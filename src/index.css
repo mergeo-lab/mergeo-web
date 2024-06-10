@@ -1,72 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 224 71.4% 4.1%;
+    --background: 0 0% 100%; /*hsl(0 0% 100%)*/
+    --foreground: 224 71.4% 4.1%; /*hsl(224 71.4% 4.1%)*/
 
-    --card: 0 0% 100%;
-    --card-foreground: 224 71.4% 4.1%;
+    --secondary-background: 234.4 58.14% 25.29%; /*hsl(234.4 58.14% 25.29%)*/
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 71.4% 4.1%;
+    --card: 0 0% 100%; /*hsl(0 0% 100%)*/
+    --card-foreground: 224 71.4% 4.1%; /*hsl(224 71.4% 4.1%)*/
 
-    --primary: 220.9 39.3% 11%;
-    --primary-foreground: 210 20% 98%;
+    --popover: 0 0% 100%; /*hsl(0 0% 100%)*/
+    --popover-foreground: 224 71.4% 4.1%; /*hsl(224 71.4% 4.1%)*/
 
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
+    --primary: 140.38 81.54% 38.24%; /*hsl(140.38 81.54% 38.24%)*/
+    --primary-foreground: 210 20% 98%; /*hsl(210 20% 98%)*/
 
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 220 8.9% 46.1%;
+    --secondary: 0 0% 31%; /*hsl(0 0% 31%)*/
+    --secondary-foreground: 0 0% 100%; /*hsl(0 0% 100%)*/
 
-    --accent: 220 14.3% 95.9%;
-    --accent-foreground: 220.9 39.3% 11%;
+    --highlight: 33.33 78.26% 54.9%; /*hsl(33.33 78.26% 54.9%)*/
+    --highlight-foreground: 0 0% 100%; /*hsl(0 0% 100%)*/
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 20% 98%;
+    --info: 236 82% 66%; /*hsl(236 82% 66%)*/
+    --info-foreground: 0 0% 100%; /*hsl(0 0% 100%)*/
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 224 71.4% 4.1%;
+    --muted: 214 20% 69%; /*hsl(214 20% 69)*/
+    --muted-foreground: 220 8.9% 46.1%; /*hsl(220 8.9% 46.1%)*/
 
-    --radius: 0.5rem;
-  }
+    --accent: 220 14.3% 95.9%; /*hsl(220 14.3% 95.9%)*/
+    --accent-foreground: 220.9 39.3% 11%; /*hsl(220.9 39.3% 11%)*/
 
-  .dark {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 20% 98%;
+    --destructive: 352.83 81.54% 38.24%; /*hsl(352.83 81.54% 38.24%)*/
+    --destructive-foreground: 210 20% 98%; /*hsl(210 20% 98%)*/
 
-    --card: 224 71.4% 4.1%;
-    --card-foreground: 210 20% 98%;
+    --border: 225 11% 93%; /*hsl(225 11% 93%)*/
+    --input: 220 13% 91%; /*hsl(220 13% 91%)*/
+    --input-text: 0 1% 40%; /*hsl(0 1% 40%)*/
+    --ring: 236 82% 66%; /*hsl(224 71.4% 4.1%)*/
 
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 20% 98%;
-
-    --primary: 210 20% 98%;
-    --primary-foreground: 220.9 39.3% 11%;
-
-    --secondary: 215 27.9% 16.9%;
-    --secondary-foreground: 210 20% 98%;
-
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-
-    --accent: 215 27.9% 16.9%;
-    --accent-foreground: 210 20% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 98%;
-
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 216 12.2% 83.9%;
+    --radius: 0.3125rem;
+    --font-size: 1rem;
   }
 }
 
 @layer base {
+  :root {
+    font-family: 'Roboto', sans-serif;
+  }
   * {
     @apply border-border;
   }

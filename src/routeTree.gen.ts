@@ -14,10 +14,11 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as RegisterImport } from './routes/register'
-import { Route as LoginImport } from './routes/login'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
+import { Route as AuthLayoutImport } from './routes/_authLayout'
 import { Route as AuthenticatedInvoicesImport } from './routes/_authenticated/invoices'
 import { Route as AuthenticatedDashboardImport } from './routes/_authenticated/dashboard'
+import { Route as AuthLayoutLoginImport } from './routes/_authLayout/login'
 
 // Create Virtual Routes
 
@@ -36,13 +37,13 @@ const RegisterRoute = RegisterImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LoginRoute = LoginImport.update({
-  path: '/login',
+const AuthenticatedRoute = AuthenticatedImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRoute,
 } as any)
 
-const AuthenticatedRoute = AuthenticatedImport.update({
-  id: '/_authenticated',
+const AuthLayoutRoute = AuthLayoutImport.update({
+  id: '/_authLayout',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -61,6 +62,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardImport.update({
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 
+const AuthLayoutLoginRoute = AuthLayoutLoginImport.update({
+  path: '/login',
+  getParentRoute: () => AuthLayoutRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -72,18 +78,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
+    '/_authLayout': {
+      id: '/_authLayout'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthLayoutImport
+      parentRoute: typeof rootRoute
+    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
       fullPath: ''
       preLoaderRoute: typeof AuthenticatedImport
-      parentRoute: typeof rootRoute
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
     '/register': {
@@ -99,6 +105,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/about'
       preLoaderRoute: typeof AboutLazyImport
       parentRoute: typeof rootRoute
+    }
+    '/_authLayout/login': {
+      id: '/_authLayout/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof AuthLayoutLoginImport
+      parentRoute: typeof AuthLayoutImport
     }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
@@ -121,11 +134,11 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
+  AuthLayoutRoute: AuthLayoutRoute.addChildren({ AuthLayoutLoginRoute }),
   AuthenticatedRoute: AuthenticatedRoute.addChildren({
     AuthenticatedDashboardRoute,
     AuthenticatedInvoicesRoute,
   }),
-  LoginRoute,
   RegisterRoute,
   AboutLazyRoute,
 })
@@ -139,14 +152,20 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/_authLayout",
         "/_authenticated",
-        "/login",
         "/register",
         "/about"
       ]
     },
     "/": {
       "filePath": "index.lazy.tsx"
+    },
+    "/_authLayout": {
+      "filePath": "_authLayout.tsx",
+      "children": [
+        "/_authLayout/login"
+      ]
     },
     "/_authenticated": {
       "filePath": "_authenticated.tsx",
@@ -155,14 +174,15 @@ export const routeTree = rootRoute.addChildren({
         "/_authenticated/invoices"
       ]
     },
-    "/login": {
-      "filePath": "login.tsx"
-    },
     "/register": {
       "filePath": "register.tsx"
     },
     "/about": {
       "filePath": "about.lazy.tsx"
+    },
+    "/_authLayout/login": {
+      "filePath": "_authLayout/login.tsx",
+      "parent": "/_authLayout"
     },
     "/_authenticated/dashboard": {
       "filePath": "_authenticated/dashboard.tsx",

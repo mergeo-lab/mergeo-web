@@ -31,7 +31,9 @@ const queryClient = new QueryClient();
 
 Bugsnag.start({
   apiKey: '667be40e7f392b57b0f07f6cd23f2de1',
-  plugins: [new BugsnagPluginReact()]
+  plugins: [new BugsnagPluginReact()],
+  releaseStage: process.env.NODE_ENV,
+  enabledReleaseStages: ['production', 'staging'],
 })
 BugsnagPerformance.start({ apiKey: '667be40e7f392b57b0f07f6cd23f2de1' })
 
