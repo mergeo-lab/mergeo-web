@@ -10,6 +10,7 @@ import PasswordVisible from '@/components/PasswordVisible';
 import { useMutation } from '@tanstack/react-query';
 import { login } from '@/lib/auth';
 import { useAuth } from '@/hooks';
+import { Button } from '@/components/ui/button';
 
 
 export const Route = createFileRoute('/login')({
@@ -112,12 +113,12 @@ function Login() {
           </div>
 
           <div>
-            <button
+            <Button
               type="submit"
-              className="mt-8 flex w-full justify-center rounded-md bg-f12-orange px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-f12-orange-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              variant="default"
             >
               Ingresar
-            </button>
+            </Button>
           </div>
         </form>
         <p className="mt-5 text-center text-sm text-f12-creame">
