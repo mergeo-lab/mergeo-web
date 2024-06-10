@@ -27,7 +27,7 @@ export type TokensType = {
 
 export interface AuthContextType {
   user: UserType | null;
-  setUser: React.Dispatch<React.SetStateAction<UserType | null>>;
+  isAuthenticated: boolean;
   logIn: (data: UserType) => void;
   logOut: () => Promise<unknown>;
 }

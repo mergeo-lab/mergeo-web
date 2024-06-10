@@ -63,8 +63,12 @@ function fallbackRender({ error, clearError }: { error: Error; info: ErrorInfo; 
   );
 }
 
-export default function App() {
+function InnerApp() {
   const auth = useAuth()
+  return <RouterProvider router={router} context={{ auth }} />
+}
+
+export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <QueryErrorResetBoundary>
@@ -79,7 +83,7 @@ export default function App() {
             }
           >
             <AuthProvider>
-              <RouterProvider router={router} context={{ auth }} />
+              <InnerApp />
             </AuthProvider>
           </ErrorBoundary>
         )}

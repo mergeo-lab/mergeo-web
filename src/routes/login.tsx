@@ -1,14 +1,16 @@
-import { useAuth } from '@/hooks';
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useRouter, useSearch, redirect } from '@tanstack/react-router';
 import { useState } from 'react';
 import * as z from "zod"
 import { zodResolver, } from '@hookform/resolvers/zod';
 import { useForm } from "react-hook-form"
-import { AuthType } from '@/types';
-import { ApiAuth } from '@/lib/auth';
+import { AuthType, LoginSearchParams } from '@/types';
 import { isApiResponse, isErrorMessage } from '@/lib/api/guards';
 import { ErrorMessage } from '@hookform/error-message';
 import PasswordVisible from '@/components/PasswordVisible';
+import { useMutation } from '@tanstack/react-query';
+import { login } from '@/lib/auth';
+import { useAuth } from '@/hooks';
+
 
 export const Route = createFileRoute('/login')({
   component: () => <Login />,
@@ -23,6 +25,8 @@ type Schema = z.infer<typeof LoginSchema>
 
 function Login() {
   const { logIn } = useAuth();
+  const router = useRouter();
+  const { redirect: from } = Route.useSearch<LoginSearchParams>()
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm<Schema>({
     resolver: zodResolver(LoginSchema),
@@ -33,15 +37,20 @@ function Login() {
     setIsPasswordVisible(!isPasswordVisible);
   }
 
-  const onSubmit = async (fields: Schema) => {
+  const mutation = useMutation({ mutationFn: login })
 
-    const response = apiCall<AuthType>(() => ApiAuth.login(fields.email, fields.password))
+  const onSubmit = async (fields: Schema) => {
+    console.log(fields)
+    const response = await mutation.mutateAsync({ email: fields.email, password: fields.password });
 
     if (isErrorMessage(response)) {
       console.log(response);
     } else if (isApiResponse<AuthType>(response)) {
       const { data } = response.data;
       logIn(data.user);
+
+      const redirectTo = from || '/';
+      router.history.push(redirectTo, { replace: true });
     }
   }
 
