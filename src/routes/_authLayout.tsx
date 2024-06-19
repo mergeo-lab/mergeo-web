@@ -5,7 +5,7 @@ export const Route = createFileRoute('/_authLayout')({
         <div className='w-full md:max-w-[600px] bg-secondary-background flex justify-center items-center p-10 md:p-0'>
             <img className='w-1/4 md:w-auto' src="/mergeo-logo.svg" alt='logo' />
         </div>
-        <div className='w-full h-full px-12 py-14'>
+        <div className='w-full h-full md:px-12 md:py-14'>
             <Outlet />
         </div>
     </div>

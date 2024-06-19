@@ -13,12 +13,16 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as RegisterImport } from './routes/register'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as AuthLayoutImport } from './routes/_authLayout'
 import { Route as AuthenticatedInvoicesImport } from './routes/_authenticated/invoices'
 import { Route as AuthenticatedDashboardImport } from './routes/_authenticated/dashboard'
+import { Route as AuthLayoutRegistrationImport } from './routes/_authLayout/registration'
 import { Route as AuthLayoutLoginImport } from './routes/_authLayout/login'
+import { Route as AuthLayoutRegistrationIndexImport } from './routes/_authLayout/registration/index'
+import { Route as AuthLayoutRegistrationValidateImport } from './routes/_authLayout/registration/validate'
+import { Route as AuthLayoutRegistrationUserImport } from './routes/_authLayout/registration/user'
+import { Route as AuthLayoutRegistrationCompanyImport } from './routes/_authLayout/registration/company'
 
 // Create Virtual Routes
 
@@ -31,11 +35,6 @@ const AboutLazyRoute = AboutLazyImport.update({
   path: '/about',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
-
-const RegisterRoute = RegisterImport.update({
-  path: '/register',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const AuthenticatedRoute = AuthenticatedImport.update({
   id: '/_authenticated',
@@ -62,10 +61,40 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardImport.update({
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 
+const AuthLayoutRegistrationRoute = AuthLayoutRegistrationImport.update({
+  path: '/registration',
+  getParentRoute: () => AuthLayoutRoute,
+} as any)
+
 const AuthLayoutLoginRoute = AuthLayoutLoginImport.update({
   path: '/login',
   getParentRoute: () => AuthLayoutRoute,
 } as any)
+
+const AuthLayoutRegistrationIndexRoute =
+  AuthLayoutRegistrationIndexImport.update({
+    path: '/',
+    getParentRoute: () => AuthLayoutRegistrationRoute,
+  } as any)
+
+const AuthLayoutRegistrationValidateRoute =
+  AuthLayoutRegistrationValidateImport.update({
+    path: '/validate',
+    getParentRoute: () => AuthLayoutRegistrationRoute,
+  } as any)
+
+const AuthLayoutRegistrationUserRoute = AuthLayoutRegistrationUserImport.update(
+  {
+    path: '/user',
+    getParentRoute: () => AuthLayoutRegistrationRoute,
+  } as any,
+)
+
+const AuthLayoutRegistrationCompanyRoute =
+  AuthLayoutRegistrationCompanyImport.update({
+    path: '/company',
+    getParentRoute: () => AuthLayoutRegistrationRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -92,13 +121,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedImport
       parentRoute: typeof rootRoute
     }
-    '/register': {
-      id: '/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterImport
-      parentRoute: typeof rootRoute
-    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -111,6 +133,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof AuthLayoutLoginImport
+      parentRoute: typeof AuthLayoutImport
+    }
+    '/_authLayout/registration': {
+      id: '/_authLayout/registration'
+      path: '/registration'
+      fullPath: '/registration'
+      preLoaderRoute: typeof AuthLayoutRegistrationImport
       parentRoute: typeof AuthLayoutImport
     }
     '/_authenticated/dashboard': {
@@ -127,6 +156,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInvoicesImport
       parentRoute: typeof AuthenticatedImport
     }
+    '/_authLayout/registration/company': {
+      id: '/_authLayout/registration/company'
+      path: '/company'
+      fullPath: '/registration/company'
+      preLoaderRoute: typeof AuthLayoutRegistrationCompanyImport
+      parentRoute: typeof AuthLayoutRegistrationImport
+    }
+    '/_authLayout/registration/user': {
+      id: '/_authLayout/registration/user'
+      path: '/user'
+      fullPath: '/registration/user'
+      preLoaderRoute: typeof AuthLayoutRegistrationUserImport
+      parentRoute: typeof AuthLayoutRegistrationImport
+    }
+    '/_authLayout/registration/validate': {
+      id: '/_authLayout/registration/validate'
+      path: '/validate'
+      fullPath: '/registration/validate'
+      preLoaderRoute: typeof AuthLayoutRegistrationValidateImport
+      parentRoute: typeof AuthLayoutRegistrationImport
+    }
+    '/_authLayout/registration/': {
+      id: '/_authLayout/registration/'
+      path: '/'
+      fullPath: '/registration/'
+      preLoaderRoute: typeof AuthLayoutRegistrationIndexImport
+      parentRoute: typeof AuthLayoutRegistrationImport
+    }
   }
 }
 
@@ -134,12 +191,19 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
-  AuthLayoutRoute: AuthLayoutRoute.addChildren({ AuthLayoutLoginRoute }),
+  AuthLayoutRoute: AuthLayoutRoute.addChildren({
+    AuthLayoutLoginRoute,
+    AuthLayoutRegistrationRoute: AuthLayoutRegistrationRoute.addChildren({
+      AuthLayoutRegistrationCompanyRoute,
+      AuthLayoutRegistrationUserRoute,
+      AuthLayoutRegistrationValidateRoute,
+      AuthLayoutRegistrationIndexRoute,
+    }),
+  }),
   AuthenticatedRoute: AuthenticatedRoute.addChildren({
     AuthenticatedDashboardRoute,
     AuthenticatedInvoicesRoute,
   }),
-  RegisterRoute,
   AboutLazyRoute,
 })
 
@@ -154,7 +218,6 @@ export const routeTree = rootRoute.addChildren({
         "/",
         "/_authLayout",
         "/_authenticated",
-        "/register",
         "/about"
       ]
     },
@@ -164,7 +227,8 @@ export const routeTree = rootRoute.addChildren({
     "/_authLayout": {
       "filePath": "_authLayout.tsx",
       "children": [
-        "/_authLayout/login"
+        "/_authLayout/login",
+        "/_authLayout/registration"
       ]
     },
     "/_authenticated": {
@@ -174,15 +238,22 @@ export const routeTree = rootRoute.addChildren({
         "/_authenticated/invoices"
       ]
     },
-    "/register": {
-      "filePath": "register.tsx"
-    },
     "/about": {
       "filePath": "about.lazy.tsx"
     },
     "/_authLayout/login": {
       "filePath": "_authLayout/login.tsx",
       "parent": "/_authLayout"
+    },
+    "/_authLayout/registration": {
+      "filePath": "_authLayout/registration.tsx",
+      "parent": "/_authLayout",
+      "children": [
+        "/_authLayout/registration/company",
+        "/_authLayout/registration/user",
+        "/_authLayout/registration/validate",
+        "/_authLayout/registration/"
+      ]
     },
     "/_authenticated/dashboard": {
       "filePath": "_authenticated/dashboard.tsx",
@@ -191,6 +262,22 @@ export const routeTree = rootRoute.addChildren({
     "/_authenticated/invoices": {
       "filePath": "_authenticated/invoices.tsx",
       "parent": "/_authenticated"
+    },
+    "/_authLayout/registration/company": {
+      "filePath": "_authLayout/registration/company.tsx",
+      "parent": "/_authLayout/registration"
+    },
+    "/_authLayout/registration/user": {
+      "filePath": "_authLayout/registration/user.tsx",
+      "parent": "/_authLayout/registration"
+    },
+    "/_authLayout/registration/validate": {
+      "filePath": "_authLayout/registration/validate.tsx",
+      "parent": "/_authLayout/registration"
+    },
+    "/_authLayout/registration/": {
+      "filePath": "_authLayout/registration/index.tsx",
+      "parent": "/_authLayout/registration"
     }
   }
 }

@@ -6,16 +6,45 @@ import {
   Response,
 } from '@/types';
 import { authEndpoints } from './endpoints';
-import { RegisterSchemaType } from '@/lib/auth/schema';
+import {
+  RegisterCompanySchemaType,
+  RegisterUserSchemaType,
+} from '@/lib/auth/schema';
 import { axiosInstance, axiosPrivate } from '@/lib/api/axios';
+import { HelpersData } from '@/types/authHelpers.type';
 
-export async function register(
-  fields: RegisterSchemaType
+export async function registerUser(
+  fields: RegisterUserSchemaType
 ): Promise<Response<AuthType>> {
   let errorMessage: string = '';
   try {
     const authApi: ApiResponse<AuthType> = await axiosInstance.post(
-      authEndpoints.REGISTER_URL,
+      authEndpoints.REGISTER_USER,
+      JSON.stringify({ ...fields }),
+      {
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
+      }
+    );
+    return authApi;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (!error.response) {
+      errorMessage = 'Algo salio mal, vuelve a intentarlo!';
+    } else {
+      errorMessage = error.response?.data.message;
+    }
+    return errorMessage;
+  }
+}
+
+export async function registerCompany(
+  fields: RegisterCompanySchemaType
+): Promise<Response<AuthType>> {
+  let errorMessage: string = '';
+  try {
+    const authApi: ApiResponse<AuthType> = await axiosInstance.post(
+      authEndpoints.REGISTER_COMPANY,
       JSON.stringify({ ...fields }),
       {
         headers: { 'Content-Type': 'application/json' },
@@ -44,7 +73,7 @@ export async function login({
   let errorMessage: string = '';
   try {
     const apiResponse: Response<AuthType> = await axiosInstance.post(
-      authEndpoints.LOGIN_URL,
+      authEndpoints.LOGIN,
       JSON.stringify({ email: email, password: password }),
       {
         headers: { 'Content-Type': 'application/json' },
@@ -129,7 +158,7 @@ export async function otp(
   let errorMessage: string = '';
   try {
     const authApi: ApiResponse<OtpType> = await axiosInstance.post(
-      authEndpoints.OTP_URL,
+      authEndpoints.OTP,
       JSON.stringify({ phone, activationCode: code }),
       {
         headers: { 'Content-Type': 'application/json' },
@@ -152,13 +181,37 @@ export async function logout(): Promise<Response<null>> {
   let errorMessage: string = '';
   try {
     const authApi: Response<null> = await axiosPrivate.post(
-      authEndpoints.LOGOUT_URL,
+      authEndpoints.LOGOUT,
       {
         headers: { 'Content-Type': 'application/json' },
         withCredentials: true,
       }
     );
     return authApi;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (!error.response) {
+      errorMessage = 'Algo salio mal, vuelve a intentarlo!';
+    } else {
+      errorMessage = error.response?.data.message;
+    }
+    return errorMessage;
+  }
+}
+
+export async function helpers(
+  type: 'provincias' | 'municipios',
+  params: string
+): Promise<Response<HelpersData>> {
+  let errorMessage: string = '';
+  try {
+    const apiResponse: Response<HelpersData> = await axiosPrivate.get(
+      `${authEndpoints.HELPERS}?type=${type}&params=${params}`,
+      {
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+    return apiResponse.data.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (!error.response) {

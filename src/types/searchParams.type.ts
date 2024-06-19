@@ -1,3 +1,3 @@
-export interface LoginSearchParams {
+export interface RedirectSearchParams {
   redirect?: string | null;
 }

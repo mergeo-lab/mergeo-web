@@ -1,19 +1,19 @@
-import { createFileRoute, Link, useRouter, useSearch, redirect } from '@tanstack/react-router';
-import { useState } from 'react';
-import * as z from "zod"
+import { createFileRoute, Link, useRouter } from '@tanstack/react-router';
 import { zodResolver, } from '@hookform/resolvers/zod';
 import { useForm } from "react-hook-form"
-import { AuthType, LoginSearchParams } from '@/types';
+import { AuthType, RedirectSearchParams } from '@/types';
 import { isApiResponse, isErrorMessage } from '@/lib/api/guards';
-import { ErrorMessage } from '@hookform/error-message';
-import PasswordVisible from '@/components/PasswordVisible';
 import { useMutation } from '@tanstack/react-query';
 import { login } from '@/lib/auth';
 import { useAuth } from '@/hooks';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-
+import { useToast } from '@/components/ui/use-toast';
+import LoadingIndicator from '@/components/loadingIndicator';
+import Card, { CardBody, CardFooter, CardHeader } from '@/components/card';
+import PasswordInput from '@/components/passwordInput';
+import { z } from 'zod';
 
 export const Route = createFileRoute('/_authLayout/login')({
   component: () => <Login />,
@@ -29,32 +29,29 @@ type Schema = z.infer<typeof LoginSchema>
 function Login() {
   const { logIn } = useAuth();
   const router = useRouter();
-  const { redirect: from } = Route.useSearch<LoginSearchParams>()
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm<Schema>({
-    resolver: zodResolver(LoginSchema),
-  })
+  const { toast } = useToast()
+  const { redirect: from } = Route.useSearch<RedirectSearchParams>()
+  const mutation = useMutation({ mutationFn: login })
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
+    disabled: mutation.isPending,
     defaultValues: {
       email: "",
       password: "",
     },
   })
 
-  const togglePasswordVisibility = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsPasswordVisible(!isPasswordVisible);
-  }
-
-  const mutation = useMutation({ mutationFn: login })
-
   const onSubmit = async (fields: Schema) => {
     console.log(fields)
     const response = await mutation.mutateAsync({ email: fields.email, password: fields.password });
 
     if (isErrorMessage(response)) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: response,
+      })
       console.log(response);
     } else if (isApiResponse<AuthType>(response)) {
       const { data } = response.data;
@@ -66,26 +63,24 @@ function Login() {
   }
 
   return (
-    <div className='w-full h-full border rounded shadow'>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col justify-between w-full h-full'>
-
-          <div className='py-5 px-16 border-b'>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className='w-full h-full'>
+        <Card>
+          <CardHeader>
             <div className='h-24 flex flex-col justify-center'>
-              <h2 className="text-3xl font-black text-secondary-background pb-2">
+              <h2 className="text-2xl md:text-3xl font-black text-secondary-background pb-2">
                 Ingresa a tu cuenta
               </h2>
-              <p className='text-muted'>Ingresa tu email y contraseña para ingresar a tu cuenta</p>
+              <p className='text-muted text-sm md:text-base'>Ingresa tu email y contraseña para ingresar a tu cuenta</p>
             </div>
-          </div>
-
-          <div className='h-full w-2/5 flex flex-col justify-center m-auto space-y-8'>
+          </CardHeader>
+          <CardBody className='space-y-8 w-2/4 m-auto h-auto' >
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel id='email'>Email</FormLabel>
                   <FormControl>
                     <Input placeholder="name@example.com" {...field} />
                   </FormControl>
@@ -98,41 +93,35 @@ function Login() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <div className='flex justify-between items-center'>
-                    <FormLabel>Contraseña</FormLabel>
-                    <Button className='m-0 h-0' variant="link">Recuperar contraseña</Button>
-                  </div>
+                  <FormLabel id='password'>Contraseña</FormLabel>
                   <FormControl>
                     <div className='relative'>
-                      <Input type={isPasswordVisible ? "text" : "password"} {...field} />
-                      <PasswordVisible isPasswordVisible={isPasswordVisible} togglePasswordVisibility={togglePasswordVisibility} />
+                      <PasswordInput fieldName={field.name} />
                     </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          </div>
-
-
-          <div className='py-5 px-16 border-t'>
-            <div className='flex justify-between items-center min-h-24'>
+          </CardBody>
+          <CardFooter>
+            <div className='flex flex-col-reverse md:flex-row justify-between items-center min-h-24'>
               <p className='text-sm text-muted'>
                 No tenes una cuenta?{' '}
-                <Link to="/register">
+                <Link to="/registration">
                   <Button className='-ml-3' variant="link">
                     Registrate
                   </Button>
                 </Link>
               </p>
-              <Button className='px-14' type="submit">Ingresar</Button>
+              <Button disabled={mutation.isPending} className='min-w-[200px]' type="submit">
+                {mutation.isPending ? <LoadingIndicator className="w-4 h-4 text-primary-foreground" /> : 'Ingresar'}
+              </Button>
             </div>
-          </div>
-
-        </form>
-      </Form>
-    </div>
-
+          </CardFooter>
+        </Card>
+      </form>
+    </Form>
   )
 }
 
