@@ -1,6 +1,18 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import CryptoJS from 'crypto-js';
+
+const secretKey = import.meta.env.VITE_SEARCH_PARAMS_KEY;
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
+}
+
+export function encryptQueryParam(param: string): string {
+  return CryptoJS.AES.encrypt(param, secretKey).toString();
+}
+
+export function decryptQueryParam(encryptedParam: string): string {
+  const bytes = CryptoJS.AES.decrypt(encryptedParam, secretKey);
+  return bytes.toString(CryptoJS.enc.Utf8);
 }

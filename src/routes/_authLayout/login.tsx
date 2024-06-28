@@ -43,7 +43,6 @@ function Login() {
   })
 
   const onSubmit = async (fields: Schema) => {
-    console.log(fields)
     const response = await mutation.mutateAsync({ email: fields.email, password: fields.password });
 
     if (isErrorMessage(response)) {
@@ -52,7 +51,6 @@ function Login() {
         title: "Error",
         description: response,
       })
-      console.log(response);
     } else if (isApiResponse<AuthType>(response)) {
       const { data } = response.data;
       logIn(data.user);
@@ -103,6 +101,17 @@ function Login() {
                 </FormItem>
               )}
             />
+
+            <div className='flex justify-center items-center min-h-24'>
+              <p className='text-sm text-muted'>
+                Olvidaste tu contraseña?{' '}
+                <Link to="/passwordRecover">
+                  <Button className='-ml-3' variant="link">
+                    Recuperar Contraseña
+                  </Button>
+                </Link>
+              </p>
+            </div>
           </CardBody>
           <CardFooter>
             <div className='flex flex-col-reverse md:flex-row justify-between items-center min-h-24'>

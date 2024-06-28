@@ -1,15 +1,30 @@
-import { RegisterCompanySchemaType } from '@/lib/auth/schema';
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-type CompanyState = {
-  company: RegisterCompanySchemaType | null;
+type RegistrationState = {
+  companyId: string | null;
+  accountType: string | null;
+  userEmail: string | null;
   // eslint-disable-next-line no-unused-vars
-  saveCompany: (user: RegisterCompanySchemaType) => void;
+  saveCompanyId: (companyId: string) => void;
+  saveAccountType: (accoutType: string) => void;
+  saveUserEmail: (userEmail: string) => void;
 };
+const UseRegistrationStore = create<RegistrationState>()(
+  persist(
+    (set) => ({
+      companyId: null,
+      accountType: null,
+      userEmail: null,
+      saveCompanyId: (companyId: string) => set(() => ({ companyId })),
+      saveAccountType: (accountType: string) => set(() => ({ accountType })),
+      saveUserEmail: (userEmail: string) => set(() => ({ userEmail })),
+    }),
+    { name: 'registrationStore' }
+  )
+);
 
-export const UseCompanyStore = create<CompanyState>()((set) => ({
-  company: null,
-  saveCompany: (company: RegisterCompanySchemaType) => set(() => ({ company })),
-}));
+export const removeRegistrationStore = () =>
+  UseRegistrationStore.persist.clearStorage();
 
-export default UseCompanyStore;
+export default UseRegistrationStore;

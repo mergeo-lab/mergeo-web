@@ -12,8 +12,8 @@ import { AuthType } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useForm, FormProvider } from 'react-hook-form'
-import { registerCompany, registerUser } from '@/lib/auth'
-import UseCompanyStore from '@/store/registration.store'
+import { registerUser } from '@/lib/auth'
+import UseRegistrationStore from '@/store/registration.store'
 
 export const Route = createFileRoute('/_authLayout/registration/user')({
   component: () => <RegisterUser />
@@ -21,12 +21,9 @@ export const Route = createFileRoute('/_authLayout/registration/user')({
 
 function RegisterUser() {
   const router = useRouter();
-  const { toast } = useToast()
-  const companyMutation = useMutation({ mutationFn: registerCompany })
-  const userMutation = useMutation({ mutationFn: registerUser })
-  const companyState = UseCompanyStore();
-
-  console.log(companyState.company);
+  const { toast } = useToast();
+  const userMutation = useMutation({ mutationFn: registerUser });
+  const registrationState = UseRegistrationStore();
 
   const form = useForm<RegisterUserSchemaType>({
     resolver: zodResolver(RegisterUserSchema),
@@ -42,10 +39,10 @@ function RegisterUser() {
   })
 
   const onSubmit = async (fields: RegisterUserSchemaType) => {
-    const { data: registerCompanyResponse } = companyState?.company ?
-      await companyMutation.mutateAsync(companyState?.company) : null;
+    const companyId = registrationState.companyId ? registrationState.companyId : "";
+    const accountType = registrationState.accountType ? registrationState.accountType : "";
 
-    console.log(registerCompanyResponse?.data);
+    console.log("registrationState :: ", registrationState)
 
     const response = await userMutation.mutateAsync({
       firstName: fields.firstName,
@@ -53,20 +50,18 @@ function RegisterUser() {
       email: fields.email,
       password: fields.password,
       phoneNumber: fields.phoneNumber,
-      companyId: registerCompanyResponse?.data.companyId,
-      accountType: "USER",
+      companyId: companyId,
+      accountType: accountType,
     });
 
     if (isErrorMessage(response)) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: response,
+        description: Array.isArray(response) ? response[0] : response,
       })
     } else if (isApiResponse<AuthType>(response)) {
-      const { data } = response.data;
-
-      console.log(data);
+      registrationState.saveUserEmail(fields.email);
 
       const redirectTo = '/registration/validate';
       router.history.push(redirectTo, { replace: true });

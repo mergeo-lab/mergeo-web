@@ -13,6 +13,10 @@ export interface OtpType {
   code: string;
 }
 
+export interface CompanyType {
+  companyId: string;
+}
+
 export type EmailRecoverType = string;
 
 export type UserList = Omit<UserType, 'accountType' | 'name'>;

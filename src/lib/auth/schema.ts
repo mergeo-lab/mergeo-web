@@ -52,3 +52,13 @@ export const RegisterCompanySchema = z.object({
 });
 
 export type RegisterCompanySchemaType = z.infer<typeof RegisterCompanySchema>;
+
+export const OtpSchema = z.object({
+  email: z
+    .string()
+    .min(3, { message: 'Tienes que completar este campo!' })
+    .email('Ingresa un email valido!'),
+  code: z.string().min(6, { message: 'El codigo deve tener 6 digitos' }),
+});
+
+export type OtpSchemaType = z.infer<typeof OtpSchema>;

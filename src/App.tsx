@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Bugsnag from '@bugsnag/js'
 import BugsnagPluginReact from '@bugsnag/plugin-react'
 import BugsnagPerformance from '@bugsnag/browser-performance'
 import { AuthProvider } from "@/auth"
 import { useAuth } from "@/hooks"
 import { QueryClient, QueryClientProvider, QueryErrorResetBoundary } from "@tanstack/react-query"
-import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { RouterProvider, createRouter, useRouter } from '@tanstack/react-router'
 import { ErrorInfo } from "react"
 import { Bug } from 'lucide-react';
 import { routeTree } from '@/routeTree.gen'
@@ -25,6 +25,9 @@ declare module '@tanstack/react-router' {
     router: typeof router
   }
 }
+
+// Handle email redirection
+const channel = new BroadcastChannel('verification_channel');
 
 // Create a client
 const queryClient = new QueryClient();

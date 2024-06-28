@@ -6,7 +6,6 @@ export const Route = createFileRoute('/_authenticated')({
 
     if (!context.auth.isAuthenticated) {
       console.debug('Not authenticated, redirecting to login...');
-      ``
       throw redirect({
         to: '/login',
         search: {

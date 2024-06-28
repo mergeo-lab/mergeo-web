@@ -30,7 +30,6 @@ function Registration() {
     }];
   const router = useRouterState();
   const currentStep = steps.find((step) => step.link === router.location.pathname);
-  console.log(currentStep);
   return (
     <div className='w-full h-full'>
       <Card className='justify-start'>

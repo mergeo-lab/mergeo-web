@@ -7,6 +7,7 @@ import {
 } from '@/types';
 import { authEndpoints } from './endpoints';
 import {
+  OtpSchemaType,
   RegisterCompanySchemaType,
   RegisterUserSchemaType,
 } from '@/lib/auth/schema';
@@ -112,8 +113,6 @@ export async function passwordRecover(
   } catch (error: any) {
     if (!error.response) {
       errorMessage = 'Algo salio mal, vuelve a intentarlo!';
-    } else if (error.response?.data.statusCode === 400) {
-      errorMessage = 'El email o la contraseña son incorrectos';
     } else {
       errorMessage = error.response?.data.message;
     }
@@ -151,21 +150,19 @@ export async function passwordReset(
   }
 }
 
-export async function otp(
-  phone: string,
-  code: string
-): Promise<Response<OtpType>> {
+export async function otp(fields: OtpSchemaType): Promise<Response<OtpType>> {
+  const { email, code } = fields;
   let errorMessage: string = '';
   try {
-    const authApi: ApiResponse<OtpType> = await axiosInstance.post(
+    const resopnse: ApiResponse<OtpType> = await axiosInstance.post(
       authEndpoints.OTP,
-      JSON.stringify({ phone, activationCode: code }),
+      JSON.stringify({ email, activationCode: code }),
       {
         headers: { 'Content-Type': 'application/json' },
         withCredentials: true,
       }
     );
-    return authApi;
+    return resopnse;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (!error.response) {

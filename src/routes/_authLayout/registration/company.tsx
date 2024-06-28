@@ -6,11 +6,14 @@ import { Input } from '@/components/ui/input'
 import { RegisterCompanySchema, RegisterCompanySchemaType } from '@/lib/auth/schema'
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery } from '@tanstack/react-query'
-import { helpers } from '@/lib/auth'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { helpers, registerCompany } from '@/lib/auth'
 import { Select, SelectContent, SelectItem, SelectValue, SelectTrigger } from '@/components/ui/select'
 import { useEffect, useState } from 'react'
-import UseCompanyStore from '@/store/registration.store'
+import UseRegistrationStore from '@/store/registration.store'
+import { useToast } from '@/components/ui/use-toast'
+import { isErrorMessage, isApiResponse } from '@/lib/api/guards'
+import { CompanyType } from '@/types'
 
 export const Route = createFileRoute('/_authLayout/registration/company')({
   loader: async () => helpers("provincias", "orden=nombre&campos=id,nombre"),
@@ -20,11 +23,12 @@ export const Route = createFileRoute('/_authLayout/registration/company')({
 function RegisterCompany() {
   const helpersData = Route.useLoaderData();
   const router = useRouter();
-  const companyState = UseCompanyStore();
-  // const { toast } = useToast()
+  const { toast } = useToast()
   const [selectedProvince, setSelectedProvince] = useState<string>("");
   const [selectedLocality, setSelectedLocality] = useState<string>("");
-  // const mutation = useMutation({ mutationFn: registerCompany })
+  const mutation = useMutation({ mutationFn: registerCompany })
+  const registrationState = UseRegistrationStore();
+
 
   const { isPending, data: municipiosData } = useQuery({
     queryKey: ['localidades', selectedProvince],
@@ -56,34 +60,33 @@ function RegisterCompany() {
   })
 
   const onSubmit = async (fields: RegisterCompanySchemaType) => {
-    companyState.saveCompany(fields);
 
-    // const response = await mutation.mutateAsync({
-    //   name: fields.name,
-    //   razonSocial: fields.razonSocial,
-    //   cuit: fields.cuit,
-    //   country: fields.country,
-    //   province: fields.province,
-    //   locality: fields.locality,
-    //   address: fields.address,
-    //   activity: fields.activity,
-    // });
+    const response = await mutation.mutateAsync({
+      name: fields.name,
+      razonSocial: fields.razonSocial,
+      cuit: fields.cuit,
+      country: fields.country,
+      province: fields.province,
+      locality: fields.locality,
+      address: fields.address,
+      activity: fields.activity,
+    });
 
-    const redirectTo = '/registration/user';
-    router.history.push(redirectTo, { replace: true });
+    if (isErrorMessage(response)) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: response,
+      })
+    } else if (isApiResponse<CompanyType>(response)) {
+      const { data } = response.data;
+      registrationState.saveCompanyId(data.companyId)
 
-    // if (isErrorMessage(response)) {
-    //   toast({
-    //     variant: "destructive",
-    //     title: "Error",
-    //     description: response,
-    //   })
-    // } else if (isApiResponse<AuthType>(response)) {
-    //   const { data } = response.data;
+      console.log("Register company:", data)
 
-    //   const redirectTo = '/registration/user';
-    //   router.history.push(redirectTo, { replace: true });
-    // }
+      const redirectTo = `/registration/user`;
+      router.history.push(redirectTo, { replace: true });
+    }
   }
 
   return (

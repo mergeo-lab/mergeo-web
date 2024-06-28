@@ -6,6 +6,6 @@ export interface ApiResponse<T> {
   };
 }
 
-export type ErrorMessage = string;
+export type ErrorMessage = string | string[];
 
 export type Response<T> = ApiResponse<T> | ErrorMessage;

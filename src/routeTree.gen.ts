@@ -18,6 +18,7 @@ import { Route as AuthLayoutImport } from './routes/_authLayout'
 import { Route as AuthenticatedInvoicesImport } from './routes/_authenticated/invoices'
 import { Route as AuthenticatedDashboardImport } from './routes/_authenticated/dashboard'
 import { Route as AuthLayoutRegistrationImport } from './routes/_authLayout/registration'
+import { Route as AuthLayoutPasswordRecoverImport } from './routes/_authLayout/passwordRecover'
 import { Route as AuthLayoutLoginImport } from './routes/_authLayout/login'
 import { Route as AuthLayoutRegistrationIndexImport } from './routes/_authLayout/registration/index'
 import { Route as AuthLayoutRegistrationValidateImport } from './routes/_authLayout/registration/validate'
@@ -63,6 +64,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardImport.update({
 
 const AuthLayoutRegistrationRoute = AuthLayoutRegistrationImport.update({
   path: '/registration',
+  getParentRoute: () => AuthLayoutRoute,
+} as any)
+
+const AuthLayoutPasswordRecoverRoute = AuthLayoutPasswordRecoverImport.update({
+  path: '/passwordRecover',
   getParentRoute: () => AuthLayoutRoute,
 } as any)
 
@@ -135,6 +141,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLayoutLoginImport
       parentRoute: typeof AuthLayoutImport
     }
+    '/_authLayout/passwordRecover': {
+      id: '/_authLayout/passwordRecover'
+      path: '/passwordRecover'
+      fullPath: '/passwordRecover'
+      preLoaderRoute: typeof AuthLayoutPasswordRecoverImport
+      parentRoute: typeof AuthLayoutImport
+    }
     '/_authLayout/registration': {
       id: '/_authLayout/registration'
       path: '/registration'
@@ -193,6 +206,7 @@ export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
   AuthLayoutRoute: AuthLayoutRoute.addChildren({
     AuthLayoutLoginRoute,
+    AuthLayoutPasswordRecoverRoute,
     AuthLayoutRegistrationRoute: AuthLayoutRegistrationRoute.addChildren({
       AuthLayoutRegistrationCompanyRoute,
       AuthLayoutRegistrationUserRoute,
@@ -228,6 +242,7 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "_authLayout.tsx",
       "children": [
         "/_authLayout/login",
+        "/_authLayout/passwordRecover",
         "/_authLayout/registration"
       ]
     },
@@ -243,6 +258,10 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_authLayout/login": {
       "filePath": "_authLayout/login.tsx",
+      "parent": "/_authLayout"
+    },
+    "/_authLayout/passwordRecover": {
+      "filePath": "_authLayout/passwordRecover.tsx",
       "parent": "/_authLayout"
     },
     "/_authLayout/registration": {

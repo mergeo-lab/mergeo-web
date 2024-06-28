@@ -9,5 +9,9 @@ export function isApiResponse<T>(response: any): response is ApiResponse<T> {
 }
 
 export function isErrorMessage(response: any): response is ErrorMessage {
-  return typeof response === 'string';
+  return (
+    typeof response === 'string' ||
+    (Array.isArray(response) &&
+      response.every((item) => typeof item === 'string'))
+  );
 }

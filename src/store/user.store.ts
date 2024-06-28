@@ -1,24 +1,22 @@
-import { UserType } from '@/types'
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { UserType } from '@/types';
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 type UserState = {
-  user: UserType | null,
+  user: UserType | null;
   // eslint-disable-next-line no-unused-vars
-  saveUser: (user: UserType) => void
-}
+  saveUser: (user: UserType) => void;
+};
 
-export const UseUserStore = create<UserState>()(
+const UseUserStore = create<UserState>()(
   persist(
     (set) => ({
       user: null,
       saveUser: (user: UserType) => set(() => ({ user })),
     }),
-    { name: 'userStore' },
-  ),
-)
+    { name: 'userStore' }
+  )
+);
 export const removeUser = () => UseUserStore.persist.clearStorage();
-
-
 
 export default UseUserStore;
