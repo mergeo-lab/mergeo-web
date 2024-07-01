@@ -120,16 +120,20 @@ export async function passwordRecover(
   }
 }
 
-export async function passwordReset(
-  password: string,
-  oldPassword: string | null,
-  email: string | null
-): Promise<Response<EmailRecoverType>> {
+export async function passwordReset({
+  token,
+  email,
+  password,
+}: {
+  token: string;
+  email: string;
+  password: string;
+}): Promise<Response<string>> {
   let errorMessage: string = '';
   try {
-    const authApi: Response<EmailRecoverType> = await axiosInstance.post(
+    const authApi: Response<string> = await axiosInstance.post(
       authEndpoints.PASSWORD_RESET,
-      JSON.stringify({ password, oldPassword, email }),
+      JSON.stringify({ password, token, email }),
       {
         headers: {
           'Content-Type': 'application/json',

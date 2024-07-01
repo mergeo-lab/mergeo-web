@@ -105,7 +105,7 @@ function Login() {
             <div className='flex justify-center items-center min-h-24'>
               <p className='text-sm text-muted'>
                 Olvidaste tu contraseña?{' '}
-                <Link to="/passwordRecover">
+                <Link to="/forgotPassword">
                   <Button className='-ml-3' variant="link">
                     Recuperar Contraseña
                   </Button>

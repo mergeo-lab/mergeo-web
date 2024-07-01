@@ -98,12 +98,27 @@ export default {
             transform: 'translateY(0)',
           },
         },
+        'slide-in-blurred-top': {
+          from: {
+            transform: 'translateY(-1000px) scaleY(2.5) scaleX(0.2)',
+            transformOrigin: '50% 0%',
+            filter:'blur(40px)',
+            opacity: 0,
+          },
+          to: {
+            transform: 'translateY(0) scaleY(1) scaleX(1)',
+            transformOrigin: '50% 50%',
+            filter:' blur(0)',
+            opacity: 1
+          }
+        }
       },
       animation: {
         "caret-blink": "caret-blink 1.25s ease-out infinite",
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'slide-down': 'slide-down 0.2s ease-out',
+        'slide-in-blurred-top': '0.6s cubic-bezier(0.230, 1.000, 0.320, 1.000) both'
       },
     },
   },

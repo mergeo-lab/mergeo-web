@@ -18,8 +18,9 @@ import { Route as AuthLayoutImport } from './routes/_authLayout'
 import { Route as AuthenticatedInvoicesImport } from './routes/_authenticated/invoices'
 import { Route as AuthenticatedDashboardImport } from './routes/_authenticated/dashboard'
 import { Route as AuthLayoutRegistrationImport } from './routes/_authLayout/registration'
-import { Route as AuthLayoutPasswordRecoverImport } from './routes/_authLayout/passwordRecover'
+import { Route as AuthLayoutPasswordResetImport } from './routes/_authLayout/passwordReset'
 import { Route as AuthLayoutLoginImport } from './routes/_authLayout/login'
+import { Route as AuthLayoutForgotPasswordImport } from './routes/_authLayout/forgotPassword'
 import { Route as AuthLayoutRegistrationIndexImport } from './routes/_authLayout/registration/index'
 import { Route as AuthLayoutRegistrationValidateImport } from './routes/_authLayout/registration/validate'
 import { Route as AuthLayoutRegistrationUserImport } from './routes/_authLayout/registration/user'
@@ -67,13 +68,18 @@ const AuthLayoutRegistrationRoute = AuthLayoutRegistrationImport.update({
   getParentRoute: () => AuthLayoutRoute,
 } as any)
 
-const AuthLayoutPasswordRecoverRoute = AuthLayoutPasswordRecoverImport.update({
-  path: '/passwordRecover',
+const AuthLayoutPasswordResetRoute = AuthLayoutPasswordResetImport.update({
+  path: '/passwordReset',
   getParentRoute: () => AuthLayoutRoute,
 } as any)
 
 const AuthLayoutLoginRoute = AuthLayoutLoginImport.update({
   path: '/login',
+  getParentRoute: () => AuthLayoutRoute,
+} as any)
+
+const AuthLayoutForgotPasswordRoute = AuthLayoutForgotPasswordImport.update({
+  path: '/forgotPassword',
   getParentRoute: () => AuthLayoutRoute,
 } as any)
 
@@ -134,6 +140,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutLazyImport
       parentRoute: typeof rootRoute
     }
+    '/_authLayout/forgotPassword': {
+      id: '/_authLayout/forgotPassword'
+      path: '/forgotPassword'
+      fullPath: '/forgotPassword'
+      preLoaderRoute: typeof AuthLayoutForgotPasswordImport
+      parentRoute: typeof AuthLayoutImport
+    }
     '/_authLayout/login': {
       id: '/_authLayout/login'
       path: '/login'
@@ -141,11 +154,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLayoutLoginImport
       parentRoute: typeof AuthLayoutImport
     }
-    '/_authLayout/passwordRecover': {
-      id: '/_authLayout/passwordRecover'
-      path: '/passwordRecover'
-      fullPath: '/passwordRecover'
-      preLoaderRoute: typeof AuthLayoutPasswordRecoverImport
+    '/_authLayout/passwordReset': {
+      id: '/_authLayout/passwordReset'
+      path: '/passwordReset'
+      fullPath: '/passwordReset'
+      preLoaderRoute: typeof AuthLayoutPasswordResetImport
       parentRoute: typeof AuthLayoutImport
     }
     '/_authLayout/registration': {
@@ -205,8 +218,9 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
   AuthLayoutRoute: AuthLayoutRoute.addChildren({
+    AuthLayoutForgotPasswordRoute,
     AuthLayoutLoginRoute,
-    AuthLayoutPasswordRecoverRoute,
+    AuthLayoutPasswordResetRoute,
     AuthLayoutRegistrationRoute: AuthLayoutRegistrationRoute.addChildren({
       AuthLayoutRegistrationCompanyRoute,
       AuthLayoutRegistrationUserRoute,
@@ -241,8 +255,9 @@ export const routeTree = rootRoute.addChildren({
     "/_authLayout": {
       "filePath": "_authLayout.tsx",
       "children": [
+        "/_authLayout/forgotPassword",
         "/_authLayout/login",
-        "/_authLayout/passwordRecover",
+        "/_authLayout/passwordReset",
         "/_authLayout/registration"
       ]
     },
@@ -256,12 +271,16 @@ export const routeTree = rootRoute.addChildren({
     "/about": {
       "filePath": "about.lazy.tsx"
     },
+    "/_authLayout/forgotPassword": {
+      "filePath": "_authLayout/forgotPassword.tsx",
+      "parent": "/_authLayout"
+    },
     "/_authLayout/login": {
       "filePath": "_authLayout/login.tsx",
       "parent": "/_authLayout"
     },
-    "/_authLayout/passwordRecover": {
-      "filePath": "_authLayout/passwordRecover.tsx",
+    "/_authLayout/passwordReset": {
+      "filePath": "_authLayout/passwordReset.tsx",
       "parent": "/_authLayout"
     },
     "/_authLayout/registration": {
