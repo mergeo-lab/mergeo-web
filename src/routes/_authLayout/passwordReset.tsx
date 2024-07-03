@@ -1,4 +1,5 @@
 import Card, { CardHeader, CardBody, CardFooter } from '@/components/card';
+import CountDownIndicator from '@/components/countdown';
 import LoadingIndicator from '@/components/loadingIndicator';
 import PasswordInput from '@/components/passwordInput';
 import { Button } from '@/components/ui/button';
@@ -10,19 +11,18 @@ import { cn } from '@/lib/utils';
 import { AuthType } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { CircleCheckBig } from 'lucide-react';
 import { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { z } from 'zod';
 
-type TokenSearch = { token: string, email: string };
+type TokenSearch = { token: string };
 
 export const Route = createFileRoute('/_authLayout/passwordReset')({
     validateSearch: (search: Record<string, unknown>): TokenSearch => {
         return {
             token: (search?.token) as string || '',
-            email: (search?.email) as string || '',
         };
     },
     component: () => <PasswordRecover />
@@ -35,10 +35,11 @@ const PssswordRecoverSchema = z.object({
 type Schema = z.infer<typeof PssswordRecoverSchema>
 
 function PasswordRecover() {
-    const { token, email } = Route.useSearch();
+    const { token } = Route.useSearch();
+    const router = useRouter();
     const { toast } = useToast()
     const mutation = useMutation({ mutationFn: passwordReset })
-    const [emailSent, setEmailSent] = useState(false);
+    const [emailSent, setEmailSent] = useState(true);
 
     const form = useForm<Schema>({
         resolver: zodResolver(PssswordRecoverSchema),
@@ -49,7 +50,7 @@ function PasswordRecover() {
     })
 
     const onSubmit = async (fields: Schema) => {
-        const response = await mutation.mutateAsync({ token, email, password: fields.password });
+        const response = await mutation.mutateAsync({ token, password: fields.password });
 
         if (isErrorMessage(response)) {
             toast({
@@ -62,6 +63,11 @@ function PasswordRecover() {
             console.log(data);
             setEmailSent(true);
         }
+    }
+
+    const redirectToLogin = () => {
+        const redirectTo = '/login';
+        router.history.push(redirectTo, { replace: true });
     }
 
     return (
@@ -87,8 +93,14 @@ function PasswordRecover() {
                                         Gracias!
                                     </h2>
                                     <p>
-                                        Te enviamos un email con un link para recuperar tu contraseña!
+                                        Tu contraseña ha sido cambiada con exito!
                                     </p>
+                                    <CountDownIndicator
+                                        showTimer
+                                        label='Redirigiendo al Login en'
+                                        time={20}
+                                        callback={redirectToLogin}
+                                    />
                                 </div>
                                 : (
                                     <FormField

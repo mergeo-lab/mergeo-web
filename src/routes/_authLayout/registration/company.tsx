@@ -35,7 +35,9 @@ function RegisterCompany() {
     queryFn: () => helpers("municipios", `provincia=${selectedProvince}%26orden=nombre%26aplanar=true%26campos=id,nombre%26max=1000%26exacto=true`),
     enabled: !!selectedProvince
   })
-  const localidades = municipiosData?.municipios;
+
+  console.log(municipiosData);
+  const localidades = municipiosData ? municipiosData?.data.municipios : "";
 
   const handleProvinceChange = (value: string) => {
     setSelectedProvince(value);
@@ -91,7 +93,7 @@ function RegisterCompany() {
 
   return (
     <>
-      <CardBody className='w-full h-full flex flex-col justify-center' >
+      <CardBody className='w-full h-full flex flex-col overflow-y-auto' >
         <FormProvider {...form}>
           <form className='space-y-8'>
             <div className='grid grid-cols-2 gap-14'>
@@ -169,7 +171,7 @@ function RegisterCompany() {
                       </FormControl>
 
                       <SelectContent>
-                        {helpersData.provincias.map(({ id, nombre }: { id: string, nombre: string }) => (
+                        {helpersData.data.provincias.map(({ id, nombre }: { id: string, nombre: string }) => (
                           <SelectItem key={id.toString()} value={nombre}>{nombre}</SelectItem>
                         ))}
                       </SelectContent>
@@ -244,7 +246,7 @@ function RegisterCompany() {
         </FormProvider>
       </CardBody >
       <CardFooter className='w-full'>
-        <div className='flex flex-col-reverse md:flex-row justify-between items-center min-h-24'>
+        <div className='flex flex-col-reverse md:flex-row justify-between items-center min-h-20'>
           <p className='text-sm text-muted'>
             ya tenes una cuenta?{' '}
             <Link to="/login">

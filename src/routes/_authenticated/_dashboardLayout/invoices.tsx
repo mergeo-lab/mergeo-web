@@ -1,7 +1,7 @@
 import { useAuth } from '@/hooks'
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/_authenticated/invoices')({
+export const Route = createFileRoute('/_authenticated/_dashboardLayout/invoices')({
   component: () => <Invoices />,
 })
 

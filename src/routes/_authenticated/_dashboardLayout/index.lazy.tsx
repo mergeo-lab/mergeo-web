@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { createLazyFileRoute, Link } from '@tanstack/react-router';
 
-export const Route = createLazyFileRoute('/')({
+export const Route = createLazyFileRoute('/_authenticated/_dashboardLayout/')({
     component: Index,
 })
 

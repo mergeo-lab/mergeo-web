@@ -72,45 +72,47 @@ function Login() {
               <p className='text-muted text-sm md:text-base'>Ingresa tu email y contraseña para ingresar a tu cuenta</p>
             </div>
           </CardHeader>
-          <CardBody className='space-y-8 w-2/4 m-auto h-auto' >
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel id='email'>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="name@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel id='password'>Contraseña</FormLabel>
-                  <FormControl>
-                    <div className='relative'>
-                      <PasswordInput fieldName={field.name} />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <CardBody className='w-full flex justify-center m-auto h-auto' >
+            <div className='w-2/4 space-y-8'>
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel id='email'>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="name@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel id='password'>Contraseña</FormLabel>
+                    <FormControl>
+                      <div className='relative'>
+                        <PasswordInput fieldName={field.name} />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div className='flex justify-center items-center min-h-24'>
-              <p className='text-sm text-muted'>
-                Olvidaste tu contraseña?{' '}
-                <Link to="/forgotPassword">
-                  <Button className='-ml-3' variant="link">
-                    Recuperar Contraseña
-                  </Button>
-                </Link>
-              </p>
+              <div className='flex justify-center items-center min-h-24'>
+                <p className='text-sm text-muted'>
+                  Olvidaste tu contraseña?{' '}
+                  <Link to="/forgotPassword">
+                    <Button className='-ml-3' variant="link">
+                      Recuperar Contraseña
+                    </Button>
+                  </Link>
+                </p>
+              </div>
             </div>
           </CardBody>
           <CardFooter>

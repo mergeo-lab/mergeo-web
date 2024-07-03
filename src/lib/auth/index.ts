@@ -13,6 +13,7 @@ import {
 } from '@/lib/auth/schema';
 import { axiosInstance, axiosPrivate } from '@/lib/api/axios';
 import { HelpersData } from '@/types/authHelpers.type';
+import { AxiosResponse } from 'axios';
 
 export async function registerUser(
   fields: RegisterUserSchemaType
@@ -122,18 +123,16 @@ export async function passwordRecover(
 
 export async function passwordReset({
   token,
-  email,
   password,
 }: {
   token: string;
-  email: string;
   password: string;
 }): Promise<Response<string>> {
   let errorMessage: string = '';
   try {
     const authApi: Response<string> = await axiosInstance.post(
       authEndpoints.PASSWORD_RESET,
-      JSON.stringify({ password, token, email }),
+      JSON.stringify({ password, token }),
       {
         headers: {
           'Content-Type': 'application/json',
@@ -206,13 +205,15 @@ export async function helpers(
 ): Promise<Response<HelpersData>> {
   let errorMessage: string = '';
   try {
-    const apiResponse: Response<HelpersData> = await axiosPrivate.get(
+    const apiResponse: AxiosResponse = await axiosPrivate.get(
       `${authEndpoints.HELPERS}?type=${type}&params=${params}`,
       {
         headers: { 'Content-Type': 'application/json' },
       }
     );
-    return apiResponse.data.data;
+    console.log(apiResponse);
+
+    return apiResponse.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (!error.response) {
