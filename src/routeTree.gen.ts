@@ -13,6 +13,7 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as FaqImport } from './routes/faq'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as AuthLayoutImport } from './routes/_authLayout'
 import { Route as AuthenticatedDashboardLayoutImport } from './routes/_authenticated/_dashboardLayout'
@@ -21,11 +22,14 @@ import { Route as AuthLayoutPasswordResetImport } from './routes/_authLayout/pas
 import { Route as AuthLayoutLoginImport } from './routes/_authLayout/login'
 import { Route as AuthLayoutForgotPasswordImport } from './routes/_authLayout/forgotPassword'
 import { Route as AuthLayoutRegistrationIndexImport } from './routes/_authLayout/registration/index'
+import { Route as AuthenticatedDashboardLayoutNotificationsImport } from './routes/_authenticated/_dashboardLayout/notifications'
 import { Route as AuthenticatedDashboardLayoutInvoicesImport } from './routes/_authenticated/_dashboardLayout/invoices'
+import { Route as AuthenticatedDashboardLayoutFaqImport } from './routes/_authenticated/_dashboardLayout/faq'
 import { Route as AuthenticatedDashboardLayoutDashboardImport } from './routes/_authenticated/_dashboardLayout/dashboard'
 import { Route as AuthLayoutRegistrationValidateImport } from './routes/_authLayout/registration/validate'
 import { Route as AuthLayoutRegistrationUserImport } from './routes/_authLayout/registration/user'
 import { Route as AuthLayoutRegistrationCompanyImport } from './routes/_authLayout/registration/company'
+import { Route as AuthenticatedDashboardLayoutConfigurationIndexImport } from './routes/_authenticated/_dashboardLayout/configuration/index'
 
 // Create Virtual Routes
 
@@ -37,6 +41,11 @@ const AuthenticatedDashboardLayoutAboutLazyImport = createFileRoute(
 )()
 
 // Create/Update Routes
+
+const FaqRoute = FaqImport.update({
+  path: '/faq',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const AuthenticatedRoute = AuthenticatedImport.update({
   id: '/_authenticated',
@@ -100,9 +109,21 @@ const AuthenticatedDashboardLayoutAboutLazyRoute =
     ),
   )
 
+const AuthenticatedDashboardLayoutNotificationsRoute =
+  AuthenticatedDashboardLayoutNotificationsImport.update({
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedDashboardLayoutRoute,
+  } as any)
+
 const AuthenticatedDashboardLayoutInvoicesRoute =
   AuthenticatedDashboardLayoutInvoicesImport.update({
     path: '/invoices',
+    getParentRoute: () => AuthenticatedDashboardLayoutRoute,
+  } as any)
+
+const AuthenticatedDashboardLayoutFaqRoute =
+  AuthenticatedDashboardLayoutFaqImport.update({
+    path: '/faq',
     getParentRoute: () => AuthenticatedDashboardLayoutRoute,
   } as any)
 
@@ -131,6 +152,12 @@ const AuthLayoutRegistrationCompanyRoute =
     getParentRoute: () => AuthLayoutRegistrationRoute,
   } as any)
 
+const AuthenticatedDashboardLayoutConfigurationIndexRoute =
+  AuthenticatedDashboardLayoutConfigurationIndexImport.update({
+    path: '/configuration/',
+    getParentRoute: () => AuthenticatedDashboardLayoutRoute,
+  } as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -147,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof AuthenticatedImport
+      parentRoute: typeof rootRoute
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqImport
       parentRoute: typeof rootRoute
     }
     '/_authLayout/forgotPassword': {
@@ -212,11 +246,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardLayoutDashboardImport
       parentRoute: typeof AuthenticatedDashboardLayoutImport
     }
+    '/_authenticated/_dashboardLayout/faq': {
+      id: '/_authenticated/_dashboardLayout/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutFaqImport
+      parentRoute: typeof AuthenticatedDashboardLayoutImport
+    }
     '/_authenticated/_dashboardLayout/invoices': {
       id: '/_authenticated/_dashboardLayout/invoices'
       path: '/invoices'
       fullPath: '/invoices'
       preLoaderRoute: typeof AuthenticatedDashboardLayoutInvoicesImport
+      parentRoute: typeof AuthenticatedDashboardLayoutImport
+    }
+    '/_authenticated/_dashboardLayout/notifications': {
+      id: '/_authenticated/_dashboardLayout/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutNotificationsImport
       parentRoute: typeof AuthenticatedDashboardLayoutImport
     }
     '/_authenticated/_dashboardLayout/about': {
@@ -240,6 +288,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardLayoutIndexLazyImport
       parentRoute: typeof AuthenticatedDashboardLayoutImport
     }
+    '/_authenticated/_dashboardLayout/configuration/': {
+      id: '/_authenticated/_dashboardLayout/configuration/'
+      path: '/configuration'
+      fullPath: '/configuration'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutConfigurationIndexImport
+      parentRoute: typeof AuthenticatedDashboardLayoutImport
+    }
   }
 }
 
@@ -261,11 +316,15 @@ export const routeTree = rootRoute.addChildren({
     AuthenticatedDashboardLayoutRoute:
       AuthenticatedDashboardLayoutRoute.addChildren({
         AuthenticatedDashboardLayoutDashboardRoute,
+        AuthenticatedDashboardLayoutFaqRoute,
         AuthenticatedDashboardLayoutInvoicesRoute,
+        AuthenticatedDashboardLayoutNotificationsRoute,
         AuthenticatedDashboardLayoutAboutLazyRoute,
         AuthenticatedDashboardLayoutIndexLazyRoute,
+        AuthenticatedDashboardLayoutConfigurationIndexRoute,
       }),
   }),
+  FaqRoute,
 })
 
 /* prettier-ignore-end */
@@ -277,7 +336,8 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/_authLayout",
-        "/_authenticated"
+        "/_authenticated",
+        "/faq"
       ]
     },
     "/_authLayout": {
@@ -294,6 +354,9 @@ export const routeTree = rootRoute.addChildren({
       "children": [
         "/_authenticated/_dashboardLayout"
       ]
+    },
+    "/faq": {
+      "filePath": "faq.tsx"
     },
     "/_authLayout/forgotPassword": {
       "filePath": "_authLayout/forgotPassword.tsx",
@@ -322,9 +385,12 @@ export const routeTree = rootRoute.addChildren({
       "parent": "/_authenticated",
       "children": [
         "/_authenticated/_dashboardLayout/dashboard",
+        "/_authenticated/_dashboardLayout/faq",
         "/_authenticated/_dashboardLayout/invoices",
+        "/_authenticated/_dashboardLayout/notifications",
         "/_authenticated/_dashboardLayout/about",
-        "/_authenticated/_dashboardLayout/"
+        "/_authenticated/_dashboardLayout/",
+        "/_authenticated/_dashboardLayout/configuration/"
       ]
     },
     "/_authLayout/registration/company": {
@@ -343,8 +409,16 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "_authenticated/_dashboardLayout/dashboard.tsx",
       "parent": "/_authenticated/_dashboardLayout"
     },
+    "/_authenticated/_dashboardLayout/faq": {
+      "filePath": "_authenticated/_dashboardLayout/faq.tsx",
+      "parent": "/_authenticated/_dashboardLayout"
+    },
     "/_authenticated/_dashboardLayout/invoices": {
       "filePath": "_authenticated/_dashboardLayout/invoices.tsx",
+      "parent": "/_authenticated/_dashboardLayout"
+    },
+    "/_authenticated/_dashboardLayout/notifications": {
+      "filePath": "_authenticated/_dashboardLayout/notifications.tsx",
       "parent": "/_authenticated/_dashboardLayout"
     },
     "/_authenticated/_dashboardLayout/about": {
@@ -357,6 +431,10 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_authenticated/_dashboardLayout/": {
       "filePath": "_authenticated/_dashboardLayout/index.lazy.tsx",
+      "parent": "/_authenticated/_dashboardLayout"
+    },
+    "/_authenticated/_dashboardLayout/configuration/": {
+      "filePath": "_authenticated/_dashboardLayout/configuration/index.tsx",
       "parent": "/_authenticated/_dashboardLayout"
     }
   }

@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import Bugsnag from '@bugsnag/js'
 import BugsnagPluginReact from '@bugsnag/plugin-react'
 import BugsnagPerformance from '@bugsnag/browser-performance'
 import { AuthProvider } from "@/auth"
 import { useAuth } from "@/hooks"
 import { QueryClient, QueryClientProvider, QueryErrorResetBoundary } from "@tanstack/react-query"
-import { RouterProvider, createRouter, useRouter } from '@tanstack/react-router'
+import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { ErrorInfo } from "react"
 import { Bug } from 'lucide-react';
 import { routeTree } from '@/routeTree.gen'
@@ -26,16 +26,13 @@ declare module '@tanstack/react-router' {
   }
 }
 
-// Handle email redirection
-const channel = new BroadcastChannel('verification_channel');
-
 // Create a client
 const queryClient = new QueryClient();
 
 Bugsnag.start({
   apiKey: '667be40e7f392b57b0f07f6cd23f2de1',
   plugins: [new BugsnagPluginReact()],
-  releaseStage: process.env.NODE_ENV,
+  releaseStage: import.meta.env.PROD ? 'production' : '',
   enabledReleaseStages: ['production', 'staging'],
 })
 BugsnagPerformance.start({ apiKey: '667be40e7f392b57b0f07f6cd23f2de1' })

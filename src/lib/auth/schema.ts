@@ -1,5 +1,20 @@
 import * as z from 'zod';
-// TODO: Add phone number validation
+
+export const LocationSchema = z.object({
+  id: z.string(),
+  location: z.object({
+    latitude: z.number(),
+    longitude: z.number(),
+  }),
+  displayName: z.object({
+    text: z.string(),
+  }),
+});
+
+export const LocationSchemaResponse = z.object({ data: LocationSchema });
+export type LocationSchemaResponseType = z.infer<typeof LocationSchemaResponse>;
+export type LocationSchemaType = z.infer<typeof LocationSchema>;
+
 export const RegisterUserSchema = z
   .object({
     firstName: z.string().min(3, { message: 'El nombre no es valido!' }),
@@ -40,12 +55,7 @@ export const RegisterCompanySchema = z.object({
     .string()
     .min(8, { message: 'El CUIT no es valido' })
     .max(8, { message: 'El CUIT no es valido' }),
-  country: z.string().min(3, { message: 'No conocemos ese pais!' }),
-  province: z.string(),
-  locality: z.string(),
-  address: z
-    .string()
-    .min(6, { message: 'Tiene que tener al menos 6 caracteres!' }),
+  address: LocationSchema,
   activity: z
     .string()
     .min(6, { message: 'Tiene que tener al menos 6 caracteres!' }),

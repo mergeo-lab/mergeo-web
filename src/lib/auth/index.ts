@@ -7,13 +7,15 @@ import {
 } from '@/types';
 import { authEndpoints } from './endpoints';
 import {
+  LocationSchemaResponseType,
+  LocationSchemaType,
   OtpSchemaType,
   RegisterCompanySchemaType,
   RegisterUserSchemaType,
 } from '@/lib/auth/schema';
 import { axiosInstance, axiosPrivate } from '@/lib/api/axios';
 import { HelpersData } from '@/types/authHelpers.type';
-import { AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 export async function registerUser(
   fields: RegisterUserSchemaType
@@ -211,9 +213,29 @@ export async function helpers(
         headers: { 'Content-Type': 'application/json' },
       }
     );
-    console.log(apiResponse);
-
     return apiResponse.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (!error.response) {
+      errorMessage = 'Algo salio mal, vuelve a intentarlo!';
+    } else {
+      errorMessage = error.response?.data.message;
+    }
+    return errorMessage;
+  }
+}
+
+export async function getLocationInfo(
+  id: string
+): Promise<Response<LocationSchemaResponseType>> {
+  let errorMessage: string = '';
+
+  const url = `https://places.googleapis.com/v1/places/${id}?fields=id,displayName,location&key=${import.meta.env.VITE_GOOGLE_MAPS_KEY}`;
+  try {
+    const apiResponse: AxiosResponse = await axios.get(`${url}`, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return apiResponse;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (!error.response) {

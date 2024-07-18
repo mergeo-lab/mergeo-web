@@ -3,49 +3,26 @@ import { CardBody, CardFooter } from '@/components/card'
 import { Button } from '@/components/ui/button'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { RegisterCompanySchema, RegisterCompanySchemaType } from '@/lib/auth/schema'
+import { LocationSchemaType, RegisterCompanySchema, RegisterCompanySchemaType } from '@/lib/auth/schema'
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { helpers, registerCompany } from '@/lib/auth'
-import { Select, SelectContent, SelectItem, SelectValue, SelectTrigger } from '@/components/ui/select'
-import { useEffect, useState } from 'react'
+import { useMutation } from '@tanstack/react-query'
+import { registerCompany } from '@/lib/auth'
 import UseRegistrationStore from '@/store/registration.store'
 import { useToast } from '@/components/ui/use-toast'
 import { isErrorMessage, isApiResponse } from '@/lib/api/guards'
 import { CompanyType } from '@/types'
+import { GoogleAutoComplete } from '@/components/googleAutoComplete'
 
 export const Route = createFileRoute('/_authLayout/registration/company')({
-  loader: async () => helpers("provincias", "orden=nombre&campos=id,nombre"),
   component: () => <RegisterCompany />
 })
 
 function RegisterCompany() {
-  const helpersData = Route.useLoaderData();
   const router = useRouter();
   const { toast } = useToast()
-  const [selectedProvince, setSelectedProvince] = useState<string>("");
-  const [selectedLocality, setSelectedLocality] = useState<string>("");
   const mutation = useMutation({ mutationFn: registerCompany })
   const registrationState = UseRegistrationStore();
-
-
-  const { isPending, data: municipiosData } = useQuery({
-    queryKey: ['localidades', selectedProvince],
-    queryFn: () => helpers("municipios", `provincia=${selectedProvince}%26orden=nombre%26aplanar=true%26campos=id,nombre%26max=1000%26exacto=true`),
-    enabled: !!selectedProvince
-  })
-
-  console.log(municipiosData);
-  const localidades = municipiosData ? municipiosData?.data.municipios : "";
-
-  const handleProvinceChange = (value: string) => {
-    setSelectedProvince(value);
-  };
-
-  useEffect(() => {
-    setSelectedLocality("");
-  }, [selectedProvince]);
 
   const form = useForm<RegisterCompanySchemaType>({
     resolver: zodResolver(RegisterCompanySchema),
@@ -53,10 +30,16 @@ function RegisterCompany() {
       name: "",
       razonSocial: "",
       cuit: "",
-      country: "Argentina",
-      province: "",
-      locality: "",
-      address: "",
+      address: {
+        id: "",
+        location: {
+          latitude: 0,
+          longitude: 0
+        },
+        displayName: {
+          text: "",
+        }
+      },
       activity: "",
     },
   })
@@ -67,9 +50,6 @@ function RegisterCompany() {
       name: fields.name,
       razonSocial: fields.razonSocial,
       cuit: fields.cuit,
-      country: fields.country,
-      province: fields.province,
-      locality: fields.locality,
       address: fields.address,
       activity: fields.activity,
     });
@@ -91,11 +71,17 @@ function RegisterCompany() {
     }
   }
 
+  const addAddress = (address: LocationSchemaType) => {
+    console.log("address:: ", address)
+    form.setValue('address', address);
+  }
+
   return (
     <>
       <CardBody className='w-full h-full flex flex-col overflow-y-auto' >
         <FormProvider {...form}>
           <form className='space-y-8'>
+
             <div className='grid grid-cols-2 gap-14'>
               <FormField
                 control={form.control}
@@ -140,96 +126,6 @@ function RegisterCompany() {
               />
               <FormField
                 control={form.control}
-                name="country"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel id='country'>Pais</FormLabel>
-                    <FormControl>
-                      <Input {...field} readOnly />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className='grid grid-cols-2 gap-14'>
-              <FormField
-                control={form.control}
-                name="province"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel id='province'>Provincia</FormLabel>
-                    <Select onValueChange={(value) => {
-                      field.onChange(value);
-                      handleProvinceChange(value);
-                    }}
-                      value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccione su Provincia" />
-                        </SelectTrigger>
-                      </FormControl>
-
-                      <SelectContent>
-                        {helpersData.data.provincias.map(({ id, nombre }: { id: string, nombre: string }) => (
-                          <SelectItem key={id.toString()} value={nombre}>{nombre}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="locality"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel id='locality'>Partido</FormLabel>
-                    <Select
-                      disabled={!localidades || isPending}
-                      onValueChange={(value) => {
-                        field.onChange(value);
-                        setSelectedLocality(value);
-                      }}
-                      value={selectedLocality}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccione su Partido" />
-                        </SelectTrigger>
-                      </FormControl>
-
-                      <SelectContent>
-                        {localidades && localidades.map(({ id, nombre }: { id: string, nombre: string }) => (
-                          <SelectItem key={id.toString()} value={nombre}>{nombre}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className='grid grid-cols-2 gap-14'>
-              <FormField
-                control={form.control}
-                name="address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel id='address'>Dirección</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
                 name="activity"
                 render={({ field }) => (
                   <FormItem>
@@ -237,6 +133,20 @@ function RegisterCompany() {
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className='grid grid-cols-1 gap-14'>
+              <FormField
+                control={form.control}
+                name="address"
+                render={() => (
+                  <FormItem>
+                    <FormLabel id='address'>Dirección</FormLabel>
+                    <GoogleAutoComplete selectedAddress={addAddress} />
                     <FormMessage />
                   </FormItem>
                 )}

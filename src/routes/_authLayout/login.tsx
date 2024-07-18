@@ -55,8 +55,9 @@ function Login() {
       const { data } = response.data;
       logIn(data.user);
 
-      const redirectTo = from || '/';
-      router.history.push(redirectTo, { replace: true });
+      console.log(from);
+      // const redirectTo = from || "/dashboard";
+      router.history.push('/');
     }
   }
 
