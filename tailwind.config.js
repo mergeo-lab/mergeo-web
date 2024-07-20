@@ -66,11 +66,12 @@ export default {
         lg: 'calc(var(--radius) + 10px)',
       },
       fontSize: {
-        DEFAULT: 'var(--font-size)',
-        sm: 'calc(var(--font-size) - 2px)',
         xs: 'calc(var(--font-size) - 4px)',
-        lg: 'calc(var(--font-size) + 2px)',
-        xl: 'calc(var(--font-size) + 4px)',
+        sm: 'calc(var(--font-size) - 2px)',
+        DEFAULT: 'var(--font-size)',
+        md: 'calc(var(--font-size) + 2px)',
+        lg: 'calc(var(--font-size) + 4px)',
+        xl: 'calc(var(--font-size) + 5px)',
         '2xl': 'calc(var(--font-size) + 6px)',
       },
       keyframes: {

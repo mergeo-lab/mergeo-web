@@ -39,23 +39,23 @@ export function Users() {
         <div className="flex w-full h-full">
             <div className="flex flex-col justify-between w-full">
                 <div className="flex gap-20 m-10">
-                    {isLoading
-                        ? <LoadingIndicator />
-                        : (
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="hover:bg-white">
-                                        <TableHead className="w-4 p-0 m-0"></TableHead>
-                                        <TableHead className="">Nombre</TableHead>
-                                        <TableHead className="">Email</TableHead>
-                                        <TableHead className="">Estado</TableHead>
-                                        <TableHead className="">Permisos</TableHead>
-                                        <TableHead className="text-center">Creado</TableHead>
-                                        <TableHead className="text-center">Editado</TableHead>
-                                        <TableHead className="w-2"></TableHead>
-                                        <TableHead className="w-2"></TableHead>
-                                    </TableRow>
-                                </TableHeader>
+                    <Table>
+                        <TableHeader>
+                            <TableRow className="hover:bg-white">
+                                <TableHead className="w-4 p-0 m-0"></TableHead>
+                                <TableHead className="">Nombre</TableHead>
+                                <TableHead className="">Email</TableHead>
+                                <TableHead className="">Estado</TableHead>
+                                <TableHead className="">Permisos</TableHead>
+                                <TableHead className="text-center">Creado</TableHead>
+                                <TableHead className="text-center">Editado</TableHead>
+                                <TableHead className="w-2"></TableHead>
+                                <TableHead className="w-2"></TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        {isLoading
+                            ? <LoadingIndicator />
+                            : (
                                 <TableBody>
                                     {
                                         users?.data.map((user: UserSchemaType) => (
@@ -90,24 +90,9 @@ export function Users() {
                                             </TableRow>
                                         ))
                                     }
-                                    {/* <TableRow>
-                                        <TableCell className="font-medium">Nicolas Wyler</TableCell>
-                                        <TableCell className="text-primary">ACTIVO</TableCell>
-                                        <TableCell>
-                                            <Badge variant="default">ADMIM</Badge>
-                                        </TableCell>
-                                        <TableCell className="text-center">-</TableCell>
-                                        <TableCell className="text-center">-</TableCell>
-                                        <TableCell className="text-right">
-                                            <Pencil size={18} />
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <Trash2 size={18} />
-                                        </TableCell>
-                                    </TableRow> */}
                                 </TableBody>
-                            </Table>
-                        )}
+                            )}
+                    </Table>
                 </div>
                 <CardFooter className='w-full'>
                     <div className='flex flex-col-reverse md:flex-row justify-end items-center min-h-20'>
