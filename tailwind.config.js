@@ -67,11 +67,11 @@ export default {
       },
       fontSize: {
         DEFAULT: 'var(--font-size)',
-        xs: '0.75rem',
-        sm: '0.875rem',
-        lg: '1.125rem',
-        xl: '1.25rem',
-        '2xl': '1.5rem',
+        sm: 'calc(var(--font-size) - 2px)',
+        xs: 'calc(var(--font-size) - 4px)',
+        lg: 'calc(var(--font-size) + 2px)',
+        xl: 'calc(var(--font-size) + 4px)',
+        '2xl': 'calc(var(--font-size) + 6px)',
       },
       keyframes: {
         "caret-blink": {

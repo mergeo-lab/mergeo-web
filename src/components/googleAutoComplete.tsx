@@ -6,15 +6,14 @@ import useGoogle from "react-google-autocomplete/lib/usePlacesAutocompleteServic
 import LoadingIndicator from '@/components/loadingIndicator';
 import { MapPin, Search, X } from "lucide-react";
 import { getLocationInfo } from "@/lib/auth";
-import { LocationSchemaType } from "@/lib/auth/schema";
-import { isApiResponse, isErrorMessage } from "@/lib/api/guards";
+import { GoogleLocationSchemaType } from "@/lib/auth/schema";
 import { toast } from "@/components/ui/use-toast";
 
 const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
 type Props = {
     debounce?: number,
-    selectedAddress: (address: LocationSchemaType) => void
+    selectedAddress: (address: GoogleLocationSchemaType) => void
 }
 
 export function GoogleAutoComplete({ debounce = 500, selectedAddress }: Props) {
@@ -57,14 +56,14 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress }: Props) {
         const response = await getLocationInfo(placeId);
         console.log("response:", response)
 
-        if (isErrorMessage(response)) {
+        if (response.error) {
             setIsLoading(false);
             toast({
                 variant: "destructive",
                 title: "Error",
-                description: response,
+                description: response.error,
             })
-        } else if (isApiResponse<LocationSchemaType>(response)) {
+        } else if (response.data) {
             console.log(response)
             const data = response.data;
             console.log("Get address component:", data)

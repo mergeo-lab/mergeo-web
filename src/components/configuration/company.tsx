@@ -5,24 +5,33 @@ import { Input } from "@/components/ui/input";
 import { RegisterCompanySchema, RegisterCompanySchemaType } from "@/lib/auth/schema";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
 import { FormProvider, useForm } from "react-hook-form";
-import { APIProvider, Map } from '@vis.gl/react-google-maps';
-import { getCompany } from "@/lib/configuration";
+import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
+import UseCompanyStore from "@/store/company.store";
+import { Pencil } from "lucide-react";
 
 const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
+interface LatLngLiteral {
+    lat: number;
+    lng: number;
+}
+
 export function Company({ isEdditing = false }: { isEdditing?: boolean }) {
-    const company = useQuery({ queryKey: ['company'], queryFn: getCompany });
+    const { company } = UseCompanyStore();
+    const markerPosition: LatLngLiteral = { lat: company?.address?.polygon.coordinates[1] || 0, lng: company?.address?.polygon.coordinates[0] || 0 };
 
     const form = useForm<RegisterCompanySchemaType>({
         resolver: zodResolver(RegisterCompanySchema),
         defaultValues: {
-            name: "Mergeo",
-            razonSocial: "Mergeo Inc",
-            cuit: "20295035316",
-            address: { displayName: { text: "Tierra del fuego 768" }, location: { latitude: 0, longitude: 0 } },
-            activity: "Internet",
+            name: company?.name,
+            razonSocial: company?.razonSocial,
+            cuit: company?.cuit,
+            address: {
+                name: company?.address?.name,
+                polygon: { coordinates: company?.address?.polygon.coordinates, type: company?.address?.polygon.type },
+            },
+            activity: company?.activity,
         },
     })
 
@@ -31,9 +40,11 @@ export function Company({ isEdditing = false }: { isEdditing?: boolean }) {
     return (
         <div className="flex w-full h-full">
             <div className="flex flex-col justify-between w-4/6">
-                <div className="flex gap-10 m-10">
+                <div className="flex gap-20 m-10">
                     <div>
-                        <div className="w-80 h-80 bg-muted"></div>
+                        <div className="w-80 h-80 bg-muted rounded overflow-hidden">
+                            <img src='/empresa-default.jpeg' alt="logo" className="w-full h-full object-cover" />
+                        </div>
                     </div>
                     <FormProvider {...form}>
                         <form className='space-y-8 w-full pr-10'>
@@ -110,7 +121,7 @@ export function Company({ isEdditing = false }: { isEdditing?: boolean }) {
                                         <FormItem>
                                             <FormLabel id='address'>Dirección</FormLabel>
                                             <FormControl>
-                                                <Input disabled={!isEdditing} value={field.value.displayName.text} className={cn("", {
+                                                <Input disabled={!isEdditing} value={field.value.name} className={cn("", {
                                                     [disabledStyle]: !isEdditing
                                                 })} />
                                             </FormControl>
@@ -124,21 +135,27 @@ export function Company({ isEdditing = false }: { isEdditing?: boolean }) {
                 </div>
                 <CardFooter className='w-full'>
                     <div className='flex flex-col-reverse md:flex-row justify-end items-center min-h-20'>
-                        <Button onClick={() => { console.log('edit') }} className='min-w-[200px]' type="submit">
-                            Editar
+                        <Button variant='outline' onClick={() => { console.log('edit') }} className='min-w-[200px] flex gap-2' type="submit">
+                            <span>
+                                Editar
+                            </span>
+                            <Pencil size={15} />
                         </Button>
                     </div>
                 </CardFooter>
             </div>
-            <div className="overflow-hidden h-full w-4/12 bg-blue-300 z-10 flex-justify-center items-center">
+            <div className="overflow-hidden h-full w-4/12 bg-accent z-10 flex-justify-center items-center">
                 <APIProvider apiKey={googleMapsApiKey}>
                     <Map
                         style={{ width: '100%', height: '100%' }}
-                        defaultCenter={{ lat: 22.54992, lng: 0 }}
-                        defaultZoom={3}
+                        center={markerPosition}
+                        defaultZoom={16}
+                        maxZoom={20}
                         gestureHandling={'greedy'}
                         disableDefaultUI={true}
-                    />
+                    >
+                        <Marker position={markerPosition} />
+                    </Map>
                 </APIProvider>
             </div>
         </div>

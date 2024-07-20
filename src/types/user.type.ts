@@ -1,3 +1,5 @@
+import { CompanySchemaType } from '@/lib/configuration/schema';
+
 export type UserType = {
   id?: string;
   email: string;
@@ -6,15 +8,20 @@ export type UserType = {
 };
 
 export interface AuthType {
-  user: UserType;
+  data: {
+    user: UserType;
+    company: CompanySchemaType;
+  };
+}
+
+export interface RegisterCompanyResult {
+  data: {
+    companyId: string;
+  };
 }
 
 export interface OtpType {
   code: string;
-}
-
-export interface CompanyType {
-  companyId: string;
 }
 
 export type EmailRecoverType = string;

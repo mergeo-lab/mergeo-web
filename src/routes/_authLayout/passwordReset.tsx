@@ -5,10 +5,8 @@ import PasswordInput from '@/components/passwordInput';
 import { Button } from '@/components/ui/button';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/components/ui/use-toast';
-import { isErrorMessage, isApiResponse } from '@/lib/api/guards';
 import { passwordReset } from '@/lib/auth';
 import { cn } from '@/lib/utils';
-import { AuthType } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
@@ -39,7 +37,7 @@ function PasswordRecover() {
     const router = useRouter();
     const { toast } = useToast()
     const mutation = useMutation({ mutationFn: passwordReset })
-    const [emailSent, setEmailSent] = useState(true);
+    const [emailSent, setEmailSent] = useState(false);
 
     const form = useForm<Schema>({
         resolver: zodResolver(PssswordRecoverSchema),
@@ -52,15 +50,13 @@ function PasswordRecover() {
     const onSubmit = async (fields: Schema) => {
         const response = await mutation.mutateAsync({ token, password: fields.password });
 
-        if (isErrorMessage(response)) {
+        if (response.error) {
             toast({
                 variant: "destructive",
                 title: "Error",
-                description: response,
+                description: response.error,
             })
-        } else if (isApiResponse<AuthType>(response)) {
-            const { data } = response.data;
-            console.log(data);
+        } else if (response.data) {
             setEmailSent(true);
         }
     }

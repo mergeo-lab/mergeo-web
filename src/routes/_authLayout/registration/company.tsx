@@ -3,15 +3,13 @@ import { CardBody, CardFooter } from '@/components/card'
 import { Button } from '@/components/ui/button'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { LocationSchemaType, RegisterCompanySchema, RegisterCompanySchemaType } from '@/lib/auth/schema'
+import { GoogleLocationSchemaType, RegisterCompanySchema, RegisterCompanySchemaType } from '@/lib/auth/schema'
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { registerCompany } from '@/lib/auth'
 import UseRegistrationStore from '@/store/registration.store'
 import { useToast } from '@/components/ui/use-toast'
-import { isErrorMessage, isApiResponse } from '@/lib/api/guards'
-import { CompanyType } from '@/types'
 import { GoogleAutoComplete } from '@/components/googleAutoComplete'
 
 export const Route = createFileRoute('/_authLayout/registration/company')({
@@ -32,13 +30,11 @@ function RegisterCompany() {
       cuit: "",
       address: {
         id: "",
-        location: {
-          latitude: 0,
-          longitude: 0
+        polygon: {
+          type: "Point",
+          coordinates: [0, 0],
         },
-        displayName: {
-          text: "",
-        }
+        name: "",
       },
       activity: "",
     },
@@ -54,26 +50,32 @@ function RegisterCompany() {
       activity: fields.activity,
     });
 
-    if (isErrorMessage(response)) {
+    if (response.error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: response,
+        description: response.error,
       })
-    } else if (isApiResponse<CompanyType>(response)) {
+    } else if (response.data) {
       const { data } = response.data;
+      console.log("data:: ", data);
       registrationState.saveCompanyId(data.companyId)
-
-      console.log("Register company:", data)
 
       const redirectTo = `/registration/user`;
       router.history.push(redirectTo, { replace: true });
     }
   }
 
-  const addAddress = (address: LocationSchemaType) => {
-    console.log("address:: ", address)
-    form.setValue('address', address);
+  const addAddress = (address: GoogleLocationSchemaType) => {
+    console.log("address:: ", address);
+    form.setValue('address', {
+      id: address.id,
+      polygon: {
+        type: "Point",
+        coordinates: [address.location.latitude, address.location.longitude]
+      },
+      name: address.displayName.text
+    });
   }
 
   return (

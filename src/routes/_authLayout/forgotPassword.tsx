@@ -4,10 +4,8 @@ import { Button } from '@/components/ui/button';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { isErrorMessage, isApiResponse } from '@/lib/api/guards';
 import { passwordRecover } from '@/lib/auth';
 import { cn } from '@/lib/utils';
-import { AuthType } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router'
@@ -42,15 +40,13 @@ function ForgotPassword() {
     const onSubmit = async (fields: Schema) => {
         const response = await mutation.mutateAsync(fields.email);
 
-        if (isErrorMessage(response)) {
+        if (response.error) {
             toast({
                 variant: "destructive",
                 title: "Error",
-                description: response,
+                description: response.error,
             })
-        } else if (isApiResponse<AuthType>(response)) {
-            const { data } = response.data;
-            console.log(data);
+        } else if (response.data) {
             setEmailSent(true);
         }
     }

@@ -1,28 +1,27 @@
 import {
-  ApiResponse,
   AuthType,
   EmailRecoverType,
   OtpType,
+  RegisterCompanyResult,
   Response,
 } from '@/types';
 import { authEndpoints } from './endpoints';
 import {
+  GoogleLocationSchemaResponseType,
   LocationSchemaResponseType,
-  LocationSchemaType,
   OtpSchemaType,
   RegisterCompanySchemaType,
   RegisterUserSchemaType,
 } from '@/lib/auth/schema';
 import { axiosInstance, axiosPrivate } from '@/lib/api/axios';
 import { HelpersData } from '@/types/authHelpers.type';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse, isAxiosError } from 'axios';
 
 export async function registerUser(
   fields: RegisterUserSchemaType
 ): Promise<Response<AuthType>> {
-  let errorMessage: string = '';
   try {
-    const authApi: ApiResponse<AuthType> = await axiosInstance.post(
+    const response: Response<AuthType> = await axiosInstance.post(
       authEndpoints.REGISTER_USER,
       JSON.stringify({ ...fields }),
       {
@@ -30,24 +29,23 @@ export async function registerUser(
         withCredentials: true,
       }
     );
-    return authApi;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    if (!error.response) {
-      errorMessage = 'Algo salio mal, vuelve a intentarlo!';
-    } else {
-      errorMessage = error.response?.data.message;
+    return response;
+  } catch (error) {
+    let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
+
+    if (isAxiosError(error)) {
+      errorMessage = error.response?.data.message || errorMessage;
     }
-    return errorMessage;
+
+    return { error: errorMessage };
   }
 }
 
 export async function registerCompany(
   fields: RegisterCompanySchemaType
-): Promise<Response<AuthType>> {
-  let errorMessage: string = '';
+): Promise<Response<RegisterCompanyResult>> {
   try {
-    const authApi: ApiResponse<AuthType> = await axiosInstance.post(
+    const response: Response<RegisterCompanyResult> = await axiosInstance.post(
       authEndpoints.REGISTER_COMPANY,
       JSON.stringify({ ...fields }),
       {
@@ -55,15 +53,15 @@ export async function registerCompany(
         withCredentials: true,
       }
     );
-    return authApi;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    if (!error.response) {
-      errorMessage = 'Algo salio mal, vuelve a intentarlo!';
-    } else {
-      errorMessage = error.response?.data.message;
+    return response;
+  } catch (error) {
+    let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
+
+    if (isAxiosError(error)) {
+      errorMessage = error.response?.data.message || errorMessage;
     }
-    return errorMessage;
+
+    return { error: errorMessage };
   }
 }
 
@@ -74,9 +72,8 @@ export async function login({
   email: string;
   password: string;
 }): Promise<Response<AuthType>> {
-  let errorMessage: string = '';
   try {
-    const apiResponse: Response<AuthType> = await axiosInstance.post(
+    const response: Response<AuthType> = await axiosInstance.post(
       authEndpoints.LOGIN,
       JSON.stringify({ email: email, password: password }),
       {
@@ -84,26 +81,27 @@ export async function login({
         withCredentials: true,
       }
     );
-    return apiResponse;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    if (!error.response) {
-      errorMessage = 'Algo salio mal, vuelve a intentarlo!';
-    } else if (error.response?.data.statusCode === 400) {
-      errorMessage = 'El email o la contraseña son incorrectos';
-    } else {
-      errorMessage = error.response?.data.message;
+    return response;
+  } catch (error) {
+    let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
+
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        errorMessage = 'El email o la contraseña son incorrectos';
+      } else {
+        errorMessage = error.response?.data.message;
+      }
     }
-    return errorMessage;
+
+    return { error: errorMessage };
   }
 }
 
 export async function passwordRecover(
   email: string
 ): Promise<Response<EmailRecoverType>> {
-  let errorMessage: string = '';
   try {
-    const authApi: Response<EmailRecoverType> = await axiosInstance.post(
+    const response: Response<EmailRecoverType> = await axiosInstance.post(
       authEndpoints.PASSWORD_RECOVER,
       JSON.stringify({ email }),
       {
@@ -111,15 +109,15 @@ export async function passwordRecover(
         withCredentials: true,
       }
     );
-    return authApi;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    if (!error.response) {
-      errorMessage = 'Algo salio mal, vuelve a intentarlo!';
-    } else {
-      errorMessage = error.response?.data.message;
+    return response;
+  } catch (error) {
+    let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
+
+    if (isAxiosError(error)) {
+      errorMessage = error.response?.data.message || errorMessage;
     }
-    return errorMessage;
+
+    return { error: errorMessage };
   }
 }
 
@@ -130,9 +128,8 @@ export async function passwordReset({
   token: string;
   password: string;
 }): Promise<Response<string>> {
-  let errorMessage: string = '';
   try {
-    const authApi: Response<string> = await axiosInstance.post(
+    const response: Response<string> = await axiosInstance.post(
       authEndpoints.PASSWORD_RESET,
       JSON.stringify({ password, token }),
       {
@@ -141,25 +138,26 @@ export async function passwordReset({
         },
       }
     );
-    return authApi;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    if (!error.response) {
-      errorMessage = 'Algo salio mal, vuelve a intentarlo!';
-    } else if (error.response?.data.statusCode === 400) {
-      errorMessage = 'El email o la contraseña son incorrectos';
-    } else {
-      errorMessage = error.response?.data.message;
+    return response;
+  } catch (error) {
+    let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
+
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        errorMessage = 'El email o la contraseña son incorrectos';
+      } else {
+        errorMessage = error.response?.data.message;
+      }
     }
-    return errorMessage;
+
+    return { error: errorMessage };
   }
 }
 
 export async function otp(fields: OtpSchemaType): Promise<Response<OtpType>> {
   const { email, code } = fields;
-  let errorMessage: string = '';
   try {
-    const resopnse: ApiResponse<OtpType> = await axiosInstance.post(
+    const resopnse: Response<OtpType> = await axiosInstance.post(
       authEndpoints.OTP,
       JSON.stringify({ email, activationCode: code }),
       {
@@ -168,36 +166,43 @@ export async function otp(fields: OtpSchemaType): Promise<Response<OtpType>> {
       }
     );
     return resopnse;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    if (!error.response) {
-      errorMessage = 'Algo salio mal, vuelve a intentarlo!';
-    } else {
-      errorMessage = error.response?.data.message;
+  } catch (error) {
+    let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
+
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        errorMessage = 'El email o la contraseña son incorrectos';
+      } else {
+        errorMessage = error.response?.data.message;
+      }
     }
-    return errorMessage;
+
+    return { error: errorMessage };
   }
 }
 
 export async function logout(): Promise<Response<null>> {
-  let errorMessage: string = '';
   try {
-    const authApi: Response<null> = await axiosPrivate.post(
+    const response: Response<null> = await axiosPrivate.post(
       authEndpoints.LOGOUT,
       {
         headers: { 'Content-Type': 'application/json' },
         withCredentials: true,
       }
     );
-    return authApi;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    if (!error.response) {
-      errorMessage = 'Algo salio mal, vuelve a intentarlo!';
-    } else {
-      errorMessage = error.response?.data.message;
+    return response;
+  } catch (error) {
+    let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
+
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        errorMessage = 'El email o la contraseña son incorrectos';
+      } else {
+        errorMessage = error.response?.data.message;
+      }
     }
-    return errorMessage;
+
+    return { error: errorMessage };
   }
 }
 
@@ -205,44 +210,50 @@ export async function helpers(
   type: 'provincias' | 'municipios',
   params: string
 ): Promise<Response<HelpersData>> {
-  let errorMessage: string = '';
   try {
-    const apiResponse: AxiosResponse = await axiosPrivate.get(
+    const response: AxiosResponse = await axiosPrivate.get(
       `${authEndpoints.HELPERS}?type=${type}&params=${params}`,
       {
         headers: { 'Content-Type': 'application/json' },
       }
     );
-    return apiResponse.data;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    if (!error.response) {
-      errorMessage = 'Algo salio mal, vuelve a intentarlo!';
-    } else {
-      errorMessage = error.response?.data.message;
+    return response.data;
+  } catch (error) {
+    let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
+
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        errorMessage = 'El email o la contraseña son incorrectos';
+      } else {
+        errorMessage = error.response?.data.message;
+      }
     }
-    return errorMessage;
+
+    return { error: errorMessage };
   }
 }
 
 export async function getLocationInfo(
   id: string
-): Promise<Response<LocationSchemaResponseType>> {
-  let errorMessage: string = '';
-
+): Promise<Response<GoogleLocationSchemaResponseType>> {
   const url = `https://places.googleapis.com/v1/places/${id}?fields=id,displayName,location&key=${import.meta.env.VITE_GOOGLE_MAPS_KEY}`;
   try {
-    const apiResponse: AxiosResponse = await axios.get(`${url}`, {
-      headers: { 'Content-Type': 'application/json' },
-    });
-    return apiResponse;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    if (!error.response) {
-      errorMessage = 'Algo salio mal, vuelve a intentarlo!';
-    } else {
-      errorMessage = error.response?.data.message;
+    const response: Response<GoogleLocationSchemaResponseType> =
+      await axios.get(`${url}`, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+    return response;
+  } catch (error) {
+    let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
+
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        errorMessage = 'El email o la contraseña son incorrectos';
+      } else {
+        errorMessage = error.response?.data.message;
+      }
     }
-    return errorMessage;
+
+    return { error: errorMessage };
   }
 }

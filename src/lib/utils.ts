@@ -16,3 +16,13 @@ export function decryptQueryParam(encryptedParam: string): string {
   const bytes = CryptoJS.AES.decrypt(encryptedParam, secretKey);
   return bytes.toString(CryptoJS.enc.Utf8);
 }
+
+export function formatDate(dateString: string) {
+  const date = new Date(dateString);
+
+  const day = date.getDate();
+  const month = date.toLocaleString('es-ES', { month: 'long' });
+  const year = date.getFullYear();
+
+  return `${day} de ${month} del ${year}`;
+}

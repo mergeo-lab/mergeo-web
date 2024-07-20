@@ -2,11 +2,9 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { toast } from '@/components/ui/use-toast';
-import { isApiResponse, isErrorMessage } from '@/lib/api/guards';
 import { otp } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 import { removeRegistrationStore } from '@/store/registration.store';
-import { OtpType } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, useLoaderData, useRouter } from '@tanstack/react-router'
@@ -60,17 +58,13 @@ function RegistrationValidate() {
       code: data.code
     })
 
-    if (isErrorMessage(response)) {
+    if (response.error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: response,
+        description: response.error,
       })
-    } else if (isApiResponse<OtpType>(response)) {
-      const { data } = response.data;
-
-      console.log(data)
-
+    } else if (response.data) {
       //clear sotred data used in registration process
       removeRegistrationStore();
       const redirectTo = `/login`;

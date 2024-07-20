@@ -1,8 +1,7 @@
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router';
 import { zodResolver, } from '@hookform/resolvers/zod';
 import { useForm } from "react-hook-form"
-import { AuthType, RedirectSearchParams } from '@/types';
-import { isApiResponse, isErrorMessage } from '@/lib/api/guards';
+import { RedirectSearchParams } from '@/types';
 import { useMutation } from '@tanstack/react-query';
 import { login } from '@/lib/auth';
 import { useAuth } from '@/hooks';
@@ -14,6 +13,7 @@ import LoadingIndicator from '@/components/loadingIndicator';
 import Card, { CardBody, CardFooter, CardHeader } from '@/components/card';
 import PasswordInput from '@/components/passwordInput';
 import { z } from 'zod';
+import UseCompanyStore from '@/store/company.store';
 
 export const Route = createFileRoute('/_authLayout/login')({
   component: () => <Login />,
@@ -28,6 +28,7 @@ type Schema = z.infer<typeof LoginSchema>
 
 function Login() {
   const { logIn } = useAuth();
+  const companyState = UseCompanyStore();
   const router = useRouter();
   const { toast } = useToast()
   const { redirect: from } = Route.useSearch<RedirectSearchParams>()
@@ -45,19 +46,20 @@ function Login() {
   const onSubmit = async (fields: Schema) => {
     const response = await mutation.mutateAsync({ email: fields.email, password: fields.password });
 
-    if (isErrorMessage(response)) {
+    if (response.error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: response,
+        description: response.error,
       })
-    } else if (isApiResponse<AuthType>(response)) {
+    } else if (response.data) {
       const { data } = response.data;
+      console.log(data)
+      companyState.saveCompany(data.company)
       logIn(data.user);
 
-      console.log(from);
-      // const redirectTo = from || "/dashboard";
-      router.history.push('/');
+      const redirectTo = from || "/dashboard";
+      router.history.replace(redirectTo);
     }
   }
 

@@ -1,4 +1,5 @@
 import { DashboardHeader, SideBarMenu } from '@/components/dashboard'
+import UseCompanyStore from '@/store/company.store';
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router';
 import { Bell, CircleHelp, Settings } from 'lucide-react'
 
@@ -15,11 +16,12 @@ const routeTitles: Record<string, { text: string, icon: JSX.Element }> = {
 
 function DashboardLayout() {
     const router = useRouter();
+    const { company } = UseCompanyStore();
     const title = routeTitles[router.history.location.pathname.split('/').pop()!] || routeTitles['configuration']
 
     return (
         <div className='w-full h-full flex'>
-            <SideBarMenu />
+            <SideBarMenu companyName={company?.name || ''} />
             <div className='w-full md:px-12 flex flex-col justify-center'>
                 <DashboardHeader title={{ text: title.text, icon: title.icon }} />
                 <div className='w-full h-full mt-0 my-10 border rounded shadow overflow-hidden'>
