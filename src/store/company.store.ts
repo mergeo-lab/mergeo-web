@@ -17,6 +17,6 @@ const UseCompanyStore = create<UseCompanyStore>()(
     { name: 'companyStore' }
   )
 );
-export const removeUser = () => UseCompanyStore.persist.clearStorage();
+export const removeCompany = () => UseCompanyStore.persist.clearStorage();
 
 export default UseCompanyStore;

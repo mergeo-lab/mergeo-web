@@ -27,7 +27,7 @@ export function Users() {
         },
         enabled: !!company?.id, // Ensure the query runs only if company ID exists
     });
-    const { data: users } = usersData || { data: [] };
+    const users = usersData && usersData.data || { data: [] };
 
     const userNameInitials = (username: string) => {
         return username.split(' ').map((n) => n.charAt(0).toUpperCase()).join('')
@@ -58,7 +58,7 @@ export function Users() {
                             : (
                                 <TableBody>
                                     {
-                                        users?.data.map((user: UserSchemaType) => (
+                                        users?.data && users?.data.map((user: UserSchemaType) => (
                                             <TableRow key={user.id} className="hover:bg-accent">
                                                 <TableCell>
                                                     <Avatar>

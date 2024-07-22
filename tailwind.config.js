@@ -60,10 +60,10 @@ export default {
         },
       },
       borderRadius: {
+        sm: 'calc(var(--radius) - 2px)',
         DEFAULT: 'var(--radius)',
-        sm: 'calc(var(--radius) + 2px)',
-        md: 'calc(var(--radius) + 8px)',
-        lg: 'calc(var(--radius) + 10px)',
+        md: 'calc(var(--radius) + 4px)',
+        lg: 'calc(var(--radius) + 8px)',
       },
       fontSize: {
         xs: 'calc(var(--font-size) - 4px)',
