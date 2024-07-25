@@ -42,3 +42,11 @@ export interface AuthContextType {
   logIn: (data: UserType) => void;
   logOut: () => Promise<unknown>;
 }
+
+export type GroupedPermissions = {
+  [key: string]: {
+    create: boolean;
+    edit: boolean;
+    delete: boolean;
+  };
+};

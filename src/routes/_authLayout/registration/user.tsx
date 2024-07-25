@@ -6,9 +6,7 @@ import { Button } from '@/components/ui/button'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
-import { isErrorMessage, isApiResponse } from '@/lib/api/guards'
 import { RegisterUserSchema, RegisterUserSchemaType, } from '@/lib/auth/schema'
-import { AuthType } from '@/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useForm, FormProvider } from 'react-hook-form'
@@ -54,13 +52,13 @@ function RegisterUser() {
       accountType: accountType,
     });
 
-    if (isErrorMessage(response)) {
+    if (response.error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: Array.isArray(response) ? response[0] : response,
+        description: Array.isArray(response.error) ? response.error[0] : response.error,
       })
-    } else if (isApiResponse<AuthType>(response)) {
+    } else if (response.data) {
       registrationState.saveUserEmail(fields.email);
 
       const redirectTo = '/registration/validate';

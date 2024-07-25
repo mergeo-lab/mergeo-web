@@ -4,9 +4,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuIte
 import { useMutation } from "@tanstack/react-query"
 import { logout } from "@/lib/auth"
 import { toast } from "@/components/ui/use-toast"
-import { removeUser } from "@/store/user.store"
-import { removeRegistrationStore } from "@/store/registration.store"
-import { removeCompany } from "@/store/company.store"
+import { useAuth } from "@/hooks"
+import { useEffect } from "react"
 
 type Props = {
     title?: {
@@ -17,9 +16,10 @@ type Props = {
 
 export function DashboardHeader({ title }: Props) {
     const mutation = useMutation({ mutationFn: logout })
+    const { logOut, isAuthenticated } = useAuth();
     const router = useRouter();
 
-    const logOut = async () => {
+    const closeSession = async () => {
         const response = await mutation.mutateAsync();
 
         if (response.error) {
@@ -29,13 +29,16 @@ export function DashboardHeader({ title }: Props) {
                 description: response.error,
             })
         } else if (response.data) {
-            const redirectTo = `/login`;
-            removeUser();
-            removeRegistrationStore();
-            removeCompany();
-            router.history.push(redirectTo, { replace: true });
+            logOut();
         }
     }
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            const redirectTo = "/login";
+            router.history.push(redirectTo, { replace: true });
+        }
+    }, [isAuthenticated, router.history]);
 
     return (
         <div className='h-24 w-full flex items-center justify-between px-5'>
@@ -55,14 +58,14 @@ export function DashboardHeader({ title }: Props) {
                 </Link>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <CircleUserRound size={30} />
+                        <CircleUserRound size={30} className="cursor-pointer" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56 mr-12 mt-2 p-5 space-y-2">
                         <DropdownMenuItem className="w-full justify-center border border-muted cursor-pointer">
                             Mi Perfil
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            onClick={logOut}
+                            onClick={closeSession}
                             className="w-full justify-center border border-muted cursor-pointer">
                             Cerrar Sesion
                         </DropdownMenuItem>

@@ -1,3 +1,4 @@
+import CountDownIndicator from '@/components/countdown';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
@@ -9,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, useLoaderData, useRouter } from '@tanstack/react-router'
 import CryptoJS, { AES } from 'crypto-js';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -21,7 +23,6 @@ export const Route = createFileRoute('/_authLayout/registration/validate')({
     if (verifyData) {
       const decryptedData = AES.decrypt(verifyData, activationCodeKey).toString(CryptoJS.enc.Utf8);
       const data = JSON.parse(decryptedData);
-      console.log(JSON.parse(data))
       return JSON.parse(data);
     }
     return {};
@@ -38,12 +39,9 @@ const FormSchema = z.object({
 
 function RegistrationValidate() {
   const router = useRouter();
+  const [isValidated, setIsValidated] = useState(false);
   const { activationCode: verifyCode, email: user } = useLoaderData({ from: '/_authLayout/registration/validate' })
   const mutation = useMutation({ mutationFn: otp })
-
-  console.log(
-    "registrationState ====> ", verifyCode
-  )
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -67,9 +65,12 @@ function RegistrationValidate() {
     } else if (response.data) {
       //clear sotred data used in registration process
       removeRegistrationStore();
-      const redirectTo = `/login`;
-      router.history.push(redirectTo, { replace: true });
+      setIsValidated(true);
     }
+  }
+  const redirectToLogin = () => {
+    const redirectTo = '/login';
+    router.history.push(redirectTo, { replace: true });
   }
 
   function validateAndSubmit(e: React.ChangeEvent<HTMLInputElement>) {
@@ -119,14 +120,31 @@ function RegistrationValidate() {
                 <div className='flex flex-col items-center'>
 
                   <div>
-                    Ingrese el codido que aparece arriba del campo para validar su cuenta
+                    {!isValidated
+                      ? <p>Ingrese el codido que aparece arriba del campo para validar su cuenta</p>
+                      : <p>Su cuenta ha sido validad con exito!</p>
+                    }
                   </div>
                 </div>
               </FormItem>
             )}
           />
-          <Button type="submit">Validar cuenta</Button>
+          {!isValidated
+            ? <Button type="submit">Validar cuenta</Button>
+            : (
+              <div className='w-1/2'>
+                <CountDownIndicator
+                  showTimer
+                  label='Redirigiendo al Login en'
+                  time={10}
+                  callback={redirectToLogin}
+                />
+              </div>
+            )
+          }
+          <Button variant="link" onClick={redirectToLogin}>Ir al Login</Button>
         </form>
+        <Button onClick={() => setIsValidated(true)}>Validar</Button>
       </Form >
     )
   }

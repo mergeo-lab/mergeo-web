@@ -1,8 +1,10 @@
 import * as React from 'react'
 import { AuthContextType, UserType } from './types/user.type'
-import UseUserStore from './store/user.store'
+import UseUserStore, { removeUser } from './store/user.store'
 import { createContext, useState } from 'react'
 import { logout } from '@/lib/auth';
+import { removeRegistrationStore } from '@/store/registration.store';
+import { removeCompany } from '@/store/company.store';
 
 export const AuthContext = createContext<AuthContextType>({
     user: null,
@@ -18,7 +20,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!persistedUser);
 
     const logOut = async () => {
-        return logout();
+        removeUser();
+        removeRegistrationStore();
+        removeCompany();
+        setIsAuthenticated(false);
     }
 
     const logIn = (data: UserType) => {

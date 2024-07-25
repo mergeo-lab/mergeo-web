@@ -171,8 +171,6 @@ export async function otp(fields: OtpSchemaType): Promise<Response<OtpType>> {
 
     if (isAxiosError(error)) {
       if (error.response?.data.statusCode === 400) {
-        errorMessage = 'El email o la contraseña son incorrectos';
-      } else {
         errorMessage = error.response?.data.message;
       }
     }

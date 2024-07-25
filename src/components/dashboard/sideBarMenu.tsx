@@ -33,11 +33,11 @@ export function SideBarMenu({ companyName }: Props) {
                 <div className="relative flex items-center">
                     <CollapsibleTrigger className="flex items-center text-lg text-secondary-backgroundfont-bold w-full gap-2">
                         <div className="w-10 min-w-10 h-10 flex justify-center items-center bg-primary rounded-full text-secondary-foreground text-lg font-extrabold">
-                            {companyName[0].toUpperCase()}
+                            {companyName && companyName[0].toUpperCase()}
                         </div>
                         <div className="font-bold text-bg-secondary-background flex items-center gap-1">
                             <span>
-                                {companyName}
+                                {companyName && companyName}
                             </span>
                             <ChevronDown size={15} strokeWidth={5} className={cn({ 'rotate-180': collapsibleIsOpen })} />
                         </div>

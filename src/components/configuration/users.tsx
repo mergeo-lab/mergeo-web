@@ -1,16 +1,26 @@
 import { CardFooter } from "@/components/card"
+import { NewUser } from "@/components/configuration/newUser"
+import { RoleDetail } from "@/components/configuration/roleDetail"
 import LoadingIndicator from "@/components/loadingIndicator"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { UserSchemaType } from "@/lib/configuration/schema"
+import { RoleSchemaType, UserSchemaType } from "@/lib/configuration/schema"
 import { getUsers } from "@/lib/configuration/users"
-import { formatDate } from "@/lib/utils"
+import { cn, formatDate } from "@/lib/utils"
 import UseCompanyStore from "@/store/company.store"
 import { AvatarImage } from "@radix-ui/react-avatar"
 import { useQuery } from "@tanstack/react-query"
-import { Pencil, Trash2, UserRoundPlus } from "lucide-react"
+import { Pencil, Trash2 } from "lucide-react"
+
+const colorClasses = [
+    'bg-primary',
+    'bg-highlight',
+    'bg-secondary-background',
+    'bg-info',
+    'bg-coaccent-foreground'
+];
 
 export function Users() {
     const { company } = UseCompanyStore();
@@ -46,65 +56,84 @@ export function Users() {
                                 <TableHead className="">Nombre</TableHead>
                                 <TableHead className="">Email</TableHead>
                                 <TableHead className="">Estado</TableHead>
-                                <TableHead className="">Permisos</TableHead>
+                                <TableHead className="">Roles</TableHead>
                                 <TableHead className="text-center">Creado</TableHead>
                                 <TableHead className="text-center">Editado</TableHead>
                                 <TableHead className="w-2"></TableHead>
                                 <TableHead className="w-2"></TableHead>
                             </TableRow>
                         </TableHeader>
-                        {isLoading
-                            ? <LoadingIndicator />
-                            : (
-                                <TableBody>
-                                    {
-                                        users?.data && users?.data.map((user: UserSchemaType) => (
-                                            <TableRow key={user.id} className="hover:bg-accent">
-                                                <TableCell>
-                                                    <Avatar>
-                                                        <AvatarImage src="https://github.com/shadcn.png" />
-                                                        <AvatarFallback>
-                                                            {userNameInitials(user.name)}
-                                                        </AvatarFallback>
-                                                    </Avatar>
-                                                </TableCell>
-                                                <TableCell className="font-base">
-                                                    {user.name}
-                                                </TableCell>
-                                                <TableCell className="">{user.email}</TableCell>
-                                                <TableCell className="text-primary">{user.isActive ? "ACTIVO" : "INACTIVO"}</TableCell>
-                                                <TableCell>
-                                                    {user.roles.length
-                                                        ? <Badge variant="default">{user.roles}</Badge>
-                                                        : "-"
-                                                    }
-                                                </TableCell>
-                                                <TableCell className="text-center">{formatDate(user.created)}</TableCell>
-                                                <TableCell className="text-center">{formatDate(user.updated)}</TableCell>
-                                                <TableCell className="text-right">
-                                                    <Pencil size={18} />
-                                                </TableCell>
-                                                <TableCell className="text-right">
-                                                    <Trash2 size={18} />
-                                                </TableCell>
-                                            </TableRow>
-                                        ))
-                                    }
-                                </TableBody>
-                            )}
+                        <TableBody>
+                            {isLoading
+                                ? <TableRow>
+                                    <TableCell>
+                                        <LoadingIndicator />
+                                    </TableCell>
+                                </TableRow>
+                                : users?.data && users?.data.map((user: UserSchemaType) => (
+                                    <TableRow key={user.id} className="hover:bg-accent">
+                                        <TableCell>
+                                            <Avatar>
+                                                <AvatarImage src="https://github.com/shadcn.png" />
+                                                <AvatarFallback>
+                                                    {userNameInitials(user.name)}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                        </TableCell>
+                                        <TableCell className="font-base">
+                                            {user.name}
+                                        </TableCell>
+                                        <TableCell className="">{user.email}</TableCell>
+                                        <TableCell className={cn('text-primary', {
+                                            'text-highlight': !user.isActive
+                                        })}>
+                                            {
+                                                user.isActive
+                                                    ? "ACTIVO"
+                                                    : "INACTIVO"}
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="flex gap-2 items-center">
+                                                {user.roles.length ?
+                                                    user.roles.map((role: RoleSchemaType, index: number) => (
+                                                        <HoverCard key={role.id}>
+                                                            <HoverCardTrigger>
+                                                                <Badge className={`cursor-pointer ${colorClasses[index]} hover:opacity-70 hover:${colorClasses[index]}`}>{role.name}</Badge>
+                                                            </HoverCardTrigger>
+                                                            <HoverCardContent className="w-96">
+                                                                <div className="flex flex-col">
+                                                                    {
+                                                                        <RoleDetail permissions={role.permissions} />
+                                                                    }
+                                                                </div>
+                                                            </HoverCardContent>
+                                                        </HoverCard>
+                                                    )
+                                                    )
+                                                    : "-"
+                                                }
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-center">{formatDate(user.created)}</TableCell>
+                                        <TableCell className="text-center">{formatDate(user.updated)}</TableCell>
+                                        <TableCell className="text-right">
+                                            <Pencil size={18} />
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <Trash2 size={18} />
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            }
+                        </TableBody>
                     </Table>
                 </div>
                 <CardFooter className='w-full'>
                     <div className='flex flex-col-reverse md:flex-row justify-end items-center min-h-20'>
-                        <Button variant='outline' onClick={() => { console.log('edit') }} className='min-w-[200px] flex gap-2' type="submit">
-                            <span>
-                                Agregar un usuario
-                            </span>
-                            <UserRoundPlus size={18} />
-                        </Button>
+                        <NewUser />
                     </div>
                 </CardFooter>
-            </div>
-        </div>
+            </div >
+        </div >
     )
 }

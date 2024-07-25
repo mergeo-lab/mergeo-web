@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router';
 import { zodResolver, } from '@hookform/resolvers/zod';
 import { useForm } from "react-hook-form"
-import { RedirectSearchParams } from '@/types';
 import { useMutation } from '@tanstack/react-query';
 import { login } from '@/lib/auth';
 import { useAuth } from '@/hooks';
@@ -14,6 +13,7 @@ import Card, { CardBody, CardFooter, CardHeader } from '@/components/card';
 import PasswordInput from '@/components/passwordInput';
 import { z } from 'zod';
 import UseCompanyStore from '@/store/company.store';
+import { useEffect } from 'react';
 
 export const Route = createFileRoute('/_authLayout/login')({
   component: () => <Login />,
@@ -27,11 +27,10 @@ const LoginSchema = z.object({
 type Schema = z.infer<typeof LoginSchema>
 
 function Login() {
-  const { logIn } = useAuth();
+  const { logIn, isAuthenticated } = useAuth();
   const companyState = UseCompanyStore();
   const router = useRouter();
   const { toast } = useToast()
-  const { redirect: from } = Route.useSearch<RedirectSearchParams>()
   const mutation = useMutation({ mutationFn: login })
 
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -57,11 +56,15 @@ function Login() {
       console.log(data)
       companyState.saveCompany(data.company)
       logIn(data.user);
-
-      const redirectTo = from || "/dashboard";
-      router.history.replace(redirectTo);
     }
   }
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const redirectTo = "/dashboard";
+      router.history.push(redirectTo, { replace: true });
+    }
+  }, [isAuthenticated, router.history]);
 
   return (
     <Form {...form}>
