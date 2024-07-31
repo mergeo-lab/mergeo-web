@@ -69,10 +69,10 @@ export default {
         xs: 'calc(var(--font-size) - 4px)',
         sm: 'calc(var(--font-size) - 2px)',
         DEFAULT: 'var(--font-size)',
-        md: 'calc(var(--font-size) + 2px)',
-        lg: 'calc(var(--font-size) + 4px)',
-        xl: 'calc(var(--font-size) + 5px)',
-        '2xl': 'calc(var(--font-size) + 6px)',
+        md: 'calc(var(--font-size) + 1px)',
+        lg: 'calc(var(--font-size) + 2px)',
+        xl: 'calc(var(--font-size) + 3px)',
+        '2xl': 'calc(var(--font-size) + 5px)',
       },
       keyframes: {
         "caret-blink": {

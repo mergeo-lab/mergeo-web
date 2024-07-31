@@ -8,19 +8,12 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { RoleSchemaType, UserSchemaType } from "@/lib/configuration/schema"
 import { getUsers } from "@/lib/configuration/users"
+import { colorClasses } from "@/lib/constants"
 import { cn, formatDate } from "@/lib/utils"
 import UseCompanyStore from "@/store/company.store"
 import { AvatarImage } from "@radix-ui/react-avatar"
 import { useQuery } from "@tanstack/react-query"
 import { Pencil, Trash2 } from "lucide-react"
-
-const colorClasses = [
-    'bg-primary',
-    'bg-highlight',
-    'bg-secondary-background',
-    'bg-info',
-    'bg-coaccent-foreground'
-];
 
 export function Users() {
     const { company } = UseCompanyStore();
@@ -103,7 +96,7 @@ export function Users() {
                                                             <HoverCardContent className="w-96">
                                                                 <div className="flex flex-col">
                                                                     {
-                                                                        <RoleDetail permissions={role.permissions} />
+                                                                        <RoleDetail role={role} />
                                                                     }
                                                                 </div>
                                                             </HoverCardContent>

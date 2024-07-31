@@ -1,14 +1,20 @@
-import { GroupedPermissionsSchemaType, PermissionSchemaType } from "@/lib/configuration/schema";
+import { GroupedPermissionsSchemaType, PermissionSchemaType, RoleSchemaType } from "@/lib/configuration/schema";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Check } from "@/components/check";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useCallback, useEffect, useState } from "react";
 
 type Props = {
-    permissions: PermissionSchemaType[]
+    role: RoleSchemaType,
+    canEdit?: boolean,
+    isEdited?: (role: RoleSchemaType) => void
 }
 
-export function RoleDetail({ permissions }: Props) {
+export function RoleDetail({ role, canEdit = false, isEdited }: Props) {
 
-    function groupAndTransformPermissions(permissions: PermissionSchemaType[]): GroupedPermissionsSchemaType[] {
+    const [permissionsList, setPermissionsList] = useState<GroupedPermissionsSchemaType[]>([]);
+
+    const groupAndTransformPermissions = useCallback((permissions: PermissionSchemaType[]): GroupedPermissionsSchemaType[] => {
         const groupedPermissions: Record<string, GroupedPermissionsSchemaType> = {};
 
         permissions.forEach(permission => {
@@ -33,36 +39,99 @@ export function RoleDetail({ permissions }: Props) {
         });
 
         return Object.values(groupedPermissions);
-    }
+    }, []);
 
-    const groupedPermissions = groupAndTransformPermissions(permissions);
+
+    useEffect(() => {
+        setPermissionsList(groupAndTransformPermissions(role.permissions));
+    }, [groupAndTransformPermissions, role.permissions]);
+
+
+    const checkboxChange = (permissionGroup: GroupedPermissionsSchemaType, action: 'create' | 'edit' | 'delete' | 'todos') => {
+        const updatedPermissionsList = permissionsList.map(permission => {
+            if (permission.group === permissionGroup.group) {
+                if (action === 'todos') {
+                    const newValue = !(permissionGroup.create && permissionGroup.edit && permissionGroup.delete);
+                    return {
+                        ...permission,
+                        create: newValue,
+                        edit: newValue,
+                        delete: newValue
+                    };
+                } else {
+                    return { ...permission, [action]: !permissionGroup[action] };
+                }
+            }
+            return permission;
+        });
+
+        setPermissionsList(updatedPermissionsList);
+
+        if (role && isEdited) {
+            const updatedRole: RoleSchemaType = {
+                ...role,
+                permissions: role.permissions.map(permission => {
+                    const matchedGroup = updatedPermissionsList.find(group => group.group === permission.group);
+                    if (matchedGroup) {
+                        return {
+                            ...permission,
+                            hasPermission: matchedGroup[permission.action as 'create' | 'edit' | 'delete']
+                        };
+                    }
+                    return permission;
+                })
+            };
+
+            isEdited(updatedRole);
+        }
+    };
 
     return (
-        <Table>
-            <TableHeader>
-                <TableRow className="hover:bg-white">
-                    <TableHead className="m-0 w-1/2">Permisos</TableHead>
-                    <TableHead className="w-fit p-0 m-0">Crear</TableHead>
-                    <TableHead className="w-fit p-0 m-0">Editar</TableHead>
-                    <TableHead className="w-fit p-0 m-0">Borrar</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {groupedPermissions.map((permisionGroup) => (
-                    <TableRow key={permisionGroup.group} className="hover:bg-white [&>td]:!py-2">
-                        <TableCell className="text-left m-0">{permisionGroup.group}</TableCell>
-                        <TableCell className="text-center">
-                            <Check positive={permisionGroup.create} />
-                        </TableCell>
-                        <TableCell className="text-center">
-                            <Check positive={permisionGroup.edit} />
-                        </TableCell>
-                        <TableCell className="text-center">
-                            <Check positive={permisionGroup.delete} />
-                        </TableCell>
+        <div className="h-[430px] min-w-[370px]">
+            <Table>
+                <TableHeader>
+                    <TableRow className="hover:bg-white">
+                        <TableHead className="m-0 w-1/2">Permisos</TableHead>
+                        <TableHead className="w-fit pr-1 m-0">Crear</TableHead>
+                        <TableHead className="w-fit pr-1 m-0">Editar</TableHead>
+                        <TableHead className="w-fit pr-1 m-0">Borrar</TableHead>
+                        {canEdit &&
+                            <TableHead className="w-fit pr-1 m-0">Todos</TableHead>
+                        }
                     </TableRow>
-                ))}
-            </TableBody>
-        </Table>
+                </TableHeader>
+                <TableBody>
+                    {permissionsList.map((permisionGroup) => (
+                        <TableRow key={permisionGroup.group} className="hover:bg-white [&>td]:!py-2">
+                            <TableCell className="text-left m-0">{permisionGroup.group}</TableCell>
+                            <TableCell className="text-center h-10">
+                                {canEdit
+                                    ? <Checkbox checked={permisionGroup.create} onClick={() => checkboxChange(permisionGroup, 'create')} />
+                                    : <Check positive={permisionGroup.create} />
+                                }
+                            </TableCell>
+                            <TableCell className="text-center">
+                                {canEdit
+                                    ? <Checkbox className="border-border" checked={permisionGroup.edit} onClick={() => checkboxChange(permisionGroup, 'edit')} />
+                                    : <Check positive={permisionGroup.edit} />
+                                }
+                            </TableCell>
+                            <TableCell className="text-center">
+                                {canEdit
+                                    ? <Checkbox checked={permisionGroup.delete} onClick={() => checkboxChange(permisionGroup, 'delete')} />
+                                    : <Check positive={permisionGroup.delete} />
+                                }
+                            </TableCell>
+                            {canEdit &&
+                                < TableCell className="text-center">
+                                    <Checkbox checked={permisionGroup.create && permisionGroup.edit && permisionGroup.delete} onClick={() => checkboxChange(permisionGroup, 'todos')} />
+                                </TableCell>
+                            }
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table >
+        </div>
+
     )
 }

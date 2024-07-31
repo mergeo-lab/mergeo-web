@@ -35,7 +35,7 @@ export function SideBarMenu({ companyName }: Props) {
                         <div className="w-10 min-w-10 h-10 flex justify-center items-center bg-primary rounded-full text-secondary-foreground text-lg font-extrabold">
                             {companyName && companyName[0].toUpperCase()}
                         </div>
-                        <div className="font-bold text-bg-secondary-background flex items-center gap-1">
+                        <div className="font-bold text-base text-bg-secondary-background flex items-center gap-1">
                             <span>
                                 {companyName && companyName}
                             </span>
@@ -55,7 +55,7 @@ export function SideBarMenu({ companyName }: Props) {
                                 onClick={onLinkClicked}
                                 to="/configuration"
                                 search={{ tab: 'company' }}
-                                className="font-light"
+                                className="font-light text-default"
                                 activeProps={{
                                     style: {
                                         fontWeight: 'bold',
@@ -71,7 +71,7 @@ export function SideBarMenu({ companyName }: Props) {
                                 onClick={onLinkClicked}
                                 to="/configuration"
                                 search={{ tab: 'users' }}
-                                className="font-light"
+                                className="font-light text-base"
                                 activeProps={{
                                     style: {
                                         fontWeight: 'bolder',

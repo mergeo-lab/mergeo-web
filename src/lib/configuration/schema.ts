@@ -1,7 +1,4 @@
-import {
-  RegisterCompanySchema,
-  BaseRegisterUserSchema,
-} from '@/lib/auth/schema';
+import { RegisterCompanySchema } from '@/lib/auth/schema';
 import * as z from 'zod';
 
 export const CompanySchema = RegisterCompanySchema.extend({
@@ -32,6 +29,8 @@ export const RoleSchema = z.object({
   name: z.string(),
   companyId: z.string(),
   permissions: z.array(PermissionSchema),
+  created: z.date(),
+  updated: z.date(),
 });
 
 export const UserSchema = z.object({

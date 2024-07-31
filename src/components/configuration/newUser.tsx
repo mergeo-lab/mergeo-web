@@ -1,9 +1,10 @@
+import { ManageRoles } from "@/components/configuration/manageRoles";
 import { Button } from "@/components/ui/button";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { useToast } from "@/components/ui/use-toast";
 import { NewUserSchemaType, NewUserSchema } from "@/lib/configuration/schema";
+import UseRoleStore from "@/store/roles.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { UserRoundPlus } from "lucide-react";
@@ -11,9 +12,10 @@ import { FormProvider, useForm } from "react-hook-form";
 
 
 export function NewUser() {
-    const { toast } = useToast();
+    const roleStore = UseRoleStore();
     const userMutation = useMutation({
         mutationFn: () => new Promise(() => { })
+        // TODO: agregar el usuario con sus roles, podes obtener los roles desde el store "roleStore"
     });
 
     const form = useForm<NewUserSchemaType>({
@@ -27,6 +29,10 @@ export function NewUser() {
             roles: [],
         },
     })
+
+    function handleCancel() {
+        roleStore.removeAllRoles();
+    }
 
     return (
         <Sheet>
@@ -103,12 +109,26 @@ export function NewUser() {
                                     </FormItem>
                                 )}
                             />
+                            <FormField
+                                control={form.control}
+                                name="roles"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel id='roles'>Rol de Usuario</FormLabel>
+                                        <FormControl>
+                                            <ManageRoles />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                         </form>
+
                     </FormProvider>
                 </div>
                 <SheetFooter className="p-10 items-center">
                     <SheetClose className="w-full">
-                        <Button variant="secondary" className="w-full">Cancelar</Button>
+                        <Button variant="secondary" className="w-full" onClick={handleCancel}>Cancelar</Button>
                     </SheetClose>
                     <Button className="w-full">Guardar</Button>
                 </SheetFooter>
