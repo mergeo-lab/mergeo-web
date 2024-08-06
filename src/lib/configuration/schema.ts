@@ -44,18 +44,24 @@ export const UserSchema = z.object({
 });
 
 export const UserSchemaResponse = z.object({
-  data: UserSchema,
+  data: z.array(UserSchema),
 });
 
 export const NewUserSchema = z.object({
-  firstName: z.string().min(3, { message: 'El nombre no es valido!' }),
-  lastName: z.string().min(3, { message: 'Ingresa tu apellido' }),
+  firstName: z
+    .string()
+    .min(3, { message: 'El nombre no es valido!' })
+    .optional(),
+  lastName: z.string().min(3, { message: 'Ingresa tu apellido' }).optional(),
   email: z
     .string()
     .min(3, { message: 'Tienes que completar este campo!' })
-    .email('Ingresa un email valido!'),
-  position: z.string().optional(),
-  roles: z.array(RoleSchema),
+    .email('Ingresa un email valido!')
+    .optional(),
+});
+
+export const DeleteUserSchema = z.object({
+  email: z.string().email('Ingresa un email valido!'),
 });
 
 export type GroupedPermissionsSchemaType = z.infer<
@@ -66,3 +72,4 @@ export type RoleSchemaType = z.infer<typeof RoleSchema>;
 export type UserSchemaType = z.infer<typeof UserSchema>;
 export type UserSchemaResponseType = z.infer<typeof UserSchemaResponse>;
 export type NewUserSchemaType = z.infer<typeof NewUserSchema>;
+export type DeleteUserSchemaType = z.infer<typeof DeleteUserSchema>;

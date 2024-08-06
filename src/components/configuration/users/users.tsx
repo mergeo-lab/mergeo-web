@@ -1,9 +1,10 @@
 import { CardFooter } from "@/components/card"
-import { NewUser } from "@/components/configuration/newUser"
-import { RoleDetail } from "@/components/configuration/roleDetail"
+import { UserSheet } from "@/components/configuration/users/userSheet"
+import { RoleDetail } from "@/components/configuration/users/roles/roleDetail"
 import LoadingIndicator from "@/components/loadingIndicator"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { RoleSchemaType, UserSchemaType } from "@/lib/configuration/schema"
@@ -13,12 +14,13 @@ import { cn, formatDate } from "@/lib/utils"
 import UseCompanyStore from "@/store/company.store"
 import { AvatarImage } from "@radix-ui/react-avatar"
 import { useQuery } from "@tanstack/react-query"
-import { Pencil, Trash2 } from "lucide-react"
+import { Pencil, Trash2, UserRoundPlus } from "lucide-react"
+import { DeleteUserSheet } from "@/components/configuration/users/deleteUserSheet"
 
 export function Users() {
     const { company } = UseCompanyStore();
 
-    const { data: usersData, isLoading, isError } = useQuery({
+    const { data: usersData, isLoading, isError, refetch } = useQuery({
         queryKey: ['users', company?.id],
         queryFn: ({ queryKey }) => {
             const companyId = queryKey[1];
@@ -30,7 +32,15 @@ export function Users() {
         },
         enabled: !!company?.id, // Ensure the query runs only if company ID exists
     });
-    const users = usersData && usersData.data || { data: [] };
+    const usersArray: UserSchemaType[] = Array.isArray(usersData?.data?.data) ? usersData.data.data : [];
+
+    const sortedUsers = usersArray.sort((a, b) => {
+        if (a.isActive !== b.isActive) {
+            return a.isActive ? -1 : 1;
+        }
+        // Then sort by created date
+        return new Date(a.created).getTime() - new Date(b.created).getTime();
+    });
 
     const userNameInitials = (username: string) => {
         return username.split(' ').map((n) => n.charAt(0).toUpperCase()).join('')
@@ -56,14 +66,14 @@ export function Users() {
                                 <TableHead className="w-2"></TableHead>
                             </TableRow>
                         </TableHeader>
-                        <TableBody>
+                        <TableBody className="h-full overflow-auto">
                             {isLoading
                                 ? <TableRow>
                                     <TableCell>
                                         <LoadingIndicator />
                                     </TableCell>
                                 </TableRow>
-                                : users?.data && users?.data.map((user: UserSchemaType) => (
+                                : sortedUsers.map((user: UserSchemaType) => (
                                     <TableRow key={user.id} className="hover:bg-accent">
                                         <TableCell>
                                             <Avatar>
@@ -110,10 +120,31 @@ export function Users() {
                                         <TableCell className="text-center">{formatDate(user.created)}</TableCell>
                                         <TableCell className="text-center">{formatDate(user.updated)}</TableCell>
                                         <TableCell className="text-right">
-                                            <Pencil size={18} />
+                                            <UserSheet
+                                                userId={user.id}
+                                                data={user}
+                                                isEdit
+                                                title="Editar usuario"
+                                                subTitle="Actualiza los datos del usuario"
+                                                icon={<Pencil size={20} />}
+                                                callback={refetch}
+                                                triggerButton={
+                                                    <Button variant='ghost' size='sm'>
+                                                        <Pencil size={18} />
+                                                    </Button>
+                                                } />
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <Trash2 size={18} />
+                                            <DeleteUserSheet
+                                                userId={user.id}
+                                                userData={user}
+                                                title="Eliminar usuario"
+                                                subTitle="¿Deseas borrar este usuario?"
+                                                triggerButton={<Button variant='ghost' size='sm'>
+                                                    <Trash2 size={18} />
+                                                </Button>}
+                                                callback={refetch}
+                                            />
                                         </TableCell>
                                     </TableRow>
                                 ))
@@ -123,7 +154,16 @@ export function Users() {
                 </div>
                 <CardFooter className='w-full'>
                     <div className='flex flex-col-reverse md:flex-row justify-end items-center min-h-20'>
-                        <NewUser />
+                        <UserSheet
+                            callback={refetch}
+                            triggerButton={
+                                <Button variant='outline' className='min-w-[200px] flex gap-2'>
+                                    <span>
+                                        Agregar un usuario
+                                    </span>
+                                    <UserRoundPlus size={18} />
+                                </Button>
+                            } />
                     </div>
                 </CardFooter>
             </div >

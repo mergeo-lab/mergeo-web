@@ -24,7 +24,7 @@ function DashboardLayout() {
             <SideBarMenu companyName={company?.name || ''} />
             <div className='w-full md:px-12 flex flex-col justify-center'>
                 <DashboardHeader title={{ text: title.text, icon: title.icon }} />
-                <div className='w-full h-full mt-0 my-10 border rounded shadow overflow-hidden'>
+                <div className='w-full h-screen mt-0 my-10 border rounded shadow overflow-hidden lg:max-h-[calc(100vh-150px)] '>
                     <Outlet />
                 </div>
             </div>

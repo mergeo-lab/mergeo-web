@@ -1,9 +1,12 @@
 import { axiosPrivate } from '@/lib/api/axios';
+import { addUserEndpoint } from '@/lib/auth/endpoints';
 import { configurationEndpoints } from '@/lib/configuration/endpoints';
 import {
+  NewUserSchemaType,
   PermissionSchemaType,
   RoleSchemaType,
   UserSchemaResponseType,
+  UserSchemaType,
 } from '@/lib/configuration/schema';
 import { Response } from '@/types';
 import { AxiosResponse, isAxiosError } from 'axios';
@@ -16,8 +19,6 @@ export async function getUsers(
       configurationEndpoints.USERS,
       {
         params: { id: compnayId },
-        headers: { 'Content-Type': 'application/json' },
-        withCredentials: true,
       }
     );
     return response;
@@ -32,15 +33,91 @@ export async function getUsers(
   }
 }
 
+export async function addUser({
+  id,
+  companyId,
+  fields,
+}: {
+  id: string;
+  companyId: string;
+  fields: NewUserSchemaType;
+}): Promise<Response<UserSchemaType>> {
+  try {
+    const response: Response<UserSchemaType> = await axiosPrivate.post(
+      addUserEndpoint(id),
+      JSON.stringify({ ...fields, companyId: companyId }),
+      {
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
+      }
+    );
+    return response;
+  } catch (error) {
+    let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
+    if (isAxiosError(error)) {
+      errorMessage = error.response?.data.message || errorMessage;
+    }
+    return { error: errorMessage };
+  }
+}
+
+export async function editUser({
+  id,
+  fields,
+}: {
+  id: string;
+  companyId?: string;
+  fields: NewUserSchemaType;
+}): Promise<Response<UserSchemaType>> {
+  try {
+    const response: Response<UserSchemaType> = await axiosPrivate.patch(
+      `${configurationEndpoints.USERS}/${id}`,
+      JSON.stringify({ ...fields }),
+      {
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
+      }
+    );
+    return response;
+  } catch (error) {
+    let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
+    if (isAxiosError(error)) {
+      errorMessage = error.response?.data.message || errorMessage;
+    }
+    return { error: errorMessage };
+  }
+}
+
+export async function deleteUser({
+  id,
+}: {
+  id: string;
+}): Promise<Response<UserSchemaType>> {
+  try {
+    const response: Response<UserSchemaType> = await axiosPrivate.delete(
+      `${configurationEndpoints.USERS}/${id}`,
+      {
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
+      }
+    );
+    return response;
+  } catch (error) {
+    let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
+    if (isAxiosError(error)) {
+      errorMessage = error.response?.data.message || errorMessage;
+    }
+    return { error: errorMessage };
+  }
+}
+
 export async function getPermissions(): Promise<
-  PermissionSchemaType[] | ErrorMessage
+  PermissionSchemaType[] | string
 > {
   try {
     const { data: response }: AxiosResponse<Response<PermissionSchemaType[]>> =
-      await axiosPrivate.get(`${configurationEndpoints.PERMISSIONS}`, {
-        headers: { 'Content-Type': 'application/json' },
-        withCredentials: true,
-      });
+      await axiosPrivate.get(`${configurationEndpoints.PERMISSIONS}`);
+
     if (response?.data) {
       return response?.data;
     }
@@ -50,8 +127,9 @@ export async function getPermissions(): Promise<
     if (isAxiosError(error)) {
       errorMessage = error.response?.data.message || errorMessage;
     }
-    return { message: errorMessage };
+    return errorMessage;
   }
+  return [];
 }
 
 export async function getAllRoles(
@@ -60,11 +138,7 @@ export async function getAllRoles(
   try {
     const { data: response }: AxiosResponse<Response<RoleSchemaType[]>> =
       await axiosPrivate.get(
-        `${configurationEndpoints.ALL_ROLES}/${compnayId}`,
-        {
-          headers: { 'Content-Type': 'application/json' },
-          withCredentials: true,
-        }
+        `${configurationEndpoints.ALL_ROLES}/${compnayId}`
       );
     if (response?.data) {
       return response?.data;
@@ -77,4 +151,5 @@ export async function getAllRoles(
     }
     return { message: errorMessage };
   }
+  return [];
 }

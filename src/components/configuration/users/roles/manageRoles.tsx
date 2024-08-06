@@ -1,7 +1,7 @@
-import { DeleteRole } from "@/components/configuration/deleteRole";
-import { NewRoleForm } from "@/components/configuration/newRoleForm";
-import { RoleDetail } from "@/components/configuration/roleDetail";
-import { RolePicker } from "@/components/configuration/rolePicker";
+import { DeleteRole } from "@/components/configuration/users/roles/deleteRole";
+import { NewRoleForm } from "@/components/configuration/users/roles/newRoleForm";
+import { RoleDetail } from "@/components/configuration/users/roles/roleDetail";
+import { RolePicker } from "@/components/configuration/users/roles/rolePicker";
 import LoadingIndicator from "@/components/loadingIndicator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -106,7 +106,6 @@ export function ManageRoles() {
 
     function saveSelectedRoles(role: RoleSchemaType) {
         roleStore.addRole(role);
-        selectedRoles(roleStore.roles)
     }
 
     function removeSelectedRoles() {
@@ -217,12 +216,12 @@ export function ManageRoles() {
                                                                         </TableRow>
 
                                                                     )
-                                                                    : <div className="absolute top-2 right-4 flex gap-4">
-                                                                        <Button key={role.id} variant="outline" className="" size="xs" onClick={() => setViewRole(role)}>{role.name}</Button>
+                                                                    : <TableRow key={role.id} className="absolute top-2 right-4 flex gap-4 border-none hover:bg-white">
+                                                                        <Button variant="outline" className="" size="xs" onClick={() => setViewRole(role)}>{role.name}</Button>
                                                                         <ArrowBigRight className={cn('text-primary opacity-0', {
                                                                             'opacity-100': viewRole?.id == role.id
                                                                         })} />
-                                                                    </div>
+                                                                    </TableRow>
                                                             ))
                                                         }
                                                     </TableBody>
@@ -268,7 +267,7 @@ export function ManageRoles() {
                                         viewRoleId={viewRole.id}
                                     />
                                     {viewRole.id !== emptyRole.id &&
-                                        <>
+                                        <div className="flex gap-2 items-baseline">
                                             <Button
                                                 size="sm"
                                                 disabled={!isEditting}
@@ -283,7 +282,7 @@ export function ManageRoles() {
                                                 roleName={viewRole.name}
                                                 roleDeleted={roleListChanged}
                                             />
-                                        </>
+                                        </div>
                                     }
                                 </div>
                             </div>

@@ -5,6 +5,7 @@ type RoleState = {
   roles: RoleSchemaType[];
   allRoles: RoleSchemaType[];
   addRole: (role: RoleSchemaType) => void;
+  addRoles: (roles: RoleSchemaType[]) => void;
   removeRole: (id: string) => void;
   removeAllRoles: () => void;
   setAllCompanyRoles: (roles: RoleSchemaType[]) => void;
@@ -24,6 +25,7 @@ const UseRoleStore = create<RoleState>((set) => ({
       }
       return state;
     }),
+  addRoles: (roles) => set({ roles }),
   removeRole: (id) =>
     set((state) => ({
       roles: state.roles.filter((role) => role.id !== id),

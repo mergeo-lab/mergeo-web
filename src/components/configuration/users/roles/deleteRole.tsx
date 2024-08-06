@@ -33,7 +33,7 @@ export function DeleteRole({ roleId, roleName, roleDeleted }: Props) {
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger>
+            <DialogTrigger className="h-6">
                 <Button
                     size="sm"
                     variant="destructive"

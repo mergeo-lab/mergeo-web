@@ -1,2 +1,2 @@
 export { Company } from './company'
-export { Users } from './users'
+export { Users } from './users/users'

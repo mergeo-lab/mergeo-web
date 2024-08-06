@@ -3,8 +3,6 @@ import { PermissionSchemaType } from '@/lib/configuration/schema';
 import { isAxiosError } from 'axios';
 import { Response } from '@/types';
 import { configurationEndpoints } from '@/lib/configuration/endpoints';
-import { resolveCname } from 'dns';
-import { permission } from 'process';
 
 export async function newRole({
   name,

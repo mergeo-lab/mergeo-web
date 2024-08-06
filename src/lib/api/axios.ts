@@ -20,10 +20,13 @@ axiosPrivate.interceptors.response.use(
       error?.response?.status === 401 ||
       (error?.response?.status === 403 && !prevRequest?.sent)
     ) {
+      // Handle 401 and specific 403 cases here
       prevRequest.sent = true;
       await refresh();
       return axiosPrivate(prevRequest);
     }
+    // If not handled, throw the error for catch block
+    throw error;
   }
 );
 

@@ -58,7 +58,6 @@ function RegisterCompany() {
       })
     } else if (response.data) {
       const { data } = response.data;
-      console.log("data:: ", data);
       registrationState.saveCompanyId(data.companyId)
 
       const redirectTo = `/registration/user`;
