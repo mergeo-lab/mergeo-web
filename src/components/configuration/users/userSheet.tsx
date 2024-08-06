@@ -85,9 +85,16 @@ export function UserSheet({
 
             }
         }
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [roleStore.roles]);
+
+    const closeModal = useCallback(() => {
+        // Perform any updates or actions you need here
+        console.log('Modal closed, perform updates here');
+        // Close the modal
+        handleCancel()
+        setOpen(false);
+    }, []);
 
     const checkFieldsValues = useCallback(() => {
         const fields = form.getValues();
@@ -180,7 +187,13 @@ export function UserSheet({
     }
 
     return (
-        <Sheet open={open} onOpenChange={setOpen}>
+        <Sheet open={open} onOpenChange={(isOpen) => {
+            if (!isOpen) {
+                closeModal();
+            } else {
+                setOpen(isOpen);
+            }
+        }}>
             <SheetTrigger>
                 {triggerButton}
             </SheetTrigger>
