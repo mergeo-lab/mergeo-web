@@ -6,17 +6,17 @@ import useGoogle from "react-google-autocomplete/lib/usePlacesAutocompleteServic
 import LoadingIndicator from '@/components/loadingIndicator';
 import { MapPin, Search, X } from "lucide-react";
 import { getLocationInfo } from "@/lib/auth";
-import { GoogleLocationSchemaType } from "@/lib/auth/schema";
+import { GoogleLocationSchemaType } from "@/lib/common/schemas";
 import { toast } from "@/components/ui/use-toast";
 
-const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
 type Props = {
     debounce?: number,
     selectedAddress: (address: GoogleLocationSchemaType) => void
+    addressRemoved?: () => void
 }
 
-export function GoogleAutoComplete({ debounce = 500, selectedAddress }: Props) {
+export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRemoved }: Props) {
     const ref = useRef(null);
     const [selected, setSelected] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +26,6 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress }: Props) {
         getPlacePredictions,
         isPlacePredictionsLoading,
     } = useGoogle({
-        apiKey: googleMapsApiKey,
         options: {
             types: ['route'],
             language: "es",
@@ -54,7 +53,6 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress }: Props) {
     const getAddressComponent = async (placeId: string) => {
         setIsLoading(true);
         const response = await getLocationInfo(placeId);
-        console.log("response:", response)
 
         if (response.error) {
             setIsLoading(false);
@@ -64,9 +62,7 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress }: Props) {
                 description: response.error,
             })
         } else if (response.data) {
-            console.log(response)
             const data = response.data;
-            console.log("Get address component:", data)
             selectedAddress(data);
             setIsLoading(false);
         }
@@ -76,10 +72,11 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress }: Props) {
         getPlacePredictions({ input: "" });
         setValue("");
         setSelected(false);
+        addressRemoved && addressRemoved();
     };
 
     return (
-        <div ref={ref}>
+        <div ref={ref} className="relative">
             <div className="w-full h-10 relative">
                 <Input
                     value={value}
@@ -100,20 +97,23 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress }: Props) {
                                 : <Search />}
                     </div>}
             </div>
-            <List
-                dataSource={placePredictions}
-                renderItem={(item) => (
-                    <List.Item className="flex gap-2" onClick={() => {
-                        setValue(item.description);
-                        getPlacePredictions({ input: "" });
-                        setSelected(true);
-                        getAddressComponent(item.place_id)
-                    }}>
-                        <MapPin size={20} />
-                        <List.Item.Meta title={item.description} />
-                    </List.Item>
-                )}
-            />
+            {
+                placePredictions && placePredictions.length > 0 &&
+                <List className="absolute top-10 w-full z-10 h-[200px] overflow-auto"
+                    dataSource={placePredictions}
+                    renderItem={(item) => (
+                        <List.Item className="flex gap-2 bg-white" onClick={() => {
+                            setValue(item.description);
+                            getPlacePredictions({ input: "" });
+                            setSelected(true);
+                            getAddressComponent(item.place_id)
+                        }}>
+                            <MapPin size={20} />
+                            <List.Item.Meta title={item.description} />
+                        </List.Item>
+                    )}
+                />
+            }
         </div>
     )
 }

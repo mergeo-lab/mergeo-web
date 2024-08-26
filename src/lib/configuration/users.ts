@@ -7,7 +7,7 @@ import {
   RoleSchemaType,
   UserSchemaResponseType,
   UserSchemaType,
-} from '@/lib/configuration/schema';
+} from '@/lib/configuration/schemas';
 import { Response } from '@/types';
 import { AxiosResponse, isAxiosError } from 'axios';
 
@@ -66,7 +66,6 @@ export async function editUser({
   fields,
 }: {
   id: string;
-  companyId?: string;
   fields: NewUserSchemaType;
 }): Promise<Response<UserSchemaType>> {
   try {
@@ -112,44 +111,36 @@ export async function deleteUser({
 }
 
 export async function getPermissions(): Promise<
-  PermissionSchemaType[] | string
+  Response<PermissionSchemaType[]>
 > {
   try {
     const { data: response }: AxiosResponse<Response<PermissionSchemaType[]>> =
       await axiosPrivate.get(`${configurationEndpoints.PERMISSIONS}`);
-
-    if (response?.data) {
-      return response?.data;
-    }
+    return response;
   } catch (error) {
     let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
 
     if (isAxiosError(error)) {
       errorMessage = error.response?.data.message || errorMessage;
     }
-    return errorMessage;
+    return { error: errorMessage };
   }
-  return [];
 }
 
 export async function getAllRoles(
   compnayId: string
-): Promise<RoleSchemaType[] | ErrorMessage> {
+): Promise<Response<{ roles: RoleSchemaType[] }>> {
   try {
-    const { data: response }: AxiosResponse<Response<RoleSchemaType[]>> =
-      await axiosPrivate.get(
-        `${configurationEndpoints.ALL_ROLES}/${compnayId}`
-      );
-    if (response?.data) {
-      return response?.data;
-    }
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${configurationEndpoints.ALL_ROLES}/${compnayId}`
+    );
+    return response;
   } catch (error) {
     let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
 
     if (isAxiosError(error)) {
       errorMessage = error.response?.data.message || errorMessage;
     }
-    return { message: errorMessage };
+    return { error: errorMessage };
   }
-  return [];
 }

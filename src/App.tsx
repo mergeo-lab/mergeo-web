@@ -9,6 +9,9 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { ErrorInfo } from "react"
 import { Bug } from 'lucide-react';
 import { routeTree } from '@/routeTree.gen'
+import { APIProvider } from '@vis.gl/react-google-maps'
+
+const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
 // Create a new router instance
 const router = createRouter({
@@ -85,7 +88,9 @@ export default function App() {
             }
           >
             <AuthProvider>
-              <InnerApp />
+              <APIProvider apiKey={googleMapsApiKey} libraries={['places']}>
+                <InnerApp />
+              </APIProvider>
             </AuthProvider>
           </ErrorBoundary>
         )}

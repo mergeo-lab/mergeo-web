@@ -1,8 +1,8 @@
 import { Response } from '@/types';
 import { configurationEndpoints } from './endpoints';
 import { axiosPrivate } from '@/lib/api/axios';
-import { CompanySchemaType } from '@/lib/configuration/schema';
 import { isAxiosError } from 'axios';
+import { CompanySchemaType } from '@/lib/configuration/schemas';
 
 export async function getCompany(): Promise<Response<CompanySchemaType>> {
   try {

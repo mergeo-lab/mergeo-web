@@ -11,7 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/components/ui/use-toast";
 import { roleUpdate } from "@/lib/configuration/roles";
-import { PermissionSchemaType, RoleSchemaType } from "@/lib/configuration/schema";
+import { PermissionSchemaType, RoleSchemaType } from "@/lib/configuration/schemas";
 import { getAllRoles, getPermissions } from "@/lib/configuration/users";
 import { cn } from "@/lib/utils";
 import UseCompanyStore from "@/store/company.store";
@@ -37,7 +37,7 @@ export function ManageRoles() {
     const [viewRole, setViewRole] = useState<RoleSchemaType>(emptyRole);
     const [roleEdited, setRoleEdited] = useState<RoleSchemaType>(emptyRole);
     const [isEditting, setIsEditting] = useState<boolean>(false);
-    const previousRolesResponse = useRef(null);
+    const previousRolesResponse = useRef<RoleSchemaType[] | null>(null);
     const mutation = useMutation({ mutationFn: roleUpdate })
 
     const { data: permissions, isLoading: isLoadingPermissions, isError: isErrorPermissions } = useQuery({
@@ -59,22 +59,22 @@ export function ManageRoles() {
     });
 
     useEffect(() => {
-        if (!isLoading && !isError && rolesResponse) {
-            if (previousRolesResponse.current !== rolesResponse) {
-                roleStore.setAllCompanyRoles(rolesResponse.roles);
-                previousRolesResponse.current = rolesResponse;
+        if (!isLoading && !isError && rolesResponse && rolesResponse?.data) {
+            if (previousRolesResponse.current !== rolesResponse.data.roles) {
+                roleStore.setAllCompanyRoles(rolesResponse.data.roles);
+                previousRolesResponse.current = rolesResponse.data.roles;
             }
         }
     }, [isLoading, isError, rolesResponse, roleStore]);
 
     const initializeRoles = useCallback(() => {
 
-        const initialPermissions = permissions.map((permission: PermissionSchemaType) => ({
+        const initialPermissions = permissions?.data && permissions?.data.map((permission: PermissionSchemaType) => ({
             ...permission,
             hasPermission: false,
         }));
 
-        if (initialPermissions.length > 0) {
+        if (initialPermissions && initialPermissions.length > 0) {
             const initialEmptyRole = {
                 ...emptyRole,
                 permissions: initialPermissions,
@@ -106,10 +106,6 @@ export function ManageRoles() {
 
     function saveSelectedRoles(role: RoleSchemaType) {
         roleStore.addRole(role);
-    }
-
-    function removeSelectedRoles() {
-        roleStore.removeAllRoles()
     }
 
     function roleEdictChange(role: RoleSchemaType) {
@@ -199,12 +195,11 @@ export function ManageRoles() {
 
                                                                             <TableCell className="m-0 p-0 w-full">
                                                                                 <div className="flex justify-evenly">
-                                                                                    <Button variant="link" className="text-xs p-2 h-6" onClick={() => changeRole(role)}>
-                                                                                        Ver
-                                                                                    </Button>
-
                                                                                     <Button variant="link" className="text-xs p-2 h-6" onClick={() => saveSelectedRoles(role)}>
                                                                                         Usar
+                                                                                    </Button>
+                                                                                    <Button variant="link" className="text-xs p-2 h-6" onClick={() => changeRole(role)}>
+                                                                                        Ver
                                                                                     </Button>
                                                                                 </div>
                                                                             </TableCell>
@@ -313,7 +308,8 @@ export function ManageRoles() {
                     </div>
                     <DialogFooter className="w-full border top-1 px-6 py-3">
                         <DialogClose className="w-40">
-                            <Button variant="secondary" className="w-full" onClick={removeSelectedRoles}>Cancelar</Button>
+                            <Button variant="secondary" className="w-full" onClick={() => roleStore.removeAllRoles()
+                            }>Cancelar</Button>
                         </DialogClose>
                         <DialogClose className="w-40" disabled={roleStore.roles.length == 0}>
                             <Button className="w-40" disabled={roleStore.roles.length == 0}>Aplicar</Button>

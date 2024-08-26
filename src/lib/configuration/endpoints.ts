@@ -5,4 +5,9 @@ export enum configurationEndpoints {
   ALL_ROLES = `${API_BASE}/role`,
   ROLE = `${API_BASE}/role`,
   PERMISSIONS = `${API_BASE}/role/permissions`,
+  BRANCH = `/branch`,
 }
+
+export const branchEndpoint = (companyId: string): string => {
+  return `${configurationEndpoints.COMPANY}/${companyId}${configurationEndpoints.BRANCH}`;
+};

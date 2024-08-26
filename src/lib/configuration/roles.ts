@@ -1,8 +1,8 @@
 import { axiosPrivate } from '@/lib/api/axios';
-import { PermissionSchemaType } from '@/lib/configuration/schema';
 import { isAxiosError } from 'axios';
 import { Response } from '@/types';
 import { configurationEndpoints } from '@/lib/configuration/endpoints';
+import { PermissionSchemaType } from '@/lib/configuration/schemas';
 
 export async function newRole({
   name,

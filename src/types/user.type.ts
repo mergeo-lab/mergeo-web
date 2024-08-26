@@ -1,4 +1,4 @@
-import { CompanySchemaType } from '@/lib/configuration/schema';
+import { CompanySchemaType } from '@/lib/configuration/schemas/schema';
 
 export type UserType = {
   id?: string;

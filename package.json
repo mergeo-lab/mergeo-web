@@ -39,6 +39,7 @@
     "crypto-js": "^4.2.0",
     "eslint-plugin-tailwindcss": "^3.17.0",
     "input-otp": "^1.2.4",
+    "libphonenumber-js": "^1.11.5",
     "lucide-react": "^0.383.0",
     "postcss": "^8.4.38",
     "react": "^18.2.0",
@@ -50,6 +51,7 @@
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-multi": "^0.4.6",
     "usehooks-ts": "^3.1.0",
+    "validator": "^13.12.0",
     "zod": "^3.23.8",
     "zustand": "^4.5.2",
     "zustand-persist": "^0.4.0"
@@ -62,6 +64,7 @@
     "@types/node": "^20.14.2",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
+    "@types/validator": "^13.12.0",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
     "@vitejs/plugin-react": "^4.2.1",

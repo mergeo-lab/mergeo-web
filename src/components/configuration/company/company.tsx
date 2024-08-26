@@ -6,16 +6,11 @@ import { RegisterCompanySchema, RegisterCompanySchemaType } from "@/lib/auth/sch
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
-import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
+import { Map, Marker } from '@vis.gl/react-google-maps';
 import UseCompanyStore from "@/store/company.store";
 import { Pencil } from "lucide-react";
-
-const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
-
-interface LatLngLiteral {
-    lat: number;
-    lng: number;
-}
+import { BranchPicker } from "@/components/configuration/company/branches/branchPicker";
+import { LatLngLiteral } from "@/types";
 
 export function Company({ isEdditing = false }: { isEdditing?: boolean }) {
     const { company } = UseCompanyStore();
@@ -130,6 +125,23 @@ export function Company({ isEdditing = false }: { isEdditing?: boolean }) {
                                     )}
                                 />
                             </div>
+
+                            <div className='grid grid-cols-1 gap-10'>
+                                <FormField
+                                    disabled={!isEdditing}
+                                    name="branch"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel id='branch'>Sucursales</FormLabel>
+                                            <FormControl>
+                                                <BranchPicker companyId={company?.id} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
                         </form>
                     </FormProvider>
                 </div>
@@ -145,18 +157,16 @@ export function Company({ isEdditing = false }: { isEdditing?: boolean }) {
                 </CardFooter>
             </div>
             <div className="overflow-hidden h-full w-4/12 bg-accent z-10 flex-justify-center items-center">
-                <APIProvider apiKey={googleMapsApiKey}>
-                    <Map
-                        style={{ width: '100%', height: '100%' }}
-                        center={markerPosition}
-                        defaultZoom={16}
-                        maxZoom={20}
-                        gestureHandling={'greedy'}
-                        disableDefaultUI={true}
-                    >
-                        <Marker position={markerPosition} />
-                    </Map>
-                </APIProvider>
+                <Map
+                    style={{ width: '100%', height: '100%' }}
+                    center={markerPosition}
+                    defaultZoom={16}
+                    maxZoom={20}
+                    gestureHandling={'greedy'}
+                    disableDefaultUI={true}
+                >
+                    <Marker position={markerPosition} />
+                </Map>
             </div>
         </div>
     )

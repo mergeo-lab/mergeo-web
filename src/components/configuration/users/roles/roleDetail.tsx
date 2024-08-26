@@ -1,4 +1,4 @@
-import { GroupedPermissionsSchemaType, PermissionSchemaType, RoleSchemaType } from "@/lib/configuration/schema";
+import { GroupedPermissionsSchemaType, PermissionSchemaType, RoleSchemaType } from "@/lib/configuration/schemas/schema";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Check } from "@/components/check";
 import { Checkbox } from "@/components/ui/checkbox";

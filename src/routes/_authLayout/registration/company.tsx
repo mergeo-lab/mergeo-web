@@ -3,7 +3,7 @@ import { CardBody, CardFooter } from '@/components/card'
 import { Button } from '@/components/ui/button'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { GoogleLocationSchemaType, RegisterCompanySchema, RegisterCompanySchemaType } from '@/lib/auth/schema'
+import { RegisterCompanySchema, RegisterCompanySchemaType } from '@/lib/auth/schema'
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
@@ -11,6 +11,7 @@ import { registerCompany } from '@/lib/auth'
 import UseRegistrationStore from '@/store/registration.store'
 import { useToast } from '@/components/ui/use-toast'
 import { GoogleAutoComplete } from '@/components/googleAutoComplete'
+import { GoogleLocationSchemaType } from '@/lib/common/schemas'
 
 export const Route = createFileRoute('/_authLayout/registration/company')({
   component: () => <RegisterCompany />

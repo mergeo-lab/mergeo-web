@@ -1,5 +1,4 @@
 import { CardFooter } from "@/components/card"
-import { UserSheet } from "@/components/configuration/users/userSheet"
 import { RoleDetail } from "@/components/configuration/users/roles/roleDetail"
 import LoadingIndicator from "@/components/loadingIndicator"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -7,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { RoleSchemaType, UserSchemaType } from "@/lib/configuration/schema"
+import { RoleSchemaType, UserSchemaType } from "@/lib/configuration/schemas/schema"
 import { getUsers } from "@/lib/configuration/users"
 import { colorClasses } from "@/lib/constants"
 import { cn, formatDate } from "@/lib/utils"
@@ -16,6 +15,8 @@ import { AvatarImage } from "@radix-ui/react-avatar"
 import { useQuery } from "@tanstack/react-query"
 import { Pencil, Trash2, UserRoundPlus } from "lucide-react"
 import { DeleteUserSheet } from "@/components/configuration/users/deleteUserSheet"
+import { AddUserSheet } from "@/components/configuration/users/addUserSheet"
+import { EditUserSheet } from "@/components/configuration/users/editUserSheet"
 
 export function Users() {
     const { company } = UseCompanyStore();
@@ -120,10 +121,9 @@ export function Users() {
                                         <TableCell className="text-center">{formatDate(user.created)}</TableCell>
                                         <TableCell className="text-center">{formatDate(user.updated)}</TableCell>
                                         <TableCell className="text-right">
-                                            <UserSheet
+                                            <EditUserSheet
                                                 userId={user.id}
                                                 data={user}
-                                                isEdit
                                                 title="Editar usuario"
                                                 subTitle="Actualiza los datos del usuario"
                                                 icon={<Pencil size={20} />}
@@ -154,7 +154,7 @@ export function Users() {
                 </div>
                 <CardFooter className='w-full'>
                     <div className='flex flex-col-reverse md:flex-row justify-end items-center min-h-20'>
-                        <UserSheet
+                        <AddUserSheet
                             callback={refetch}
                             triggerButton={
                                 <Button variant='outline' className='min-w-[200px] flex gap-2'>

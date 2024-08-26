@@ -5,7 +5,7 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { newRole } from "@/lib/configuration/roles";
-import { PermissionSchemaType, RoleSchemaType } from "@/lib/configuration/schema";
+import { PermissionSchemaType, RoleSchemaType } from "@/lib/configuration/schemas/schema";
 import UseCompanyStore from "@/store/company.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";

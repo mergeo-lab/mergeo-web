@@ -144,7 +144,6 @@ function RegistrationValidate() {
           }
           <Button variant="link" onClick={redirectToLogin}>Ir al Login</Button>
         </form>
-        <Button onClick={() => setIsValidated(true)}>Validar</Button>
       </Form >
     )
   }

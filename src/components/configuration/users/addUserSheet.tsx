@@ -4,9 +4,8 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "@/components/ui/use-toast";
-import { NewUserSchemaType, NewUserSchema, UserSchemaType, RoleSchemaType } from "@/lib/configuration/schema";
-import { addUser, editUser } from "@/lib/configuration/users";
-import { arraysAreEqual, splitFullName } from "@/lib/utils";
+import { NewUserSchemaType, NewUserSchema } from "@/lib/configuration/schemas";
+import { addUser } from "@/lib/configuration/users";
 import UseCompanyStore from "@/store/company.store";
 import UseRoleStore from "@/store/roles.store";
 import UseUserStore from "@/store/user.store";
@@ -19,9 +18,6 @@ import { FormProvider, useForm } from "react-hook-form";
 type FormSchemaType = Omit<NewUserSchemaType, 'id' | 'companyId'>
 
 type Props = {
-    userId?: string,
-    isEdit?: boolean,
-    data?: UserSchemaType,
     title?: string,
     subTitle?: string,
     icon?: JSX.Element,
@@ -29,10 +25,7 @@ type Props = {
     triggerButton?: React.ReactNode
 }
 
-export function UserSheet({
-    userId,
-    data,
-    isEdit = false,
+export function AddUserSheet({
     title = "Agregar un usuario",
     subTitle = "Agrega un nuevo usuario para poder compartir la cuenta",
     icon = <UserRoundPlus size={20} />,
@@ -41,7 +34,7 @@ export function UserSheet({
     const roleStore = UseRoleStore();
     const { company } = UseCompanyStore();
     const { user } = UseUserStore();
-    const mutation = useMutation({ mutationFn: data ? editUser : addUser })
+    const mutation = useMutation({ mutationFn: addUser })
     const [open, setOpen] = useState(false);
     const [canSubmit, setCanSubmit] = useState(false);
 
@@ -49,21 +42,11 @@ export function UserSheet({
         resolver: zodResolver(NewUserSchema),
         disabled: mutation.isPending,
         defaultValues: {
-            firstName: data ? splitFullName(data.name).firstName : "",
-            lastName: data ? splitFullName(data.name).lastName : "",
-            email: data ? data.email : "",
+            firstName: "",
+            lastName: "",
+            email: "",
         },
     })
-
-    useEffect(() => {
-        if (open && isEdit && data) {
-            roleStore.addRoles(data.roles);
-        } else {
-            roleStore.removeAllRoles();
-        }
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data, form, open]);
 
     useEffect(() => {
         if (form.formState.isDirty) {
@@ -74,93 +57,21 @@ export function UserSheet({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [form.formState.isDirty]);
 
-    useEffect(() => {
-        if (isEdit && data) {
-            const rolesHaveChanged = !arraysAreEqual(roleStore.roles, data.roles);
-
-            if (rolesHaveChanged) {
-                setCanSubmit(true);
-            } else {
-                setCanSubmit(false);
-
-            }
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [roleStore.roles]);
 
     const closeModal = useCallback(() => {
-        // Perform any updates or actions you need here
-        console.log('Modal closed, perform updates here');
         // Close the modal
         handleCancel()
         setOpen(false);
     }, []);
 
-    const checkFieldsValues = useCallback(() => {
-        const fields = form.getValues();
-        const editedFields: FormSchemaType & { roles?: string[] } = {
-            firstName: "",
-            lastName: "",
-            email: "",
-            roles: [],
-        };
-        if (isEdit && data) {
-
-            const rolesHaveChanged = !arraysAreEqual(roleStore.roles, data.roles);
-            const { firstName, lastName } = splitFullName(data.name);
-
-            if (fields.email !== data.email) {
-                editedFields.email = fields.email;
-            } else {
-                delete editedFields.email;
-            }
-
-            if (fields.firstName !== firstName) {
-                editedFields.firstName = fields.firstName;
-            }
-            else {
-                delete editedFields.firstName;
-            }
-
-            if (fields.lastName !== lastName) {
-                editedFields.lastName = fields.lastName;
-            } else {
-                delete editedFields.lastName;
-            }
-
-            if (rolesHaveChanged) {
-                const newRoles = roleStore.roles.map((role: RoleSchemaType) => role.id);
-                editedFields.roles = newRoles;
-            } else {
-                delete editedFields.roles;
-            }
-
-        }
-        return editedFields;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [form, isEdit, data, open, roleStore.roles]);
-
-    useEffect(() => {
-        checkFieldsValues();
-    }, [checkFieldsValues, roleStore.roles]);
-
     const onSubmit = async (fields: FormSchemaType) => {
         if (!canSubmit) return;
 
-        if (!isEdit && roleStore.roles.length === 0) {
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Debe agregar al menos un rol",
-            })
-            return;
-        }
-
         if (user?.id && company?.id) {
-            const editedFields = checkFieldsValues();
-            const formData = isEdit ? { ...editedFields } : { ...fields };
+            console.log(roleStore.roles)
+            const formData = { ...fields, roles: roleStore.roles };
             const payload = {
-                id: isEdit ? userId || "" : user?.id,
+                id: user?.id,
                 companyId: company?.id,
                 fields: formData
             };
