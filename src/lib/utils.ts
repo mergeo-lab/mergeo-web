@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import CryptoJS from 'crypto-js';
+import { HourSlot } from '@/types';
 
 const secretKey = import.meta.env.VITE_SEARCH_PARAMS_KEY;
 
@@ -44,4 +45,18 @@ export function arraysAreEqual<T>(arr1: T[], arr2: T[]): boolean {
     arr1.length === arr2.length &&
     arr1.sort().join(',') === arr2.sort().join(',')
   );
+}
+
+export function generateHourSlots(max: number): HourSlot[] {
+  const hours: HourSlot[] = [];
+
+  for (let i = 1; i < max + 1; i++) {
+    const hour = i < 10 ? `0${i}:00` : `${i}:00`;
+    hours.push({
+      name: hour + ' hs',
+      value: hour,
+    });
+  }
+
+  return hours;
 }

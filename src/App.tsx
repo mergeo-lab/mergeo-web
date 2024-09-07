@@ -5,11 +5,12 @@ import BugsnagPerformance from '@bugsnag/browser-performance'
 import { AuthProvider } from "@/auth"
 import { useAuth } from "@/hooks"
 import { QueryClient, QueryClientProvider, QueryErrorResetBoundary } from "@tanstack/react-query"
-import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { RouterProvider, createRouter, Link } from '@tanstack/react-router'
 import { ErrorInfo } from "react"
 import { Bug } from 'lucide-react';
 import { routeTree } from '@/routeTree.gen'
 import { APIProvider } from '@vis.gl/react-google-maps'
+import { Button } from '@/components/ui/button'
 
 const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
@@ -20,6 +21,21 @@ const router = createRouter({
   context: {
     auth: undefined!, // This will be set after we wrap the app in an AuthProvider
   },
+  defaultNotFoundComponent: () => {
+    return (
+      <div className='w-full h-screen flex flex-col justify-center items-center'>
+        <h1 className='text-5xl font-bold'>UPS!</h1>
+        <h1 className='text-xl'> Not encontramos la pagina que estas buscandos!</h1>
+        <img className='w-1/3 aspect-squares' src="/404-computer.jpg" alt="" />
+        <Link to="/">
+          <Button variant="link">
+            Ir al inicio
+          </Button>
+        </Link>
+      </div>
+    )
+  },
+
 })
 
 // Register the router instance for type safety

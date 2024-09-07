@@ -40,17 +40,20 @@ export type RegisterUserSchemaType = z.infer<typeof RegisterUserSchema>;
 export const RegisterCompanySchema = z.object({
   name: z.string().min(3, { message: 'El nombre no es valido!' }),
   razonSocial: z.string().min(3, { message: 'Ingresa tu Razon Social' }),
-  cuit: z
-    .string()
-    .min(8, { message: 'El CUIT no es valido' })
-    .max(8, { message: 'El CUIT no es valido' }),
+  cuit: z.number(),
   address: LocationSchema,
   activity: z
     .string()
     .min(6, { message: 'Tiene que tener al menos 6 caracteres!' }),
 });
 
+export const UpdateCompanySchema = RegisterCompanySchema.omit({
+  razonSocial: true,
+  cuit: true,
+});
+
 export type RegisterCompanySchemaType = z.infer<typeof RegisterCompanySchema>;
+export type UpdateCompanySchemaType = z.infer<typeof UpdateCompanySchema>;
 
 export const OtpSchema = z.object({
   email: z

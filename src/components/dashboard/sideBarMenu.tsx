@@ -43,7 +43,7 @@ export function SideBarMenu({ companyName }: Props) {
                         </div>
                     </CollapsibleTrigger>
                     <div className="absolute right-0 hover:multi-[transition-all;rotate-180]">
-                        <Link to="/configuration" search={{ tab: 'company' }}>
+                        <Link to="/client/configuration" search={{ tab: 'company' }} onMouseEnter={(e) => e.preventDefault()}>
                             <Settings />
                         </Link>
                     </div>
@@ -52,8 +52,9 @@ export function SideBarMenu({ companyName }: Props) {
                     <ul className="py-4 pt-6 pl-10 [&>li>*]:multi-[flex;gap-2;] space-y-5 text-secondary-background ">
                         <li>
                             <Link
+                                onMouseEnter={(e) => e.preventDefault()}
                                 onClick={onLinkClicked}
-                                to="/configuration"
+                                to="/client/configuration"
                                 search={{ tab: 'company' }}
                                 className="font-light text-default"
                                 activeProps={{
@@ -68,8 +69,9 @@ export function SideBarMenu({ companyName }: Props) {
                         </li>
                         <li>
                             <Link
+                                onMouseEnter={(e) => e.preventDefault()}
                                 onClick={onLinkClicked}
-                                to="/configuration"
+                                to="/client/configuration"
                                 search={{ tab: 'users' }}
                                 className="font-light text-base"
                                 activeProps={{

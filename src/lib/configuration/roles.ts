@@ -39,14 +39,10 @@ export async function newRole({
   }
 }
 
-export async function roleDelete({
-  roleId,
-}: {
-  roleId: string;
-}): Promise<Response<string>> {
+export async function roleDelete({ id }: { id: string }): Promise<void> {
   try {
-    const response: Response<string> = await axiosPrivate.delete(
-      `${configurationEndpoints.ROLE}/${roleId}`,
+    const { data: response } = await axiosPrivate.delete(
+      `${configurationEndpoints.ROLE}/${id}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -55,17 +51,15 @@ export async function roleDelete({
     );
     return response;
   } catch (error) {
-    let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
-
     if (isAxiosError(error)) {
       if (error.response?.data.statusCode === 400) {
-        errorMessage = 'El email o la contraseña son incorrectos';
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
       } else {
-        errorMessage = error.response?.data.message;
+        error.message = error.response?.data.message;
       }
     }
 
-    return { error: errorMessage };
+    throw error;
   }
 }
 

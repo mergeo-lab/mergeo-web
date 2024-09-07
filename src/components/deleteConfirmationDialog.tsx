@@ -2,45 +2,48 @@ import LoadingIndicator from "@/components/loadingIndicator";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/use-toast";
-import { roleDelete } from "@/lib/configuration/roles";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 
-type Props = {
-    roleId: string,
-    roleName: string,
-    roleDeleted: () => void
+
+type MutationFn<T> = (args: T) => Promise<void>;
+
+type Props<T> = {
+    id: string | null | undefined,
+    name: string | null | undefined,
+    title: string,
+    question: string,
+    triggerButton?: React.ReactNode,
+    onLoading: () => void
+    mutationFn: MutationFn<T>,
+    callback: () => void
 }
 
-export function DeleteRole({ roleId, roleName, roleDeleted }: Props) {
-    const mutation = useMutation({ mutationFn: roleDelete });
+export function DeleteConfirmationDialog<T>({ id, name, title, question, triggerButton, onLoading, mutationFn, callback }: Props<T>) {
+    const mutation = useMutation({ mutationFn: mutationFn });
     const [open, setOpen] = useState(false);
 
     async function deleteRole() {
-        const response = await mutation.mutateAsync({ id: roleId });
+        onLoading();
+        await mutation.mutateAsync({ id } as T);
 
-        if (response.error) {
+        if (mutation.isError) {
             toast({
                 variant: "destructive",
                 title: "Error",
-                description: response.error,
+                description: mutation.error.message,
             })
-        } else if (response.data) {
-            roleDeleted();
+
+        } else {
             setOpen(false);
+            callback();
         }
     }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger className="h-6">
-                <Button
-                    size="sm"
-                    variant="destructive"
-                    className="text-xs h-6"
-                >
-                    Borrar
-                </Button>
+                {triggerButton}
             </DialogTrigger>
 
             <DialogContent className="w-1/4">
@@ -50,10 +53,10 @@ export function DeleteRole({ roleId, roleName, roleDeleted }: Props) {
                     </div>
                 }
                 <DialogHeader className="px-6 py-3 border bottom-1">
-                    <DialogTitle>Borrar Rol</DialogTitle>
+                    <DialogTitle>{title}</DialogTitle>
                 </DialogHeader>
                 <div className="px-6 py-3">
-                    <p>Estas seguro que quieres borrar el rol <span className="font-bold">{roleName}</span>?</p>
+                    <p>{question} <span className="font-bold">{name}</span>?</p>
                     <div className="mt-4 w-full flex justify-end gap-2">
                         <DialogClose asChild>
                             <Button variant="secondary">Cancelar</Button>

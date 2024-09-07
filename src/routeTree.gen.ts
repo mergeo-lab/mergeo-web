@@ -26,10 +26,14 @@ import { Route as AuthenticatedDashboardLayoutNotificationsImport } from './rout
 import { Route as AuthenticatedDashboardLayoutInvoicesImport } from './routes/_authenticated/_dashboardLayout/invoices'
 import { Route as AuthenticatedDashboardLayoutFaqImport } from './routes/_authenticated/_dashboardLayout/faq'
 import { Route as AuthenticatedDashboardLayoutDashboardImport } from './routes/_authenticated/_dashboardLayout/dashboard'
+import { Route as AuthenticatedDashboardLayoutAccountTypeImport } from './routes/_authenticated/_dashboardLayout/_accountType'
 import { Route as AuthLayoutRegistrationValidateImport } from './routes/_authLayout/registration/validate'
 import { Route as AuthLayoutRegistrationUserImport } from './routes/_authLayout/registration/user'
 import { Route as AuthLayoutRegistrationCompanyImport } from './routes/_authLayout/registration/company'
-import { Route as AuthenticatedDashboardLayoutConfigurationIndexImport } from './routes/_authenticated/_dashboardLayout/configuration/index'
+import { Route as AuthenticatedDashboardLayoutAccountTypeProviderIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/index'
+import { Route as AuthenticatedDashboardLayoutAccountTypeClientIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/index'
+import { Route as AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/configuration/index'
+import { Route as AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/configuration/index'
 
 // Create Virtual Routes
 
@@ -133,6 +137,12 @@ const AuthenticatedDashboardLayoutDashboardRoute =
     getParentRoute: () => AuthenticatedDashboardLayoutRoute,
   } as any)
 
+const AuthenticatedDashboardLayoutAccountTypeRoute =
+  AuthenticatedDashboardLayoutAccountTypeImport.update({
+    id: '/_accountType',
+    getParentRoute: () => AuthenticatedDashboardLayoutRoute,
+  } as any)
+
 const AuthLayoutRegistrationValidateRoute =
   AuthLayoutRegistrationValidateImport.update({
     path: '/validate',
@@ -152,10 +162,30 @@ const AuthLayoutRegistrationCompanyRoute =
     getParentRoute: () => AuthLayoutRegistrationRoute,
   } as any)
 
-const AuthenticatedDashboardLayoutConfigurationIndexRoute =
-  AuthenticatedDashboardLayoutConfigurationIndexImport.update({
-    path: '/configuration/',
-    getParentRoute: () => AuthenticatedDashboardLayoutRoute,
+const AuthenticatedDashboardLayoutAccountTypeProviderIndexRoute =
+  AuthenticatedDashboardLayoutAccountTypeProviderIndexImport.update({
+    path: '/provider/',
+    getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
+  } as any)
+
+const AuthenticatedDashboardLayoutAccountTypeClientIndexRoute =
+  AuthenticatedDashboardLayoutAccountTypeClientIndexImport.update({
+    path: '/client/',
+    getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
+  } as any)
+
+const AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexRoute =
+  AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexImport.update(
+    {
+      path: '/provider/configuration/',
+      getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
+    } as any,
+  )
+
+const AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexRoute =
+  AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexImport.update({
+    path: '/client/configuration/',
+    getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
   } as any)
 
 // Populate the FileRoutesByPath interface
@@ -239,6 +269,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLayoutRegistrationValidateImport
       parentRoute: typeof AuthLayoutRegistrationImport
     }
+    '/_authenticated/_dashboardLayout/_accountType': {
+      id: '/_authenticated/_dashboardLayout/_accountType'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
+      parentRoute: typeof AuthenticatedDashboardLayoutImport
+    }
     '/_authenticated/_dashboardLayout/dashboard': {
       id: '/_authenticated/_dashboardLayout/dashboard'
       path: '/dashboard'
@@ -288,12 +325,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardLayoutIndexLazyImport
       parentRoute: typeof AuthenticatedDashboardLayoutImport
     }
-    '/_authenticated/_dashboardLayout/configuration/': {
-      id: '/_authenticated/_dashboardLayout/configuration/'
-      path: '/configuration'
-      fullPath: '/configuration'
-      preLoaderRoute: typeof AuthenticatedDashboardLayoutConfigurationIndexImport
-      parentRoute: typeof AuthenticatedDashboardLayoutImport
+    '/_authenticated/_dashboardLayout/_accountType/client/': {
+      id: '/_authenticated/_dashboardLayout/_accountType/client/'
+      path: '/client'
+      fullPath: '/client'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientIndexImport
+      parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
+    }
+    '/_authenticated/_dashboardLayout/_accountType/provider/': {
+      id: '/_authenticated/_dashboardLayout/_accountType/provider/'
+      path: '/provider'
+      fullPath: '/provider'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderIndexImport
+      parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
+    }
+    '/_authenticated/_dashboardLayout/_accountType/client/configuration/': {
+      id: '/_authenticated/_dashboardLayout/_accountType/client/configuration/'
+      path: '/client/configuration'
+      fullPath: '/client/configuration'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexImport
+      parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
+    }
+    '/_authenticated/_dashboardLayout/_accountType/provider/configuration/': {
+      id: '/_authenticated/_dashboardLayout/_accountType/provider/configuration/'
+      path: '/provider/configuration'
+      fullPath: '/provider/configuration'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexImport
+      parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
     }
   }
 }
@@ -315,13 +373,19 @@ export const routeTree = rootRoute.addChildren({
   AuthenticatedRoute: AuthenticatedRoute.addChildren({
     AuthenticatedDashboardLayoutRoute:
       AuthenticatedDashboardLayoutRoute.addChildren({
+        AuthenticatedDashboardLayoutAccountTypeRoute:
+          AuthenticatedDashboardLayoutAccountTypeRoute.addChildren({
+            AuthenticatedDashboardLayoutAccountTypeClientIndexRoute,
+            AuthenticatedDashboardLayoutAccountTypeProviderIndexRoute,
+            AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexRoute,
+            AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexRoute,
+          }),
         AuthenticatedDashboardLayoutDashboardRoute,
         AuthenticatedDashboardLayoutFaqRoute,
         AuthenticatedDashboardLayoutInvoicesRoute,
         AuthenticatedDashboardLayoutNotificationsRoute,
         AuthenticatedDashboardLayoutAboutLazyRoute,
         AuthenticatedDashboardLayoutIndexLazyRoute,
-        AuthenticatedDashboardLayoutConfigurationIndexRoute,
       }),
   }),
   FaqRoute,
@@ -384,13 +448,13 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "_authenticated/_dashboardLayout.tsx",
       "parent": "/_authenticated",
       "children": [
+        "/_authenticated/_dashboardLayout/_accountType",
         "/_authenticated/_dashboardLayout/dashboard",
         "/_authenticated/_dashboardLayout/faq",
         "/_authenticated/_dashboardLayout/invoices",
         "/_authenticated/_dashboardLayout/notifications",
         "/_authenticated/_dashboardLayout/about",
-        "/_authenticated/_dashboardLayout/",
-        "/_authenticated/_dashboardLayout/configuration/"
+        "/_authenticated/_dashboardLayout/"
       ]
     },
     "/_authLayout/registration/company": {
@@ -404,6 +468,16 @@ export const routeTree = rootRoute.addChildren({
     "/_authLayout/registration/validate": {
       "filePath": "_authLayout/registration/validate.tsx",
       "parent": "/_authLayout/registration"
+    },
+    "/_authenticated/_dashboardLayout/_accountType": {
+      "filePath": "_authenticated/_dashboardLayout/_accountType.tsx",
+      "parent": "/_authenticated/_dashboardLayout",
+      "children": [
+        "/_authenticated/_dashboardLayout/_accountType/client/",
+        "/_authenticated/_dashboardLayout/_accountType/provider/",
+        "/_authenticated/_dashboardLayout/_accountType/client/configuration/",
+        "/_authenticated/_dashboardLayout/_accountType/provider/configuration/"
+      ]
     },
     "/_authenticated/_dashboardLayout/dashboard": {
       "filePath": "_authenticated/_dashboardLayout/dashboard.tsx",
@@ -433,9 +507,21 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "_authenticated/_dashboardLayout/index.lazy.tsx",
       "parent": "/_authenticated/_dashboardLayout"
     },
-    "/_authenticated/_dashboardLayout/configuration/": {
-      "filePath": "_authenticated/_dashboardLayout/configuration/index.tsx",
-      "parent": "/_authenticated/_dashboardLayout"
+    "/_authenticated/_dashboardLayout/_accountType/client/": {
+      "filePath": "_authenticated/_dashboardLayout/_accountType/client/index.tsx",
+      "parent": "/_authenticated/_dashboardLayout/_accountType"
+    },
+    "/_authenticated/_dashboardLayout/_accountType/provider/": {
+      "filePath": "_authenticated/_dashboardLayout/_accountType/provider/index.tsx",
+      "parent": "/_authenticated/_dashboardLayout/_accountType"
+    },
+    "/_authenticated/_dashboardLayout/_accountType/client/configuration/": {
+      "filePath": "_authenticated/_dashboardLayout/_accountType/client/configuration/index.tsx",
+      "parent": "/_authenticated/_dashboardLayout/_accountType"
+    },
+    "/_authenticated/_dashboardLayout/_accountType/provider/configuration/": {
+      "filePath": "_authenticated/_dashboardLayout/_accountType/provider/configuration/index.tsx",
+      "parent": "/_authenticated/_dashboardLayout/_accountType"
     }
   }
 }

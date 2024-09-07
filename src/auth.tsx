@@ -2,7 +2,6 @@ import * as React from 'react'
 import { AuthContextType, UserType } from './types/user.type'
 import UseUserStore, { removeUser } from './store/user.store'
 import { createContext, useState } from 'react'
-import { logout } from '@/lib/auth';
 import { removeRegistrationStore } from '@/store/registration.store';
 import { removeCompany } from '@/store/company.store';
 

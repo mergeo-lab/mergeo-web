@@ -7,14 +7,17 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { GoogleLocationSchemaType } from "@/lib/common/schemas";
 import { newBranch } from "@/lib/configuration/branch";
-import { BranchesSchemaType, BranchesSchema } from "@/lib/configuration/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { MapPin, Store } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { LatLngLiteral } from "@/types";
 import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
+import { PickUpDaysSchemaType, PickUpSchema, PickUpSchemaType } from "@/lib/configuration/schemas/pickUp.schema";
+import DaysPicker from "@/components/daysPicker";
+import useDaysPickerStore from "@/store/daysPicker.store";
+import { newPickUpPoints } from "@/lib/configuration/pickUp";
 
 type Props = {
     title?: string,
@@ -22,23 +25,27 @@ type Props = {
     icon?: JSX.Element,
     companyId: string,
     triggerButton?: React.ReactNode
-    callback: (branch: BranchesSchemaType) => void
+    callback: () => void
+    onLoading: () => void
 }
 
-export function NewBranch(
+export function NewPickUpPoint(
     {
         title = 'Agregar una sucursal',
         subTitle = 'Aquí puedes agregar una nueva sucursal',
         icon = <Store />,
         companyId,
         triggerButton,
-        callback
+        callback,
+        onLoading,
     }: Props) {
     const [open, setOpen] = useState(false);
-    const mutation = useMutation({ mutationFn: newBranch })
+    const mutation = useMutation({ mutationFn: newPickUpPoints })
     const [markerPosition, setMarkerPosition] = useState<LatLngLiteral>({ lat: 0, lng: 0 });
-    const form = useForm<BranchesSchemaType>({
-        resolver: zodResolver(BranchesSchema),
+    const { daysAndTime, reset: resetDays } = useDaysPickerStore();
+
+    const form = useForm<PickUpSchemaType>({
+        resolver: zodResolver(PickUpSchema),
         disabled: mutation.isPending,
         defaultValues: {
             name: "",
@@ -51,10 +58,12 @@ export function NewBranch(
                     type: "Point",
                 },
             },
+            days: [],
         },
     })
 
     function addAddress(address: GoogleLocationSchemaType) {
+        console.log(" address", address)
         form.setValue('address', {
             id: address.id,
             polygon: {
@@ -68,33 +77,29 @@ export function NewBranch(
         form.trigger('address');
     }
 
-    async function onSubmit(fields: BranchesSchemaType) {
-        console.log(fields)
-        const response = await mutation.mutateAsync({ companyId: companyId, body: fields });
+    function setSelectedDays(days: PickUpDaysSchemaType[]) {
+        console.log("days", days)
+        form.setValue('days', days);
+    }
 
-        if (response.error) {
+    async function onSubmit(fields: PickUpSchemaType) {
+        onLoading();
+        console.log("fields", fields)
+        await mutation.mutateAsync({ companyId: companyId, body: fields });
+
+        if (mutation.isError) {
             toast({
                 variant: "destructive",
                 title: "Error",
-                description: response.error,
+                description: mutation.error.message,
             })
-        } else if (response.data) {
-            const { data } = response;
+        } else {
             form.reset();
+            resetDays();
             setOpen(false);
-            callback(response.data);
-
-            console.log(data)
+            callback();
         }
     }
-
-    useEffect(() => {
-        console.log(form.getValues())
-        console.log(form.formState.isValid)
-        console.log(form.formState.errors)
-
-
-    }, [form, form.formState])
 
     function handleCancel() {
         form.reset();
@@ -126,8 +131,8 @@ export function NewBranch(
                     {mutation.isPending && <OverlayLoadingIndicator />}
                     <div className="w-1/2">
                         <FormProvider {...form}>
-                            <div className="h-4/5 p-10">
-                                <form className='space-y-8'>
+                            <div className="h-4/5 p-10 py-3">
+                                <form className='space-y-6'>
                                     <FormField
                                         control={form.control}
                                         name="name"
@@ -149,6 +154,7 @@ export function NewBranch(
                                                 <FormLabel id='address'>Dirección</FormLabel>
                                                 <GoogleAutoComplete
                                                     selectedAddress={addAddress}
+                                                    disabled={false}
                                                     addressRemoved={() => {
                                                         setMarkerPosition({ lat: 0, lng: 0 });
                                                     }}
@@ -178,6 +184,20 @@ export function NewBranch(
                                                 <FormLabel id='phoneNumber'>Phone</FormLabel>
                                                 <FormControl>
                                                     <Input {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="days"
+                                        render={() => (
+                                            <FormItem>
+                                                <FormLabel id='days'>Dias y Horarios de Pick Up</FormLabel>
+                                                <FormControl>
+                                                    <DaysPicker callback={() => setSelectedDays(daysAndTime)} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>

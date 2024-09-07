@@ -1,26 +1,23 @@
 import { axiosPrivate } from '@/lib/api/axios';
 import { AxiosResponse, isAxiosError } from 'axios';
-import { Response } from '@/types';
 import {
-  BRANCH,
-  BRANCH_DELETE,
-  BRANCH_EDIT,
+  PICK_UP,
+  PICK_UP_DELETE,
+  PICK_UP_EDIT,
 } from '@/lib/configuration/endpoints';
-import {
-  BranchesSchemaResultsType,
-  BranchesSchemaType,
-} from './schemas/branches.schemas';
 
-export async function newBranch({
+import { PickUpSchemaType } from '@/lib/configuration/schemas/pickUp.schema';
+
+export async function newPickUpPoints({
   companyId,
   body,
 }: {
   companyId: string;
-  body: BranchesSchemaType;
-}): Promise<Response<BranchesSchemaType>> {
+  body: PickUpSchemaType;
+}): Promise<PickUpSchemaType> {
   try {
-    const response: Response<BranchesSchemaType> = await axiosPrivate.post(
-      BRANCH(companyId),
+    const { data: response }: AxiosResponse = await axiosPrivate.post(
+      PICK_UP(companyId),
       JSON.stringify({ ...body }),
       {
         headers: {
@@ -30,30 +27,28 @@ export async function newBranch({
     );
     return response;
   } catch (error) {
-    let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
-
     if (isAxiosError(error)) {
       if (error.response?.data.statusCode === 400) {
-        errorMessage = 'El email o la contraseña son incorrectos';
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
       } else {
-        errorMessage = error.response?.data.message;
+        error.message = error.response?.data.message;
       }
     }
 
-    return { error: errorMessage };
+    throw error;
   }
 }
 
-export async function editBranch({
+export async function editPickUpPoints({
   branchId,
   body,
 }: {
   branchId: string;
-  body: Partial<BranchesSchemaType>;
-}): Promise<Response<BranchesSchemaType>> {
+  body: Partial<PickUpSchemaType>;
+}): Promise<PickUpSchemaType> {
   try {
-    const response: Response<BranchesSchemaType> = await axiosPrivate.patch(
-      BRANCH_EDIT(branchId),
+    const { data: response }: AxiosResponse = await axiosPrivate.patch(
+      PICK_UP_EDIT(branchId),
       JSON.stringify({ ...body }),
       {
         headers: {
@@ -63,54 +58,50 @@ export async function editBranch({
     );
     return response;
   } catch (error) {
-    let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
-
     if (isAxiosError(error)) {
       if (error.response?.data.statusCode === 400) {
-        errorMessage = 'El email o la contraseña son incorrectos';
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
       } else {
-        errorMessage = error.response?.data.message;
+        error.message = error.response?.data.message;
       }
     }
 
-    return { error: errorMessage };
+    throw error;
   }
 }
 
-export async function getBranches({
+export async function getPickUpPoints({
   companyId,
 }: {
   companyId: string;
-}): Promise<Response<BranchesSchemaResultsType>> {
+}): Promise<PickUpSchemaType[]> {
   try {
-    const {
-      data: response,
-    }: AxiosResponse<Response<BranchesSchemaResultsType>> =
-      await axiosPrivate.get(BRANCH(companyId), {
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      PICK_UP(companyId),
+      {
         headers: {
           'Content-Type': 'application/json',
         },
-      });
+      }
+    );
     return response;
   } catch (error) {
-    let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
-
     if (isAxiosError(error)) {
       if (error.response?.data.statusCode === 400) {
-        errorMessage = 'El email o la contraseña son incorrectos';
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
       } else {
-        errorMessage = error.response?.data.message;
+        error.message = error.response?.data.message;
       }
     }
 
-    return { error: errorMessage };
+    throw error;
   }
 }
 
-export async function deletBranch({ id }: { id: string }): Promise<void> {
+export async function deletPickUpPoint({ id }: { id: string }): Promise<void> {
   try {
     const { data: response }: AxiosResponse = await axiosPrivate.delete(
-      BRANCH_DELETE(id),
+      PICK_UP_DELETE(id),
       {
         headers: {
           'Content-Type': 'application/json',

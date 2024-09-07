@@ -1,7 +1,7 @@
-import { DeleteRole } from "@/components/configuration/users/roles/deleteRole";
 import { NewRoleForm } from "@/components/configuration/users/roles/newRoleForm";
 import { RoleDetail } from "@/components/configuration/users/roles/roleDetail";
 import { RolePicker } from "@/components/configuration/users/roles/rolePicker";
+import { DeleteConfirmationDialog } from "@/components/deleteConfirmationDialog";
 import LoadingIndicator from "@/components/loadingIndicator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/components/ui/use-toast";
-import { roleUpdate } from "@/lib/configuration/roles";
+import { roleDelete, roleUpdate } from "@/lib/configuration/roles";
 import { PermissionSchemaType, RoleSchemaType } from "@/lib/configuration/schemas";
 import { getAllRoles, getPermissions } from "@/lib/configuration/users";
 import { cn } from "@/lib/utils";
@@ -272,11 +272,22 @@ export function ManageRoles() {
                                             >
                                                 Guardar cambios
                                             </Button>
-                                            <DeleteRole
-                                                roleId={viewRole.id}
-                                                roleName={viewRole.name}
-                                                roleDeleted={roleListChanged}
-                                            />
+                                            <DeleteConfirmationDialog
+                                                id={viewRole.id}
+                                                name={viewRole.name}
+                                                title="Borrar Rol"
+                                                question="¿Estas seguro que quieres borrar el rol"
+                                                triggerButton={<Button
+                                                    size="sm"
+                                                    variant="destructive"
+                                                    className="text-xs h-6"
+                                                >
+                                                    Borrar
+                                                </Button>}
+                                                mutationFn={roleDelete}
+                                                callback={roleListChanged} onLoading={function (): void {
+                                                    throw new Error("Function not implemented.");
+                                                }} />
                                         </div>
                                     }
                                 </div>

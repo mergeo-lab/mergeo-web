@@ -28,7 +28,7 @@ function RegisterCompany() {
     defaultValues: {
       name: "",
       razonSocial: "",
-      cuit: "",
+      cuit: undefined,
       address: {
         id: "",
         polygon: {

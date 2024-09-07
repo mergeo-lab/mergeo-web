@@ -8,18 +8,26 @@ import { MapPin, Search, X } from "lucide-react";
 import { getLocationInfo } from "@/lib/auth";
 import { GoogleLocationSchemaType } from "@/lib/common/schemas";
 import { toast } from "@/components/ui/use-toast";
-
+import { useEffect } from 'react'
+import { cn } from "@/lib/utils";
 
 type Props = {
     debounce?: number,
-    selectedAddress: (address: GoogleLocationSchemaType) => void
+    selectedAddress: (address: GoogleLocationSchemaType) => void,
+    defaultAddressName?: string,
+    disabled: boolean,
     addressRemoved?: () => void
 }
 
-export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRemoved }: Props) {
+export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRemoved, defaultAddressName, disabled }: Props) {
     const ref = useRef(null);
+    const inputRef = useRef<HTMLInputElement>(null);
     const [selected, setSelected] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        defaultAddressName && setValue(defaultAddressName);
+    }, [defaultAddressName]);
 
     const {
         placePredictions,
@@ -43,14 +51,19 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRem
     );
 
     useOnClickOutside(ref, () => {
+        if (disabled) return;
+        if (defaultAddressName) {
+            setSelected(true);
+            return;
+        }
         getPlacePredictions({ input: "" })
-        if (!selected) {
+        if (!selected && !disabled) {
             setValue("");
             setSelected(false);
         }
     });
 
-    const getAddressComponent = async (placeId: string) => {
+    const getAddressComponent = async (placeId: string, serachPlaceText: string) => {
         setIsLoading(true);
         const response = await getLocationInfo(placeId);
 
@@ -62,24 +75,38 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRem
                 description: response.error,
             })
         } else if (response.data) {
-            const data = response.data;
+            let data: GoogleLocationSchemaType = response.data;
+            data = {
+                ...data,
+                displayName: {
+                    text: serachPlaceText,
+                }
+            };
             selectedAddress(data);
             setIsLoading(false);
         }
     };
 
     const clearSearch = () => {
+        if (disabled) return;
         getPlacePredictions({ input: "" });
         setValue("");
         setSelected(false);
         addressRemoved && addressRemoved();
+        inputRef.current?.focus();
     };
 
     return (
         <div ref={ref} className="relative">
-            <div className="w-full h-10 relative">
+            <div className="w-full h-10 relative overflow-hidden">
                 <Input
+                    ref={inputRef}
+                    title={value}
+                    disabled={disabled}
                     value={value}
+                    className={cn("w-full text-ellipsis pr-12 select-none overflow-hidden", {
+                        'disabledStyle': disabled
+                    })}
                     onChange={(evt) => {
                         debounced(evt.target.value)
                         setValue(evt.target.value);
@@ -87,12 +114,13 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRem
                     }}
                 />
 
-                {isPlacePredictionsLoading || isLoading ? (
-                    <LoadingIndicator className="absolute right-4 top-2" />
-                )
-                    : <div className="absolute right-4 top-2">
+                {isPlacePredictionsLoading || isLoading
+                    ? (
+                        <LoadingIndicator className="absolute right-4 top-2" />
+                    )
+                    : !disabled && <div className="absolute right-4 top-2">
                         {
-                            selected
+                            selected || value
                                 ? <X className="cursor-pointer" onClick={clearSearch} />
                                 : <Search />}
                     </div>}
@@ -106,7 +134,7 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRem
                             setValue(item.description);
                             getPlacePredictions({ input: "" });
                             setSelected(true);
-                            getAddressComponent(item.place_id)
+                            getAddressComponent(item.place_id, item.description);
                         }}>
                             <MapPin size={20} />
                             <List.Item.Meta title={item.description} />

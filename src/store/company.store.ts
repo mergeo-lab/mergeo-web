@@ -1,4 +1,4 @@
-import { CompanySchemaType } from '@/lib/configuration/schemas/schema';
+import { CompanySchemaType } from '@/lib/configuration/schemas';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 

@@ -1,6 +1,6 @@
 export enum ACCOUNT {
-  CLIENT = 'CLIENT',
-  PROVIDER = 'PROVIDER',
+  client = 'CLIENT',
+  provider = 'PROVIDER',
 }
 
 export const colorClasses = [

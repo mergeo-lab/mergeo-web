@@ -89,3 +89,7 @@
     }
   }
 }
+
+.disabledStyle {
+  @apply text-base text-black border-none bg-accent;
+}
