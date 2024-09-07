@@ -9,7 +9,6 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Map, Marker } from '@vis.gl/react-google-maps';
 import UseCompanyStore from "@/store/company.store";
 import { MapPin, Pencil } from "lucide-react";
-import { BranchPicker } from "@/components/configuration/branches/branchPicker";
 import { LatLngLiteral } from "@/types";
 import { useEffect, useState } from "react";
 import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
@@ -18,7 +17,7 @@ import { GoogleLocationSchemaType } from "@/lib/common/schemas";
 import { useMutation } from "@tanstack/react-query";
 import { updateCompany } from "@/lib/configuration/company";
 import { toast } from "@/components/ui/use-toast";
-import { PickUpPicker } from "@/components/configuration/pickUp/branchPicker";
+import { PickUpPicker } from "@/components/configuration/pickUp/pickUpPicker";
 
 export function Company() {
     const { company, saveCompany } = UseCompanyStore();
@@ -75,8 +74,7 @@ export function Company() {
         }
     }
 
-    function branchActionEnded() {
-        console.log("branchActionEnded");
+    function actionEnded() {
         setIsEditing(false);
         setIsLoading(false);
     }
@@ -194,10 +192,10 @@ export function Company() {
                                                 <PickUpPicker
                                                     companyId={company?.id}
                                                     isEditing={isEditing}
-                                                    callback={branchActionEnded}
+                                                    callback={actionEnded}
                                                     onLoading={() => setIsLoading(true)}
                                                     notFoundMessage="No se encontraron Puntos de Pick Up"
-                                                    newBranch={{
+                                                    newEntry={{
                                                         title: "Agregar un Punto de Pick Up",
                                                         subTitle: "Aqui puedes areguegar un punto de Pick Up",
                                                     }}
@@ -216,13 +214,13 @@ export function Company() {
                                         <FormItem>
                                             <FormLabel id='branch'>Zonas de Entrega (click para {isEditing ? ' editar' : 'ver detalles'} )</FormLabel>
                                             <FormControl>
-                                                <BranchPicker
+                                                {/* <PickUpPicker
                                                     companyId={company?.id}
                                                     isEditing={isEditing}
-                                                    callback={branchActionEnded}
+                                                    callback={actionEnded}
                                                     onLoading={() => setIsLoading(true)}
                                                     notFoundMessage="No se encontraron Zonas de Entrega"
-                                                />
+                                                /> */}
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

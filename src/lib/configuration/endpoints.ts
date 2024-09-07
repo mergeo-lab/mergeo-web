@@ -6,7 +6,7 @@ export enum configurationEndpoints {
   ROLE = `${API_BASE}/role`,
   PERMISSIONS = `${API_BASE}/role/permissions`,
   BRANCH = `/branch`,
-  PICK_UP = `/pickup`,
+  PICK_UP = `/pickUpPoint`,
 }
 
 export const BRANCH = (companyId: string): string => {
@@ -25,10 +25,10 @@ export const PICK_UP = (companyId: string): string => {
   return `${configurationEndpoints.COMPANY}/${companyId}${configurationEndpoints.PICK_UP}`;
 };
 
-export const PICK_UP_DELETE = (branchId: string): string => {
-  return `${configurationEndpoints.COMPANY}${configurationEndpoints.PICK_UP}/${branchId}`;
+export const PICK_UP_DELETE = (pickUpPointId: string): string => {
+  return `${configurationEndpoints.COMPANY}${configurationEndpoints.PICK_UP}/${pickUpPointId}`;
 };
 
-export const PICK_UP_EDIT = (branchId: string): string => {
-  return `${configurationEndpoints.COMPANY}${configurationEndpoints.PICK_UP}/${branchId}`;
+export const PICK_UP_EDIT = (pickUpPointId: string): string => {
+  return `${configurationEndpoints.COMPANY}${configurationEndpoints.PICK_UP}/${pickUpPointId}`;
 };

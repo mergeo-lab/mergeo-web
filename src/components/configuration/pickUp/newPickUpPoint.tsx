@@ -6,7 +6,6 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { GoogleLocationSchemaType } from "@/lib/common/schemas";
-import { newBranch } from "@/lib/configuration/branch";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { MapPin, Store } from "lucide-react";
@@ -14,7 +13,7 @@ import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { LatLngLiteral } from "@/types";
 import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
-import { PickUpDaysSchemaType, PickUpSchema, PickUpSchemaType } from "@/lib/configuration/schemas/pickUp.schema";
+import { PickUpSchedulesSchemaType, PickUpSchema, PickUpSchemaType } from "@/lib/configuration/schemas/pickUp.schema";
 import DaysPicker from "@/components/daysPicker";
 import useDaysPickerStore from "@/store/daysPicker.store";
 import { newPickUpPoints } from "@/lib/configuration/pickUp";
@@ -58,7 +57,7 @@ export function NewPickUpPoint(
                     type: "Point",
                 },
             },
-            days: [],
+            schedules: [],
         },
     })
 
@@ -77,9 +76,9 @@ export function NewPickUpPoint(
         form.trigger('address');
     }
 
-    function setSelectedDays(days: PickUpDaysSchemaType[]) {
-        console.log("days", days)
-        form.setValue('days', days);
+    function setSelectedDays(schedules: PickUpSchedulesSchemaType[]) {
+        console.log("schedules", schedules)
+        form.setValue('schedules', schedules);
     }
 
     async function onSubmit(fields: PickUpSchemaType) {
@@ -192,10 +191,10 @@ export function NewPickUpPoint(
 
                                     <FormField
                                         control={form.control}
-                                        name="days"
+                                        name="schedules"
                                         render={() => (
                                             <FormItem>
-                                                <FormLabel id='days'>Dias y Horarios de Pick Up</FormLabel>
+                                                <FormLabel id='schedules'>Dias y Horarios de Pick Up</FormLabel>
                                                 <FormControl>
                                                     <DaysPicker callback={() => setSelectedDays(daysAndTime)} />
                                                 </FormControl>

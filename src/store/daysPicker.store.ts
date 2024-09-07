@@ -17,6 +17,8 @@ type DaysPickerState = {
   setStartHour: (hour: string) => void;
   setEndHour: (hour: string) => void;
   addDayAndTime: (newEntry: PickUpDaysSchemaType) => void;
+  addMultipleDaysAndTime: (newEntries: PickUpDaysSchemaType[]) => void;
+  removeAll: () => void;
   removeById: (id: string) => void;
   reset: () => void;
 };
@@ -42,6 +44,14 @@ const useDaysPickerStore = create<DaysPickerState>((set) => ({
   addDayAndTime: (newEntry: PickUpDaysSchemaType) =>
     set((state) => ({
       daysAndTime: [...state.daysAndTime, newEntry],
+    })),
+  addMultipleDaysAndTime: (newEntries: PickUpDaysSchemaType[]) =>
+    set((state) => ({
+      daysAndTime: [...state.daysAndTime, ...newEntries],
+    })),
+  removeAll: () =>
+    set(() => ({
+      daysAndTime: [],
     })),
   removeById: (id) =>
     set((state) => ({

@@ -74,7 +74,7 @@ export async function getPickUpPoints({
   companyId,
 }: {
   companyId: string;
-}): Promise<PickUpSchemaType[]> {
+}): Promise<{ data: PickUpSchemaType[] }> {
   try {
     const { data: response }: AxiosResponse = await axiosPrivate.get(
       PICK_UP(companyId),

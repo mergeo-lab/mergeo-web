@@ -6,7 +6,6 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { GoogleLocationSchemaType } from "@/lib/common/schemas";
-import { deletBranch, editBranch } from "@/lib/configuration/branch";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { MapPin, Store, Trash2 } from "lucide-react";
@@ -16,7 +15,10 @@ import { LatLngLiteral } from "@/types";
 import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
 import { DeleteConfirmationDialog } from "@/components/deleteConfirmationDialog";
 import { cn } from "@/lib/utils";
-import { PickUpSchema, PickUpSchemaType } from "@/lib/configuration/schemas/pickUp.schema";
+import { PickUpSchedulesSchemaType, PickUpSchema, PickUpSchemaType } from "@/lib/configuration/schemas/pickUp.schema";
+import DaysPicker from "@/components/daysPicker";
+import useDaysPickerStore from "@/store/daysPicker.store";
+import { deletPickUpPoint, editPickUpPoints } from "@/lib/configuration/pickUp";
 
 type Props = {
     title?: string,
@@ -45,8 +47,9 @@ export function EditPickUp(
     }: Props) {
     const [open, setOpen] = useState(false);
     const [isLoading, setIsloading] = useState(false);
-    const mutation = useMutation({ mutationFn: editBranch })
+    const mutation = useMutation({ mutationFn: editPickUpPoints })
     const [markerPosition, setMarkerPosition] = useState<LatLngLiteral>({ lat: 0, lng: 0 });
+    const { daysAndTime } = useDaysPickerStore();
 
     useEffect(() => {
         setOpen(isOpen);
@@ -83,7 +86,7 @@ export function EditPickUp(
                 type: "Point",
             },
         },
-        days: pickUpData?.days || [],
+        schedules: pickUpData?.schedules || [],
     };
 
     const form = useForm<PickUpSchemaType>({
@@ -106,6 +109,11 @@ export function EditPickUp(
         form.trigger('address');
     }
 
+    function setSelectedDays(schedules: PickUpSchedulesSchemaType[]) {
+        console.log("schedules", schedules)
+        form.setValue('schedules', schedules);
+    }
+
     function deleteComplete() {
         callback();
         setIsloading(false);
@@ -115,15 +123,15 @@ export function EditPickUp(
     async function onSubmit(fields: PickUpSchemaType) {
         onLoading();
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const response = await mutation.mutateAsync({ branchId: fields.id!, body: fields });
+        await mutation.mutateAsync({ branchId: fields.id!, body: fields });
 
-        if (response.error) {
+        if (mutation.isError) {
             toast({
                 variant: "destructive",
                 title: "Error",
-                description: response.error,
+                description: mutation.error.message,
             })
-        } else if (response.data) {
+        } else {
             form.reset();
             setOpen(false);
             callback();
@@ -226,12 +234,16 @@ export function EditPickUp(
                                     />
                                     <FormField
                                         control={form.control}
-                                        name="days"
+                                        name="schedules"
                                         render={() => (
                                             <FormItem>
-                                                <FormLabel id='days'>Dias y Horarios de recogida</FormLabel>
+                                                <FormLabel id='schedules'>Dias y Horarios de recogida</FormLabel>
                                                 <FormControl>
-
+                                                    <DaysPicker
+                                                        isEditing={isEditing}
+                                                        defaultData={pickUpData?.schedules}
+                                                        callback={() => setSelectedDays(daysAndTime)}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -287,7 +299,7 @@ export function EditPickUp(
                                         setIsloading(true);
                                         onLoading();
                                     }}
-                                    mutationFn={deletBranch}
+                                    mutationFn={deletPickUpPoint}
                                     callback={deleteComplete}
                                 />
                                 <div className="flex gap-2">

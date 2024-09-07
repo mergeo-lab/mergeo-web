@@ -1,12 +1,12 @@
 
-import { EditBranch } from "@/components/configuration/branches/editBranch"
+import { EditPickUp } from "@/components/configuration/pickUp/editPickUpPoint"
 import { NewPickUpPoint } from "@/components/configuration/pickUp/newPickUpPoint"
 import LoadingIndicator from "@/components/loadingIndicator"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { getBranches } from "@/lib/configuration/branch"
-import { BranchesSchemaType } from "@/lib/configuration/schemas"
+import { getPickUpPoints } from "@/lib/configuration/pickUp"
+import { PickUpSchemaType } from "@/lib/configuration/schemas/pickUp.schema"
 import { useQuery } from "@tanstack/react-query"
 import { Plus } from "lucide-react"
 import { useState } from "react"
@@ -16,7 +16,7 @@ type Props = {
     isEditing: boolean
     className?: string,
     notFoundMessage?: string,
-    newBranch?: {
+    newEntry?: {
         title?: string,
         subTitle?: string,
         icon?: JSX.Element,
@@ -25,22 +25,22 @@ type Props = {
     callback?: () => void,
 }
 
-type EditBranch = {
-    branchData: BranchesSchemaType | null,
+type EditEntry = {
+    entryData: PickUpSchemaType | null,
     isOpen: boolean,
 }
 
-export function PickUpPicker({ className, companyId, isEditing, notFoundMessage, newBranch, onLoading, callback }: Props) {
-    const [editBranch, setEditBranch] = useState<EditBranch>({ branchData: null, isOpen: false });
+export function PickUpPicker({ className, companyId, isEditing, notFoundMessage, newEntry, onLoading, callback }: Props) {
+    const [editEntry, setEditEntry] = useState<EditEntry>({ entryData: null, isOpen: false });
 
-    const { data: branchesResult, isLoading, isError, refetch } = useQuery({
+    const { data: pickUpResult, isLoading, isError, refetch } = useQuery({
         queryKey: ['branches', companyId],
-        queryFn: () => companyId ? getBranches({ companyId }) : Promise.reject(new Error('Company ID is undefined')),
+        queryFn: () => companyId ? getPickUpPoints({ companyId }) : Promise.reject(new Error('Company ID is undefined')),
     })
-    const branches = branchesResult?.data?.company?.branches;
-
-    const handleEditPickUp = async (branch: BranchesSchemaType) => {
-        setEditBranch({ branchData: branch, isOpen: true });
+    const pickUpPoints = pickUpResult?.data;
+    console.log("pickUpPoints", pickUpPoints)
+    const handleEditPickUp = async (pickUp: PickUpSchemaType) => {
+        setEditEntry({ entryData: pickUp, isOpen: true });
     }
 
     if (isError) {
@@ -58,7 +58,7 @@ export function PickUpPicker({ className, companyId, isEditing, notFoundMessage,
     }
 
     async function pickUpEdited() {
-        setEditBranch({ branchData: null, isOpen: false })
+        setEditEntry({ entryData: null, isOpen: false })
         await refetch();
         callback && callback();
     }
@@ -72,16 +72,16 @@ export function PickUpPicker({ className, companyId, isEditing, notFoundMessage,
                     :
                     <div className="flex flex-wrap gap-1 items-center">
                         {
-                            branches && branches.length > 0 ?
-                                branches.map((branch: BranchesSchemaType) => (
+                            pickUpPoints && pickUpPoints.length > 0 ?
+                                pickUpPoints.map((pickUp: PickUpSchemaType) => (
                                     <Badge
-                                        key={branch.id}
+                                        key={pickUp.id}
                                         variant="outline"
-                                        onClick={() => branch.id && handleEditPickUp(branch)}
+                                        onClick={() => pickUp.id && handleEditPickUp(pickUp)}
                                         className="hover:bg-slate-200 cursor-pointer"
                                     >
                                         <span className="flex gap-2 items-center text-sm">
-                                            {branch.name}
+                                            {pickUp.name}
                                         </span>
                                     </Badge>
                                 ))
@@ -94,9 +94,9 @@ export function PickUpPicker({ className, companyId, isEditing, notFoundMessage,
                         }
                         {isEditing && companyId &&
                             <NewPickUpPoint
-                                title={newBranch?.title}
-                                subTitle={newBranch?.subTitle}
-                                icon={newBranch?.icon}
+                                title={newEntry?.title}
+                                subTitle={newEntry?.subTitle}
+                                icon={newEntry?.icon}
                                 companyId={companyId}
                                 triggerButton={
                                     <Button className="w-8 h-8 absolute right-1 -top-1 flex justify-center items-center p-0">
@@ -112,15 +112,15 @@ export function PickUpPicker({ className, companyId, isEditing, notFoundMessage,
 
             </ScrollArea >
             {companyId &&
-                <EditBranch
+                <EditPickUp
                     title={isEditing ? "Editar sucursal" : 'Ver sucursal'}
                     subTitle={`Aquí puedes ${!isEditing ? 'ver los detalles' : 'editar los datos'} de la sucursal`}
                     companyId={companyId}
-                    isOpen={editBranch.isOpen}
+                    isOpen={editEntry.isOpen}
                     isEditing={isEditing}
-                    branchData={editBranch.branchData && editBranch.branchData}
+                    pickUpData={editEntry.entryData && editEntry.entryData}
                     callback={pickUpEdited}
-                    onClose={() => setEditBranch({ branchData: null, isOpen: false })}
+                    onClose={() => setEditEntry({ entryData: null, isOpen: false })}
                     onLoading={() => onLoading && onLoading()}
                 />
             }
