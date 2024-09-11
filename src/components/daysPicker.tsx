@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react";
 import { PickUpSchedulesSchemaType } from '../lib/configuration/schemas/pickUp.schema'
 
 type Props = {
-    defaultData: PickUpSchedulesSchemaType[] | undefined,
+    defaultData?: PickUpSchedulesSchemaType[] | undefined,
     isEditing: boolean,
     callback: () => void,
 }
@@ -17,7 +17,6 @@ export default function DaysPicker({ defaultData, isEditing, callback }: Props) 
     const prevDaysAndTime = useRef(daysAndTime);
 
     function handelRemoveDay(id: string) {
-        console.log(id);
         removeById(id);
     }
 
@@ -57,7 +56,7 @@ export default function DaysPicker({ defaultData, isEditing, callback }: Props) 
                                     }
                                 </div>
                             ))
-                            : <div className="text-md border p-1 m-1 text-center">No has agregado ningun dia ni horario</div>
+                            : <div className="text-md border p-1 m-1 text-center">No has agregado ningun dia</div>
                     }
                 </div>
             </div>

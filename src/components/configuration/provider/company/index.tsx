@@ -18,6 +18,8 @@ import { useMutation } from "@tanstack/react-query";
 import { updateCompany } from "@/lib/configuration/company";
 import { toast } from "@/components/ui/use-toast";
 import { PickUpPicker } from "@/components/configuration/pickUp/pickUpPicker";
+import { DropZoneSheet } from "../dropZone/dropZoneSheet";
+import { DropZonePicker } from "@/components/configuration/provider/dropZone/dropZonePicker";
 
 export function Company() {
     const { company, saveCompany } = UseCompanyStore();
@@ -212,15 +214,19 @@ export function Company() {
                                     name="branch"
                                     render={() => (
                                         <FormItem>
-                                            <FormLabel id='branch'>Zonas de Entrega (click para {isEditing ? ' editar' : 'ver detalles'} )</FormLabel>
                                             <FormControl>
-                                                {/* <PickUpPicker
+                                                <DropZonePicker
                                                     companyId={company?.id}
                                                     isEditing={isEditing}
                                                     callback={actionEnded}
                                                     onLoading={() => setIsLoading(true)}
-                                                    notFoundMessage="No se encontraron Zonas de Entrega"
-                                                /> */}
+                                                    notFoundMessage="No se encontraron zonas de entrega"
+                                                    newEntry={{
+                                                        title: "agregar una zona de entrega",
+                                                        subTitle: "Aqui puedes areguegar una zona de entrega",
+                                                        icon: <MapPin size={20} />
+                                                    }}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

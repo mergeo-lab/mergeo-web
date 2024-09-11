@@ -20,6 +20,15 @@ export const LocationSchema = z.object({
   name: z.string(),
 });
 
+export const LocationPolygonSchema = z.object({
+  id: z.string(),
+  polygon: z.object({
+    type: z.string(),
+    coordinates: z.array(z.tuple([z.number(), z.number()])),
+  }),
+  name: z.string(),
+});
+
 export const LocationSchemaResponse = z.object({ data: LocationSchema });
 export type LocationSchemaResponseType = z.infer<typeof LocationSchemaResponse>;
 export type LocationSchemaType = z.infer<typeof LocationSchema>;

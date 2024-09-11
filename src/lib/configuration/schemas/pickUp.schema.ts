@@ -1,7 +1,7 @@
 import * as z from 'zod';
 import { BranchesSchema } from '@/lib/configuration/schemas/branches.schemas';
 
-const PickUpSchedulesSchema = z.object({
+export const PickUpSchedulesSchema = z.object({
   id: z.string(),
   day: z.string().min(1, { message: 'Este campo es obligatorio' }),
   startHour: z.string().optional(),
@@ -9,7 +9,7 @@ const PickUpSchedulesSchema = z.object({
 });
 
 export const PickUpSchema = BranchesSchema.extend({
-  schedules: z.array(PickUpSchedulesSchema),
+  schedules: PickUpSchedulesSchema.array(),
 });
 
 export type PickUpSchemaType = z.infer<typeof PickUpSchema>;

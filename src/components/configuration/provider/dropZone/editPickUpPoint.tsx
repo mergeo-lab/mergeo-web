@@ -1,68 +1,101 @@
 import { GoogleAutoComplete } from "@/components/googleAutoComplete";
 import { Map, Marker } from '@vis.gl/react-google-maps';
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { GoogleLocationSchemaType } from "@/lib/common/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { MapPin, Store } from "lucide-react";
-import { useState } from "react";
+import { MapPin, Store, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { LatLngLiteral } from "@/types";
 import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
+import { DeleteConfirmationDialog } from "@/components/deleteConfirmationDialog";
+import { cn } from "@/lib/utils";
 import { PickUpSchedulesSchemaType, PickUpSchema, PickUpSchemaType } from "@/lib/configuration/schemas/pickUp.schema";
 import DaysPicker from "@/components/daysPicker";
 import useDaysPickerStore from "@/store/daysPicker.store";
-import { newPickUpPoints } from "@/lib/configuration/pickUp";
+import { deletPickUpPoint, editPickUpPoints } from "@/lib/configuration/pickUp";
 
 type Props = {
     title?: string,
     subTitle?: string,
     icon?: JSX.Element,
     companyId: string,
-    triggerButton?: React.ReactNode
-    callback: () => void
+    isEditing: boolean,
+    isOpen: boolean,
+    pickUpData: PickUpSchemaType | null,
     onLoading: () => void
+    callback: () => void
+    onClose: () => void
 }
 
-export function NewPickUpPoint(
+export function EditPickUp(
     {
-        title = 'Agregar una sucursal',
-        subTitle = 'Aquí puedes agregar una nueva sucursal',
+        title = 'Detalles de la sucursal',
+        subTitle = 'Aquí puedes ver los detalles de la sucursal',
         icon = <Store />,
-        companyId,
-        triggerButton,
-        callback,
+        isEditing,
+        isOpen,
+        pickUpData,
         onLoading,
+        callback,
+        onClose,
     }: Props) {
     const [open, setOpen] = useState(false);
-    const mutation = useMutation({ mutationFn: newPickUpPoints })
+    const [isLoading, setIsloading] = useState(false);
+    const mutation = useMutation({ mutationFn: editPickUpPoints })
     const [markerPosition, setMarkerPosition] = useState<LatLngLiteral>({ lat: 0, lng: 0 });
-    const { daysAndTime, reset: resetDays } = useDaysPickerStore();
+    const { daysAndTime } = useDaysPickerStore();
+
+    useEffect(() => {
+        setOpen(isOpen);
+    }, [isOpen]);
+
+    useEffect(() => {
+        setIsloading(mutation.isPending);
+    }, [mutation.isPending]);
+
+    useEffect(() => {
+        if (pickUpData) {
+            form.reset(pickUpData);
+            addAddress({
+                id: pickUpData.address.id,
+                displayName: { text: pickUpData.address.name },
+                location: {
+                    latitude: pickUpData.address.polygon.coordinates[1],
+                    longitude: pickUpData.address.polygon.coordinates[0]
+                },
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pickUpData]);
+
+    const defaultValues: PickUpSchemaType = {
+        name: pickUpData?.name || "",
+        email: pickUpData?.email || "",
+        phoneNumber: pickUpData?.phoneNumber || "",
+        address: {
+            id: pickUpData?.address.id || "",
+            name: pickUpData?.address.name || "",
+            polygon: {
+                coordinates: pickUpData?.address.polygon.coordinates || [0, 0],
+                type: "Point",
+            },
+        },
+        schedules: pickUpData?.schedules || [],
+    };
 
     const form = useForm<PickUpSchemaType>({
         resolver: zodResolver(PickUpSchema),
         disabled: mutation.isPending,
-        defaultValues: {
-            name: "",
-            email: "",
-            phoneNumber: "",
-            address: {
-                name: "",
-                polygon: {
-                    coordinates: [],
-                    type: "Point",
-                },
-            },
-            schedules: [],
-        },
+        defaultValues: defaultValues,
     })
 
     function addAddress(address: GoogleLocationSchemaType) {
-        console.log(" address", address)
         form.setValue('address', {
             id: address.id,
             polygon: {
@@ -81,10 +114,16 @@ export function NewPickUpPoint(
         form.setValue('schedules', schedules);
     }
 
+    function deleteComplete() {
+        callback();
+        setIsloading(false);
+        setOpen(false);
+    }
+
     async function onSubmit(fields: PickUpSchemaType) {
         onLoading();
-        console.log("fields", fields)
-        await mutation.mutateAsync({ companyId: companyId, body: fields });
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        await mutation.mutateAsync({ branchId: fields.id!, body: fields });
 
         if (mutation.isError) {
             toast({
@@ -94,7 +133,6 @@ export function NewPickUpPoint(
             })
         } else {
             form.reset();
-            resetDays();
             setOpen(false);
             callback();
         }
@@ -109,13 +147,12 @@ export function NewPickUpPoint(
             if (!isOpen) {
                 setOpen(false);
                 handleCancel();
+                onClose();
+
             } else {
                 setOpen(true);
             }
         }}>
-            <DialogTrigger className="w-full flex mt-2" asChild>
-                {triggerButton}
-            </DialogTrigger>
             <DialogContent className="w-full">
                 <DialogHeader className="px-6 py-3 border bottom-1">
                     <DialogTitle className="flex items-center gap-2">
@@ -127,11 +164,11 @@ export function NewPickUpPoint(
                     </DialogDescription>
                 </DialogHeader>
                 <div className="px-6 py-2 flex gap-2">
-                    {mutation.isPending && <OverlayLoadingIndicator />}
+                    {isLoading && <OverlayLoadingIndicator />}
                     <div className="w-1/2">
                         <FormProvider {...form}>
-                            <div className="h-4/5 p-10 py-3">
-                                <form className='space-y-6'>
+                            <div className="h-4/5 p-10">
+                                <form className='space-y-8'>
                                     <FormField
                                         control={form.control}
                                         name="name"
@@ -139,7 +176,9 @@ export function NewPickUpPoint(
                                             <FormItem>
                                                 <FormLabel id='name'>Nombre</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} />
+                                                    <Input {...field} disabled={!isEditing} className={cn("", {
+                                                        'disabledStyle': !isEditing
+                                                    })} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -152,8 +191,9 @@ export function NewPickUpPoint(
                                             <FormItem>
                                                 <FormLabel id='address'>Dirección</FormLabel>
                                                 <GoogleAutoComplete
+                                                    disabled={!isEditing}
+                                                    defaultAddressName={pickUpData?.address.name}
                                                     selectedAddress={addAddress}
-                                                    disabled={false}
                                                     addressRemoved={() => {
                                                         setMarkerPosition({ lat: 0, lng: 0 });
                                                     }}
@@ -169,7 +209,9 @@ export function NewPickUpPoint(
                                             <FormItem>
                                                 <FormLabel id='email'>Email</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} />
+                                                    <Input {...field} disabled={!isEditing} className={cn("", {
+                                                        'disabledStyle': !isEditing
+                                                    })} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -182,29 +224,32 @@ export function NewPickUpPoint(
                                             <FormItem>
                                                 <FormLabel id='phoneNumber'>Phone</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} />
+                                                    <Input {...field} disabled={!isEditing} className={cn("", {
+                                                        'disabledStyle': !isEditing
+                                                    })} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
                                     />
-
                                     <FormField
                                         control={form.control}
                                         name="schedules"
                                         render={() => (
                                             <FormItem>
-                                                <FormLabel id='schedules'>Dias y Horarios</FormLabel>
+                                                <FormLabel id='schedules'>Dias y Horarios de recogida</FormLabel>
                                                 <FormControl>
-                                                    <DaysPicker isEditing={true} callback={() => setSelectedDays(daysAndTime)} />
+                                                    <DaysPicker
+                                                        isEditing={isEditing}
+                                                        defaultData={pickUpData?.schedules}
+                                                        callback={() => setSelectedDays(daysAndTime)}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
                                     />
-
                                 </form>
-
                             </div>
 
                         </FormProvider>
@@ -229,15 +274,48 @@ export function NewPickUpPoint(
                     </div>
                 </div>
 
-                <DialogFooter className="w-full border top-1 px-6 py-3">
-                    <DialogClose className="w-40">
-                        <Button variant="secondary" className="w-full" onClick={handleCancel}>Cancelar</Button>
-                    </DialogClose>
-                    <DialogClose className="w-40" disabled={!form.formState.isValid}>
-                        <Button disabled={!form.formState.isValid} onClick={form.handleSubmit(onSubmit)} type="submit" className="w-full">Guardar</Button>
-                    </DialogClose>
+                <DialogFooter className="w-full border px-6 py-3">
+                    {!isEditing
+                        ?
+                        <DialogClose className="w-40">
+                            <Button variant="secondary" className="w-full">
+                                Cerrar
+                            </Button>
+                        </DialogClose>
+                        : (
+                            <div className="w-full flex justify-between gap-2">
+                                <DeleteConfirmationDialog
+                                    id={pickUpData && pickUpData?.id}
+                                    name={pickUpData && pickUpData?.name}
+                                    title="Borrar sucursal"
+                                    question="¿Seguro que quieres borrar esta sucursal"
+                                    triggerButton={
+                                        <Button variant="destructive" className="w-40 flex gap-2">
+                                            <Trash2 size={15} />
+                                            Borrar
+                                        </Button>
+                                    }
+                                    onLoading={() => {
+                                        setIsloading(true);
+                                        onLoading();
+                                    }}
+                                    mutationFn={deletPickUpPoint}
+                                    callback={deleteComplete}
+                                />
+                                <div className="flex gap-2">
+                                    <DialogClose className="w-40">
+                                        <Button variant="secondary" className="w-full">Cancelar</Button>
+                                    </DialogClose>
+                                    <DialogClose className="w-40" disabled={!form.formState.isValid}>
+                                        <Button disabled={!form.formState.isValid} onClick={form.handleSubmit(onSubmit)} type="submit" className="w-full">Guardar</Button>
+                                    </DialogClose>
+                                </div>
+                            </div>
+                        )
+                    }
                 </DialogFooter>
             </DialogContent>
         </Dialog >
+
     )
 }
