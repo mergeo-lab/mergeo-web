@@ -1,36 +1,37 @@
 import { useState } from 'react';
-import { UndoRedoControl } from '@/components/map/undo-redo-control';
-import { useDrawingManager } from '@/components/map/use-drawing-manager';
 import { Button } from '@/components/ui/button';
 import { Hand, Pentagon } from 'lucide-react';
+import { useDrawingManager } from '@/components/map/use-drawing-manager';
 
 type CustomDrawingControlsProps = {
-    onPolygonComplete: (coordinates: google.maps.LatLngLiteral[]) => void; // Prop to handle the drawn zone
+    onPolygonComplete: (coordinates: google.maps.LatLngLiteral[]) => void;
 };
 
 const CustomDrawingControls = ({ onPolygonComplete }: CustomDrawingControlsProps) => {
-    const [polygonDrawn, setPolygonDrawn] = useState(false); // State to track if polygon is drawn
+    const [polygonDrawn, setPolygonDrawn] = useState(false);
 
     const { drawingManager, startDrawing } = useDrawingManager(null, (event) => {
         if (event.type === 'polygon') {
             const polygon = event.overlay as google.maps.Polygon;
             const path = polygon.getPath();
-            const coordinates: google.maps.LatLngLiteral[] = [];
 
-            // Extract the coordinates from the polygon's path
-            for (let i = 0; i < path.getLength(); i++) {
-                const latLng = path.getAt(i);
-                coordinates.push({ lat: latLng.lat(), lng: latLng.lng() });
-            }
+            const updatePolygonCoordinates = () => {
+                const coordinates: google.maps.LatLngLiteral[] = [];
+                for (let i = 0; i < path.getLength(); i++) {
+                    const latLng = path.getAt(i);
+                    coordinates.push({ lat: latLng.lat(), lng: latLng.lng() });
+                }
+                onPolygonComplete(coordinates);
+            };
 
-            // Pass the coordinates to the parent component
-            onPolygonComplete(coordinates);
-
-            // Set polygon drawn state to true
+            // Extract initial coordinates
+            updatePolygonCoordinates();
             setPolygonDrawn(true);
-
-            // Enable editing on the drawn polygon
             polygon.setEditable(true);
+
+            // Listen for changes to the polygon
+            google.maps.event.addListener(path, 'set_at', updatePolygonCoordinates);
+            google.maps.event.addListener(path, 'insert_at', updatePolygonCoordinates);
         }
     });
 
@@ -40,20 +41,18 @@ const CustomDrawingControls = ({ onPolygonComplete }: CustomDrawingControlsProps
                 <Button
                     variant="ghost"
                     onClick={() => startDrawing(google.maps.drawing.OverlayType.POLYGON)}
-                    disabled={polygonDrawn} // Disable if polygon is drawn
+                    disabled={polygonDrawn}
                 >
                     <Pentagon />
                 </Button>
                 <Button
                     variant="ghost"
                     onClick={() => startDrawing(null)}
-                    disabled={polygonDrawn} // Disable if polygon is drawn
+                    disabled={!polygonDrawn}
                 >
                     <Hand />
                 </Button>
-
             </div>
-            <UndoRedoControl drawingManager={drawingManager} />
         </div>
     );
 };

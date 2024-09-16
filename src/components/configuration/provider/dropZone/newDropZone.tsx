@@ -48,7 +48,7 @@ export function NewDropZone(
                     </DialogDescription>
                 </DialogHeader>
                 <div className="w-full h-[650px] overflow-hidden p-0 m-0">
-                    <DrawingMap />
+                    <DrawingMap zone={zone} />
                 </div>
 
                 <DialogFooter className="w-full border top-1 px-6 py-3">

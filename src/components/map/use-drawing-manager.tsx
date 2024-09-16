@@ -14,8 +14,8 @@ export function useDrawingManager(
 
         const newDrawingManager = new drawing.DrawingManager({
             map,
-            drawingMode: null, // Disable default drawing mode
-            drawingControl: false, // Disable default drawing control UI
+            drawingMode: null,
+            drawingControl: false,
             circleOptions: {
                 editable: true,
             },
@@ -26,10 +26,8 @@ export function useDrawingManager(
 
         setDrawingManager(newDrawingManager);
 
-        // Add an event listener for `overlaycomplete` to handle drawing completion
         const listener = google.maps.event.addListener(newDrawingManager, 'overlaycomplete', (event: google.maps.drawing.OverlayCompleteEvent) => {
             onOverlayComplete(event);
-            // Stop drawing once the path is closed
             newDrawingManager.setDrawingMode(null);
         });
 

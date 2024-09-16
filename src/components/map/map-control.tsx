@@ -1,18 +1,14 @@
-
-import { AutocompleteCustom } from './autoComplete';
-import CustomDrawingControls from '@/components/map/custom-drowaing-controls';
-import useZoneStore from '@/store/zone.store';
 import { ControlPosition, MapControl } from '@vis.gl/react-google-maps';
+import { AutocompleteCustom } from './autoComplete';
+import useZoneStore from '@/store/zone.store';
+import CustomDrawingControls from '@/components/map/custom-drowaing-controls';
 
 type CustomAutocompleteControlProps = {
     controlPosition: ControlPosition;
     onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void;
 };
 
-export const CustomMapControl = ({
-    controlPosition,
-    onPlaceSelect
-}: CustomAutocompleteControlProps) => {
+export const CustomMapControl = ({ controlPosition, onPlaceSelect }: CustomAutocompleteControlProps) => {
     const { setZone } = useZoneStore();
 
     const handlePolygonComplete = (coordinates: google.maps.LatLngLiteral[]) => {
@@ -28,7 +24,6 @@ export const CustomMapControl = ({
                 </div>
             </MapControl>
             <CustomDrawingControls onPolygonComplete={handlePolygonComplete} />
-
         </>
     );
 };
