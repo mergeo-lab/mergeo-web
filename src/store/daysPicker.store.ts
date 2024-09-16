@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { PickUpDaysSchemaType } from '@/lib/configuration/schemas/pickUp.schema';
+import { PickUpSchedulesSchemaType } from '@/lib/configuration/schemas/pickUp.schema';
 
 interface Day {
   name: string;
@@ -12,12 +12,12 @@ type DaysPickerState = {
   day: string;
   startHour: string;
   endHour: string;
-  daysAndTime: PickUpDaysSchemaType[];
+  daysAndTime: PickUpSchedulesSchemaType[];
   setDay: (day: string) => void;
   setStartHour: (hour: string) => void;
   setEndHour: (hour: string) => void;
-  addDayAndTime: (newEntry: PickUpDaysSchemaType) => void;
-  addMultipleDaysAndTime: (newEntries: PickUpDaysSchemaType[]) => void;
+  addDayAndTime: (newEntry: PickUpSchedulesSchemaType) => void;
+  addMultipleDaysAndTime: (newEntries: PickUpSchedulesSchemaType[]) => void;
   removeAll: () => void;
   removeById: (id: string) => void;
   reset: () => void;
@@ -41,11 +41,11 @@ const useDaysPickerStore = create<DaysPickerState>((set) => ({
   setDay: (day: string) => set({ day }),
   setStartHour: (hour: string) => set({ startHour: hour }),
   setEndHour: (hour: string) => set({ endHour: hour }),
-  addDayAndTime: (newEntry: PickUpDaysSchemaType) =>
+  addDayAndTime: (newEntry: PickUpSchedulesSchemaType) =>
     set((state) => ({
       daysAndTime: [...state.daysAndTime, newEntry],
     })),
-  addMultipleDaysAndTime: (newEntries: PickUpDaysSchemaType[]) =>
+  addMultipleDaysAndTime: (newEntries: PickUpSchedulesSchemaType[]) =>
     set((state) => ({
       daysAndTime: [...state.daysAndTime, ...newEntries],
     })),

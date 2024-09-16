@@ -9,11 +9,13 @@ import { newDropZone } from "@/lib/configuration/dropZone";
 import { DropZoneSchema, DropZoneSchemaType } from "@/lib/configuration/schemas/dropZone.schemas";
 import { PickUpSchedulesSchemaType } from "@/lib/configuration/schemas/pickUp.schema";
 import useDaysPickerStore from "@/store/daysPicker.store";
+import useZoneStore from "@/store/zone.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { UserRoundPlus } from "lucide-react";
+import { Map, UserRoundPlus } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { MapPinned } from "lucide-react";
 
 type Props = {
     title?: string,
@@ -37,8 +39,10 @@ export function DropZoneSheet({
     triggerButton }: Props) {
     const mutation = useMutation({ mutationFn: newDropZone })
     const [open, setOpen] = useState(false);
+    const [selectedZone, setSelectedZone] = useState<google.maps.LatLngLiteral[]>([]);
     const [canSubmit, setCanSubmit] = useState(false);
     const { daysAndTime } = useDaysPickerStore();
+    const { removeZone } = useZoneStore();
 
     const form = useForm<DropZoneSchemaType>({
         resolver: zodResolver(DropZoneSchema),
@@ -46,13 +50,7 @@ export function DropZoneSheet({
         defaultValues: {
             name: "",
             schedules: [],
-            address: {
-                name: "",
-                polygon: {
-                    coordinates: [],
-                    type: "Point",
-                },
-            },
+            zones: [],
         },
     })
 
@@ -69,6 +67,7 @@ export function DropZoneSheet({
     const closeModal = useCallback(() => {
         // Close the modal
         handleCancel()
+        setSelectedZone([]);
         setOpen(false);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -98,7 +97,12 @@ export function DropZoneSheet({
     }
 
     function handleCancel() {
+        removeZone();
         form.reset();
+    }
+
+    function addDropZone() {
+        console.log('selectedZone', selectedZone)
     }
 
     return (
@@ -123,7 +127,7 @@ export function DropZoneSheet({
                             {subTitle}
                         </SheetDescription>
                     </SheetHeader>
-                    <div className="h-4/5 p-10">
+                    <div className="rounded border p-5 mt-5 h-fit">
                         <form className='space-y-8'>
                             <FormField
                                 control={form.control}
@@ -154,26 +158,43 @@ export function DropZoneSheet({
                                     </FormItem>
                                 )}
                             />
-                            <FormItem>
-                                <FormLabel id='roles'>Zonas de entrega</FormLabel>
+                            <FormItem className="flex justify-center">
                                 <FormControl>
                                     <NewDropZone
                                         companyId={""}
-                                        triggerButton={<Button disabled={!isEditing} className="px-5 w-full" type="button" size='sm'>Agregar zona en mapa</Button>}
-                                        callback={function (): void {
-                                            throw new Error("Function not implemented.");
-                                        }}
-                                        onLoading={function (): void {
-                                            throw new Error("Function not implemented.");
-                                        }}
+                                        triggerButton={
+                                            <Button
+                                                variant={selectedZone.length ? "outline" : "secondary"}
+                                                disabled={!isEditing}
+                                                className="w-full space-x-2 text-md font-black p-8" type="button">
+                                                <Map size={30} />
+                                                <p className="uppercase">{
+                                                    selectedZone.length
+                                                        ? "Editar zona en el mapa"
+                                                        : "Dibujar zona en el mapa"
+                                                }
+                                                </p>
+                                            </Button>
+                                        }
+                                        addZone={(zone) => setSelectedZone(zone)}
                                     />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
+                            <div className="w-full border-t flex justify-end pt-4">
+                                <Button
+                                    onClick={addDropZone}
+                                    disabled={!isEditing}
+                                    className="w-fit space-x-2 px-14"
+                                    type="button"
+                                >
+                                    <MapPinned />
+                                    <p>Agregar Zona de entrega</p>
+                                </Button>
+                            </div>
                         </form>
-
                     </div>
-                    <SheetFooter className="p-10 items-center">
+                    <SheetFooter className="w-full p-10 items-center absolute bottom-0">
                         <SheetClose className="w-full">
                             <Button variant="secondary" className="w-full" onClick={handleCancel}>Cancelar</Button>
                         </SheetClose>

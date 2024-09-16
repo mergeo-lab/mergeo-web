@@ -5,13 +5,12 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { GoogleLocationSchemaType } from "@/lib/common/schemas";
+import { GoogleLocationSchemaType, LatLngLiteralType } from "@/lib/common/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { MapPin, Store, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { LatLngLiteral } from "@/types";
 import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
 import { DeleteConfirmationDialog } from "@/components/deleteConfirmationDialog";
 import { cn } from "@/lib/utils";
@@ -48,7 +47,7 @@ export function EditPickUp(
     const [open, setOpen] = useState(false);
     const [isLoading, setIsloading] = useState(false);
     const mutation = useMutation({ mutationFn: editPickUpPoints })
-    const [markerPosition, setMarkerPosition] = useState<LatLngLiteral>({ lat: 0, lng: 0 });
+    const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ lat: 0, lng: 0 });
     const { daysAndTime } = useDaysPickerStore();
 
     useEffect(() => {
@@ -66,8 +65,8 @@ export function EditPickUp(
                 id: pickUpData.address.id,
                 displayName: { text: pickUpData.address.name },
                 location: {
-                    latitude: pickUpData.address.polygon.coordinates[1],
-                    longitude: pickUpData.address.polygon.coordinates[0]
+                    lat: pickUpData.address.polygon.coordinates[1],
+                    lng: pickUpData.address.polygon.coordinates[0]
                 },
             });
         }
@@ -100,12 +99,12 @@ export function EditPickUp(
             id: address.id,
             polygon: {
                 type: "Point",
-                coordinates: [address.location.latitude, address.location.longitude]
+                coordinates: [address.location.lat, address.location.lng]
             },
             name: address.displayName.text
         });
 
-        setMarkerPosition({ lat: address.location.latitude, lng: address.location.longitude });
+        setMarkerPosition({ lat: address.location.lat, lng: address.location.lng });
         form.trigger('address');
     }
 

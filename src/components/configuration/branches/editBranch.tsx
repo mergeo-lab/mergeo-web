@@ -5,7 +5,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { GoogleLocationSchemaType } from "@/lib/common/schemas";
+import { GoogleLocationSchemaType, LatLngLiteralType } from "@/lib/common/schemas";
 import { deletBranch, editBranch } from "@/lib/configuration/branch";
 import { BranchesSchemaType, BranchesSchema } from "@/lib/configuration/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,7 +13,6 @@ import { useMutation } from "@tanstack/react-query";
 import { MapPin, Store, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { LatLngLiteral } from "@/types";
 import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
 import { DeleteConfirmationDialog } from "@/components/deleteConfirmationDialog";
 import { cn } from "@/lib/utils";
@@ -46,7 +45,7 @@ export function EditBranch(
     const [open, setOpen] = useState(false);
     const [isLoading, setIsloading] = useState(false);
     const mutation = useMutation({ mutationFn: editBranch })
-    const [markerPosition, setMarkerPosition] = useState<LatLngLiteral>({ lat: 0, lng: 0 });
+    const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ lat: 0, lng: 0 });
 
     useEffect(() => {
         setOpen(isOpen);
@@ -63,8 +62,8 @@ export function EditBranch(
                 id: branchData.address.id,
                 displayName: { text: branchData.address.name },
                 location: {
-                    latitude: branchData.address.polygon.coordinates[1],
-                    longitude: branchData.address.polygon.coordinates[0]
+                    latitude: branchData.address.location.coordinates[1],
+                    longitude: branchData.address.location.coordinates[0]
                 },
             });
         }
@@ -78,8 +77,8 @@ export function EditBranch(
         address: {
             id: branchData?.address.id || "",
             name: branchData?.address.name || "",
-            polygon: {
-                coordinates: branchData?.address.polygon.coordinates || [0, 0],
+            location: {
+                coordinates: branchData?.address.location.coordinates || [0, 0],
                 type: "Point",
             },
         },
@@ -94,7 +93,7 @@ export function EditBranch(
     function addAddress(address: GoogleLocationSchemaType) {
         form.setValue('address', {
             id: address.id,
-            polygon: {
+            location: {
                 type: "Point",
                 coordinates: [address.location.latitude, address.location.longitude]
             },

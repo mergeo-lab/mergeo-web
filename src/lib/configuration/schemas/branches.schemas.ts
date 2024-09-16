@@ -43,17 +43,17 @@ export const BranchesSchema = z.object({
       });
     }
 
-    if (!address.polygon || address.polygon.coordinates.length !== 2) {
+    if (!address.location || address.location.coordinates.length !== 2) {
       ctx.addIssue({
-        path: ['polygon', 'coordinates'],
+        path: ['location', 'coordinates'],
         code: z.ZodIssueCode.custom,
         message: 'Las coordenadas deben contener latitud y longitud',
       });
     } else if (
-      !address.polygon.coordinates.every((coord) => typeof coord === 'number')
+      !address.location.coordinates.every((coord) => typeof coord === 'number')
     ) {
       ctx.addIssue({
-        path: ['polygon', 'coordinates'],
+        path: ['location', 'coordinates'],
         code: z.ZodIssueCode.custom,
         message: 'Las coordenadas deben ser números válidos',
       });

@@ -1,11 +1,14 @@
 import * as z from 'zod';
 
+export const LatLngLiteral = z.object({
+  lat: z.number(),
+  lng: z.number(),
+});
+export type LatLngLiteralType = z.infer<typeof LatLngLiteral>;
+
 export const GoogleLocationSchema = z.object({
   id: z.string(),
-  location: z.object({
-    latitude: z.number(),
-    longitude: z.number(),
-  }),
+  location: LatLngLiteral,
   displayName: z.object({
     text: z.string(),
   }),
@@ -13,18 +16,18 @@ export const GoogleLocationSchema = z.object({
 
 export const LocationSchema = z.object({
   id: z.string(),
-  polygon: z.object({
+  location: z.object({
     type: z.string(),
     coordinates: z.tuple([z.number(), z.number()]),
   }),
   name: z.string(),
 });
 
-export const LocationPolygonSchema = z.object({
+export const ZoneLocationSchema = z.object({
   id: z.string(),
   polygon: z.object({
     type: z.string(),
-    coordinates: z.array(z.tuple([z.number(), z.number()])),
+    coordinates: z.array(LatLngLiteral),
   }),
   name: z.string(),
 });
@@ -40,3 +43,5 @@ export type GoogleLocationSchemaResponseType = z.infer<
   typeof LocationSchemaResponse
 >;
 export type GoogleLocationSchemaType = z.infer<typeof GoogleLocationSchema>;
+
+export type ZoneLocationSchemaType = z.infer<typeof ZoneLocationSchema>;

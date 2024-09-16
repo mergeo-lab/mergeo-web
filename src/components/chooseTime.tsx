@@ -1,9 +1,9 @@
 import { SelectScrollable } from "@/components/selectScrollable";
 import { Button } from "@/components/ui/button";
 import { DialogContent, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
-import { PickUpDaysSchemaType } from "@/lib/configuration/schemas/pickUp.schema";
+import { PickUpSchedulesSchemaType } from "@/lib/configuration/schemas/pickUp.schema";
 import { generateHourSlots } from "@/lib/utils";
-import useDaysPickerStore from "../store/daysPicker.store";
+import useDaysPickerStore from "@/store/daysPicker.store";
 import { HourSlot } from "@/types";
 import { Dialog, DialogTitle } from "@radix-ui/react-dialog";
 import { useState } from "react";
@@ -25,7 +25,7 @@ export default function ChooseTime({ triggerButton }: Props) {
     function addSelectedTime(e: React.FormEvent) {
         e.preventDefault();
         const dayName = allDays.find(d => d.value === day)?.name;
-        const newEntry: PickUpDaysSchemaType = {
+        const newEntry: PickUpSchedulesSchemaType = {
             id: crypto.randomUUID(),
             day: dayName || '',
             startHour,

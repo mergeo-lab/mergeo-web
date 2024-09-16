@@ -10,11 +10,10 @@ import { Map, Marker } from '@vis.gl/react-google-maps';
 import UseCompanyStore from "@/store/company.store";
 import { MapPin, Pencil } from "lucide-react";
 import { BranchPicker } from "@/components/configuration/branches/branchPicker";
-import { LatLngLiteral } from "@/types";
 import { useEffect, useState } from "react";
 import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
 import { GoogleAutoComplete } from "@/components/googleAutoComplete";
-import { GoogleLocationSchemaType } from "@/lib/common/schemas";
+import { GoogleLocationSchemaType, LatLngLiteralType } from "@/lib/common/schemas";
 import { useMutation } from "@tanstack/react-query";
 import { updateCompany } from "@/lib/configuration/company";
 import { toast } from "@/components/ui/use-toast";
@@ -24,7 +23,7 @@ export function Company() {
     const [isLoading, setIsLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const mutation = useMutation({ mutationFn: updateCompany })
-    const [markerPosition, setMarkerPosition] = useState<LatLngLiteral>({ lat: company?.address?.polygon.coordinates[1] || 0, lng: company?.address?.polygon.coordinates[0] || 0 });
+    const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ lat: company?.address?.location.coordinates[1] || 0, lng: company?.address?.location.coordinates[0] || 0 });
 
     const form = useForm<UpdateCompanySchemaType>({
         resolver: zodResolver(UpdateCompanySchema),
@@ -32,7 +31,7 @@ export function Company() {
             name: company?.name || "",
             address: {
                 name: company?.address?.name || "",
-                polygon: { coordinates: company?.address?.polygon.coordinates || [0, 0], type: company?.address?.polygon.type || "Point" },
+                location: { coordinates: company?.address?.location.coordinates || [0, 0], type: company?.address?.location.type || "Point" },
             },
             activity: company?.activity || "",
         },
@@ -45,8 +44,8 @@ export function Company() {
                 id: company.address.id,
                 displayName: { text: company.address.name },
                 location: {
-                    latitude: company.address.polygon.coordinates[1],
-                    longitude: company.address.polygon.coordinates[0]
+                    lat: company.address.location.coordinates[1],
+                    lng: company.address.location.coordinates[0]
                 },
             });
         }
@@ -83,14 +82,14 @@ export function Company() {
     function addAddress(address: GoogleLocationSchemaType) {
         form.setValue('address', {
             id: address.id,
-            polygon: {
+            location: {
                 type: "Point",
-                coordinates: [address.location.latitude, address.location.longitude]
+                coordinates: [address.location.lat, address.location.lng]
             },
             name: address.displayName.text
         });
 
-        setMarkerPosition({ lat: address.location.latitude, lng: address.location.longitude });
+        setMarkerPosition({ lat: address.location.lat, lng: address.location.lng });
         form.trigger('address');
     }
 

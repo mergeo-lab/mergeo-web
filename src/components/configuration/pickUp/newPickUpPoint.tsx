@@ -5,13 +5,12 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { GoogleLocationSchemaType } from "@/lib/common/schemas";
+import { GoogleLocationSchemaType, LatLngLiteralType } from "@/lib/common/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { MapPin, Store } from "lucide-react";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { LatLngLiteral } from "@/types";
 import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
 import { PickUpSchedulesSchemaType, PickUpSchema, PickUpSchemaType } from "@/lib/configuration/schemas/pickUp.schema";
 import DaysPicker from "@/components/daysPicker";
@@ -40,7 +39,7 @@ export function NewPickUpPoint(
     }: Props) {
     const [open, setOpen] = useState(false);
     const mutation = useMutation({ mutationFn: newPickUpPoints })
-    const [markerPosition, setMarkerPosition] = useState<LatLngLiteral>({ lat: 0, lng: 0 });
+    const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ lat: 0, lng: 0 });
     const { daysAndTime, reset: resetDays } = useDaysPickerStore();
 
     const form = useForm<PickUpSchemaType>({
@@ -52,7 +51,7 @@ export function NewPickUpPoint(
             phoneNumber: "",
             address: {
                 name: "",
-                polygon: {
+                location: {
                     coordinates: [],
                     type: "Point",
                 },
@@ -65,14 +64,14 @@ export function NewPickUpPoint(
         console.log(" address", address)
         form.setValue('address', {
             id: address.id,
-            polygon: {
+            location: {
                 type: "Point",
-                coordinates: [address.location.latitude, address.location.longitude]
+                coordinates: [address.location.lat, address.location.lng]
             },
             name: address.displayName.text
         });
 
-        setMarkerPosition({ lat: address.location.latitude, lng: address.location.longitude });
+        setMarkerPosition({ lat: address.location.lat, lng: address.location.lng });
         form.trigger('address');
     }
 

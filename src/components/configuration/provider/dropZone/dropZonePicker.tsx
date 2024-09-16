@@ -15,6 +15,11 @@ type Props = {
     isEditing: boolean
     className?: string,
     notFoundMessage?: string,
+    newEntry: {
+        title: string,
+        subTitle: string,
+        icon: JSX.Element
+    },
     onLoading?: () => void,
     callback?: () => void,
 }
@@ -24,7 +29,7 @@ type EditEntry = {
     isOpen: boolean,
 }
 
-export function DropZonePicker({ className, companyId, isEditing, notFoundMessage, onLoading, callback }: Props) {
+export function DropZonePicker({ className, companyId, isEditing, notFoundMessage, newEntry, onLoading, callback }: Props) {
     const [editEntry, setEditEntry] = useState<EditEntry>({ entryData: null, isOpen: false });
 
     const { data: dropZonesListData, isLoading, isError, refetch } = useQuery({
@@ -90,6 +95,9 @@ export function DropZonePicker({ className, companyId, isEditing, notFoundMessag
 
             {companyId &&
                 <DropZoneSheet
+                    title={newEntry.title}
+                    subTitle={newEntry.subTitle}
+                    icon={newEntry.icon}
                     triggerButton={
                         <Button disabled={!isEditing} className="px-5 w-full" type="button" size='sm'>Zonas de Entrega</Button>
                     }
