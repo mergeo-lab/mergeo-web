@@ -12,17 +12,21 @@ import useDaysPickerStore from "@/store/daysPicker.store";
 import useZoneStore from "@/store/zone.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { Map, UserRoundPlus } from "lucide-react";
+import { FilePenLine, Map, UserRoundPlus } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { MapPinned } from "lucide-react";
+import UseDropZonesStore from "@/store/dropZones.store";
+import DropZoneList from "@/components/configuration/provider/dropZone/dropZoneList";
+import { ShowDropZoneMap } from "@/components/configuration/provider/dropZone/showDropZoneMap";
+import LoadingIndicator from "@/components/loadingIndicator";
 
 type Props = {
     title?: string,
     subTitle?: string,
     icon?: JSX.Element,
     companyId: string | undefined,
-    isEditing: boolean,
+    isEditing?: boolean
     onLoading?: () => void,
     callback: () => void
     triggerButton?: React.ReactNode
@@ -39,10 +43,13 @@ export function DropZoneSheet({
     triggerButton }: Props) {
     const mutation = useMutation({ mutationFn: newDropZone })
     const [open, setOpen] = useState(false);
+    const [showMap, setShowMap] = useState<{ name: string, zone: google.maps.LatLngLiteral[], show: boolean }>({ name: "", zone: [], show: false });
     const [selectedZone, setSelectedZone] = useState<google.maps.LatLngLiteral[]>([]);
     const [canSubmit, setCanSubmit] = useState(false);
-    const { daysAndTime } = useDaysPickerStore();
-    const { removeZone } = useZoneStore();
+    const [editingDz, setEditingDz] = useState({ editing: false, id: "" });
+    const { daysAndTime: schedules, removeAll: removeSchedules, addMultipleDaysAndTime } = useDaysPickerStore();
+    const { dropZones, addDropZone, editDropZone, removeAllDropZones, getDropZoneById } = UseDropZonesStore();
+    const { removeZone, setZone } = useZoneStore();
 
     const form = useForm<DropZoneSchemaType>({
         resolver: zodResolver(DropZoneSchema),
@@ -50,18 +57,41 @@ export function DropZoneSheet({
         defaultValues: {
             name: "",
             schedules: [],
-            zones: [],
+            zone: {
+                polygon: {
+                    type: "Poygon",
+                    coordinates: []
+                }
+            },
         },
     })
 
     useEffect(() => {
-        if (form.formState.isDirty) {
-            setCanSubmit(true);
-        } else {
-            setCanSubmit(false);
+        if (selectedZone) {
+            form.setValue('zone', {
+                polygon: {
+                    type: "Poygon",
+                    coordinates: selectedZone
+                }
+            });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [form.formState.isDirty]);
+    }, [selectedZone]);
+
+    useEffect(() => {
+        const subscription = form.watch((value) => {
+            const { name, schedules, zone } = value;
+            if (name && schedules?.length && zone) {
+                setCanSubmit(true);
+            } else {
+                setCanSubmit(false);
+            }
+        });
+
+        // Clean up the subscription when the component unmounts
+        return () => subscription.unsubscribe();
+    }, [form]);
+
 
 
     const closeModal = useCallback(() => {
@@ -72,11 +102,46 @@ export function DropZoneSheet({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const onSubmit = async (fields: DropZoneSchemaType) => {
-        if (!canSubmit || !companyId) return;
+    // const onSubmit = async () => {
+    //     if (dropZones.length === 0 || !companyId) return;
+    //     onLoading && onLoading();
+    //     console.log("fields", dropZones)
+    //     await mutation.mutateAsync({ companyId: companyId, body: dropZones });
+
+    //     if (mutation.isError) {
+    //         toast({
+    //             variant: "destructive",
+    //             title: "Error",
+    //             description: mutation.error.message,
+    //         })
+    //     } else {
+    //         form.reset();
+    //         setOpen(false);
+    //         callback();
+    //     }
+    // }
+
+    function setSelectedDays(schedules: PickUpSchedulesSchemaType[]) {
+        form.setValue('schedules', schedules);
+    }
+
+    function handleCancel() {
+        removeZone();
+        removeAllDropZones();
+        form.setValue('name', "");
+    }
+
+    async function saveDropZone() {
+        if (!companyId) return;
+        if (!form.getValues().name || !form.getValues().schedules || !form.getValues().zone) return;
+        const dzone = {
+            name: form.getValues().name,
+            schedules: form.getValues().schedules,
+            zone: form.getValues().zone,
+        }
+
+        await mutation.mutateAsync({ companyId: companyId, body: dzone });
         onLoading && onLoading();
-        console.log("fields", fields)
-        await mutation.mutateAsync({ companyId: companyId, body: fields });
 
         if (mutation.isError) {
             toast({
@@ -85,24 +150,49 @@ export function DropZoneSheet({
                 description: mutation.error.message,
             })
         } else {
+            addDropZone(dzone);
+            removeZone();
+            removeSchedules();
+            setSelectedZone([]);
             form.reset();
-            setOpen(false);
-            callback();
         }
     }
 
-    function setSelectedDays(schedules: PickUpSchedulesSchemaType[]) {
-        console.log("schedules", schedules)
-        form.setValue('schedules', schedules);
+    function startEdit(id: string) {
+        const dzone = getDropZoneById(id);
+        if (!dzone) return;
+        setEditingDz({ editing: true, id: id });
+        setZone(dzone.zone.polygon.coordinates);
+        setSelectedZone(dzone.zone.polygon.coordinates);
+        removeSchedules();
+        addMultipleDaysAndTime(dzone.schedules);
+        form.reset(dzone);
     }
 
-    function handleCancel() {
-        removeZone();
-        form.reset();
+    function saveEdit() {
+        if (!form.getValues().name || !form.getValues().schedules || !form.getValues().zone) return;
+        const dzone = {
+            name: form.getValues().name,
+            schedules: form.getValues().schedules,
+            zone: form.getValues().zone,
+        }
+        editDropZone(editingDz.id, dzone);
+        cancelEdit();
     }
 
-    function addDropZone() {
-        console.log('selectedZone', selectedZone)
+    function cancelEdit() {
+        form.setValue('name', "");
+        setEditingDz({ editing: false, id: "" });
+        setZone([]);
+        setSelectedZone([]);
+        removeSchedules();
+    }
+
+    function handleShowMap(id: string) {
+        console.log("handleShowMap", showMap);
+        const zone = getDropZoneById(id);
+        if (!zone) return;
+        setShowMap({ name: zone.name, zone: zone?.zone.polygon.coordinates, show: true });
     }
 
     return (
@@ -117,6 +207,7 @@ export function DropZoneSheet({
                 {triggerButton}
             </SheetTrigger>
             <SheetContent className="w-1/3 mx-w-1/3 sm:max-w-1/3">
+                {mutation.isPending && <LoadingIndicator />}
                 <FormProvider {...form}>
                     <SheetHeader>
                         <SheetTitle className="flex gap-2 items-center">
@@ -151,7 +242,7 @@ export function DropZoneSheet({
                                         <FormControl>
                                             <DaysPicker
                                                 isEditing={true}
-                                                callback={() => setSelectedDays(daysAndTime)}
+                                                callback={() => setSelectedDays(schedules)}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -161,12 +252,13 @@ export function DropZoneSheet({
                             <FormItem className="flex justify-center">
                                 <FormControl>
                                     <NewDropZone
+                                        title="Dibuja una zona en el mapa"
+                                        subTitle="Agrega una nueva zona de reparto"
                                         companyId={""}
                                         triggerButton={
                                             <Button
                                                 variant={selectedZone.length ? "outline" : "secondary"}
-                                                disabled={!isEditing}
-                                                className="w-full space-x-2 text-md font-black p-8" type="button">
+                                                className="w-fit space-x-2 text-md font-black p-6 rounded-md" type="button">
                                                 <Map size={30} />
                                                 <p className="uppercase">{
                                                     selectedZone.length
@@ -182,23 +274,62 @@ export function DropZoneSheet({
                                 <FormMessage />
                             </FormItem>
                             <div className="w-full border-t flex justify-end pt-4">
-                                <Button
-                                    onClick={addDropZone}
-                                    disabled={!isEditing}
-                                    className="w-fit space-x-2 px-14"
-                                    type="button"
-                                >
-                                    <MapPinned />
-                                    <p>Agregar Zona de entrega</p>
-                                </Button>
+                                {
+                                    editingDz.editing ?
+                                        (
+                                            <div className="flex gap-2">
+                                                <Button
+                                                    variant="secondary"
+                                                    onClick={() => cancelEdit()}
+                                                    className="w-fit space-x-2 px-14"
+                                                    type="button"
+                                                >
+                                                    <p>Cancelar</p>
+                                                </Button>
+                                                <Button
+                                                    onClick={() => saveEdit()}
+                                                    disabled={!canSubmit}
+                                                    className="w-fit space-x-2 px-14"
+                                                    type="button"
+                                                >
+                                                    <FilePenLine />
+                                                    <p>Guardar cambios</p>
+                                                </Button>
+                                            </div>
+                                        )
+                                        : (
+                                            <Button
+                                                onClick={saveDropZone}
+                                                disabled={!canSubmit}
+                                                className="w-fit space-x-2 px-14"
+                                                type="button"
+                                            >
+                                                <MapPinned />
+                                                <p>Agregar Zona de entrega</p>
+                                            </Button>
+
+                                        )
+                                }
                             </div>
                         </form>
                     </div>
+                    <ShowDropZoneMap
+                        title={`Zona seleccionada para ${showMap.name}`}
+                        subTitle="Aqui puedes ver la zona de entrega"
+                        showDialog={showMap.show}
+                        zone={showMap.zone}
+                        onClose={() => setShowMap({ name: "", zone: [], show: false })}
+                    />
+                    <DropZoneList
+                        list={dropZones}
+                        isEditing={editingDz.id}
+                        startEditing={startEdit}
+                        handleShowMap={(id: string) => handleShowMap(id)}
+                    />
                     <SheetFooter className="w-full p-10 items-center absolute bottom-0">
                         <SheetClose className="w-full">
-                            <Button variant="secondary" className="w-full" onClick={handleCancel}>Cancelar</Button>
+                            <Button variant="secondary" className="w-1/2" onClick={handleCancel}>Cerrar</Button>
                         </SheetClose>
-                        <Button disabled={!canSubmit} onClick={form.handleSubmit(onSubmit)} type="submit" className="w-full">Guardar</Button>
                     </SheetFooter>
                 </FormProvider>
             </SheetContent>

@@ -10,7 +10,7 @@ type CustomDrawingControlsProps = {
 const CustomDrawingControls = ({ onPolygonComplete }: CustomDrawingControlsProps) => {
     const [polygonDrawn, setPolygonDrawn] = useState(false);
 
-    const { drawingManager, startDrawing } = useDrawingManager(null, (event) => {
+    const { startDrawing } = useDrawingManager(null, (event) => {
         if (event.type === 'polygon') {
             const polygon = event.overlay as google.maps.Polygon;
             const path = polygon.getPath();

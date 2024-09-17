@@ -17,7 +17,7 @@ export const DropZoneSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(3, { message: 'Ingresa un nombre!' }),
   schedules: PickUpSchedulesSchema.array(),
-  zones: ZoneSchema.array(),
+  zone: ZoneSchema,
 });
 
 export type ZoneSchemaType = z.infer<typeof ZoneSchema>;

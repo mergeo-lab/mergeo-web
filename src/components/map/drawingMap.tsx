@@ -6,13 +6,18 @@ import useZoneStore from '@/store/zone.store';
 
 const centerArgentina = { lat: -35.196593198428815, lng: -64.71031145842831 };
 
-const DrawingMap = ({ zone }: { zone?: google.maps.LatLngLiteral[] }) => {
+type Props = {
+    zone?: google.maps.LatLngLiteral[],
+    hideControls?: boolean
+}
+
+const DrawingMap = ({ zone, hideControls = false }: Props) => {
     const [selectedPlace, setSelectedPlace] = useState<google.maps.places.PlaceResult | null>(null);
     const { setZone } = useZoneStore();
     const map = useMap();
 
     useEffect(() => {
-        if (map && zone) {
+        if (map && zone && zone?.length > 0) {
             try {
                 // Clear existing polygons if necessary
                 map.data.forEach((feature) => {
@@ -23,7 +28,7 @@ const DrawingMap = ({ zone }: { zone?: google.maps.LatLngLiteral[] }) => {
 
                 const polygon = new google.maps.Polygon({
                     paths: zone,
-                    editable: true,
+                    editable: hideControls ? false : true,
                 });
                 polygon.setMap(map);
 
@@ -41,6 +46,13 @@ const DrawingMap = ({ zone }: { zone?: google.maps.LatLngLiteral[] }) => {
                 google.maps.event.addListener(polygon.getPath(), 'set_at', updatePolygonCoordinates);
                 google.maps.event.addListener(polygon.getPath(), 'insert_at', updatePolygonCoordinates);
                 google.maps.event.addListener(polygon.getPath(), 'remove_at', updatePolygonCoordinates);
+
+                // Calculate bounds and fit map to polygon
+                const bounds = new google.maps.LatLngBounds();
+                polygon.getPath().forEach((latLng) => {
+                    bounds.extend(latLng);
+                });
+                map.fitBounds(bounds);
 
                 // Cleanup function to remove listeners and polygon
                 return () => {
@@ -62,7 +74,9 @@ const DrawingMap = ({ zone }: { zone?: google.maps.LatLngLiteral[] }) => {
                 gestureHandling={'greedy'}
                 disableDefaultUI={true}
             />
-            <CustomMapControl controlPosition={ControlPosition.TOP} onPlaceSelect={setSelectedPlace} />
+            {hideControls === false &&
+                <CustomMapControl controlPosition={ControlPosition.TOP} onPlaceSelect={setSelectedPlace} />
+            }
             <MapHandler place={selectedPlace} />
         </>
     );
