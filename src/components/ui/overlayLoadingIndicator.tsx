@@ -7,7 +7,7 @@ type Props = {
 
 function OverlayLoadingIndicator({ className }: Props) {
     return (
-        <div className={cn("absolute inset-0 flex items-center justify-center z-20 bg-white/50", className)}>
+        <div className={cn("absolute inset-0 flex items-center justify-center z-50 bg-white/50", className)}>
             <LoadingIndicator />
         </div>
     )

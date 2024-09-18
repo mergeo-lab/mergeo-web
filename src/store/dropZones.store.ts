@@ -1,12 +1,22 @@
 import { create } from 'zustand';
-import { DropZoneSchemaType } from '@/lib/configuration/schemas/dropZone.schemas';
+import {
+  DropZoneSchemaType,
+  IncomingDropZoneSchemaType,
+} from '@/lib/configuration/schemas/dropZone.schemas';
+import { transformToLatLng } from '@/lib/utils';
 
 type DropZonesState = {
   dropZones: DropZoneSchemaType[];
   addDropZone: (dropZone: DropZoneSchemaType) => void;
   addMultipleDropZones: (dropZone: DropZoneSchemaType[]) => void;
+  addMultipleIncomingDropZoneSchema: (
+    dropZones: IncomingDropZoneSchemaType[]
+  ) => void;
   removeDropZone: (id: string) => void;
-  editDropZone: (id: string, updatedDropZone: DropZoneSchemaType) => void;
+  editDropZone: (
+    id: string,
+    updatedDropZone: Partial<DropZoneSchemaType>
+  ) => void;
   getDropZoneById: (id: string) => DropZoneSchemaType | undefined;
   removeAllDropZones: () => void;
 };
@@ -37,6 +47,17 @@ const UseDropZonesStore = create<DropZonesState>((set, get) => ({
         dropZone.id === id ? { ...dropZone, ...updatedDropZone } : dropZone
       ),
     })),
+  addMultipleIncomingDropZoneSchema: (incomingDropZones) => {
+    const googleZones = incomingDropZones.map((dz) => ({
+      ...dz, // Spread the rest of the zone's properties
+      zone: {
+        ...dz.zone, // Spread the properties of the zone
+        coordinates: transformToLatLng(dz.zone.coordinates), // Transform the coordinates
+      },
+    }));
+
+    set(() => ({ dropZones: googleZones }));
+  },
   getDropZoneById: (id) =>
     get().dropZones.find((dropZone) => dropZone.id === id),
 

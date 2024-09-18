@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/use-toast";
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 
 type MutationFn<T> = (args: T) => Promise<void>;
@@ -14,16 +14,29 @@ type Props<T> = {
     title: string,
     question: string,
     triggerButton?: React.ReactNode,
+    openDialog?: boolean,
     onLoading: () => void
     mutationFn: MutationFn<T>,
     callback: () => void
 }
 
-export function DeleteConfirmationDialog<T>({ id, name, title, question, triggerButton, onLoading, mutationFn, callback }: Props<T>) {
+export function DeleteConfirmationDialog<T>({ id, name, title, question, triggerButton, openDialog, onLoading, mutationFn, callback }: Props<T>) {
     const mutation = useMutation({ mutationFn: mutationFn });
     const [open, setOpen] = useState(false);
 
-    async function deleteRole() {
+    useEffect(() => {
+        openDialog && setOpen(openDialog);
+    }, [openDialog]);
+
+    function onOpenChange(open: boolean) {
+        setOpen(open);
+
+        if (!open) {
+            callback();
+        }
+    }
+
+    async function remove() {
         onLoading();
         await mutation.mutateAsync({ id } as T);
 
@@ -41,7 +54,7 @@ export function DeleteConfirmationDialog<T>({ id, name, title, question, trigger
     }
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogTrigger className="h-6">
                 {triggerButton}
             </DialogTrigger>
@@ -62,7 +75,7 @@ export function DeleteConfirmationDialog<T>({ id, name, title, question, trigger
                             <Button variant="secondary">Cancelar</Button>
                         </DialogClose>
                         <DialogClose asChild>
-                            <Button variant="destructive" onClick={deleteRole}>Eliminar</Button>
+                            <Button variant="destructive" onClick={remove}>Eliminar</Button>
                         </DialogClose>
                     </div>
                 </div>

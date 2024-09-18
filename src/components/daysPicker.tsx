@@ -43,24 +43,24 @@ export default function DaysPicker({ defaultData, isEditing, className, callback
                     <Button className="absolute -top-[35px] right-0" variant="outline" size={"xs"}>Agregar Dia y Horario</Button>
                 } />
             }
-            <div className={cn("flex flex-col gap-2 border p-4 relative max-h-32 overflow-auto", className)}>
-                <div>
-                    {
-                        daysAndTime.length ?
-                            daysAndTime.map((dt: PickUpSchedulesSchemaType, index: number) => (
-                                <div key={index} className="text-md flex justify-between items-center space-x-4 border p-1 m-1">
-                                    <span className="ml-2">{dt.day}</span>
-                                    <span>{dt.startHour} - {dt.endHour}</span>
-                                    {isEditing &&
-                                        <Button type="button" variant="ghost" onClick={() => handelRemoveDay(dt.id)}>
-                                            <Trash2 className="cursor-pointer" size={15} />
-                                        </Button>
-                                    }
-                                </div>
-                            ))
-                            : <div className="text-md border p-1 m-1 text-center">No has agregado ningun dia</div>
-                    }
-                </div>
+            <div className={cn("flex flex-col gap-2 border p-4 relative max-h-32 h-32 overflow-auto", className)}>
+                {
+                    daysAndTime.length ?
+                        daysAndTime.map((dt: PickUpSchedulesSchemaType, index: number) => (
+                            <div key={index} className="text-md flex justify-between items-center space-x-4 border p-1 m-1">
+                                <span className="ml-2">{dt.day}</span>
+                                <span>{dt.startHour} - {dt.endHour}</span>
+                                {isEditing &&
+                                    <Button type="button" variant="ghost" onClick={() => handelRemoveDay(dt.id)}>
+                                        <Trash2 className="cursor-pointer" size={15} />
+                                    </Button>
+                                }
+                            </div>
+                        ))
+                        : <div className="flex justify-center items-center w-full h-full">
+                            <div className="text-md border p-1 m-1 w-full text-center">No has agregado ningun dia</div>
+                        </div>
+                }
             </div>
 
         </div>

@@ -5,8 +5,8 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "@/components/ui/use-toast";
-import { newDropZone } from "@/lib/configuration/dropZone";
-import { DropZoneSchema, DropZoneSchemaType } from "@/lib/configuration/schemas/dropZone.schemas";
+import { newDropZone, apiEditDropZone, deletDropZone } from "@/lib/configuration/dropZone";
+import { DropZoneSchema, DropZoneSchemaType, IncomingDropZoneSchemaType } from "@/lib/configuration/schemas/dropZone.schemas";
 import { PickUpSchedulesSchemaType } from "@/lib/configuration/schemas/pickUp.schema";
 import useDaysPickerStore from "@/store/daysPicker.store";
 import useZoneStore from "@/store/zone.store";
@@ -19,37 +19,45 @@ import { MapPinned } from "lucide-react";
 import UseDropZonesStore from "@/store/dropZones.store";
 import DropZoneList from "@/components/configuration/provider/dropZone/dropZoneList";
 import { ShowDropZoneMap } from "@/components/configuration/provider/dropZone/showDropZoneMap";
-import LoadingIndicator from "@/components/loadingIndicator";
+import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
+import { DeleteConfirmationDialog } from "@/components/deleteConfirmationDialog";
+import { cn } from "@/lib/utils";
 
 type Props = {
+    zones: IncomingDropZoneSchemaType[],
     title?: string,
     subTitle?: string,
     icon?: JSX.Element,
     companyId: string | undefined,
-    isEditing?: boolean
-    onLoading?: () => void,
-    callback: () => void
-    triggerButton?: React.ReactNode
+    triggerButton?: React.ReactNode,
+    isLoadingProp?: boolean
+    fetchZones: () => void
 }
 
 export function DropZoneSheet({
+    zones,
     title = "Agregar una zona de entrega",
     subTitle = "Aquí puedes agregar una nueva zona de entrega, los dias y horarios",
     icon = <UserRoundPlus size={20} />,
     companyId,
-    isEditing,
-    onLoading,
-    callback,
-    triggerButton }: Props) {
+    triggerButton,
+    isLoadingProp,
+    fetchZones
+}: Props) {
     const mutation = useMutation({ mutationFn: newDropZone })
+    const editMutation = useMutation({ mutationFn: apiEditDropZone })
     const [open, setOpen] = useState(false);
     const [showMap, setShowMap] = useState<{ name: string, zone: google.maps.LatLngLiteral[], show: boolean }>({ name: "", zone: [], show: false });
     const [selectedZone, setSelectedZone] = useState<google.maps.LatLngLiteral[]>([]);
     const [canSubmit, setCanSubmit] = useState(false);
     const [editingDz, setEditingDz] = useState({ editing: false, id: "" });
     const { daysAndTime: schedules, removeAll: removeSchedules, addMultipleDaysAndTime } = useDaysPickerStore();
-    const { dropZones, addDropZone, editDropZone, removeAllDropZones, getDropZoneById } = UseDropZonesStore();
+    const { dropZones, addDropZone, editDropZone, getDropZoneById, addMultipleIncomingDropZoneSchema, removeDropZone } = UseDropZonesStore();
     const { removeZone, setZone } = useZoneStore();
+    const [isLoading, setIsLoading] = useState(false);
+    const [isAdding, setIsAdding] = useState(false);
+    const [deleteDropZoneData, setDeleteDropZoneData] = useState<{ data: DropZoneSchemaType | null, isOpen: boolean }>({ data: null, isOpen: false });
+
 
     const form = useForm<DropZoneSchemaType>({
         resolver: zodResolver(DropZoneSchema),
@@ -58,10 +66,8 @@ export function DropZoneSheet({
             name: "",
             schedules: [],
             zone: {
-                polygon: {
-                    type: "Poygon",
-                    coordinates: []
-                }
+                type: "Polygon",
+                coordinates: []
             },
         },
     })
@@ -69,10 +75,8 @@ export function DropZoneSheet({
     useEffect(() => {
         if (selectedZone) {
             form.setValue('zone', {
-                polygon: {
-                    type: "Poygon",
-                    coordinates: selectedZone
-                }
+                type: "Polygon",
+                coordinates: selectedZone
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -92,34 +96,26 @@ export function DropZoneSheet({
         return () => subscription.unsubscribe();
     }, [form]);
 
+    useEffect(() => {
+        if (zones) {
+            addMultipleIncomingDropZoneSchema(zones);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [zones]);
 
+    useEffect(() => {
+        if (open) {
+            fetchZones();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open]);
 
     const closeModal = useCallback(() => {
-        // Close the modal
         handleCancel()
         setSelectedZone([]);
         setOpen(false);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    // const onSubmit = async () => {
-    //     if (dropZones.length === 0 || !companyId) return;
-    //     onLoading && onLoading();
-    //     console.log("fields", dropZones)
-    //     await mutation.mutateAsync({ companyId: companyId, body: dropZones });
-
-    //     if (mutation.isError) {
-    //         toast({
-    //             variant: "destructive",
-    //             title: "Error",
-    //             description: mutation.error.message,
-    //         })
-    //     } else {
-    //         form.reset();
-    //         setOpen(false);
-    //         callback();
-    //     }
-    // }
 
     function setSelectedDays(schedules: PickUpSchedulesSchemaType[]) {
         form.setValue('schedules', schedules);
@@ -127,7 +123,7 @@ export function DropZoneSheet({
 
     function handleCancel() {
         removeZone();
-        removeAllDropZones();
+        cancelEdit();
         form.setValue('name', "");
     }
 
@@ -137,11 +133,10 @@ export function DropZoneSheet({
         const dzone = {
             name: form.getValues().name,
             schedules: form.getValues().schedules,
-            zone: form.getValues().zone,
+            zone: form.getValues().zone
         }
 
         await mutation.mutateAsync({ companyId: companyId, body: dzone });
-        onLoading && onLoading();
 
         if (mutation.isError) {
             toast({
@@ -155,29 +150,45 @@ export function DropZoneSheet({
             removeSchedules();
             setSelectedZone([]);
             form.reset();
+            setIsAdding(false);
+            fetchZones();
         }
     }
 
     function startEdit(id: string) {
         const dzone = getDropZoneById(id);
         if (!dzone) return;
+        setIsAdding(true);
         setEditingDz({ editing: true, id: id });
-        setZone(dzone.zone.polygon.coordinates);
-        setSelectedZone(dzone.zone.polygon.coordinates);
+        setZone(dzone.zone.coordinates);
+        setSelectedZone(dzone.zone.coordinates);
         removeSchedules();
         addMultipleDaysAndTime(dzone.schedules);
         form.reset(dzone);
     }
 
-    function saveEdit() {
+    async function saveEdit() {
         if (!form.getValues().name || !form.getValues().schedules || !form.getValues().zone) return;
+        const id = editingDz.id;
         const dzone = {
             name: form.getValues().name,
             schedules: form.getValues().schedules,
-            zone: form.getValues().zone,
+            zone: form.getValues().zone
         }
-        editDropZone(editingDz.id, dzone);
-        cancelEdit();
+        await editMutation.mutateAsync({ id: id, body: dzone });
+
+        if (mutation.isError) {
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: mutation.error.message,
+            })
+        } else {
+            editDropZone(editingDz.id, dzone);
+            cancelEdit();
+            fetchZones();
+            setIsAdding(false);
+        }
     }
 
     function cancelEdit() {
@@ -186,13 +197,34 @@ export function DropZoneSheet({
         setZone([]);
         setSelectedZone([]);
         removeSchedules();
+        setIsAdding(false);
+    }
+
+    function handelDeleteZone(id: string) {
+        if (!id) return;
+        const toDelete = getDropZoneById(id);
+        if (toDelete) setDeleteDropZoneData({ data: toDelete, isOpen: true });
+    }
+
+    function deleteComplete() {
+        if (deleteDropZoneData.data && deleteDropZoneData.data.id) {
+            removeDropZone(deleteDropZoneData.data.id);
+        }
+        setDeleteDropZoneData({ data: null, isOpen: false });
+        fetchZones();
     }
 
     function handleShowMap(id: string) {
-        console.log("handleShowMap", showMap);
-        const zone = getDropZoneById(id);
-        if (!zone) return;
-        setShowMap({ name: zone.name, zone: zone?.zone.polygon.coordinates, show: true });
+        const dzone = getDropZoneById(id);
+        if (!dzone) return;
+        setShowMap({ name: dzone.name, zone: dzone?.zone.coordinates, show: true });
+    }
+
+    function openAddZone() {
+        if (!isAdding) {
+            handleCancel()
+        }
+        setIsAdding(!isAdding);
     }
 
     return (
@@ -203,11 +235,13 @@ export function DropZoneSheet({
                 setOpen(isOpen);
             }
         }}>
-            <SheetTrigger disabled={!isEditing} className="pt-2 w-full">
+            <SheetTrigger className="pt-2 w-full">
                 {triggerButton}
             </SheetTrigger>
             <SheetContent className="w-1/3 mx-w-1/3 sm:max-w-1/3">
-                {mutation.isPending && <LoadingIndicator />}
+                {
+                    isLoading || isLoadingProp && <OverlayLoadingIndicator />
+                }
                 <FormProvider {...form}>
                     <SheetHeader>
                         <SheetTitle className="flex gap-2 items-center">
@@ -218,8 +252,14 @@ export function DropZoneSheet({
                             {subTitle}
                         </SheetDescription>
                     </SheetHeader>
-                    <div className="rounded border p-5 mt-5 h-fit">
-                        <form className='space-y-8'>
+                    <Button onClick={() => openAddZone()} variant="outline" className="mt-5 w-full">
+                        {isAdding ? "Cancelar" : "Añadir Zona"}
+                    </Button>
+                    <div className={cn("rounded border mt-5 overflow-hidden transition-[height] duration-500", {
+                        "h-0 p-0": !isAdding,
+                        "h-[420px]": isAdding
+                    })}>
+                        <form className='space-y-4 p-5'>
                             <FormField
                                 control={form.control}
                                 name="name"
@@ -227,7 +267,7 @@ export function DropZoneSheet({
                                     <FormItem>
                                         <FormLabel id='name'>Nombre</FormLabel>
                                         <FormControl>
-                                            <Input {...field} />
+                                            <Input className="h-8" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -258,7 +298,7 @@ export function DropZoneSheet({
                                         triggerButton={
                                             <Button
                                                 variant={selectedZone.length ? "outline" : "secondary"}
-                                                className="w-fit space-x-2 text-md font-black p-6 rounded-md" type="button">
+                                                className="w-fit space-x-2 text-md font-black p-6 rounded-md m-0" type="button">
                                                 <Map size={30} />
                                                 <p className="uppercase">{
                                                     selectedZone.length
@@ -313,6 +353,7 @@ export function DropZoneSheet({
                             </div>
                         </form>
                     </div>
+
                     <ShowDropZoneMap
                         title={`Zona seleccionada para ${showMap.name}`}
                         subTitle="Aqui puedes ver la zona de entrega"
@@ -324,7 +365,18 @@ export function DropZoneSheet({
                         list={dropZones}
                         isEditing={editingDz.id}
                         startEditing={startEdit}
+                        deleteZone={(id: string) => handelDeleteZone(id)}
                         handleShowMap={(id: string) => handleShowMap(id)}
+                    />
+                    <DeleteConfirmationDialog
+                        id={deleteDropZoneData.data && deleteDropZoneData.data.id}
+                        name={deleteDropZoneData.data && deleteDropZoneData.data.name}
+                        openDialog={deleteDropZoneData && deleteDropZoneData.isOpen}
+                        title="Borrar zona de entrega"
+                        question="¿Seguro que quieres borrar esta zona de entrega"
+                        onLoading={() => setIsLoading(true)}
+                        mutationFn={deletDropZone}
+                        callback={deleteComplete}
                     />
                     <SheetFooter className="w-full p-10 items-center absolute bottom-0">
                         <SheetClose className="w-full">

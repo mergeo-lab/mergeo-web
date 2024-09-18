@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import CryptoJS from 'crypto-js';
 import { HourSlot } from '@/types';
+import { ZoneSchemaPostGisType } from '@/lib/configuration/schemas/dropZone.schemas';
 
 const secretKey = import.meta.env.VITE_SEARCH_PARAMS_KEY;
 
@@ -59,4 +60,28 @@ export function generateHourSlots(max: number): HourSlot[] {
   }
 
   return hours;
+}
+
+export function transformPolygonToGeoJSON(
+  coordinates: google.maps.LatLngLiteral[]
+): ZoneSchemaPostGisType {
+  const transformedCoordinates: [number, number][] = coordinates.map(
+    (c: google.maps.LatLngLiteral): [number, number] => [c.lng, c.lat] // Explicitly return a tuple
+  );
+
+  // Return the transformed polygon
+  return {
+    coordinates: [transformedCoordinates],
+    type: 'Polygon',
+  };
+}
+
+export function transformToLatLng(
+  coordinates: [number, number][][]
+): google.maps.LatLngLiteral[] {
+  // Flatten the array and transform each [lng, lat] to { lat, lng }
+  return coordinates[0].map((pair: [number, number]) => ({
+    lat: pair[1], // lat is the second element
+    lng: pair[0], // lng is the first element
+  }));
 }

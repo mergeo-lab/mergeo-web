@@ -216,8 +216,6 @@ export function Company() {
                                                 <DropZonePicker
                                                     companyId={company?.id}
                                                     isEditing={isEditing}
-                                                    callback={actionEnded}
-                                                    onLoading={() => setIsLoading(true)}
                                                     notFoundMessage="No se encontraron zonas de entrega"
                                                     newEntry={{
                                                         title: "Agregar una zona de entrega",

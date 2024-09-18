@@ -1,35 +1,43 @@
 import DropZoneItem from "@/components/configuration/provider/dropZone/dropZoneItem";
 import { DropZoneSchemaType } from "@/lib/configuration/schemas/dropZone.schemas";
 import { cn } from "@/lib/utils";
-import UseDropZonesStore from "@/store/dropZones.store";
+import { MapPinned } from "lucide-react";
 
 type Props = {
     list: DropZoneSchemaType[],
     className?: string
     isEditing: string,
     startEditing: (id: string) => void,
+    deleteZone: (id: string) => void,
     handleShowMap: (id: string) => void
 }
 
-export default function DropZoneList({ list, className, isEditing, startEditing, handleShowMap }: Props) {
-    const { removeDropZone } = UseDropZonesStore();
+export default function DropZoneList({ list, className, isEditing, startEditing, deleteZone, handleShowMap }: Props) {
 
     function handleRemove(id: string) {
-        removeDropZone(id);
+        deleteZone(id);
     }
-
 
     function handleEdit(id: string) {
         startEditing(id);
     }
 
     return (
-        <div className={cn("flex flex-wrap gap-2 mt-2", className)}>
-            {
-                list.map((item: DropZoneSchemaType, index: number) => (
-                    <DropZoneItem isEditing={isEditing} key={index} item={item} remove={handleRemove} edit={handleEdit} showMap={handleShowMap} />
-                ))
-            }
+        <div>
+            <p className="font-bold mx-3 my-5 flex items-center gap-2">
+                <MapPinned />
+                Zonas de reparto Agregadas:
+            </p>
+            <div className={cn("flex ml-3 flex-wrap w-full mt-2 gap-2 max-h-60 overflow-y-auto", className)}>
+                {list.length ?
+                    list.map((item: DropZoneSchemaType, index: number) => (
+                        <DropZoneItem isEditing={isEditing} key={index} item={item} remove={handleRemove} edit={handleEdit} showMap={handleShowMap} />
+                    ))
+                    : <div className="w-full mr-5 bg-muted/30 p-5 flex justify-center items-center">
+                        <p>No hay zonas de reparto agregadas</p>
+                    </div>
+                }
+            </div>
         </div>
     )
 }

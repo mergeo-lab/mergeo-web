@@ -14,21 +14,21 @@ type Props = {
 
 export default function DropZoneItem({ item, isEditing, remove, edit, showMap }: Props) {
     return (
-        <div className={cn("flex flex-col justify-between gap-2 w-48 bg-accent rounded overflow-hidden")}>
-            <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2 px-4 pt-4">
+        <div className={cn("flex flex-col justify-between w-[calc(50%-1rem)] bg-accent rounded overflow-hidden")}>
+            <div className="flex flex-col">
+                <div className="flex items-center gap-2 px-4 pt-2">
                     <Map size={20} className="text-primary" />
                     <p className="text-ellipsis text-nowrap w-32 overflow-hidden">
                         {item.name}
                     </p>
                 </div>
-                <div className="px-4">
+                <div className="px-4 ga py-3">
                     <ScheduleHoverCard schedules={item.schedules} />
                 </div>
 
             </div>
-            <div className="w-48 flex justify-end items-center bg-muted/40 relative">
-                {isEditing == item.id && <span className="bg-highlight text-white text-sm absolute left-2 px-2 rounded">EDITING</span>}
+            <div className="w-full flex justify-end items-center bg-muted/40 relative">
+                {isEditing == item.id && <span className="bg-highlight text-white text-sm absolute left-2 px-2 rounded">EDITANDO</span>}
                 <Button variant="ghost" className="hover:bg-muted hover:text-white h-8 w-8 p-0" onClick={() => showMap(item.id!)}>
                     <Map size={15} />
                 </Button>

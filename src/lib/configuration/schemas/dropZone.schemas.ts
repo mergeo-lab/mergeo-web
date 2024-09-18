@@ -6,11 +6,16 @@ const LatLngLiteralSchema = z.object({
   lng: z.number(),
 });
 
+const PostGis = z.array(z.tuple([z.number(), z.number()]));
+
 export const ZoneSchema = z.object({
-  polygon: z.object({
-    coordinates: z.array(LatLngLiteralSchema), // Array of LatLngLiteral objects
-    type: z.string(),
-  }),
+  coordinates: z.array(LatLngLiteralSchema), // Array of LatLngLiteral objects
+  type: z.string(),
+});
+
+export const ZoneSchemaPostGis = z.object({
+  coordinates: z.array(PostGis), // Array of LatLngLiteral objects
+  type: z.string(),
 });
 
 export const DropZoneSchema = z.object({
@@ -20,5 +25,11 @@ export const DropZoneSchema = z.object({
   zone: ZoneSchema,
 });
 
+export const IncomingDropZoneSchema = DropZoneSchema.extend({
+  zone: ZoneSchemaPostGis,
+});
+
 export type ZoneSchemaType = z.infer<typeof ZoneSchema>;
+export type ZoneSchemaPostGisType = z.infer<typeof ZoneSchemaPostGis>;
 export type DropZoneSchemaType = z.infer<typeof DropZoneSchema>;
+export type IncomingDropZoneSchemaType = z.infer<typeof IncomingDropZoneSchema>;
