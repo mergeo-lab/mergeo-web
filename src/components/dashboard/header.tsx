@@ -51,14 +51,14 @@ export function DashboardHeader({ title }: Props) {
             </div>
             <div className="h-full flex items-center gap-6">
                 <Link to="/faq">
-                    <CircleHelp size={30} />
+                    <CircleHelp size={25} className="text-secondary-background" />
                 </Link>
                 <Link to="/notifications">
-                    <Bell size={30} />
+                    <Bell size={25} className="text-secondary-background" />
                 </Link>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <CircleUserRound size={30} className="cursor-pointer" />
+                        <CircleUserRound size={25} className="cursor-pointer text-secondary-background" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56 mr-12 mt-2 p-5 space-y-2">
                         <DropdownMenuItem className="w-full justify-center border border-muted cursor-pointer">

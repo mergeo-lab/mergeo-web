@@ -1,6 +1,6 @@
 import { axiosPrivate } from '@/lib/api/axios';
 import { addUserEndpoint } from '@/lib/auth/endpoints';
-import { configurationEndpoints } from '@/lib/configuration/endpoints';
+import { configurationEndpoints } from './endpoints';
 import {
   NewUserSchemaType,
   PermissionSchemaType,

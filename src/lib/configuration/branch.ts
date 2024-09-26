@@ -2,14 +2,14 @@ import { axiosPrivate } from '@/lib/api/axios';
 import { AxiosResponse, isAxiosError } from 'axios';
 import { Response } from '@/types';
 import {
-  BRANCH,
-  BRANCH_DELETE,
-  BRANCH_EDIT,
-} from '@/lib/configuration/endpoints';
-import {
   BranchesSchemaResultsType,
   BranchesSchemaType,
 } from './schemas/branches.schemas';
+import {
+  BRANCH,
+  BRANCH_EDIT,
+  BRANCH_DELETE,
+} from '@/lib/configuration/endpoints';
 
 export async function newBranch({
   companyId,

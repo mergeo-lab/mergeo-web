@@ -99,7 +99,7 @@ export function SideBarMenu({ companyName }: Props) {
 
                 <ul className="py-4 pt-6 text-secondary-foreground [&>li]:multi-[w-full] [&>li>a]:multi-[flex;gap-2;text-sm;w-full;h-10;pl-6;py-6;items-center;] [&>li>a]:hover:multi-['hover:bg-secondary-foreground/20']">
                     <li>
-                        <Link to="/login">
+                        <Link to="/client/searchLists">
                             <ScrollText />
                             Mis Listas
                         </Link>

@@ -1,10 +1,6 @@
 import { axiosPrivate } from '@/lib/api/axios';
 import { AxiosResponse, isAxiosError } from 'axios';
-import {
-  DELETE_DROP_ZONE,
-  DROP_ZONE,
-  EDIT_DROP_ZONE,
-} from '@/lib/configuration/endpoints';
+import { DELETE_DROP_ZONE, DROP_ZONE, EDIT_DROP_ZONE } from './endpoints';
 
 import {
   DropZoneSchemaType,

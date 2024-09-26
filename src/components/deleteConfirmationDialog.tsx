@@ -17,10 +17,11 @@ type Props<T> = {
     openDialog?: boolean,
     onLoading: () => void
     mutationFn: MutationFn<T>,
-    callback: () => void
+    callback: () => void,
+    otherMutationProp?: unknown,
 }
 
-export function DeleteConfirmationDialog<T>({ id, name, title, question, triggerButton, openDialog, onLoading, mutationFn, callback }: Props<T>) {
+export function DeleteConfirmationDialog<T>({ id, name, title, question, triggerButton, openDialog, otherMutationProp, onLoading, mutationFn, callback }: Props<T>) {
     const mutation = useMutation({ mutationFn: mutationFn });
     const [open, setOpen] = useState(false);
 
@@ -38,7 +39,13 @@ export function DeleteConfirmationDialog<T>({ id, name, title, question, trigger
 
     async function remove() {
         onLoading();
-        await mutation.mutateAsync({ id } as T);
+
+        console.log("otherMutationProp", otherMutationProp)
+        if (otherMutationProp) {
+            await mutation.mutateAsync({ id, otherMutationProp } as T);
+        } else {
+            await mutation.mutateAsync({ id } as T);
+        }
 
         if (mutation.isError) {
             toast({
@@ -55,10 +62,11 @@ export function DeleteConfirmationDialog<T>({ id, name, title, question, trigger
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogTrigger className="h-6">
-                {triggerButton}
-            </DialogTrigger>
-
+            {triggerButton &&
+                <DialogTrigger className="h-6">
+                    {triggerButton}
+                </DialogTrigger>
+            }
             <DialogContent className="w-1/4">
                 {mutation.isPending &&
                     <div className="w-full h-full bg-white/60 flex justify-center items-center absolute">

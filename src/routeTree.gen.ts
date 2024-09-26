@@ -32,6 +32,7 @@ import { Route as AuthLayoutRegistrationUserImport } from './routes/_authLayout/
 import { Route as AuthLayoutRegistrationCompanyImport } from './routes/_authLayout/registration/company'
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/index'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/index'
+import { Route as AuthenticatedDashboardLayoutAccountTypeClientSearchListsImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/searchLists'
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/configuration/index'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/configuration/index'
 
@@ -171,6 +172,12 @@ const AuthenticatedDashboardLayoutAccountTypeProviderIndexRoute =
 const AuthenticatedDashboardLayoutAccountTypeClientIndexRoute =
   AuthenticatedDashboardLayoutAccountTypeClientIndexImport.update({
     path: '/client/',
+    getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
+  } as any)
+
+const AuthenticatedDashboardLayoutAccountTypeClientSearchListsRoute =
+  AuthenticatedDashboardLayoutAccountTypeClientSearchListsImport.update({
+    path: '/client/searchLists',
     getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
   } as any)
 
@@ -325,6 +332,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardLayoutIndexLazyImport
       parentRoute: typeof AuthenticatedDashboardLayoutImport
     }
+    '/_authenticated/_dashboardLayout/_accountType/client/searchLists': {
+      id: '/_authenticated/_dashboardLayout/_accountType/client/searchLists'
+      path: '/client/searchLists'
+      fullPath: '/client/searchLists'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientSearchListsImport
+      parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
+    }
     '/_authenticated/_dashboardLayout/_accountType/client/': {
       id: '/_authenticated/_dashboardLayout/_accountType/client/'
       path: '/client'
@@ -375,6 +389,7 @@ export const routeTree = rootRoute.addChildren({
       AuthenticatedDashboardLayoutRoute.addChildren({
         AuthenticatedDashboardLayoutAccountTypeRoute:
           AuthenticatedDashboardLayoutAccountTypeRoute.addChildren({
+            AuthenticatedDashboardLayoutAccountTypeClientSearchListsRoute,
             AuthenticatedDashboardLayoutAccountTypeClientIndexRoute,
             AuthenticatedDashboardLayoutAccountTypeProviderIndexRoute,
             AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexRoute,
@@ -473,6 +488,7 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "_authenticated/_dashboardLayout/_accountType.tsx",
       "parent": "/_authenticated/_dashboardLayout",
       "children": [
+        "/_authenticated/_dashboardLayout/_accountType/client/searchLists",
         "/_authenticated/_dashboardLayout/_accountType/client/",
         "/_authenticated/_dashboardLayout/_accountType/provider/",
         "/_authenticated/_dashboardLayout/_accountType/client/configuration/",
@@ -506,6 +522,10 @@ export const routeTree = rootRoute.addChildren({
     "/_authenticated/_dashboardLayout/": {
       "filePath": "_authenticated/_dashboardLayout/index.lazy.tsx",
       "parent": "/_authenticated/_dashboardLayout"
+    },
+    "/_authenticated/_dashboardLayout/_accountType/client/searchLists": {
+      "filePath": "_authenticated/_dashboardLayout/_accountType/client/searchLists.tsx",
+      "parent": "/_authenticated/_dashboardLayout/_accountType"
     },
     "/_authenticated/_dashboardLayout/_accountType/client/": {
       "filePath": "_authenticated/_dashboardLayout/_accountType/client/index.tsx",
