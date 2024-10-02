@@ -3,19 +3,21 @@ import SearchListButton from '@/components/configuration/client/searchLists/sear
 import SearchProductsTable from '@/components/configuration/client/searchLists/searchProductsTable';
 import { DeleteConfirmationDialog } from '@/components/deleteConfirmationDialog';
 import { Button } from '@/components/ui/button'
-import { deleteProduct, getSearchLists } from '@/lib/searchLists/searchLists';
+import { deleteProduct, deleteSearchList, getSearchLists, updateListName } from '@/lib/searchLists/searchLists';
 import UseCompanyStore from '@/store/company.store';
 import UseSearchListsStore from '@/store/searchLists.store';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router'
 import { CircleAlert, ListPlus, PackagePlus, Pencil, Search, Trash2, X } from 'lucide-react'
-import { useEffect, useState } from 'react';
-import { SearchListProductType } from '@/lib/searchLists/searchLists.schemas';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { SearchListProductType, SearchListType } from '@/lib/searchLists/searchLists.schemas';
 import OverlayLoadingIndicator from '@/components/ui/overlayLoadingIndicator';
 import { Input } from '@/components/ui/input';
 import { DropdownMenuCheckboxes } from '@/components/dropdownMenuCheckboxes';
 import emptyBox from '../../../../../assets/emptyBox.svg';
 import { useDebounceCallback } from 'usehooks-ts';
+import { formatDate } from '@/lib/utils';
+import EditNameDialog from '@/components/editNameDialog';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/searchLists')({
     component: () => <SearchLists />
@@ -23,11 +25,23 @@ export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountT
 
 export function SearchLists() {
     const { company } = UseCompanyStore();
-    const { addMultipleLists, removeAllLists, getAllListsNames, getListById, searchProductById, selectedList, setSelectedList, getCategoriesFromSelectedList, categoriesFromList } = UseSearchListsStore();
+    const {
+        addMultipleLists,
+        removeAllLists,
+        getAllListsNames,
+        getListById,
+        searchProductById,
+        selectedList,
+        setSelectedList,
+        getCategoriesFromSelectedList,
+        categoriesFromList,
+        lists
+    } = UseSearchListsStore();
     const [isLoading, setIsLoading] = useState(false);
     const [filteredProducts, setFilteredProducts] = useState<SearchListProductType[]>([]);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [deleteListProduct, setDeleteListProduct] = useState<{ data: SearchListProductType | null, isOpen: boolean }>({ data: null, isOpen: false });
+    const [deleteList, setDeleteList] = useState<{ data: SearchListType | null, isOpen: boolean }>({ data: null, isOpen: false });
     const [searchQuery, setSearchQuery] = useState('');
 
     const { data, isLoading: searchListsLoading, isError, refetch } = useQuery({
@@ -42,7 +56,6 @@ export function SearchLists() {
         },
         enabled: !!company?.id, // Ensure the query runs only if company ID exists
     });
-    const { lists } = UseSearchListsStore();
 
     useEffect(() => {
         if (data) {
@@ -58,44 +71,65 @@ export function SearchLists() {
             setFilteredProducts([]);
             setSelectedCategories([]);
         }
-    }, [data]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data, selectedList, addMultipleLists, removeAllLists, setSelectedList, getCategoriesFromSelectedList]);
 
-    const debouncedFilter = useDebounceCallback((query) => {
-        if (!selectedCategories) {
-            setFilteredProducts(selectedList?.products || []);
-            return; // Exit early if no categories are selected
-        }
+    const debouncedFilter = useDebounceCallback(
+        useCallback((query) => {
+            if (!selectedCategories.length && selectedList) {
+                // Return the full list if no categories are selected
+                setFilteredProducts(selectedList.products || []);
+                return;
+            }
 
-        if (selectedList) {
-            const filtered = selectedList.products.filter(product => {
-                const matchesCategory = product.category && selectedCategories.includes(product.category);
-                const matchesSearch = product.name.toLowerCase().includes(query.toLowerCase());
-                return matchesCategory && matchesSearch;
-            });
-            setFilteredProducts(filtered);
-        }
-    }, 300); // Adjust debounce duration as needed
+            if (selectedList) {
+                const filtered = selectedList.products.filter((product) => {
+                    const matchesCategory = product.category && selectedCategories.includes(product.category);
+                    const matchesSearch = product.name.toLowerCase().includes(query.toLowerCase());
+                    return matchesCategory && matchesSearch;
+                });
+                setFilteredProducts(filtered);
+            }
+        }, [selectedCategories, selectedList]), // Only recompute when categories or list change
+        300 // Debounce duration
+    );
 
     useEffect(() => {
-        debouncedFilter(searchQuery);
+        if (selectedList) {
+            debouncedFilter(searchQuery);
+        }
     }, [searchQuery, selectedList, selectedCategories, debouncedFilter]);
 
-    function handleSelectedList(id: string) {
+
+    const handleSelectedList = useCallback((id: string) => {
         if (!id) return;
         const selectedList = getListById(id);
         selectedList && setSelectedList(selectedList);
         getCategoriesFromSelectedList();
-    }
+    }, [getListById, setSelectedList, getCategoriesFromSelectedList]);
 
-    function handleRemoveProduct(id: string) {
+    const handleRemoveProduct = useCallback((id: string) => {
         if (!id) return;
         const selectedProduct = searchProductById(id);
         if (selectedProduct) setDeleteListProduct({ data: selectedProduct, isOpen: true });
         getCategoriesFromSelectedList();
-    }
+    }, [searchProductById, getCategoriesFromSelectedList]);
+
+    const handleRemoveList = useCallback((id: string | undefined) => {
+        if (!id) return;
+        const list = getListById(id);
+        if (list) setDeleteList({ data: list, isOpen: true });
+    }, [getListById]);
+
 
     function deleteComplete() {
         setDeleteListProduct({ data: null, isOpen: false });
+        setIsLoading(false);
+        refetch();
+    }
+
+    function deleteListComplete() {
+        setDeleteList({ data: null, isOpen: false });
         setIsLoading(false);
         refetch();
     }
@@ -106,7 +140,8 @@ export function SearchLists() {
 
     if (isError) return <div>Error</div>
 
-    const noElements = (
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const noElements = useMemo(() => (
         <div className='w-full h-2/3 flex flex-col justify-center items-center'>
             <p className='text-center'>
                 No esperes mas!<br />
@@ -125,18 +160,17 @@ export function SearchLists() {
                     </Button>
                 }
             />
-
             <div className='flex items-center w-2/5 gap-6 p-4 shadow rounded absolute bottom-44'>
                 <CircleAlert className='text-info' size={70} />
                 <div className='space-y-2'>
                     <p>Las <strong className='text-info'>listas</strong> sirven para hacer que tu experiencia de compra sea mas rápida y ágil.
                         Evitaras buscar producto por producto cada vez que quieras hacer una compra.</p>
-
                     <p>Cuando estes haciendo un pedido, puedes usar una de tus listas y el sistema se encargara del resto.</p>
                 </div>
             </div>
         </div>
-    )
+    ), [refetch]);
+
 
     return (
         <div className='w-full flex h-full'>
@@ -164,18 +198,41 @@ export function SearchLists() {
                                 />
                             </div>
                             <div className='w-full flex flex-col'>
-                                <div className='h-24 flex justify-between items-center px-8 bg-border'>
-                                    <div>
-                                        <h2 className='text-2xl font-bold'>{selectedList?.name}</h2>
-                                        <p className='text-sm'>Lista creada por: {selectedList?.createdBy}</p>
+                                <div className='w-full flex justify-between items-center bg-border px-8'>
+                                    <div className='h-24 flex items-center gap-5'>
+                                        <div>
+                                            <h2 className='text-2xl font-bold text-ellipsis text-nowrap max-w-96 overflow-hidden'>
+                                                {selectedList?.name}
+                                            </h2>
+                                            <p className='text-sm text-secondary/60'>Lista creada por: {selectedList?.createdBy}</p>
+                                        </div>
+                                        <div className='border border-l h-10 w-1 bg-secondary/20'></div>
+                                        <div className='flex ga-2'>
+                                            <EditNameDialog
+                                                dialogTitle="Editar nombre de la lista"
+                                                triggerButton={
+                                                    <Button variant="ghost">
+                                                        <Pencil size={18} />
+                                                    </Button>
+                                                }
+                                                name={selectedList?.name}
+                                                id={selectedList?.id}
+                                                callback={() => {
+                                                    setIsLoading(false);
+                                                    refetch()
+                                                }}
+                                                onLoading={() => setIsLoading(true)}
+                                                mutationFn={updateListName}
+                                            />
+
+                                            <Button variant="ghost" disabled={!selectedList} onClick={() => handleRemoveList(selectedList?.id)}>
+                                                <Trash2 size={18} />
+                                            </Button>
+                                        </div>
                                     </div>
-                                    <div className='flex ga-2'>
-                                        <Button variant="ghost">
-                                            <Pencil size={18} />
-                                        </Button>
-                                        <Button variant="ghost">
-                                            <Trash2 size={18} />
-                                        </Button>
+                                    <div className='text-sm text-secondary/60 items-end flex flex-col'>
+                                        <span>Actualizado el</span>
+                                        {selectedList && formatDate(selectedList?.updated)}
                                     </div>
                                 </div>
                                 <div className='h-20 flex items-center justify-between px-8 border-b'>
@@ -202,6 +259,7 @@ export function SearchLists() {
                                         <AddSearchList
                                             title='Agrega productos'
                                             subTitle='Vas a agregar productos a la lista:'
+                                            buttonText='Agregar'
                                             icon={<PackagePlus size={16} />}
                                             list={{ name: selectedList && selectedList?.name, id: selectedList && selectedList?.id }}
                                             callback={() => {
@@ -236,6 +294,7 @@ export function SearchLists() {
                                         )
                                     }
                                 </div>
+                                {/* DELETE PRODUCT CONFITMATION */}
                                 <DeleteConfirmationDialog
                                     id={deleteListProduct.data && deleteListProduct.data.id}
                                     otherMutationProp={selectedList?.id}
@@ -247,10 +306,21 @@ export function SearchLists() {
                                     mutationFn={deleteProduct}
                                     callback={deleteComplete}
                                 />
+                                {/* DELETE LIST CONFITMATION */}
+                                <DeleteConfirmationDialog
+                                    id={deleteList.data && deleteList.data.id}
+                                    name={deleteList.data && deleteList.data.name}
+                                    openDialog={deleteList && deleteList.isOpen}
+                                    title="Eliminar Lista!"
+                                    question="¿Seguro que quieres borrar la lista"
+                                    onLoading={() => setIsLoading(true)}
+                                    mutationFn={deleteSearchList}
+                                    callback={deleteListComplete}
+                                />
                             </div>
                         </>
                     )
             }
-        </div>
+        </div >
     )
 }

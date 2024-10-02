@@ -39,7 +39,7 @@ export function NewPickUpPoint(
     }: Props) {
     const [open, setOpen] = useState(false);
     const mutation = useMutation({ mutationFn: newPickUpPoints })
-    const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ lat: 0, lng: 0 });
+    const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ latitude: 0, longitude: 0 });
     const { daysAndTime, reset: resetDays } = useDaysPickerStore();
 
     const form = useForm<PickUpSchemaType>({
@@ -66,12 +66,12 @@ export function NewPickUpPoint(
             id: address.id,
             location: {
                 type: "Point",
-                coordinates: [address.location.lat, address.location.lng]
+                coordinates: [address.location.latitude, address.location.longitude]
             },
             name: address.displayName.text
         });
 
-        setMarkerPosition({ lat: address.location.lat, lng: address.location.lng });
+        setMarkerPosition({ latitude: address.location.latitude, longitude: address.location.longitude });
         form.trigger('address');
     }
 
@@ -154,7 +154,7 @@ export function NewPickUpPoint(
                                                     selectedAddress={addAddress}
                                                     disabled={false}
                                                     addressRemoved={() => {
-                                                        setMarkerPosition({ lat: 0, lng: 0 });
+                                                        setMarkerPosition({ latitude: 0, longitude: 0 });
                                                     }}
                                                 />
                                                 <FormMessage />
@@ -209,16 +209,16 @@ export function NewPickUpPoint(
                         </FormProvider>
                     </div>
                     <div className="w-1/2 h-full flex justify-center items-center bg-border overflow-hidden rounded-lg">
-                        {markerPosition.lat !== 0 && markerPosition.lng !== 0
+                        {markerPosition.latitude !== 0 && markerPosition.longitude !== 0
                             ? <Map
                                 style={{ width: '100%', height: '100%' }}
-                                center={markerPosition}
+                                center={{ lat: markerPosition.latitude, lng: markerPosition.longitude }}
                                 defaultZoom={16}
                                 maxZoom={20}
                                 gestureHandling={'greedy'}
                                 disableDefaultUI={true}
                             >
-                                <Marker position={markerPosition} />
+                                <Marker position={{ lat: markerPosition.latitude, lng: markerPosition.longitude }} />
                             </Map>
                             : <div className="flex flex-col justify-center items-center gap-2">
                                 <MapPin size={40} />

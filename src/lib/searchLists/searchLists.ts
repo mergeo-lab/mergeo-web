@@ -41,6 +41,88 @@ export async function newSearchList({
   }
 }
 
+export async function getSearchLists(
+  companyId: string
+): Promise<SearchListsResultsType[]> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${SEARCH_LISTS}/${companyId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+export async function deleteSearchList({ id }: { id: string }): Promise<void> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.delete(
+      `${SEARCH_LISTS}/${id}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal intentalo de nuevo';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+export async function updateListName({
+  id,
+  name,
+}: {
+  id: string;
+  name: string;
+}): Promise<void> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.patch(
+      `${SEARCH_LISTS}/list/${id}`,
+      { name },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal intentalo de nuevo';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+// PRODUCTS
 export async function addProductsToList({
   listId,
   body,
@@ -107,32 +189,6 @@ export async function uploadSearchListFile({
   }
 }
 
-export async function getSearchLists(
-  companyId: string
-): Promise<SearchListsResultsType[]> {
-  try {
-    const { data: response }: AxiosResponse = await axiosPrivate.get(
-      `${SEARCH_LISTS}/${companyId}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    if (isAxiosError(error)) {
-      if (error.response?.data.statusCode === 400) {
-        error.message = 'Algo salio mal, vuelve a intentarlo!';
-      } else {
-        error.message = error.response?.data.message;
-      }
-    }
-
-    throw error;
-  }
-}
-
 export async function deleteProduct(args: {
   id: string;
   otherMutationProp: unknown;
@@ -151,7 +207,7 @@ export async function deleteProduct(args: {
   } catch (error) {
     if (isAxiosError(error)) {
       if (error.response?.data.statusCode === 400) {
-        error.message = 'El email o la contraseña son incorrectos';
+        error.message = 'Algo salio mal intentalo de nuevo';
       } else {
         error.message = error.response?.data.message;
       }

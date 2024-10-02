@@ -39,9 +39,11 @@ export default function SearchProductsTable({ products, removeProduct, maxHeight
                                             {product.category}
                                         </TableCell>
                                         <TableCell className="m-0 p-0 py-2 px-4 leading-none">
-                                            <Button variant="ghost" className="w-fit h-fit" onClick={() => removeProduct(product.id!)}>
-                                                <Trash2 size={15} className="text-destructive" />
-                                            </Button>
+                                            <div className="w-full flex justify-end">
+                                                <Button variant="ghost" className="w-fit h-fit" onClick={() => removeProduct(product.id!)}>
+                                                    <Trash2 size={15} className="text-destructive" />
+                                                </Button>
+                                            </div>
                                         </TableCell>
                                     </TableRow>
 

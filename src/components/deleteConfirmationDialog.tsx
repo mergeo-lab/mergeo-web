@@ -18,10 +18,11 @@ type Props<T> = {
     onLoading: () => void
     mutationFn: MutationFn<T>,
     callback: () => void,
+    onClose?: () => void,
     otherMutationProp?: unknown,
 }
 
-export function DeleteConfirmationDialog<T>({ id, name, title, question, triggerButton, openDialog, otherMutationProp, onLoading, mutationFn, callback }: Props<T>) {
+export function DeleteConfirmationDialog<T>({ id, name, title, question, triggerButton, openDialog, otherMutationProp, onLoading, mutationFn, callback, onClose }: Props<T>) {
     const mutation = useMutation({ mutationFn: mutationFn });
     const [open, setOpen] = useState(false);
 
@@ -33,14 +34,13 @@ export function DeleteConfirmationDialog<T>({ id, name, title, question, trigger
         setOpen(open);
 
         if (!open) {
-            callback();
+            onClose && onClose();
         }
     }
 
     async function remove() {
         onLoading();
 
-        console.log("otherMutationProp", otherMutationProp)
         if (otherMutationProp) {
             await mutation.mutateAsync({ id, otherMutationProp } as T);
         } else {

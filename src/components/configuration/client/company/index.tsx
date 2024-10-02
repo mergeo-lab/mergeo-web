@@ -23,31 +23,35 @@ export function Company() {
     const [isLoading, setIsLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const mutation = useMutation({ mutationFn: updateCompany })
-    const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ lat: company?.address?.location.coordinates[1] || 0, lng: company?.address?.location.coordinates[0] || 0 });
+    const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ latitude: company?.address?.location.coordinates[1] || 0, longitude: company?.address?.location.coordinates[0] || 0 });
+
+    const defaultCompnay = {
+        id: company?.address?.id || "",
+        name: company?.name || "",
+        address: {
+            name: company?.address?.name || "",
+            location: { coordinates: company?.address?.location.coordinates || [0, 0], type: company?.address?.location.type || "Point" },
+        },
+        activity: company?.activity || "",
+    }
 
     const form = useForm<UpdateCompanySchemaType>({
         resolver: zodResolver(UpdateCompanySchema),
-        defaultValues: {
-            name: company?.name || "",
-            address: {
-                name: company?.address?.name || "",
-                location: { coordinates: company?.address?.location.coordinates || [0, 0], type: company?.address?.location.type || "Point" },
-            },
-            activity: company?.activity || "",
-        },
+        defaultValues: defaultCompnay,
     })
 
     useEffect(() => {
         if (company?.address) {
             form.reset(company);
-            addAddress({
+            const address = {
                 id: company.address.id,
                 displayName: { text: company.address.name },
                 location: {
-                    lat: company.address.location.coordinates[1],
-                    lng: company.address.location.coordinates[0]
+                    latitude: company.address.location.coordinates[1],
+                    longitude: company.address.location.coordinates[0]
                 },
-            });
+            }
+            addAddress(address);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [company]);
@@ -84,13 +88,31 @@ export function Company() {
             id: address.id,
             location: {
                 type: "Point",
-                coordinates: [address.location.lat, address.location.lng]
+                coordinates: [address.location.latitude, address.location.longitude]
             },
             name: address.displayName.text
         });
 
-        setMarkerPosition({ lat: address.location.lat, lng: address.location.lng });
+        setMarkerPosition({ latitude: address.location.latitude, longitude: address.location.longitude });
         form.trigger('address');
+    }
+
+    function handleCancelEdit() {
+        if (defaultCompnay) {
+            const { address } = defaultCompnay;
+            setMarkerPosition({ latitude: address.location.coordinates[1], longitude: address.location.coordinates[0] });
+            form.reset(defaultCompnay);
+            form.setValue("address", {
+                id: defaultCompnay.id,
+                location: {
+                    type: "Point",
+                    coordinates: address.location.coordinates
+                },
+                name: address.name
+            });
+            form.trigger('address');
+        }
+        setIsEditing(false);
     }
 
     return (
@@ -163,16 +185,24 @@ export function Company() {
                                 <FormField
                                     disabled={!isEditing}
                                     name="address"
-                                    render={() => (
+                                    render={({ field }) => (
                                         <FormItem>
                                             <FormLabel id='address'>Dirección</FormLabel>
                                             <FormControl>
                                                 <GoogleAutoComplete
                                                     disabled={!isEditing}
-                                                    defaultAddressName={company?.address?.name}
+                                                    defaultAddressName={field.value?.name}
                                                     selectedAddress={addAddress}
                                                     addressRemoved={() => {
-                                                        setMarkerPosition({ lat: 0, lng: 0 });
+                                                        field.value?.name && form.setValue('address', {
+                                                            id: "",
+                                                            location: {
+                                                                type: "Point",
+                                                                coordinates: [0, 0]
+                                                            },
+                                                            name: ""
+                                                        });
+                                                        setMarkerPosition({ latitude: 0, longitude: 0 });
                                                     }}
                                                 />
                                             </FormControl>
@@ -210,7 +240,7 @@ export function Company() {
                     <div className='flex flex-col-reverse md:flex-row justify-end items-center min-h-20 gap-2'>
                         {isEditing ?
                             <>
-                                <Button variant='secondary' onClick={() => setIsEditing(!isEditing)} className='min-w-[200px] flex gap-2' type="submit">
+                                <Button variant='secondary' onClick={handleCancelEdit} className='min-w-[200px] flex gap-2' type="submit">
                                     <span>
                                         Cancelar
                                     </span>
@@ -233,16 +263,16 @@ export function Company() {
                 </CardFooter>
             </div>
             <div className="overflow-hidden h-full w-4/12 bg-accent z-10 flex-justify-center items-center">
-                {markerPosition.lat !== 0 && markerPosition.lng !== 0
+                {markerPosition.latitude !== 0 && markerPosition.longitude !== 0
                     ? <Map
                         style={{ width: '100%', height: '100%' }}
-                        center={markerPosition}
+                        center={{ lat: markerPosition.latitude, lng: markerPosition.longitude }}
                         defaultZoom={16}
                         maxZoom={20}
                         gestureHandling={'greedy'}
                         disableDefaultUI={true}
                     >
-                        <Marker position={markerPosition} />
+                        <Marker position={{ lat: markerPosition.latitude, lng: markerPosition.longitude }} />
                     </Map>
                     : <div className="flex flex-col justify-center items-center gap-2 h-full">
                         <MapPin size={40} />

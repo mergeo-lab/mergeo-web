@@ -113,8 +113,8 @@ export function PickUpPicker({ className, companyId, isEditing, notFoundMessage,
             </ScrollArea >
             {companyId &&
                 <EditPickUp
-                    title={isEditing ? "Editar sucursal" : 'Ver sucursal'}
-                    subTitle={`Aquí puedes ${!isEditing ? 'ver los detalles' : 'editar los datos'} de la sucursal`}
+                    title={isEditing ? "Editar punto de PickUp" : 'Ver punto de PickUp'}
+                    subTitle={`Aquí puedes ${!isEditing ? 'ver los detalles' : 'editar los datos'} del punto de PickUp`}
                     companyId={companyId}
                     isOpen={editEntry.isOpen}
                     isEditing={isEditing}

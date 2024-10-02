@@ -21,6 +21,7 @@ type FormSchemaType = Omit<SearchListType, 'id'>
 type Props = {
     title?: string,
     subTitle?: string,
+    buttonText?: string,
     icon?: JSX.Element,
     list?: {
         id: string | null,
@@ -34,6 +35,7 @@ type Props = {
 export function AddSearchList({
     title = "Agregar una Lista nueva",
     subTitle = "Agregue una nueva lista de búsqueda para agilizar sus compras",
+    buttonText = "Crear Lista",
     icon = <ScrollText size={20} />,
     list,
     onLoading,
@@ -287,7 +289,7 @@ export function AddSearchList({
                             }}
                             type="submit"
                             className="w-full">
-                            Crear Lista
+                            {buttonText}
                         </Button>
                     </SheetFooter>
                 </FormProvider>

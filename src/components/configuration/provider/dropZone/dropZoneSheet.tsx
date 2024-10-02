@@ -252,7 +252,9 @@ export function DropZoneSheet({
                             {subTitle}
                         </SheetDescription>
                     </SheetHeader>
-                    <Button onClick={() => openAddZone()} variant="outline" className="mt-5 w-full">
+                    <Button onClick={() => {
+                        isAdding ? cancelEdit() : openAddZone()
+                    }} variant="outline" className="mt-5 w-full">
                         {isAdding ? "Cancelar" : "Añadir Zona"}
                     </Button>
                     <div className={cn("rounded border mt-5 overflow-hidden transition-[height] duration-500", {
@@ -377,6 +379,7 @@ export function DropZoneSheet({
                         onLoading={() => setIsLoading(true)}
                         mutationFn={deletDropZone}
                         callback={deleteComplete}
+                        onClose={() => setDeleteDropZoneData({ data: null, isOpen: false })}
                     />
                     <SheetFooter className="w-full p-10 items-center absolute bottom-0">
                         <SheetClose className="w-full">

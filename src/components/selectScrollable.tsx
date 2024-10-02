@@ -2,6 +2,7 @@
 import {
     Select,
     SelectContent,
+    SelectGroup,
     SelectItem,
     SelectTrigger,
     SelectValue,
@@ -28,16 +29,16 @@ export function SelectScrollable({ data, defautlt, placeholder, className, onCha
             <SelectTrigger className={cn("w-[280px]", className)}>
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
-            <SelectContent>
-                <SelectItem value="00:00" />
-                {
-                    data.map((item: SelectItem) => (
-                        <SelectItem key={item.value} value={item.value} disabled={item.disabled}>
-                            {item.name}
-                        </SelectItem>
-                    ))
-                }
-
+            <SelectContent className="overflow-y-auto">
+                <SelectGroup>
+                    {
+                        data.map((item: SelectItem) => (
+                            <SelectItem key={item.value} value={item.value} disabled={item.disabled}>
+                                {item.name}
+                            </SelectItem>
+                        ))
+                    }
+                </SelectGroup>
             </SelectContent>
         </Select>
     )

@@ -4,13 +4,15 @@ import { Link } from '@tanstack/react-router';
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from '@/components/ui/button';
+import UseUserStore from "@/store/user.store";
+import { ACCOUNT } from "@/lib/constants";
 
 type Props = {
     companyName: string
 }
 
 export function SideBarMenu({ companyName }: Props) {
-
+    const { user } = UseUserStore();
     const [collapsibleIsOpen, setCollapsibleIsOpen] = useState(false);
 
     const onCollapsibleChange = (value: boolean) => {
@@ -58,9 +60,7 @@ export function SideBarMenu({ companyName }: Props) {
                                 search={{ tab: 'company' }}
                                 className="font-light text-default"
                                 activeProps={{
-                                    style: {
-                                        fontWeight: 'bold',
-                                    },
+                                    className: '!text-primary',
                                 }}
                             >
                                 <Building strokeWidth={2.5} />
@@ -98,12 +98,14 @@ export function SideBarMenu({ companyName }: Props) {
                 </div>
 
                 <ul className="py-4 pt-6 text-secondary-foreground [&>li]:multi-[w-full] [&>li>a]:multi-[flex;gap-2;text-sm;w-full;h-10;pl-6;py-6;items-center;] [&>li>a]:hover:multi-['hover:bg-secondary-foreground/20']">
-                    <li>
-                        <Link to="/client/searchLists">
-                            <ScrollText />
-                            Mis Listas
-                        </Link>
-                    </li>
+                    {user?.accountType === ACCOUNT.client && (
+                        <li>
+                            <Link to="/client/searchLists">
+                                <ScrollText />
+                                Mis Listas
+                            </Link>
+                        </li>
+                    )}
                     <li>
                         <Link to="/login">
                             <WalletCards />

@@ -104,9 +104,10 @@ export default function ChooseTime({ triggerButton }: Props) {
                         Agregar
                     </Button>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 bg-border p-4 rounded">
                     <Checkbox
                         id="allDays"
+                        className="border-secondary"
                         checked={isAllDaysChecked}
                         onCheckedChange={handleChange}
                         disabled={!startHour || !endHour} />

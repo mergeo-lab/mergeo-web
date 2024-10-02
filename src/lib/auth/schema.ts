@@ -40,7 +40,13 @@ export type RegisterUserSchemaType = z.infer<typeof RegisterUserSchema>;
 export const RegisterCompanySchema = z.object({
   name: z.string().min(3, { message: 'El nombre no es valido!' }),
   razonSocial: z.string().min(3, { message: 'Ingresa tu Razon Social' }),
-  cuit: z.number(),
+  cuit: z
+    .string() // Expect string input from form
+    .min(11, { message: 'CUIT debe tener 11 dígitos' }) // Ensure it has 11 characters
+    .transform((val) => Number(val)) // Transform string to number
+    .refine((val) => !isNaN(val), {
+      message: 'CUIT debe ser un número válido',
+    }),
   address: LocationSchema,
   activity: z
     .string()

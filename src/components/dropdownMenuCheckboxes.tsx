@@ -45,7 +45,7 @@ export function DropdownMenuCheckboxes({ values, triggerLabel, disabled, callbac
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild disabled={disabled}>
+      <PopoverTrigger asChild disabled={disabled || false}>
         <Button variant="outlineSecondary" onClick={() => setOpen((prev) => !prev)}>
           {triggerLabel}
         </Button>
@@ -57,6 +57,11 @@ export function DropdownMenuCheckboxes({ values, triggerLabel, disabled, callbac
             value={value} // This will be used as a label for the checkbox
             checked={selectedValues.includes(value)}
             onChange={(checked) => {
+              // Ensure that at least one checkbox remains checked
+              if (!checked && selectedValues.length === 1) {
+                return; // Do nothing if attempting to uncheck the last item
+              }
+
               const newSelectedValues = checked
                 ? [...selectedValues, value]
                 : selectedValues.filter((v) => v !== value);

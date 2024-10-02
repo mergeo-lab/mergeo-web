@@ -28,10 +28,10 @@ function RegisterCompany() {
     defaultValues: {
       name: "",
       razonSocial: "",
-      cuit: undefined,
+      cuit: "",
       address: {
         id: "",
-        polygon: {
+        location: {
           type: "Point",
           coordinates: [0, 0],
         },
@@ -70,7 +70,7 @@ function RegisterCompany() {
     console.log("address:: ", address);
     form.setValue('address', {
       id: address.id,
-      polygon: {
+      location: {
         type: "Point",
         coordinates: [address.location.latitude, address.location.longitude]
       },
@@ -148,7 +148,7 @@ function RegisterCompany() {
                 render={() => (
                   <FormItem>
                     <FormLabel id='address'>Dirección</FormLabel>
-                    <GoogleAutoComplete selectedAddress={addAddress} />
+                    <GoogleAutoComplete selectedAddress={addAddress} disabled={false} />
                     <FormMessage />
                   </FormItem>
                 )}

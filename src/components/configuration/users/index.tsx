@@ -11,12 +11,13 @@ import { cn, formatDate } from "@/lib/utils"
 import UseCompanyStore from "@/store/company.store"
 import { AvatarImage } from "@radix-ui/react-avatar"
 import { useQuery } from "@tanstack/react-query"
-import { Pencil, Trash2, UserRoundPlus } from "lucide-react"
+import { Ban, Pencil, Trash2, UserRoundPlus } from "lucide-react"
 import { RoleDetail } from "@/components/configuration/users/roles/roleDetail"
 import { AddUserSheet } from "@/components/configuration/users/addUserSheet"
 import { DeleteUserSheet } from "@/components/configuration/users/deleteUserSheet"
 import { EditUserSheet } from "@/components/configuration/users/editUserSheet"
 import { RoleSchemaType, UserSchemaType } from "@/lib/configuration/schemas"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 
 export function Users() {
     const { company } = UseCompanyStore();
@@ -135,16 +136,30 @@ export function Users() {
                                                 } />
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <DeleteUserSheet
-                                                userId={user.id}
-                                                userData={user}
-                                                title="Eliminar usuario"
-                                                subTitle="¿Deseas borrar este usuario?"
-                                                triggerButton={<Button variant='ghost' size='sm'>
-                                                    <Trash2 size={18} />
-                                                </Button>}
-                                                callback={refetch}
-                                            />
+                                            {user.roles.find((role: RoleSchemaType) => role.name !== "admin") ?
+                                                <Dialog>
+                                                    <DialogTrigger asChild>
+                                                        <Button variant='ghost' size='sm'>
+                                                            <Trash2 size={18} />
+                                                        </Button>
+                                                    </DialogTrigger>
+                                                    <DialogContent className="w-fit p-10 flex justify-center items-center">
+                                                        <Ban size={50} className="text-destructive" />
+                                                        <p className="text-2xl">No puedes borrar un usuario <br />con el rol de Admianistrador!</p>
+                                                    </DialogContent>
+                                                </Dialog>
+                                                :
+                                                <DeleteUserSheet
+                                                    userId={user.id}
+                                                    userData={user}
+                                                    title="Eliminar usuario"
+                                                    subTitle="¿Deseas borrar este usuario?"
+                                                    triggerButton={<Button variant='ghost' size='sm'>
+                                                        <Trash2 size={18} />
+                                                    </Button>}
+                                                    callback={refetch}
+                                                />
+                                            }
                                         </TableCell>
                                     </TableRow>
                                 ))
