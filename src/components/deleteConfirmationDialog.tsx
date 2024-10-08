@@ -1,10 +1,10 @@
+import React from "react";
 import LoadingIndicator from "@/components/loadingIndicator";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/use-toast";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-
+import { useEffect, useState, useCallback } from "react";
 
 type MutationFn<T> = (args: T) => Promise<void>;
 
@@ -22,7 +22,7 @@ type Props<T> = {
     otherMutationProp?: unknown,
 }
 
-export function DeleteConfirmationDialog<T>({ id, name, title, question, triggerButton, openDialog, otherMutationProp, onLoading, mutationFn, callback, onClose }: Props<T>) {
+function DeleteConfirmationDialogComponent<T>({ id, name, title, question, triggerButton, openDialog, otherMutationProp, onLoading, mutationFn, callback, onClose }: Props<T>) {
     const mutation = useMutation({ mutationFn: mutationFn });
     const [open, setOpen] = useState(false);
 
@@ -30,15 +30,15 @@ export function DeleteConfirmationDialog<T>({ id, name, title, question, trigger
         openDialog && setOpen(openDialog);
     }, [openDialog]);
 
-    function onOpenChange(open: boolean) {
+    const onOpenChange = useCallback((open: boolean) => {
         setOpen(open);
 
         if (!open) {
             onClose && onClose();
         }
-    }
+    }, [onClose]);
 
-    async function remove() {
+    const remove = useCallback(async () => {
         onLoading();
 
         if (otherMutationProp) {
@@ -58,7 +58,7 @@ export function DeleteConfirmationDialog<T>({ id, name, title, question, trigger
             setOpen(false);
             callback();
         }
-    }
+    }, [onLoading, mutation, id, otherMutationProp, callback]);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -91,3 +91,5 @@ export function DeleteConfirmationDialog<T>({ id, name, title, question, trigger
         </Dialog>
     )
 }
+
+export const DeleteConfirmationDialog = React.memo(DeleteConfirmationDialogComponent);

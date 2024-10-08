@@ -11,7 +11,7 @@ import { BranchesSchemaType, BranchesSchema } from "@/lib/configuration/schemas"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { MapPin, Store, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
 import { DeleteConfirmationDialog } from "@/components/deleteConfirmationDialog";
@@ -132,17 +132,18 @@ export function EditBranch(
         form.reset();
     }
 
-    return (
-        <Dialog open={open} onOpenChange={(isOpen) => {
-            if (!isOpen) {
-                setOpen(false);
-                handleCancel();
-                onClose();
+    const handleOpenChange = useCallback((isOpen: boolean) => {
+        if (!isOpen) {
+            setOpen(false);
+            handleCancel();
+            onClose();
+        } else {
+            setOpen(true);
+        }
+    }, [onClose]);
 
-            } else {
-                setOpen(true);
-            }
-        }}>
+    return (
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="w-full">
                 <DialogHeader className="px-6 py-3 border bottom-1">
                     <DialogTitle className="flex items-center gap-2">
@@ -289,6 +290,5 @@ export function EditBranch(
                 </DialogFooter>
             </DialogContent>
         </Dialog >
-
     )
 }

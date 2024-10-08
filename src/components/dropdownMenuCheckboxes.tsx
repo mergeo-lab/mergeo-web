@@ -46,7 +46,7 @@ export function DropdownMenuCheckboxes({ values, triggerLabel, disabled, callbac
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild disabled={disabled || false}>
-        <Button variant="outlineSecondary" onClick={() => setOpen((prev) => !prev)}>
+        <Button variant="outlineSecondary" onClick={() => setOpen(!open)}>
           {triggerLabel}
         </Button>
       </PopoverTrigger>

@@ -100,7 +100,6 @@ export function SearchLists() {
         }
     }, [searchQuery, selectedList, selectedCategories, debouncedFilter]);
 
-
     const handleSelectedList = useCallback((id: string) => {
         if (!id) return;
         const selectedList = getListById(id);
@@ -115,27 +114,37 @@ export function SearchLists() {
         getCategoriesFromSelectedList();
     }, [searchProductById, getCategoriesFromSelectedList]);
 
-    const handleRemoveList = useCallback((id: string | undefined) => {
+    const handleRemoveListClick = useCallback((id: string | undefined) => {
         if (!id) return;
         const list = getListById(id);
-        if (list) setDeleteList({ data: list, isOpen: true });
+        if (list) {
+            setDeleteList({ data: list, isOpen: true });
+        }
     }, [getListById]);
 
+    const handleAddSearchListCallback = useCallback(() => {
+        setIsLoading(false);
+        refetch();
+    }, [refetch]);
 
-    function deleteComplete() {
+    function handleDeleteProductCallback() {
         setDeleteListProduct({ data: null, isOpen: false });
         setIsLoading(false);
         refetch();
     }
 
-    function deleteListComplete() {
+    function handleDeleteListCallback() {
         setDeleteList({ data: null, isOpen: false });
         setIsLoading(false);
         refetch();
     }
 
-    function filterByCategory(category: string[]) {
+    const handleFilterByCategory = useCallback((category: string[]) => {
         setSelectedCategories(category);
+    }, [setSelectedCategories]);
+
+    function handleIsLoading() {
+        setIsLoading(true);
     }
 
     if (isError) return <div>Error</div>
@@ -171,11 +180,52 @@ export function SearchLists() {
         </div>
     ), [refetch]);
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const memoizedCategories = useMemo(() => categoriesFromList || [], [categoriesFromList]);
+
+    // Memoize filteredProducts to prevent unnecessary re-renders of SearchProductsTable
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const memoizedFilteredProducts = useMemo(() => filteredProducts, [filteredProducts]);
+    // Memoize the OverlayLoadingIndicator to prevent unnecessary re-renders
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const MemoizedOverlayLoadingIndicator = useMemo(() => {
+        if (isLoading) {
+            return <OverlayLoadingIndicator />;
+        }
+        return null;
+    }, [isLoading]);
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const memoizedTriggerButton = useMemo(() => (
+        <Button variant="ghost">
+            <Pencil size={18} />
+        </Button>
+    ), []);
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const memoizedAddSearchListButton = useMemo(() => (
+        <Button
+            variant="outline"
+            className='w-60 flex items-center gap-4'>
+            Agregar Productos a la Lista
+            <PackagePlus size={16} />
+        </Button>
+    ), []);
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const memorizedTrashIcon = useMemo(() => (
+        <Trash2 size={18} />
+    ), []);
+
+    // Memoize the Search icon to prevent unnecessary re-renders
+    const memoizedSearchIcon = useMemo(() => (
+        <Search className='absolute top-2 left-3' />
+    ), []);
 
     return (
         <div className='w-full flex h-full'>
             {searchListsLoading ?
-                <OverlayLoadingIndicator />
+                MemoizedOverlayLoadingIndicator
                 : lists.length === 0
                     ? noElements
                     : (
@@ -210,23 +260,16 @@ export function SearchLists() {
                                         <div className='flex ga-2'>
                                             <EditNameDialog
                                                 dialogTitle="Editar nombre de la lista"
-                                                triggerButton={
-                                                    <Button variant="ghost">
-                                                        <Pencil size={18} />
-                                                    </Button>
-                                                }
+                                                triggerButton={memoizedTriggerButton}
                                                 name={selectedList?.name}
                                                 id={selectedList?.id}
-                                                callback={() => {
-                                                    setIsLoading(false);
-                                                    refetch()
-                                                }}
-                                                onLoading={() => setIsLoading(true)}
+                                                callback={handleAddSearchListCallback}
+                                                onLoading={handleIsLoading}
                                                 mutationFn={updateListName}
                                             />
 
-                                            <Button variant="ghost" disabled={!selectedList} onClick={() => handleRemoveList(selectedList?.id)}>
-                                                <Trash2 size={18} />
+                                            <Button variant="ghost" disabled={!selectedList} onClick={() => handleRemoveListClick(selectedList?.id)}>
+                                                {memorizedTrashIcon}
                                             </Button>
                                         </div>
                                     </div>
@@ -238,7 +281,7 @@ export function SearchLists() {
                                 <div className='h-20 flex items-center justify-between px-8 border-b'>
                                     <div className='flex gap-4 items-center'>
                                         <div className='relative'>
-                                            <Search className='absolute top-2 left-3' />
+                                            {memoizedSearchIcon}
                                             <Input
                                                 onChange={(e) => setSearchQuery(e.target.value)}
                                                 disabled={!!selectedList && selectedList.products.length <= 1}
@@ -249,10 +292,10 @@ export function SearchLists() {
                                             {searchQuery.length > 0 && <X size={16} className='absolute top-3 right-3 cursor-pointer' onClick={() => setSearchQuery('')} />}
                                         </div>
                                         <DropdownMenuCheckboxes
-                                            disabled={categoriesFromList && categoriesFromList?.length <= 1}
-                                            triggerLabel='Seleccionar cartegorias'
-                                            values={categoriesFromList && categoriesFromList}
-                                            callback={(selectedValues) => filterByCategory(selectedValues)}
+                                            disabled={memoizedCategories.length <= 1}
+                                            triggerLabel='Seleccionar categorías'
+                                            values={memoizedCategories}
+                                            callback={handleFilterByCategory}
                                         />
                                     </div>
                                     <div>
@@ -261,29 +304,19 @@ export function SearchLists() {
                                             subTitle='Vas a agregar productos a la lista:'
                                             buttonText='Agregar'
                                             icon={<PackagePlus size={16} />}
-                                            list={{ name: selectedList && selectedList?.name, id: selectedList && selectedList?.id }}
-                                            callback={() => {
-                                                setIsLoading(false);
-                                                refetch()
-                                            }} onLoading={() => setIsLoading(true)}
-                                            triggerButton={
-                                                <Button
-                                                    variant="outline"
-                                                    className='w-60 flex items-center gap-4'>
-                                                    Agregar Productos a la Lista
-                                                    <PackagePlus size={16} />
-                                                </Button>
-                                            }
+                                            list={{ name: selectedList && selectedList?.name, id: selectedList && selectedList?.id }} callback={handleAddSearchListCallback}
+                                            onLoading={handleIsLoading}
+                                            triggerButton={memoizedAddSearchListButton}
                                         />
                                     </div>
                                 </div>
                                 <div className='px-6 h-full'>
-                                    {isLoading && <OverlayLoadingIndicator />}
+                                    {isLoading && MemoizedOverlayLoadingIndicator}
                                     {selectedList?.products && selectedList?.products.length > 0 ?
                                         <SearchProductsTable
                                             maxHeight="450px"
-                                            products={filteredProducts && filteredProducts}
-                                            removeProduct={(id) => handleRemoveProduct(id)}
+                                            products={memoizedFilteredProducts} // Use memoized filtered products
+                                            removeProduct={handleRemoveProduct}
                                         />
                                         : (
                                             <div className='w-full h-full flex flex-col justify-center items-center gap-4'>
@@ -302,9 +335,10 @@ export function SearchLists() {
                                     openDialog={deleteListProduct && deleteListProduct.isOpen}
                                     title="Eliminar producto!"
                                     question="¿Seguro que quieres borrar producto"
-                                    onLoading={() => setIsLoading(true)}
+                                    onLoading={handleIsLoading}
                                     mutationFn={deleteProduct}
-                                    callback={deleteComplete}
+                                    callback={handleDeleteProductCallback}
+                                    onClose={() => setDeleteListProduct({ data: null, isOpen: false })}
                                 />
                                 {/* DELETE LIST CONFITMATION */}
                                 <DeleteConfirmationDialog
@@ -313,9 +347,10 @@ export function SearchLists() {
                                     openDialog={deleteList && deleteList.isOpen}
                                     title="Eliminar Lista!"
                                     question="¿Seguro que quieres borrar la lista"
-                                    onLoading={() => setIsLoading(true)}
+                                    onLoading={handleIsLoading}
                                     mutationFn={deleteSearchList}
-                                    callback={deleteListComplete}
+                                    callback={handleDeleteListCallback}
+                                    onClose={() => setDeleteList({ data: null, isOpen: false })}
                                 />
                             </div>
                         </>

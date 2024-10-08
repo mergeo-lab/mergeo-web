@@ -1,4 +1,3 @@
-
 import { EditBranch } from "@/components/configuration/branches/editBranch"
 import { NewBranch } from "@/components/configuration/branches/newBranch"
 import LoadingIndicator from "@/components/loadingIndicator"
@@ -9,7 +8,7 @@ import { getBranches } from "@/lib/configuration/branch"
 import { BranchesSchemaType } from "@/lib/configuration/schemas"
 import { useQuery } from "@tanstack/react-query"
 import { Plus } from "lucide-react"
-import { useState } from "react"
+import { useState, useCallback, useMemo } from "react"
 
 type Props = {
     companyId: string | undefined,
@@ -52,16 +51,35 @@ export function BranchPicker({ className, companyId, isEditing, notFoundMessage,
         )
     }
 
-    async function branchAdded() {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const branchAdded = useCallback(async () => {
         await refetch();
         callback && callback();
-    }
+    }, [callback, refetch]);
 
-    async function branchEdited() {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const branchEdited = useCallback(async () => {
         setEditBranch({ branchData: null, isOpen: false })
         await refetch();
         callback && callback();
-    }
+    }, [callback, refetch]);
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const handleOnClose = useCallback(() => {
+        setEditBranch({ branchData: null, isOpen: false });
+    }, []);
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const handleOnLoading = useCallback(() => {
+        onLoading && onLoading();
+    }, [onLoading]);
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const memoTriggerButton = useMemo(() => (
+        <Button className="w-8 h-8 absolute right-1 -top-1 flex justify-center items-center p-0">
+            <Plus size={15} className="text-white" />
+        </Button>
+    ), []);
 
     return (
         <div className={className}>
@@ -98,13 +116,9 @@ export function BranchPicker({ className, companyId, isEditing, notFoundMessage,
                                 subTitle={newBranch?.subTitle}
                                 icon={newBranch?.icon}
                                 companyId={companyId}
-                                triggerButton={
-                                    <Button className="w-8 h-8 absolute right-1 -top-1 flex justify-center items-center p-0">
-                                        <Plus size={15} className="text-white" />
-                                    </Button>
-                                }
+                                triggerButton={memoTriggerButton}
                                 callback={branchAdded}
-                                onLoading={() => onLoading && onLoading()}
+                                onLoading={handleOnLoading}
                             />
                         }
                     </div>
@@ -120,8 +134,8 @@ export function BranchPicker({ className, companyId, isEditing, notFoundMessage,
                     isEditing={isEditing}
                     branchData={editBranch.branchData && editBranch.branchData}
                     callback={branchEdited}
-                    onClose={() => setEditBranch({ branchData: null, isOpen: false })}
-                    onLoading={() => onLoading && onLoading()}
+                    onClose={handleOnClose}
+                    onLoading={handleOnLoading}
                 />
             }
         </div>

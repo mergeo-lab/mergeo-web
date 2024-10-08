@@ -2,6 +2,7 @@ import { Company } from '@/components/configuration/client';
 import { Users } from '@/components/configuration/users';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
+import React from 'react';
 
 type TabSearch = { tab: string };
 
@@ -35,7 +36,7 @@ function Configuration() {
         <TabsTrigger className={tabsTriggerClassName} value="users">Usuarios</TabsTrigger>
       </TabsList>
       <TabsContent className='h-[calc(100%-50px)] m-0' value="company">
-        <Company />
+        <MemoizedCompany />
       </TabsContent>
       <TabsContent className='h-[calc(100%-50px)]  m-0' value="users">
         <Users />
@@ -43,3 +44,5 @@ function Configuration() {
     </Tabs >
   )
 }
+
+const MemoizedCompany = React.memo(Company)

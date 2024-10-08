@@ -11,8 +11,9 @@ import UseRoleStore from "@/store/roles.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { UserRoundPlus } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import React from "react"; // Import React to use React.memo
 
 type FormSchemaType = Omit<NewUserSchemaType, 'id' | 'companyId'>
 
@@ -25,6 +26,9 @@ type Props = {
     callback: () => void
     triggerButton?: React.ReactNode
 }
+
+// Use React.memo to optimize ManageRoles
+const MemoizedManageRoles = React.memo(ManageRoles);
 
 export function EditUserSheet({
     userId,
@@ -232,7 +236,7 @@ export function EditUserSheet({
                             <FormItem>
                                 <FormLabel id='roles'>Rol de Usuario</FormLabel>
                                 <FormControl>
-                                    <ManageRoles />
+                                    <MemoizedManageRoles />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

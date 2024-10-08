@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import Bugsnag from '@bugsnag/js'
 import BugsnagPluginReact from '@bugsnag/plugin-react'
 import BugsnagPerformance from '@bugsnag/browser-performance'
@@ -35,7 +35,6 @@ const router = createRouter({
       </div>
     )
   },
-
 })
 
 // Register the router instance for type safety
@@ -84,12 +83,14 @@ function fallbackRender({ error, clearError }: { error: Error; info: ErrorInfo; 
   );
 }
 
-function InnerApp() {
+const InnerApp = React.memo(() => {
   const auth = useAuth()
   return <RouterProvider router={router} context={{ auth }} />
-}
+})
 
 export default function App() {
+  const apiKeyMemo = useMemo(() => googleMapsApiKey, [googleMapsApiKey]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <QueryErrorResetBoundary>
@@ -104,7 +105,7 @@ export default function App() {
             }
           >
             <AuthProvider>
-              <APIProvider apiKey={googleMapsApiKey} libraries={['places']}>
+              <APIProvider apiKey={apiKeyMemo} libraries={['places']}>
                 <InnerApp />
               </APIProvider>
             </AuthProvider>

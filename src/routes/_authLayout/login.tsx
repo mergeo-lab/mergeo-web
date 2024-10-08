@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router';
-import { zodResolver, } from '@hookform/resolvers/zod';
-import { useForm } from "react-hook-form"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from "react-hook-form";
 import { useMutation } from '@tanstack/react-query';
 import { login } from '@/lib/auth';
 import { useAuth } from '@/hooks';
@@ -13,7 +13,13 @@ import Card, { CardBody, CardFooter, CardHeader } from '@/components/card';
 import PasswordInput from '@/components/passwordInput';
 import { z } from 'zod';
 import UseCompanyStore from '@/store/company.store';
-import { useEffect } from 'react';
+import { useEffect, memo, useCallback } from 'react';
+
+// Memoize Card and its subcomponents
+const MemoizedCard = memo(Card);
+const MemoizedCardHeader = memo(CardHeader);
+const MemoizedCardBody = memo(CardBody);
+const MemoizedCardFooter = memo(CardFooter);
 
 export const Route = createFileRoute('/_authLayout/login')({
   component: () => <Login />,
@@ -26,12 +32,14 @@ const LoginSchema = z.object({
 
 type Schema = z.infer<typeof LoginSchema>
 
+const MemoizedFormField = memo(FormField);
+
 function Login() {
   const { logIn, isAuthenticated } = useAuth();
   const companyState = UseCompanyStore();
   const router = useRouter();
-  const { toast } = useToast()
-  const mutation = useMutation({ mutationFn: login })
+  const { toast } = useToast();
+  const mutation = useMutation({ mutationFn: login });
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -40,9 +48,10 @@ function Login() {
       email: "",
       password: "",
     },
-  })
+  });
 
-  const onSubmit = async (fields: Schema) => {
+  // Memoize the onSubmit function
+  const onSubmit = useCallback(async (fields: Schema) => {
     const response = await mutation.mutateAsync({ email: fields.email, password: fields.password });
 
     if (response.error) {
@@ -50,14 +59,14 @@ function Login() {
         variant: "destructive",
         title: "Error",
         description: response.error,
-      })
+      });
     } else if (response.data) {
       const { data } = response.data;
-      console.log(data)
-      companyState.saveCompany(data.company)
+      console.log(data);
+      companyState.saveCompany(data.company);
       logIn(data.user);
     }
-  }
+  }, [mutation, toast, companyState, logIn]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -69,18 +78,18 @@ function Login() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className='w-full h-full'>
-        <Card>
-          <CardHeader>
+        <MemoizedCard>
+          <MemoizedCardHeader>
             <div className='h-24 flex flex-col justify-center'>
               <h2 className="text-2xl md:text-3xl font-black text-secondary-background pb-2">
                 Ingresa a tu cuenta
               </h2>
               <p className='text-muted text-sm md:text-base'>Ingresa tu email y contraseña para ingresar a tu cuenta</p>
             </div>
-          </CardHeader>
-          <CardBody className='w-full flex justify-center m-auto h-auto' >
+          </MemoizedCardHeader>
+          <MemoizedCardBody className='w-full flex justify-center m-auto h-auto'>
             <div className='w-2/4 space-y-8'>
-              <FormField
+              <MemoizedFormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
@@ -93,7 +102,7 @@ function Login() {
                   </FormItem>
                 )}
               />
-              <FormField
+              <MemoizedFormField
                 control={form.control}
                 name="password"
                 render={({ field }) => (
@@ -120,8 +129,8 @@ function Login() {
                 </p>
               </div>
             </div>
-          </CardBody>
-          <CardFooter>
+          </MemoizedCardBody>
+          <MemoizedCardFooter>
             <div className='flex flex-col-reverse md:flex-row justify-between items-center min-h-24'>
               <p className='text-sm text-muted'>
                 No tenes una cuenta?{' '}
@@ -135,11 +144,11 @@ function Login() {
                 {mutation.isPending ? <LoadingIndicator className="w-4 h-4 text-primary-foreground" /> : 'Ingresar'}
               </Button>
             </div>
-          </CardFooter>
-        </Card>
+          </MemoizedCardFooter>
+        </MemoizedCard>
       </form>
     </Form>
-  )
+  );
 }
 
 

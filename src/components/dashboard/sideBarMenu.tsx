@@ -1,7 +1,7 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Building, ChevronDown, ChevronRight, ScrollText, Settings, UsersRound, WalletCards, Scale } from "lucide-react";
 import { Link } from '@tanstack/react-router';
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from '@/components/ui/button';
 import UseUserStore from "@/store/user.store";
@@ -15,9 +15,10 @@ export function SideBarMenu({ companyName }: Props) {
     const { user } = UseUserStore();
     const [collapsibleIsOpen, setCollapsibleIsOpen] = useState(false);
 
-    const onCollapsibleChange = (value: boolean) => {
+    // Use useCallback to memoize the onCollapsibleChange function
+    const onCollapsibleChange = useCallback((value: boolean) => {
         setCollapsibleIsOpen(value);
-    }
+    }, []);
 
     const onLinkClicked = () => {
         setTimeout(() => {

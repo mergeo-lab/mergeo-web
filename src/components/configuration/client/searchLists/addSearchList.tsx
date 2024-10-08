@@ -88,6 +88,14 @@ export function AddSearchList({
         setOpen(false);
     }, []);
 
+    const handleOpenChange = useCallback((isOpen: boolean) => {
+        if (!isOpen) {
+            closeModal();
+        } else {
+            setOpen(isOpen);
+        }
+    }, [closeModal]);
+
     async function addProductsToExistingList(id: string, fields: FormSchemaType) {
         if (fields.products && fields.products.length > 0) {
             await addProductsMutation.mutateAsync({ listId: id, body: fields.products });
@@ -181,14 +189,17 @@ export function AddSearchList({
         }
     }
 
+    // Wrap the callback and onLoading functions in useCallback
+    const memoizedCallback = useCallback(() => {
+        callback();
+    }, [callback]);
+
+    const memoizedOnLoading = useCallback(() => {
+        onLoading();
+    }, [onLoading]);
+
     return (
-        <Sheet open={open} onOpenChange={(isOpen) => {
-            if (!isOpen) {
-                closeModal();
-            } else {
-                setOpen(isOpen);
-            }
-        }}>
+        <Sheet open={open} onOpenChange={handleOpenChange}>
             <SheetTrigger>
                 {triggerButton}
             </SheetTrigger>

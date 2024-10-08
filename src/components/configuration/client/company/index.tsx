@@ -10,13 +10,25 @@ import { Map, Marker } from '@vis.gl/react-google-maps';
 import UseCompanyStore from "@/store/company.store";
 import { MapPin, Pencil } from "lucide-react";
 import { BranchPicker } from "@/components/configuration/branches/branchPicker";
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
 import { GoogleAutoComplete } from "@/components/googleAutoComplete";
 import { GoogleLocationSchemaType, LatLngLiteralType } from "@/lib/common/schemas";
 import { useMutation } from "@tanstack/react-query";
 import { updateCompany } from "@/lib/configuration/company";
 import { toast } from "@/components/ui/use-toast";
+
+const MemoizedFormItem = memo(({ value }: { value: string }) => (
+    <FormItem>
+        <FormLabel id='cuit'>CUIT</FormLabel>
+        <FormControl>
+            <Input disabled={true} value={value} className={cn("", {
+                'disabledStyle': true
+            })} />
+        </FormControl>
+        <FormMessage />
+    </FormItem>
+));
 
 export function Company() {
     const { company, saveCompany } = UseCompanyStore();
@@ -155,15 +167,7 @@ export function Company() {
                                 </FormItem>
                             </div>
                             <div className='grid grid-cols-2 gap-10'>
-                                <FormItem>
-                                    <FormLabel id='cuit'>CUIT</FormLabel>
-                                    <FormControl>
-                                        <Input disabled={true} value={company?.cuit && company?.cuit} className={cn("", {
-                                            'disabledStyle': true
-                                        })} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                                <MemoizedFormItem value={company?.cuit && company?.cuit} />
                                 <FormField
                                     disabled={!isEditing}
                                     name="activity"

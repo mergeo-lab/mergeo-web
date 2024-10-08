@@ -1,6 +1,6 @@
 import List from "@/components/list";
 import { Input } from "@/components/ui/input";
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { useDebounceCallback, useOnClickOutside } from 'usehooks-ts'
 import useGoogle from "react-google-autocomplete/lib/usePlacesAutocompleteService";
 import LoadingIndicator from '@/components/loadingIndicator';
@@ -8,7 +8,6 @@ import { MapPin, Search, X } from "lucide-react";
 import { getLocationInfo } from "@/lib/auth";
 import { GoogleLocationSchemaType } from "@/lib/common/schemas";
 import { toast } from "@/components/ui/use-toast";
-import { useEffect } from 'react'
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -46,7 +45,7 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRem
     const [value, setValue] = useState("");
 
     const debounced = useDebounceCallback(
-        (value) => getPlacePredictions({ input: value }),
+        useCallback((value) => getPlacePredictions({ input: value }), [getPlacePredictions]),
         debounce
     );
 
@@ -96,6 +95,12 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRem
         inputRef.current?.focus();
     };
 
+    const handleChange = useCallback((evt) => {
+        debounced(evt.target.value);
+        setValue(evt.target.value);
+        if (evt.target.value === "") setSelected(false);
+    }, [debounced]);
+
     return (
         <div ref={ref} className="relative">
             <div className="w-full h-10 relative overflow-hidden">
@@ -107,11 +112,7 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRem
                     className={cn("w-full text-ellipsis pr-12 select-none overflow-hidden", {
                         'disabledStyle': disabled
                     })}
-                    onChange={(evt) => {
-                        debounced(evt.target.value)
-                        setValue(evt.target.value);
-                        if (evt.target.value == "") setSelected(false);
-                    }}
+                    onChange={handleChange}
                 />
 
                 {isPlacePredictionsLoading || isLoading

@@ -47,7 +47,7 @@ export function RoleDetail({ role, canEdit = false, isEdited }: Props) {
     }, [groupAndTransformPermissions, role.permissions]);
 
 
-    const checkboxChange = (permissionGroup: GroupedPermissionsSchemaType, action: 'create' | 'edit' | 'delete' | 'todos') => {
+    const checkboxChange = useCallback((permissionGroup: GroupedPermissionsSchemaType, action: 'create' | 'edit' | 'delete' | 'todos') => {
         const updatedPermissionsList = permissionsList.map(permission => {
             if (permission.group === permissionGroup.group) {
                 if (action === 'todos') {
@@ -84,7 +84,7 @@ export function RoleDetail({ role, canEdit = false, isEdited }: Props) {
 
             isEdited(updatedRole);
         }
-    };
+    }, [permissionsList, role, isEdited]);
 
     return (
         <div className="h-[430px] min-w-[370px]">

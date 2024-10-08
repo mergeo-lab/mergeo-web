@@ -12,19 +12,31 @@ const DialogPortal = DialogPrimitive.Portal
 
 const DialogClose = DialogPrimitive.Close
 
-const DialogOverlay = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Overlay>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
->(({ className, ...props }, ref) => (
-  <DialogPrimitive.Overlay
-    ref={ref}
-    className={cn(
-      "fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-      className
-    )}
-    {...props}
-  />
-))
+// Memoize DialogOverlay to prevent unnecessary re-renders
+const DialogOverlay = React.memo(
+  React.forwardRef<
+    React.ElementRef<typeof DialogPrimitive.Overlay>,
+    React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
+  >(({ className, ...props }, ref) => {
+    // Use useMemo to cache the className computation
+    const computedClassName = React.useMemo(
+      () =>
+        cn(
+          "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+          className
+        ),
+      [className]
+    )
+
+    return (
+      <DialogPrimitive.Overlay
+        ref={ref}
+        className={computedClassName}
+        {...props}
+      />
+    )
+  })
+)
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
 const DialogContent = React.forwardRef<

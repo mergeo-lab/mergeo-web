@@ -26,18 +26,27 @@ const FormFieldContext = React.createContext<FormFieldContextValue>(
   {} as FormFieldContextValue
 )
 
-const FormField = <
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
->({
-  ...props
-}: ControllerProps<TFieldValues, TName>) => {
-  return (
-    <FormFieldContext.Provider value={{ name: props.name }}>
-      <Controller {...props} />
-    </FormFieldContext.Provider>
-  )
-}
+const FormField = React.memo(
+  <
+    TFieldValues extends FieldValues = FieldValues,
+    TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  >({
+    ...props
+  }: ControllerProps<TFieldValues, TName>) => {
+    const contextValue = React.useMemo(() => ({ name: props.name }), [props.name])
+
+    const render = React.useCallback(
+      (fieldProps) => <Controller {...props} {...fieldProps} />,
+      [props]
+    )
+
+    return (
+      <FormFieldContext.Provider value={contextValue}>
+        <Controller {...props} render={render} />
+      </FormFieldContext.Provider>
+    )
+  }
+)
 
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext)
@@ -75,9 +84,10 @@ const FormItem = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
   const id = React.useId()
+  const contextValue = React.useMemo(() => ({ id }), [id])
 
   return (
-    <FormItemContext.Provider value={{ id }}>
+    <FormItemContext.Provider value={contextValue}>
       <div ref={ref} className={cn("space-y-2", className)} {...props} />
     </FormItemContext.Provider>
   )

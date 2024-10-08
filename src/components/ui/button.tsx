@@ -43,12 +43,23 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, onClick, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
+
+    // Memoize the onClick handler to prevent unnecessary rerenders
+    const memoizedOnClick = React.useCallback(onClick, [onClick])
+
+    // Memoize the className to prevent unnecessary recalculations
+    const memoizedClassName = React.useMemo(
+      () => cn(buttonVariants({ variant, size, className })),
+      [variant, size, className]
+    )
+
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={memoizedClassName}
         ref={ref}
+        onClick={memoizedOnClick}
         {...props}
       />
     )

@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query"
 import { logout } from "@/lib/auth"
 import { toast } from "@/components/ui/use-toast"
 import { useAuth } from "@/hooks"
-import { useEffect } from "react"
+import { useEffect, useCallback, memo } from "react"
 
 type Props = {
     title?: {
@@ -19,7 +19,8 @@ export function DashboardHeader({ title }: Props) {
     const { logOut, isAuthenticated } = useAuth();
     const router = useRouter();
 
-    const closeSession = async () => {
+    // Memoize the closeSession function to ensure it remains stable
+    const closeSession = useCallback(async () => {
         const response = await mutation.mutateAsync();
 
         if (response.error) {
@@ -31,7 +32,7 @@ export function DashboardHeader({ title }: Props) {
         } else if (response.data) {
             logOut();
         }
-    }
+    }, [mutation, logOut]);
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -40,10 +41,24 @@ export function DashboardHeader({ title }: Props) {
         }
     }, [isAuthenticated, router.history]);
 
+    // Memoize individual DropdownMenuItems to prevent unnecessary re-renders
+    const MemoizedProfileItem = memo(() => (
+        <DropdownMenuItem className="w-full justify-center border border-muted cursor-pointer">
+            Mi Perfil
+        </DropdownMenuItem>
+    ));
+
+    const MemoizedLogoutItem = memo(() => (
+        <DropdownMenuItem
+            onClick={closeSession}
+            className="w-full justify-center border border-muted cursor-pointer">
+            Cerrar Sesion
+        </DropdownMenuItem>
+    ));
+
     return (
         <div className='h-24 w-full flex items-center justify-between px-5'>
             <div className="flex items-center">
-
                 <div className="mr-2">
                     {title && title.icon && title.icon}
                 </div>
@@ -61,14 +76,8 @@ export function DashboardHeader({ title }: Props) {
                         <CircleUserRound size={25} className="cursor-pointer text-secondary-background" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56 mr-12 mt-2 p-5 space-y-2">
-                        <DropdownMenuItem className="w-full justify-center border border-muted cursor-pointer">
-                            Mi Perfil
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            onClick={closeSession}
-                            className="w-full justify-center border border-muted cursor-pointer">
-                            Cerrar Sesion
-                        </DropdownMenuItem>
+                        <MemoizedProfileItem />
+                        <MemoizedLogoutItem />
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
