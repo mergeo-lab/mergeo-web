@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { PickUpSchedulesSchemaType } from '@/lib/configuration/schemas/pickUp.schema';
+import { PickUpSchedulesSchemaType } from '@/lib/schemas/pickUp.schema';
 
 interface Day {
   name: string;

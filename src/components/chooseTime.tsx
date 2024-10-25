@@ -2,8 +2,8 @@ import { SelectScrollable } from "@/components/selectScrollable";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DialogContent, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
-import { PickUpSchedulesSchemaType } from "@/lib/configuration/schemas/pickUp.schema";
-import { generateHourSlots } from "@/lib/utils";
+import { PickUpSchedulesSchemaType } from "@/lib/schemas/pickUp.schema";
+import { generateHourSlots, timeStringToNumber } from "@/lib/utils";
 import useDaysPickerStore from "@/store/daysPicker.store";
 import { HourSlot } from "@/types";
 import { CheckedState } from "@radix-ui/react-checkbox";
@@ -43,8 +43,8 @@ export default function ChooseTime({ triggerButton }: Props) {
                 const newEntry: PickUpSchedulesSchemaType = {
                     id: crypto.randomUUID(),
                     day: day.name, // Add the day for each entry
-                    startHour,
-                    endHour,
+                    startHour: timeStringToNumber(startHour),
+                    endHour: timeStringToNumber(endHour),
                 };
                 addDayAndTime(newEntry); // Add the entry for each day
             });
@@ -54,8 +54,8 @@ export default function ChooseTime({ triggerButton }: Props) {
             const newEntry: PickUpSchedulesSchemaType = {
                 id: crypto.randomUUID(),
                 day: dayName || '',
-                startHour,
-                endHour,
+                startHour: timeStringToNumber(startHour),
+                endHour: timeStringToNumber(endHour),
             };
             addDayAndTime(newEntry);
         }

@@ -5,7 +5,6 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { GoogleLocationSchemaType, LatLngLiteralType } from "@/lib/common/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { MapPin, Store, Trash2 } from "lucide-react";
@@ -14,7 +13,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
 import { DeleteConfirmationDialog } from "@/components/deleteConfirmationDialog";
 import { cn } from "@/lib/utils";
-import { PickUpSchedulesSchemaType, PickUpSchema, PickUpSchemaType } from "@/lib/configuration/schemas/pickUp.schema";
+import { PickUpSchedulesSchemaType, PickUpSchema, PickUpSchemaType, GoogleLocationSchemaType, LatLngLiteralType } from "@/lib/schemas";
 import DaysPicker from "@/components/daysPicker";
 import useDaysPickerStore from "@/store/daysPicker.store";
 import { deletPickUpPoint, editPickUpPoints } from "@/lib/configuration/pickUp";
@@ -47,7 +46,7 @@ export function EditPickUp(
     const [open, setOpen] = useState(false);
     const [isLoading, setIsloading] = useState(false);
     const mutation = useMutation({ mutationFn: editPickUpPoints })
-    const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ lat: 0, lng: 0 });
+    const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ latitude: 0, longitude: 0 });
     const { daysAndTime } = useDaysPickerStore();
 
     useEffect(() => {
@@ -65,8 +64,8 @@ export function EditPickUp(
                 id: pickUpData.address.id,
                 displayName: { text: pickUpData.address.name },
                 location: {
-                    lat: pickUpData.address.location.coordinates[1],
-                    lng: pickUpData.address.location.coordinates[0]
+                    latitude: pickUpData.address.location.coordinates[1],
+                    longitude: pickUpData.address.location.coordinates[0]
                 },
             });
         }
@@ -99,12 +98,12 @@ export function EditPickUp(
             id: address.id,
             location: {
                 type: "Point",
-                coordinates: [address.location.lat, address.location.lng]
+                coordinates: [address.location.latitude, address.location.longitude]
             },
             name: address.displayName.text
         });
 
-        setMarkerPosition({ lat: address.location.lat, lng: address.location.lng });
+        setMarkerPosition({ latitude: address.location.latitude, longitude: address.location.longitude });
         form.trigger('address');
     }
 
@@ -166,8 +165,8 @@ export function EditPickUp(
                     {isLoading && <OverlayLoadingIndicator />}
                     <div className="w-1/2">
                         <FormProvider {...form}>
-                            <div className="h-4/5 p-10">
-                                <form className='space-y-8'>
+                            <div className="h-4/5 px-10 py-2">
+                                <form className='space-y-6'>
                                     <FormField
                                         control={form.control}
                                         name="name"
@@ -194,7 +193,7 @@ export function EditPickUp(
                                                     defaultAddressName={pickUpData?.address.name}
                                                     selectedAddress={addAddress}
                                                     addressRemoved={() => {
-                                                        setMarkerPosition({ lat: 0, lng: 0 });
+                                                        setMarkerPosition({ latitude: 0, longitude: 0 });
                                                     }}
                                                 />
                                                 <FormMessage />
@@ -254,16 +253,16 @@ export function EditPickUp(
                         </FormProvider>
                     </div>
                     <div className="w-1/2 h-full flex justify-center items-center bg-border overflow-hidden rounded-lg">
-                        {markerPosition.lat !== 0 && markerPosition.lng !== 0
+                        {markerPosition.latitude !== 0 && markerPosition.longitude !== 0
                             ? <Map
                                 style={{ width: '100%', height: '100%' }}
-                                center={markerPosition}
+                                center={{ lat: markerPosition.latitude, lng: markerPosition.longitude }}
                                 defaultZoom={16}
                                 maxZoom={20}
                                 gestureHandling={'greedy'}
                                 disableDefaultUI={true}
                             >
-                                <Marker position={markerPosition} />
+                                <Marker position={{ lat: markerPosition.latitude, lng: markerPosition.longitude }} />
                             </Map>
                             : <div className="flex flex-col justify-center items-center gap-2">
                                 <MapPin size={40} />

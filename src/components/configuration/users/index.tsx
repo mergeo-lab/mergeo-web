@@ -16,7 +16,7 @@ import { RoleDetail } from "@/components/configuration/users/roles/roleDetail"
 import { AddUserSheet } from "@/components/configuration/users/addUserSheet"
 import { DeleteUserSheet } from "@/components/configuration/users/deleteUserSheet"
 import { EditUserSheet } from "@/components/configuration/users/editUserSheet"
-import { RoleSchemaType, UserSchemaType } from "@/lib/configuration/schemas"
+import { RoleSchemaType, UserSchemaType } from "@/lib/schemas"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 
 export function Users() {

@@ -1,4 +1,4 @@
-import { LocationSchema } from '@/lib/common/schemas';
+import { BranchesSchema } from '@/lib/schemas';
 import * as z from 'zod';
 
 export const BaseRegisterUserSchema = z.object({
@@ -47,7 +47,7 @@ export const RegisterCompanySchema = z.object({
     .refine((val) => !isNaN(val), {
       message: 'CUIT debe ser un número válido',
     }),
-  address: LocationSchema,
+  branch: BranchesSchema,
   activity: z
     .string()
     .min(6, { message: 'Tiene que tener al menos 6 caracteres!' }),

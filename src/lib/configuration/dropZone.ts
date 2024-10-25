@@ -2,11 +2,8 @@ import { axiosPrivate } from '@/lib/api/axios';
 import { AxiosResponse, isAxiosError } from 'axios';
 import { DELETE_DROP_ZONE, DROP_ZONE, EDIT_DROP_ZONE } from './endpoints';
 
-import {
-  DropZoneSchemaType,
-  IncomingDropZoneSchemaType,
-} from '@/lib/configuration/schemas/dropZone.schemas';
-import { transformPolygonToGeoJSON } from '@/lib/utils';
+import { DropZoneSchemaType, IncomingDropZoneSchemaType } from '@/lib/schemas';
+import { timeStringToNumber, transformPolygonToGeoJSON } from '@/lib/utils';
 
 export async function newDropZone({
   companyId,
@@ -18,13 +15,22 @@ export async function newDropZone({
   try {
     // TODO transform lat, lng to [][]
     const coordinates = transformPolygonToGeoJSON(body.zone.coordinates);
+    const schedules = body.schedules.map((schedule) => ({
+      ...schedule,
+      startHour: schedule.startHour
+        ? timeStringToNumber(schedule.startHour)
+        : undefined,
+      endHour: schedule.endHour
+        ? timeStringToNumber(schedule.endHour)
+        : undefined,
+    }));
     const payload = {
       zone: {
         ...coordinates,
         type: 'Polygon',
       },
       name: body.name,
-      schedules: body.schedules,
+      schedules: schedules,
     };
 
     const { data: response }: AxiosResponse = await axiosPrivate.post(
@@ -58,17 +64,27 @@ export async function apiEditDropZone({
   body: DropZoneSchemaType;
 }): Promise<IncomingDropZoneSchemaType> {
   try {
-    const payload: Partial<IncomingDropZoneSchemaType> = {};
+    const payload: IncomingDropZoneSchemaType = {
+      name: '',
+      schedules: [],
+      zone: { type: '', coordinates: [] },
+    };
     if (body.zone) {
       const coordinates =
         body.zone && transformPolygonToGeoJSON(body.zone.coordinates);
+
+      const schedules = body.schedules.map((schedule) => ({
+        ...schedule,
+        startHour: schedule.startHour ? schedule.startHour : undefined,
+        endHour: schedule.endHour ? schedule.endHour : undefined,
+      }));
 
       payload.zone = {
         ...coordinates,
         type: 'Polygon',
       };
       payload.name = body.name;
-      payload.schedules = body.schedules;
+      payload.schedules = schedules;
     }
     const { data: response }: AxiosResponse = await axiosPrivate.patch(
       EDIT_DROP_ZONE(id),

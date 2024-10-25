@@ -3,7 +3,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { toast } from "@/components/ui/use-toast"
-import { DeleteUserSchemaType, DeleteUserSchema, NewUserSchema, NewUserSchemaType, UserSchemaType } from "@/lib/configuration/schemas"
+import { DeleteUserSchemaType, DeleteUserSchema, NewUserSchema, NewUserSchemaType, UserSchemaType } from "@/lib/schemas"
 import { deleteUser } from "@/lib/configuration/users"
 import { splitFullName } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { getBranches } from "@/lib/configuration/branch"
-import { BranchesSchemaType } from "@/lib/configuration/schemas"
+import { BranchesSchemaType } from "@/lib/schemas"
 import { useQuery } from "@tanstack/react-query"
 import { Plus } from "lucide-react"
 import { useState, useCallback, useMemo } from "react"
@@ -36,7 +36,7 @@ export function BranchPicker({ className, companyId, isEditing, notFoundMessage,
         queryKey: ['branches', companyId],
         queryFn: () => companyId ? getBranches({ companyId }) : Promise.reject(new Error('Company ID is undefined')),
     })
-    const branches = branchesResult?.data?.company?.branches;
+    const branches = branchesResult?.data?.company?.branches.filter(branch => !branch.isMain) || [];
 
     const handleEditBranch = async (branch: BranchesSchemaType) => {
         setEditBranch({ branchData: branch, isOpen: true });

@@ -1,10 +1,7 @@
 import { axiosPrivate } from '@/lib/api/axios';
 import { AxiosResponse, isAxiosError } from 'axios';
 import { Response } from '@/types';
-import {
-  BranchesSchemaResultsType,
-  BranchesSchemaType,
-} from './schemas/branches.schemas';
+import { BranchesSchemaResultsType, BranchesSchemaType } from '@/lib/schemas';
 import {
   BRANCH,
   BRANCH_EDIT,

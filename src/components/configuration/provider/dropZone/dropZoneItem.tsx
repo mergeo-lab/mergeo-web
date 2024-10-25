@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { DropZoneSchemaType } from "@/lib/configuration/schemas/dropZone.schemas"
+import { DropZoneSchemaType } from "@/lib/schemas"
 import { Map, PenIcon, Trash2 } from "lucide-react";
 import ScheduleHoverCard from "@/components/scheduleHoverCard";
 import { cn } from "@/lib/utils";

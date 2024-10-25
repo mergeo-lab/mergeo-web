@@ -1,6 +1,6 @@
-import { LocationSchema } from '@/lib/common/schemas';
 import * as z from 'zod';
 import parsePhoneNumber from 'libphonenumber-js';
+import { LocationSchema } from '@/lib/schemas';
 
 export const zPhoneNumber = z.string().transform((value, ctx) => {
   const phoneNumber = parsePhoneNumber(value, {
@@ -30,11 +30,11 @@ export const zPhoneNumber = z.string().transform((value, ctx) => {
 
 export const BranchesSchema = z.object({
   id: z.string().optional(),
-  name: z.string().min(3, { message: 'Ingresa un nombre!' }),
-  email: z.string().email('Ingresa un email valido!'),
-  phoneNumber: zPhoneNumber,
+  name: z.string().min(3, { message: 'Ingresa un nombre!' }).optional(),
+  email: z.string().email('Ingresa un email valido!').optional(),
+  phoneNumber: zPhoneNumber.optional(),
+  isMain: z.boolean().optional(),
   address: LocationSchema.superRefine((address, ctx) => {
-    console.log('Address validation triggered:', address);
     if (!address.id || !address.name) {
       ctx.addIssue({
         path: ['name'],

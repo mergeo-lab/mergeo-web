@@ -1,4 +1,4 @@
-import { PickUpSchedulesSchema } from '@/lib/configuration/schemas/pickUp.schema';
+import { PickUpSchedulesSchema } from '@/lib/schemas';
 import * as z from 'zod';
 
 const LatLngLiteralSchema = z.object({

@@ -85,3 +85,29 @@ export function transformToLatLng(
     lng: pair[0], // lng is the first element
   }));
 }
+
+// Transforms string "07:00 to number 7000"¸
+export function timeStringToNumber(timeString: string): number {
+  // Split the time string by the colon
+  const [hours, minutes] = timeString.split(':');
+
+  // Convert hours and minutes to integers
+  const hoursInt = parseInt(hours, 10);
+  const minutesInt = parseInt(minutes, 10);
+
+  // Return the number in the format HHMM
+  return hoursInt * 100 + minutesInt;
+}
+
+export function numberToTimeString(time: number | undefined): string {
+  if (!time) return '00:00';
+  // Extract hours and minutes
+  const hours = Math.floor(time / 100);
+  const minutes = time % 100;
+
+  // Pad hours and minutes with leading zeros if necessary, then return the time string
+  const hoursString = hours.toString().padStart(2, '0');
+  const minutesString = minutes.toString().padStart(2, '0');
+
+  return `${hoursString}:${minutesString}hs`;
+}

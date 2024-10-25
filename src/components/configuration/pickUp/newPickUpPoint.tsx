@@ -5,14 +5,13 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { GoogleLocationSchemaType, LatLngLiteralType } from "@/lib/common/schemas";
+import { GoogleLocationSchemaType, LatLngLiteralType, PickUpSchedulesSchemaType, PickUpSchema, PickUpSchemaType } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { MapPin, Store } from "lucide-react";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
-import { PickUpSchedulesSchemaType, PickUpSchema, PickUpSchemaType } from "@/lib/configuration/schemas/pickUp.schema";
 import DaysPicker from "@/components/daysPicker";
 import useDaysPickerStore from "@/store/daysPicker.store";
 import { newPickUpPoints } from "@/lib/configuration/pickUp";

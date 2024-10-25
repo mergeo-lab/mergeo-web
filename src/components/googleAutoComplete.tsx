@@ -6,7 +6,7 @@ import useGoogle from "react-google-autocomplete/lib/usePlacesAutocompleteServic
 import LoadingIndicator from '@/components/loadingIndicator';
 import { MapPin, Search, X } from "lucide-react";
 import { getLocationInfo } from "@/lib/auth";
-import { GoogleLocationSchemaType } from "@/lib/common/schemas";
+import { GoogleLocationSchemaType } from "@/lib/schemas";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -15,10 +15,11 @@ type Props = {
     selectedAddress: (address: GoogleLocationSchemaType) => void,
     defaultAddressName?: string,
     disabled: boolean,
-    addressRemoved?: () => void
+    addressRemoved?: () => void,
+    isEditing?: boolean
 }
 
-export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRemoved, defaultAddressName, disabled }: Props) {
+export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRemoved, defaultAddressName, disabled, isEditing }: Props) {
     const ref = useRef(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const [selected, setSelected] = useState(false);
@@ -26,7 +27,7 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRem
 
     useEffect(() => {
         defaultAddressName && setValue(defaultAddressName);
-    }, [defaultAddressName]);
+    }, [defaultAddressName, isEditing]);
 
     const {
         placePredictions,

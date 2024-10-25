@@ -5,9 +5,8 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { GoogleLocationSchemaType, LatLngLiteralType } from "@/lib/common/schemas";
+import { GoogleLocationSchemaType, LatLngLiteralType, BranchesSchemaType, BranchesSchema } from "@/lib/schemas";
 import { newBranch } from "@/lib/configuration/branch";
-import { BranchesSchemaType, BranchesSchema } from "@/lib/configuration/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { MapPin, Store } from "lucide-react";

@@ -1,7 +1,7 @@
-import { Badge } from "@/components/ui/badge";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { PickUpSchedulesSchemaType } from "@/lib/configuration/schemas/pickUp.schema";
+import { PickUpSchedulesSchemaType } from "@/lib/schemas";
+import { numberToTimeString } from "@/lib/utils";
 
 
 function groupSchedulesByDay(schedules: PickUpSchedulesSchemaType[]) {
@@ -43,13 +43,13 @@ export default function ScheduleHoverCard({ schedules }: { schedules: PickUpSche
                                     {groupedSchedules[day].map((schedule) => (
                                         <TableRow key={schedule.id} className="hover:bg-white w-full h-2 odd:bg-muted/20 hover:bg-muted/30">
                                             <TableCell className="h-2 py-2">
-                                                {schedule.startHour}
+                                                {numberToTimeString(schedule.startHour)}
                                             </TableCell>
                                             <TableCell className="w-fit h-2 py-2">
                                                 -
                                             </TableCell>
                                             <TableCell className="h-2 py-2">
-                                                {schedule.endHour}
+                                                {numberToTimeString(schedule.endHour)}
                                             </TableCell>
                                         </TableRow>
                                     ))}

@@ -4,7 +4,7 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "@/components/ui/use-toast";
-import { NewUserSchemaType, NewUserSchema } from "@/lib/configuration/schemas";
+import { NewUserSchemaType, NewUserSchema } from "@/lib/schemas";
 import { addUser } from "@/lib/configuration/users";
 import UseCompanyStore from "@/store/company.store";
 import UseRoleStore from "@/store/roles.store";

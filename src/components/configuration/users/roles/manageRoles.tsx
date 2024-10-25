@@ -11,7 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/components/ui/use-toast";
 import { roleDelete, roleUpdate } from "@/lib/configuration/roles";
-import { PermissionSchemaType, RoleSchemaType } from "@/lib/configuration/schemas";
+import { PermissionSchemaType, RoleSchemaType } from "@/lib/schemas";
 import { getAllRoles, getPermissions } from "@/lib/configuration/users";
 import { cn } from "@/lib/utils";
 import UseCompanyStore from "@/store/company.store";

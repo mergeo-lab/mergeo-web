@@ -1,4 +1,4 @@
-import { BranchesSchemaType } from '@/lib/configuration/schemas';
+import { BranchesSchemaType } from '@/lib/schemas';
 import { create } from 'zustand';
 
 type BranchesStore = {

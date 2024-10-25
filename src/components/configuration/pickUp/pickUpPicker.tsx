@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { getPickUpPoints } from "@/lib/configuration/pickUp"
-import { PickUpSchemaType } from "@/lib/configuration/schemas/pickUp.schema"
+import { PickUpSchemaType } from "@/lib/schemas"
 import { useQuery } from "@tanstack/react-query"
 import { Plus } from "lucide-react"
 import { useState } from "react"
@@ -34,9 +34,10 @@ export function PickUpPicker({ className, companyId, isEditing, notFoundMessage,
     const [editEntry, setEditEntry] = useState<EditEntry>({ entryData: null, isOpen: false });
 
     const { data: pickUpResult, isLoading, isError, refetch } = useQuery({
-        queryKey: ['branches', companyId],
+        queryKey: ['pickUp', companyId],
         queryFn: () => companyId ? getPickUpPoints({ companyId }) : Promise.reject(new Error('Company ID is undefined')),
-    })
+    });
+
     const pickUpPoints = pickUpResult?.data;
     console.log("pickUpPoints", pickUpPoints)
     const handleEditPickUp = async (pickUp: PickUpSchemaType) => {

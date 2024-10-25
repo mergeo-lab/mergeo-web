@@ -1,4 +1,4 @@
-import { RoleSchema } from '@/lib/configuration/schemas/roles.schema';
+import { RoleSchema } from '@/lib/schemas';
 import * as z from 'zod';
 
 export const UserSchema = z.object({

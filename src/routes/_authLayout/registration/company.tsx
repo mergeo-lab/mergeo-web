@@ -3,7 +3,7 @@ import { CardBody, CardFooter } from '@/components/card'
 import { Button } from '@/components/ui/button'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { RegisterCompanySchema, RegisterCompanySchemaType } from '@/lib/auth/schema'
+import { GoogleLocationSchemaType, RegisterCompanySchema, RegisterCompanySchemaType } from '@/lib/schemas'
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
@@ -11,7 +11,6 @@ import { registerCompany } from '@/lib/auth'
 import UseRegistrationStore from '@/store/registration.store'
 import { useToast } from '@/components/ui/use-toast'
 import { GoogleAutoComplete } from '@/components/googleAutoComplete'
-import { GoogleLocationSchemaType } from '@/lib/common/schemas'
 
 export const Route = createFileRoute('/_authLayout/registration/company')({
   component: () => <RegisterCompany />
@@ -28,26 +27,28 @@ function RegisterCompany() {
     defaultValues: {
       name: "",
       razonSocial: "",
-      cuit: "",
-      address: {
-        id: "",
-        location: {
-          type: "Point",
-          coordinates: [0, 0],
-        },
-        name: "",
+      cuit: undefined,
+      branch: {
+        address: {
+          id: "",
+          location: {
+            type: "Point",
+            coordinates: [0, 0],
+          },
+          name: "",
+        }
       },
       activity: "",
     },
   })
 
   const onSubmit = async (fields: RegisterCompanySchemaType) => {
-
+    console.log("SUBMIT COMPANY REGISTER")
     const response = await mutation.mutateAsync({
       name: fields.name,
       razonSocial: fields.razonSocial,
       cuit: fields.cuit,
-      address: fields.address,
+      branch: fields.branch,
       activity: fields.activity,
     });
 
@@ -66,9 +67,8 @@ function RegisterCompany() {
     }
   }
 
-  const addAddress = (address: GoogleLocationSchemaType) => {
-    console.log("address:: ", address);
-    form.setValue('address', {
+  const addBranch = (address: GoogleLocationSchemaType) => {
+    form.setValue('branch.address', {
       id: address.id,
       location: {
         type: "Point",
@@ -144,11 +144,11 @@ function RegisterCompany() {
             <div className='grid grid-cols-1 gap-14'>
               <FormField
                 control={form.control}
-                name="address"
+                name="branch.address"
                 render={() => (
                   <FormItem>
-                    <FormLabel id='address'>Dirección</FormLabel>
-                    <GoogleAutoComplete selectedAddress={addAddress} disabled={false} />
+                    <FormLabel id='branch.address'>Dirección de la Sucursal</FormLabel>
+                    <GoogleAutoComplete selectedAddress={addBranch} disabled={false} />
                     <FormMessage />
                   </FormItem>
                 )}

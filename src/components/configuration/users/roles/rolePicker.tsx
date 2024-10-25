@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { RoleSchemaType } from "@/lib/configuration/schemas"
+import { RoleSchemaType } from "@/lib/schemas"
 import UseRoleStore from "@/store/roles.store"
 import { CircleX } from "lucide-react"
 

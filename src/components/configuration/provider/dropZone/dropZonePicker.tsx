@@ -3,7 +3,7 @@ import { DropZoneSheet } from "@/components/configuration/provider/dropZone/drop
 import LoadingIndicator from "@/components/loadingIndicator"
 import { Button } from "@/components/ui/button"
 import { getDropZones } from "@/lib/configuration/dropZone"
-import { IncomingDropZoneSchemaType } from "@/lib/configuration/schemas/dropZone.schemas"
+import { IncomingDropZoneSchemaType } from "@/lib/schemas"
 import { useQuery } from "@tanstack/react-query"
 import { MapPinned } from "lucide-react"
 

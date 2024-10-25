@@ -8,11 +8,10 @@ import {
 import { authEndpoints } from './endpoints';
 import {
   GoogleLocationSchemaResponseType,
-  LocationSchemaResponseType,
   OtpSchemaType,
   RegisterCompanySchemaType,
   RegisterUserSchemaType,
-} from '@/lib/auth/schema';
+} from '@/lib/schemas';
 import { axiosInstance, axiosPrivate } from '@/lib/api/axios';
 import { HelpersData } from '@/types/authHelpers.type';
 import axios, { AxiosResponse, isAxiosError } from 'axios';

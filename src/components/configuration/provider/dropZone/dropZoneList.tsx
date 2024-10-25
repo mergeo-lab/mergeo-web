@@ -1,5 +1,5 @@
 import DropZoneItem from "@/components/configuration/provider/dropZone/dropZoneItem";
-import { DropZoneSchemaType } from "@/lib/configuration/schemas/dropZone.schemas";
+import { DropZoneSchemaType } from "@/lib/schemas";
 import { cn } from "@/lib/utils";
 import { MapPinned } from "lucide-react";
 

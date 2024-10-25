@@ -2,7 +2,7 @@ import { CardFooter } from "@/components/card";
 import { Button } from "@/components/ui/button";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { UpdateCompanySchema, UpdateCompanySchemaType } from "@/lib/auth/schema";
+import { UpdateCompanySchema, UpdateCompanySchemaType, GoogleLocationSchemaType, LatLngLiteralType } from "@/lib/schemas";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
@@ -12,7 +12,6 @@ import { MapPin, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
 import { GoogleAutoComplete } from "@/components/googleAutoComplete";
-import { GoogleLocationSchemaType, LatLngLiteralType } from "@/lib/common/schemas";
 import { useMutation } from "@tanstack/react-query";
 import { updateCompany } from "@/lib/configuration/company";
 import { toast } from "@/components/ui/use-toast";
@@ -24,14 +23,18 @@ export function Company() {
     const [isLoading, setIsLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const mutation = useMutation({ mutationFn: updateCompany })
-    const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ latitude: company?.address?.location.coordinates[1] || 0, longitude: company?.address?.location.coordinates[0] || 0 });
+    const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ latitude: 0, longitude: 0 });
+
+    const companyMainBranch = company?.branches.find((branch) => branch.isMain);
 
     const defaultCompnay = {
-        id: company?.address?.id || "",
-        name: company?.name || "",
-        address: {
-            name: company?.address?.name || "",
-            location: { coordinates: company?.address?.location.coordinates || [0, 0], type: company?.address?.location.type || "Point" },
+        id: companyMainBranch?.id || "",
+        name: companyMainBranch?.name || "",
+        branch: {
+            address: {
+                name: companyMainBranch?.name || "",
+                location: { coordinates: companyMainBranch?.address?.location.coordinates || [0, 0], type: companyMainBranch?.address?.location.type || "Point" },
+            }
         },
         activity: company?.activity || "",
     }
@@ -43,25 +46,22 @@ export function Company() {
     })
 
     useEffect(() => {
-        if (company?.address) {
-            form.reset(company);
-            addAddress({
-                id: company.address.id,
-                displayName: { text: company.address.name },
-                location: {
-                    latitude: company.address.location.coordinates[1],
-                    longitude: company.address.location.coordinates[0]
-                },
-            });
-        }
+        handleCancelEdit();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [company]);
+    }, [companyMainBranch]);
 
     useEffect(() => {
         setIsLoading(mutation.isPending);
     }, [mutation.isPending]);
 
     async function onSubmit(fields: UpdateCompanySchemaType) {
+        fields.branch = {
+            ...fields.branch,
+            id: companyMainBranch?.id || "",
+            name: companyMainBranch?.name || "",
+            email: companyMainBranch?.email || "",
+            phoneNumber: companyMainBranch?.phoneNumber || "",
+        }
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         if (!company) return;
         const response = await mutation.mutateAsync({ companyId: company.id, fields: fields });
@@ -84,34 +84,32 @@ export function Company() {
     }
 
     function addAddress(address: GoogleLocationSchemaType) {
-        form.setValue('address', {
-            id: address.id,
-            location: {
-                type: "Point",
-                coordinates: [address.location.latitude, address.location.longitude]
-            },
-            name: address.displayName.text
+        form.setValue('branch', {
+            address: {
+                id: address.id,
+                location: {
+                    type: "Point",
+                    coordinates: [address.location.latitude, address.location.longitude]
+                },
+                name: address.displayName.text
+            }
         });
 
         setMarkerPosition({ latitude: address.location.latitude, longitude: address.location.longitude });
-        form.trigger('address');
+        form.trigger('branch');
     }
 
     function handleCancelEdit() {
-        if (defaultCompnay) {
-            const { address } = defaultCompnay;
-            setMarkerPosition({ latitude: address.location.coordinates[1], longitude: address.location.coordinates[0] });
-            form.reset(defaultCompnay);
-            form.setValue("address", {
-                id: defaultCompnay.id,
-                location: {
-                    type: "Point",
-                    coordinates: address.location.coordinates
-                },
-                name: address.name
-            });
-            form.trigger('address');
-        }
+        if (!companyMainBranch) return;
+        form.reset(defaultCompnay);
+        addAddress({
+            id: companyMainBranch.address.id,
+            displayName: { text: companyMainBranch.address.name },
+            location: {
+                latitude: companyMainBranch.address.location.coordinates[1],
+                longitude: companyMainBranch.address.location.coordinates[0]
+            },
+        });
         setIsEditing(false);
     }
 
@@ -184,40 +182,46 @@ export function Company() {
                             <div className='grid grid-cols-1 gap-10'>
                                 <FormField
                                     disabled={!isEditing}
-                                    name="address"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel id='address'>Dirección</FormLabel>
-                                            <FormControl>
-                                                <GoogleAutoComplete
-                                                    disabled={!isEditing}
-                                                    defaultAddressName={field.value?.name}
-                                                    selectedAddress={addAddress}
-                                                    addressRemoved={() => {
-                                                        field.value?.name && form.setValue('address', {
-                                                            id: "",
-                                                            location: {
-                                                                type: "Point",
-                                                                coordinates: [0, 0]
-                                                            },
-                                                            name: ""
-                                                        });
-                                                        setMarkerPosition({ latitude: 0, longitude: 0 });
-                                                    }}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
+                                    name="branch"
+                                    render={({ field }) => {
+                                        console.log(field?.value)
+                                        return (
+                                            <FormItem>
+                                                <FormLabel id='branch'>Dirección</FormLabel>
+                                                <FormControl>
+                                                    <GoogleAutoComplete
+                                                        isEditing={isEditing}
+                                                        disabled={!isEditing}
+                                                        defaultAddressName={field?.value.address.name}
+                                                        selectedAddress={addAddress}
+                                                        addressRemoved={() => {
+                                                            field?.value.name && form.setValue('branch', {
+                                                                address: {
+                                                                    id: "",
+                                                                    location: {
+                                                                        type: "Point",
+                                                                        coordinates: [0, 0]
+                                                                    },
+                                                                    name: ""
+                                                                }
+                                                            });
+                                                            setMarkerPosition({ latitude: 0, longitude: 0 });
+                                                        }}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )
+                                    }}
                                 />
                             </div>
                             <div className='grid grid-cols-1 gap-10'>
                                 <FormField
+                                    name="pickUp"
                                     disabled={!isEditing}
-                                    name="branch"
                                     render={() => (
                                         <FormItem>
-                                            <FormLabel id='branch'>Puntos de Pick Up ( click para {isEditing ? ' editar' : 'ver detalles'} )</FormLabel>
+                                            <FormLabel>Puntos de Pick Up ( click para {isEditing ? ' editar' : 'ver detalles'} )</FormLabel>
                                             <FormControl>
                                                 <PickUpPicker
                                                     companyId={company?.id}
@@ -239,7 +243,7 @@ export function Company() {
                             <div className='grid grid-cols-1 gap-10'>
                                 <FormField
                                     disabled={!isEditing}
-                                    name="branch"
+                                    name="dropZone"
                                     render={() => (
                                         <FormItem>
                                             <FormControl>

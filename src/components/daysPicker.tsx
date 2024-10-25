@@ -3,9 +3,9 @@ import ChooseTime from "@/components/chooseTime";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { PickUpSchedulesSchemaType } from '../lib/configuration/schemas/pickUp.schema'
+import { PickUpSchedulesSchemaType } from '../lib/schemas'
 import useDaysPickerStore from "@/store/daysPicker.store";
-import { cn } from "@/lib/utils";
+import { cn, numberToTimeString } from "@/lib/utils";
 
 type Props = {
     defaultData?: PickUpSchedulesSchemaType[] | undefined,
@@ -49,7 +49,7 @@ export default function DaysPicker({ defaultData, isEditing, className, callback
                         daysAndTime.map((dt: PickUpSchedulesSchemaType, index: number) => (
                             <div key={index} className="text-md flex justify-between items-center space-x-4 border p-1 m-1">
                                 <span className="ml-2">{dt.day}</span>
-                                <span>{dt.startHour} - {dt.endHour}</span>
+                                <span>{numberToTimeString(dt.startHour)} - {numberToTimeString(dt.endHour)}</span>
                                 {isEditing &&
                                     <Button type="button" variant="ghost" onClick={() => handelRemoveDay(dt.id)}>
                                         <Trash2 className="cursor-pointer" size={15} />

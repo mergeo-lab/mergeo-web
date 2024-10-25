@@ -1,4 +1,4 @@
-import { RoleSchemaType } from '@/lib/configuration/schemas';
+import { RoleSchemaType } from '@/lib/schemas';
 import { create } from 'zustand';
 
 type RoleState = {

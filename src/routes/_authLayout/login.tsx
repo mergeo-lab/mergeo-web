@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from "react-hook-form";
+import { Control, FieldValues, useForm } from "react-hook-form";
 import { useMutation } from '@tanstack/react-query';
 import { login } from '@/lib/auth';
 import { useAuth } from '@/hooks';
@@ -13,7 +13,8 @@ import Card, { CardBody, CardFooter, CardHeader } from '@/components/card';
 import PasswordInput from '@/components/passwordInput';
 import { z } from 'zod';
 import UseCompanyStore from '@/store/company.store';
-import { useEffect, memo, useCallback } from 'react';
+import { useEffect, memo, useCallback, useMemo } from 'react';
+
 
 // Memoize Card and its subcomponents
 const MemoizedCard = memo(Card);
@@ -41,6 +42,7 @@ function Login() {
   const { toast } = useToast();
   const mutation = useMutation({ mutationFn: login });
 
+  // Memoize the form object
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     disabled: mutation.isPending,
@@ -49,6 +51,9 @@ function Login() {
       password: "",
     },
   });
+
+  // Memoize the mutation.isPending state
+  const isPending = useMemo(() => mutation.isPending, [mutation.isPending]);
 
   // Memoize the onSubmit function
   const onSubmit = useCallback(async (fields: Schema) => {
@@ -62,7 +67,7 @@ function Login() {
       });
     } else if (response.data) {
       const { data } = response.data;
-      console.log(data);
+      console.log("DATA COMPANY  ===> ", data.company)
       companyState.saveCompany(data.company);
       logIn(data.user);
     }
@@ -90,7 +95,7 @@ function Login() {
           <MemoizedCardBody className='w-full flex justify-center m-auto h-auto'>
             <div className='w-2/4 space-y-8'>
               <MemoizedFormField
-                control={form.control}
+                control={form.control as unknown as Control<FieldValues>}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
@@ -103,7 +108,7 @@ function Login() {
                 )}
               />
               <MemoizedFormField
-                control={form.control}
+                control={form.control as unknown as Control<FieldValues>}
                 name="password"
                 render={({ field }) => (
                   <FormItem>
@@ -140,8 +145,8 @@ function Login() {
                   </Button>
                 </Link>
               </p>
-              <Button disabled={mutation.isPending} className='min-w-[200px]' type="submit">
-                {mutation.isPending ? <LoadingIndicator className="w-4 h-4 text-primary-foreground" /> : 'Ingresar'}
+              <Button disabled={isPending} className='min-w-[200px]' type="submit">
+                {isPending ? <LoadingIndicator className="w-4 h-4 text-primary-foreground" /> : 'Ingresar'}
               </Button>
             </div>
           </MemoizedCardFooter>

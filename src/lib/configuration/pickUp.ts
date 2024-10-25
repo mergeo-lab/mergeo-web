@@ -2,7 +2,7 @@ import { axiosPrivate } from '@/lib/api/axios';
 import { AxiosResponse, isAxiosError } from 'axios';
 import { PICK_UP, PICK_UP_DELETE, PICK_UP_EDIT } from './endpoints';
 
-import { PickUpSchemaType } from '@/lib/configuration/schemas/pickUp.schema';
+import { PickUpSchemaType } from '@/lib/schemas';
 
 export async function newPickUpPoints({
   companyId,

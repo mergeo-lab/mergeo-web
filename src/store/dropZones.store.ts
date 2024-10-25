@@ -1,8 +1,5 @@
 import { create } from 'zustand';
-import {
-  DropZoneSchemaType,
-  IncomingDropZoneSchemaType,
-} from '@/lib/configuration/schemas/dropZone.schemas';
+import { DropZoneSchemaType, IncomingDropZoneSchemaType } from '@/lib/schemas';
 import { transformToLatLng } from '@/lib/utils';
 
 type DropZonesState = {

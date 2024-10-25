@@ -1,7 +1,7 @@
 import { configurationEndpoints } from './endpoints';
 import { axiosPrivate } from '@/lib/api/axios';
 import { AxiosResponse, isAxiosError } from 'axios';
-import { CompanySchemaType } from '@/lib/configuration/schemas';
+import { CompanySchemaType } from '@/lib/schemas';
 
 export async function getCompany(
   companyId: string

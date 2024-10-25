@@ -76,9 +76,8 @@ export function SideBarMenu({ companyName }: Props) {
                                 search={{ tab: 'users' }}
                                 className="font-light text-base"
                                 activeProps={{
-                                    style: {
-                                        fontWeight: 'bolder',
-                                    },
+                                    className: '!text-primary',
+
                                 }}>
                                 <UsersRound strokeWidth={2.5} />
                                 Usuarios

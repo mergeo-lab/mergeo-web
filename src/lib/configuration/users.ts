@@ -7,7 +7,7 @@ import {
   RoleSchemaType,
   UserSchemaResponseType,
   UserSchemaType,
-} from '@/lib/configuration/schemas';
+} from '@/lib/schemas';
 import { Response } from '@/types';
 import { AxiosResponse, isAxiosError } from 'axios';
 
