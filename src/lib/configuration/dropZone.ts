@@ -3,7 +3,7 @@ import { AxiosResponse, isAxiosError } from 'axios';
 import { DELETE_DROP_ZONE, DROP_ZONE, EDIT_DROP_ZONE } from './endpoints';
 
 import { DropZoneSchemaType, IncomingDropZoneSchemaType } from '@/lib/schemas';
-import { timeStringToNumber, transformPolygonToGeoJSON } from '@/lib/utils';
+import { transformPolygonToGeoJSON } from '@/lib/utils';
 
 export async function newDropZone({
   companyId,
@@ -13,16 +13,11 @@ export async function newDropZone({
   body: DropZoneSchemaType;
 }): Promise<IncomingDropZoneSchemaType> {
   try {
-    // TODO transform lat, lng to [][]
     const coordinates = transformPolygonToGeoJSON(body.zone.coordinates);
     const schedules = body.schedules.map((schedule) => ({
       ...schedule,
-      startHour: schedule.startHour
-        ? timeStringToNumber(schedule.startHour)
-        : undefined,
-      endHour: schedule.endHour
-        ? timeStringToNumber(schedule.endHour)
-        : undefined,
+      startHour: schedule.startHour,
+      endHour: schedule.endHour,
     }));
     const payload = {
       zone: {

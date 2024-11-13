@@ -33,6 +33,7 @@ import { Route as AuthLayoutRegistrationCompanyImport } from './routes/_authLayo
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/index'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/index'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientSearchListsImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/searchLists'
+import { Route as AuthenticatedDashboardLayoutAccountTypeClientOrdersImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/orders'
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/configuration/index'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/configuration/index'
 
@@ -178,6 +179,12 @@ const AuthenticatedDashboardLayoutAccountTypeClientIndexRoute =
 const AuthenticatedDashboardLayoutAccountTypeClientSearchListsRoute =
   AuthenticatedDashboardLayoutAccountTypeClientSearchListsImport.update({
     path: '/client/searchLists',
+    getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
+  } as any)
+
+const AuthenticatedDashboardLayoutAccountTypeClientOrdersRoute =
+  AuthenticatedDashboardLayoutAccountTypeClientOrdersImport.update({
+    path: '/client/orders',
     getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
   } as any)
 
@@ -332,6 +339,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardLayoutIndexLazyImport
       parentRoute: typeof AuthenticatedDashboardLayoutImport
     }
+    '/_authenticated/_dashboardLayout/_accountType/client/orders': {
+      id: '/_authenticated/_dashboardLayout/_accountType/client/orders'
+      path: '/client/orders'
+      fullPath: '/client/orders'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientOrdersImport
+      parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
+    }
     '/_authenticated/_dashboardLayout/_accountType/client/searchLists': {
       id: '/_authenticated/_dashboardLayout/_accountType/client/searchLists'
       path: '/client/searchLists'
@@ -389,6 +403,7 @@ export const routeTree = rootRoute.addChildren({
       AuthenticatedDashboardLayoutRoute.addChildren({
         AuthenticatedDashboardLayoutAccountTypeRoute:
           AuthenticatedDashboardLayoutAccountTypeRoute.addChildren({
+            AuthenticatedDashboardLayoutAccountTypeClientOrdersRoute,
             AuthenticatedDashboardLayoutAccountTypeClientSearchListsRoute,
             AuthenticatedDashboardLayoutAccountTypeClientIndexRoute,
             AuthenticatedDashboardLayoutAccountTypeProviderIndexRoute,
@@ -488,6 +503,7 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "_authenticated/_dashboardLayout/_accountType.tsx",
       "parent": "/_authenticated/_dashboardLayout",
       "children": [
+        "/_authenticated/_dashboardLayout/_accountType/client/orders",
         "/_authenticated/_dashboardLayout/_accountType/client/searchLists",
         "/_authenticated/_dashboardLayout/_accountType/client/",
         "/_authenticated/_dashboardLayout/_accountType/provider/",
@@ -522,6 +538,10 @@ export const routeTree = rootRoute.addChildren({
     "/_authenticated/_dashboardLayout/": {
       "filePath": "_authenticated/_dashboardLayout/index.lazy.tsx",
       "parent": "/_authenticated/_dashboardLayout"
+    },
+    "/_authenticated/_dashboardLayout/_accountType/client/orders": {
+      "filePath": "_authenticated/_dashboardLayout/_accountType/client/orders.tsx",
+      "parent": "/_authenticated/_dashboardLayout/_accountType"
     },
     "/_authenticated/_dashboardLayout/_accountType/client/searchLists": {
       "filePath": "_authenticated/_dashboardLayout/_accountType/client/searchLists.tsx",

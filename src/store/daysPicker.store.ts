@@ -9,11 +9,13 @@ interface Day {
 
 type DaysPickerState = {
   allDays: Day[];
-  day: string;
+  selectedDays: string[];
   startHour: string;
   endHour: string;
   daysAndTime: PickUpSchedulesSchemaType[];
-  setDay: (day: string) => void;
+  toggleDay: (day: string) => void;
+  selectAllDays: () => void;
+  unselectAllDays: () => void;
   setStartHour: (hour: string) => void;
   setEndHour: (hour: string) => void;
   addDayAndTime: (newEntry: PickUpSchedulesSchemaType) => void;
@@ -34,11 +36,23 @@ const listOfDays: Day[] = [
 
 const useDaysPickerStore = create<DaysPickerState>((set) => ({
   allDays: listOfDays,
-  day: 'lunes',
+  selectedDays: [],
   startHour: '',
   endHour: '',
   daysAndTime: [],
-  setDay: (day: string) => set({ day }),
+  toggleDay: (day: string) =>
+    set((state) => {
+      // eslint-disable-next-line no-debugger
+      if (state.selectedDays.includes(day)) {
+        return {
+          selectedDays: state.selectedDays.filter((d) => d !== day),
+        };
+      } else {
+        return {
+          selectedDays: [...state.selectedDays, day],
+        };
+      }
+    }),
   setStartHour: (hour: string) => set({ startHour: hour }),
   setEndHour: (hour: string) => set({ endHour: hour }),
   addDayAndTime: (newEntry: PickUpSchedulesSchemaType) =>
@@ -59,10 +73,21 @@ const useDaysPickerStore = create<DaysPickerState>((set) => ({
     })),
   reset: () =>
     set({
-      day: 'lunes',
+      selectedDays: [],
       startHour: '',
       endHour: '',
     }),
+  selectAllDays: () =>
+    set((state) => ({
+      selectedDays:
+        state.selectedDays.length === state.allDays.length
+          ? [] // If all days are selected, deselect all
+          : state.allDays.map((day) => day.value), // Otherwise, select all days
+    })),
+  unselectAllDays: () =>
+    set(() => ({
+      selectedDays: [],
+    })),
 }));
 
 export default useDaysPickerStore;

@@ -1,18 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useAuth } from '@/hooks'
-
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/dashboard')({
-    component: DashboardPage,
+    component: () => <Dashboard />,
 })
 
-function DashboardPage() {
-    const auth = useAuth()
-
+export default function Dashboard() {
     return (
-        <section className="grid gap-2 p-2">
-            <p>Hi {auth && auth.user?.name}!</p>
-            <p>You are currently on the dashboard route.</p>
-        </section>
+        <div>
+            <h1>Dashboard</h1>
+        </div>
     )
 }

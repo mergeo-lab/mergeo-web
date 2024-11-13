@@ -1,6 +1,6 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Building, ChevronDown, ChevronRight, ScrollText, Settings, UsersRound, WalletCards, Scale } from "lucide-react";
-import { Link } from '@tanstack/react-router';
+import { Link, useSearch } from '@tanstack/react-router';
 import { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from '@/components/ui/button';
@@ -11,9 +11,15 @@ type Props = {
     companyName: string
 }
 
+export enum tabs {
+    company = "company",
+    users = "users"
+}
+
 export function SideBarMenu({ companyName }: Props) {
     const { user } = UseUserStore();
     const [collapsibleIsOpen, setCollapsibleIsOpen] = useState(false);
+    const search = useSearch({ from: "/_authenticated/_dashboardLayout" });
 
     // Use useCallback to memoize the onCollapsibleChange function
     const onCollapsibleChange = useCallback((value: boolean) => {
@@ -58,11 +64,10 @@ export function SideBarMenu({ companyName }: Props) {
                                 onMouseEnter={(e) => e.preventDefault()}
                                 onClick={onLinkClicked}
                                 to="/client/configuration"
-                                search={{ tab: 'company' }}
-                                className="font-light text-default"
-                                activeProps={{
-                                    className: '!text-primary',
-                                }}
+                                search={{ tab: tabs.company }}
+                                className={cn("font-light text-default", {
+                                    'text-primary': search.tab === tabs.company,
+                                })}
                             >
                                 <Building strokeWidth={2.5} />
                                 Empresa
@@ -73,12 +78,11 @@ export function SideBarMenu({ companyName }: Props) {
                                 onMouseEnter={(e) => e.preventDefault()}
                                 onClick={onLinkClicked}
                                 to="/client/configuration"
-                                search={{ tab: 'users' }}
-                                className="font-light text-base"
-                                activeProps={{
-                                    className: '!text-primary',
-
-                                }}>
+                                search={{ tab: tabs.users }}
+                                className={cn("font-light text-default", {
+                                    'text-primary': search.tab === tabs.users,
+                                })}
+                            >
                                 <UsersRound strokeWidth={2.5} />
                                 Usuarios
                             </Link>
@@ -88,14 +92,16 @@ export function SideBarMenu({ companyName }: Props) {
             </Collapsible>
 
             <div className="mt-8">
-                <div className="px-5">
-                    <Link to="/login" className="w-full">
-                        <Button className="w-full text-md">
-                            Hacer Pedido
-                            <ChevronRight size={20} strokeWidth={3} className="ml-2" />
-                        </Button>
-                    </Link>
-                </div>
+                {user?.accountType === ACCOUNT.client &&
+                    <div className="px-5">
+                        <Link to="/client/orders" className="w-full">
+                            <Button className="w-full text-md">
+                                Hacer Pedido
+                                <ChevronRight size={20} strokeWidth={3} className="ml-2" />
+                            </Button>
+                        </Link>
+                    </div>
+                }
 
                 <ul className="py-4 pt-6 text-secondary-foreground [&>li]:multi-[w-full] [&>li>a]:multi-[flex;gap-2;text-sm;w-full;h-10;pl-6;py-6;items-center;] [&>li>a]:hover:multi-['hover:bg-secondary-foreground/20']">
                     {user?.accountType === ACCOUNT.client && (

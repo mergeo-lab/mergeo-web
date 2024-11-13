@@ -67,6 +67,32 @@ export async function getSearchLists(
   }
 }
 
+export async function getSearchListById(
+  listID: string
+): Promise<SearchListsResultsType> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${SEARCH_LISTS}/list/${listID}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
 export async function deleteSearchList({ id }: { id: string }): Promise<void> {
   try {
     const { data: response }: AxiosResponse = await axiosPrivate.delete(
