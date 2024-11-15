@@ -1,18 +1,16 @@
-"use client"
+import * as React from "react";
+import { addDays, format, isBefore, startOfToday } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { DateRange } from "react-day-picker";
 
-import * as React from "react"
-import { addDays, format, isBefore, startOfToday } from "date-fns"
-import { Calendar as CalendarIcon } from "lucide-react"
-import { DateRange } from "react-day-picker"
-
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 
 interface DatePickerWithRangeProps {
   className?: string;
@@ -25,10 +23,10 @@ export function DeliveryTimeSelector({
   onDateChange,
   defaultValue,
 }: DatePickerWithRangeProps) {
-  const today = new Date();
+  const today = startOfToday();
 
   const [date, setDate] = React.useState<DateRange>(
-    defaultValue ?? { from: today, to: addDays(today, 7) }
+    defaultValue ?? { from: today, to: addDays(today, 1) }
   );
 
   const handleDateSelect = (newDate: DateRange | undefined) => {
@@ -72,8 +70,9 @@ export function DeliveryTimeSelector({
           <Calendar
             initialFocus
             defaultMonth={startOfToday()}
-            mode="range"
             fromMonth={startOfToday()}
+            disabled={(date) => date < today}
+            mode="range"
             selected={date}
             onSelect={(newDate) => handleDateSelect(newDate)}
             numberOfMonths={2}

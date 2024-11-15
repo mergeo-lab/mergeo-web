@@ -2,7 +2,7 @@ import React, { memo, useMemo } from 'react'; // Import React, memo, and useMemo
 import { DashboardHeader, SideBarMenu } from '@/components/dashboard'
 import UseCompanyStore from '@/store/company.store';
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router';
-import { Bell, CircleHelp, Settings, ScrollText } from 'lucide-react'
+import { Bell, CircleHelp, Settings, ScrollText, Package } from 'lucide-react'
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout')({
     component: () => <DashboardLayout />
@@ -13,6 +13,7 @@ const routeTitles: Record<string, { text: string, icon: JSX.Element }> = {
     'configuration': { text: 'Configuración de cuenta', icon: <Settings size={25} /> },
     'notifications': { text: 'Notificaciones', icon: <Bell size={25} /> },
     'faq': { text: 'Preguntas Frecuentes', icon: <CircleHelp size={25} /> },
+    'orders': { text: 'Hacer Pedido', icon: <Package size={25} /> },
 }
 
 function DashboardLayout() {

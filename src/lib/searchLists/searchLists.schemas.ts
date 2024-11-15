@@ -1,4 +1,3 @@
-import { create } from 'domain';
 import * as z from 'zod';
 
 export const SearchListProductSchema = z.object({

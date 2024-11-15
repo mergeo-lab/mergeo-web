@@ -56,8 +56,15 @@ const MapRadiusSelection = ({ hideControls = false, initialCenter = centerArgent
             });
 
             // Fit map bounds to circle
-            map.fitBounds(circle.getBounds()!);
-
+            const bounds = circle.getBounds();
+            if (bounds) {
+                map.fitBounds(bounds, {
+                    top: 80,
+                    bottom: 80,
+                    left: 80,
+                    right: 80
+                });
+            }
             // Update zone coordinates initially and on radius change
             updateZoneCoordinates();
 
@@ -89,8 +96,9 @@ const MapRadiusSelection = ({ hideControls = false, initialCenter = centerArgent
                 className='w-full h-full m-0 p-0'
                 defaultZoom={3}
                 defaultCenter={centerArgentina}
-                gestureHandling={'greedy'}
+                gestureHandling="greedy"
                 disableDefaultUI={true}
+                reuseMaps={true}
             />
             {hideControls === false && (
                 <>

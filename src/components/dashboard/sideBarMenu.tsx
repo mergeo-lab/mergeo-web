@@ -1,11 +1,12 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Building, ChevronDown, ChevronRight, ScrollText, Settings, UsersRound, WalletCards, Scale } from "lucide-react";
-import { Link, useSearch } from '@tanstack/react-router';
+import { Link, useNavigate, useRouter, useSearch } from '@tanstack/react-router';
 import { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from '@/components/ui/button';
 import UseUserStore from "@/store/user.store";
 import { ACCOUNT } from "@/lib/constants";
+import UseSearchConfigStore from "@/store/searchConfiguration.store.";
 
 type Props = {
     companyName: string
@@ -20,6 +21,8 @@ export function SideBarMenu({ companyName }: Props) {
     const { user } = UseUserStore();
     const [collapsibleIsOpen, setCollapsibleIsOpen] = useState(false);
     const search = useSearch({ from: "/_authenticated/_dashboardLayout" });
+    const { setConfigDialogOpen, setShouldResetConfig } = UseSearchConfigStore();
+    const navigate = useNavigate()
 
     // Use useCallback to memoize the onCollapsibleChange function
     const onCollapsibleChange = useCallback((value: boolean) => {
@@ -30,6 +33,12 @@ export function SideBarMenu({ companyName }: Props) {
         setTimeout(() => {
             setCollapsibleIsOpen(!collapsibleIsOpen);
         }, 400);
+    }
+
+    function handleNewOrder() {
+        setShouldResetConfig(true);
+        setConfigDialogOpen(true);
+        navigate({ to: "/client/orders" });
     }
 
     return (
@@ -94,12 +103,12 @@ export function SideBarMenu({ companyName }: Props) {
             <div className="mt-8">
                 {user?.accountType === ACCOUNT.client &&
                     <div className="px-5">
-                        <Link to="/client/orders" className="w-full">
+                        <div className="w-full" onClick={handleNewOrder}>
                             <Button className="w-full text-md">
                                 Hacer Pedido
                                 <ChevronRight size={20} strokeWidth={3} className="ml-2" />
                             </Button>
-                        </Link>
+                        </div>
                     </div>
                 }
 

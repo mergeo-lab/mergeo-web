@@ -1,18 +1,15 @@
-// import { GoogleAutoComplete } from "@/components/googleAutoComplete";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import { Compass } from "lucide-react";
 import UseSearchConfigStore from "@/store/searchConfiguration.store.";
-import MapRadiusSelection from "@/components/orders/mapRadiusSelection";
+import MapRadiusSelection from "@/components/configuration/client/orders/searchConfig/mapRadiusSelection";
 
 type Props = {
     title?: string,
     subTitle?: string,
     icon?: JSX.Element,
     showDialog: boolean,
-    point: google.maps.LatLngLiteral[],
-    radius?: number,
     onClose: () => void
 }
 
@@ -22,8 +19,6 @@ export function PickUpSelectMap(
         subTitle = 'Esta es la zona de Pick Up donde estas dispuesto a buscar tu pedido',
         icon = <Compass />,
         showDialog = false,
-        point,
-        radius,
         onClose
     }: Props) {
     const [open, setOpen] = useState(showDialog);
@@ -40,6 +35,7 @@ export function PickUpSelectMap(
 
     useEffect(() => {
         if (!open) onClose();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open])
 
     return (

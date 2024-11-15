@@ -1,5 +1,6 @@
 import { ReplacementCriteria } from '@/lib/constants';
 import { BranchesSchemaType, LatLngLiteralType } from '@/lib/schemas';
+import { addDays } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { create } from 'zustand';
 
@@ -9,45 +10,55 @@ type PickUpLocationArea = {
 };
 
 type SearchConfigState = {
+  searchParams: { name: string; brand: string };
   deliveryTime: DateRange;
   branch: BranchesSchemaType | null;
   pickUp: boolean;
+  pickUpDialog: boolean;
   pickUpLocation: PickUpLocationArea;
   replacementCriteria: ReplacementCriteria;
   listId: string;
   compulsa: boolean;
   requiredFields: Array<keyof SearchConfigState>;
   isValid: boolean;
+  configDialogOpen: boolean;
+  configDataSubmitted: boolean;
+  shouldResetConfig: boolean;
+  setSearchParams: (params: { name?: string; brand?: string }) => void;
+  setShouldResetConfig: (value: boolean) => void;
+  setConfigDataSubmitted: (value: boolean) => void;
+  setConfigDialogOpen: (open: boolean) => void;
   selectList: (listId: string) => void;
   removeList: () => void;
   setDeliveryTime: (date: DateRange) => void;
   setBranch: (branch: BranchesSchemaType) => void;
   setPickUp: () => void;
+  setPickUpDialog: (turnOn?: boolean) => void;
   setPickUpLocation: (location: PickUpLocationArea) => void;
   setReplacementCriteria: (criteria: ReplacementCriteria) => void;
   setCompulsa: (value: boolean) => void;
   validateFields: () => void;
-  getAllConfig: () => Omit<
+  getAllConfig: () => Pick<
     SearchConfigState,
-    | 'requiredFields'
-    | 'isValid'
-    | 'selectList'
-    | 'removeList'
-    | 'setDeliveryTime'
-    | 'setBranch'
-    | 'setPickUp'
-    | 'setPickUpLocation'
-    | 'setReplacementCriteria'
-    | 'setCompulsa'
-    | 'validateFields'
-    | 'getAllConfig'
+    | 'deliveryTime'
+    | 'branch'
+    | 'pickUp'
+    | 'pickUpLocation'
+    | 'replacementCriteria'
+    | 'listId'
+    | 'compulsa'
   >;
+
+  resetConfig: () => void; // New reset function
 };
 
 const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
-  deliveryTime: { from: new Date(), to: new Date() },
+  searchParams: { name: '', brand: '' },
+  configDialogOpen: false,
+  deliveryTime: { from: new Date(), to: addDays(new Date(), 1) },
   branch: null,
   pickUp: false,
+  pickUpDialog: false,
   pickUpLocation: {
     radius: 0,
     location: {
@@ -60,6 +71,25 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
   compulsa: false,
   requiredFields: ['deliveryTime', 'branch'],
   isValid: false,
+  configDataSubmitted: false,
+  shouldResetConfig: false,
+
+  setSearchParams: (params: { name?: string; brand?: string }) => {
+    set((state) => ({
+      searchParams: {
+        name: params.name ?? state.searchParams.name,
+        brand: params.brand ?? state.searchParams.brand,
+      },
+    }));
+  },
+
+  setShouldResetConfig: (value: boolean) => {
+    set(() => ({ shouldResetConfig: value }));
+  },
+
+  setConfigDialogOpen: (open: boolean) => {
+    set(() => ({ configDialogOpen: open }));
+  },
 
   selectList: (listId) => {
     set({ listId });
@@ -79,6 +109,14 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
   setBranch: (branch: BranchesSchemaType) => {
     set({ branch: branch });
     get().validateFields();
+  },
+
+  setPickUpDialog: (turnOn?: boolean) => {
+    if (turnOn) {
+      set(() => ({ pickUpDialog: true }));
+    } else {
+      set((state) => ({ pickUpDialog: !state.pickUpDialog }));
+    }
   },
 
   setPickUp: () => {
@@ -108,6 +146,9 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
     set({ isValid });
   },
 
+  setConfigDataSubmitted: (value: boolean) =>
+    set(() => ({ configDataSubmitted: value })),
+
   getAllConfig: () => {
     const {
       deliveryTime,
@@ -119,8 +160,8 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
       compulsa,
     } = get();
     return {
-      deliveryTime,
       branch,
+      deliveryTime,
       pickUp,
       pickUpLocation,
       replacementCriteria,
@@ -128,6 +169,28 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
       compulsa,
     };
   },
+
+  // Reset function to clear all saved data
+  resetConfig: () =>
+    set({
+      searchParams: { name: '', brand: '' },
+      configDialogOpen: true,
+      deliveryTime: { from: new Date(), to: addDays(new Date(), 1) },
+      branch: null,
+      pickUp: false,
+      pickUpLocation: {
+        radius: 0,
+        location: {
+          latitude: 0,
+          longitude: 0,
+        },
+      },
+      replacementCriteria: ReplacementCriteria.BEST_PRICE_SAME_UNIT,
+      listId: '',
+      compulsa: false,
+      isValid: false,
+      configDataSubmitted: false,
+    }),
 }));
 
 export default UseSearchConfigStore;

@@ -4,12 +4,15 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { List, PackageSearch, ClipboardList, X, ShoppingBag } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import ProductsSearch from '@/components/orders/tabs/productsSearch';
-import ProductsList from '@/components/orders/tabs/productsList';
-import { OrderConfig } from '@/components/orders/orderConfiguration';
+import ProductsSearch from '@/components/configuration/client/orders/tabs/productsSearch';
+import ProductsList from '@/components/configuration/client/orders/tabs/productsList';
+import { OrderConfig } from '@/components/configuration/client/orders/searchConfig/orderConfiguration';
 import UseCompanyStore from '@/store/company.store';
-import { PickUpSelectMap } from '@/components/orders/pickUpSelectMap';
+import { PickUpSelectMap } from '@/components/configuration/client/orders/searchConfig/pickUpSelectMap';
 import UseSearchConfigStore from '@/store/searchConfiguration.store.';
+import ProductsTable from '@/components/configuration/client/orders/productsTable';
+import { CartSheet } from '@/components/configuration/client/orders/cartSheet';
+import UseSearchStore from '@/store/search.store';
 
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/orders')({
@@ -26,17 +29,24 @@ enum TabsEnum {
 function OrdersPage() {
     const [tab, setTab] = useState(TabsEnum.LISTA_DE_PRODUCTOS);
     const [menuOpen, setMenuStatus] = useState(true);
-    const [configDataSubmitted, setConfigDataSubmitted] = useState(false);
+    const [cartOpen, setOpenCart] = useState(false);
+    const [configCanceled, setcCnfigCanceled] = useState(false);
     const { company } = UseCompanyStore();
-    const { pickUp } = UseSearchConfigStore();
-
-    useEffect(() => {
-        console.log("ACA")
-    }, [])
+    const {
+        pickUpDialog,
+        setPickUpDialog,
+        resetConfig,
+        configDialogOpen,
+        setConfigDialogOpen,
+        configDataSubmitted,
+        setConfigDataSubmitted,
+        setShouldResetConfig
+    } = UseSearchConfigStore();
+    const { getAllSavedProducts, reset } = UseSearchStore();
+    const savedProducts = getAllSavedProducts();
 
     function onTabChange(value: string) {
         const selectedTab = value as TabsEnum;
-        console.log(selectedTab)
         setTab(selectedTab)
     }
 
@@ -44,6 +54,15 @@ function OrdersPage() {
         if (tab) setTab(tab);
         setMenuStatus(!menuOpen);
     }
+
+    useEffect(() => {
+        return () => {
+            reset();
+            resetConfig();
+            setShouldResetConfig(true);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [reset, resetConfig])
 
     return (
         <section className="h-full w-full flex">
@@ -62,19 +81,31 @@ function OrdersPage() {
                                     </Button>
                                 </TabsList>
                                 <TabsContent className='w-full overflow-x-hidden h-[calc(100%-50px)] m-0 ' value={TabsEnum.LISTA_DE_PRODUCTOS}>
-                                    <ProductsList isVisible={configDataSubmitted} />
+                                    <ProductsList
+                                        configCanceled={configCanceled}
+                                        isVisible={configDataSubmitted}
+                                        selectList={() => {
+                                            setConfigDataSubmitted(false);
+                                            setShouldResetConfig(false);
+                                            setConfigDialogOpen(true)
+                                        }}
+                                    />
                                 </TabsContent>
                                 <TabsContent className='w-full overflow-x-hidden h-[calc(100%-50px)] m-0 p-4' value={TabsEnum.BUSCAR_PRODUCTOS}>
                                     <ProductsSearch />
                                 </TabsContent>
                                 <div className='w-full h-20 p-5 border-t-2 border-t-border'>
-                                    <Button className='w-full h-full flex gap-4' onClick={() => console.log('ver pedido!')}>
+                                    <Button
+                                        className='w-full h-full flex gap-4 disabled:bg-muted/80'
+                                        disabled={!savedProducts.length}
+                                        onClick={() => setOpenCart(true)}>
                                         Ver Pedido
                                         <ShoppingBag size={20} />
                                     </Button>
                                 </div>
                             </>
                             :
+                            // HIDDEN MENU
                             <>
                                 <TabsList className='rounded-t flex flex-col justify-start rounded-b-none w-full h-full bg-accent px-4 gap-4'>
                                     <Button variant="ghost" size="sm" onClick={() => toggleMenu()}>
@@ -90,7 +121,8 @@ function OrdersPage() {
                                     </Button>
                                 </TabsList>
                                 <div className='flex justify-center items-center h-20 border-t-2 border-t-border'>
-                                    <Button className='p-0 px-3' onClick={() => console.log('ver pedido!')}>
+
+                                    <Button disabled={!savedProducts.length} className='p-0 px-3 disabled:bg-muted/80' onClick={() => setOpenCart(true)}>
                                         <ShoppingBag size={20} />
                                     </Button>
                                 </div>
@@ -99,17 +131,36 @@ function OrdersPage() {
                     </div>
                 </Tabs >
             </div>
+
+            {/* Products table */}
             <div className='w-full p-10'>
-                <div className='w-full h-10 bg-blue-200'>
-                </div>
+                <ProductsTable
+                    configCompleted={configDataSubmitted}
+                    configCanceled={configCanceled}
+                />
             </div>
 
-            <PickUpSelectMap showDialog={!!pickUp} onClose={() => { }} point={[]} />
+            <PickUpSelectMap showDialog={pickUpDialog} onClose={() => setPickUpDialog(false)} />
 
             <OrderConfig
                 companyId={company?.id}
-                callback={() => setConfigDataSubmitted(true)}
+                callback={() => {
+                    setTab(TabsEnum.LISTA_DE_PRODUCTOS);
+                    setConfigDataSubmitted(true);
+                    setConfigDialogOpen(false);
+                }}
                 onLoading={() => { }}
+                openDialog={configDialogOpen}
+                onCancel={() => {
+                    setcCnfigCanceled(true);
+                    setConfigDialogOpen(false)
+                }}
+            />
+
+            <CartSheet
+                callback={() => setOpenCart(false)}
+                title="Resumen de su pedido"
+                isOpen={cartOpen}
             />
 
         </section>
