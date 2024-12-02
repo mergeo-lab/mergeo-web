@@ -25,17 +25,22 @@ import { Route as AuthLayoutRegistrationIndexImport } from './routes/_authLayout
 import { Route as AuthenticatedDashboardLayoutNotificationsImport } from './routes/_authenticated/_dashboardLayout/notifications'
 import { Route as AuthenticatedDashboardLayoutInvoicesImport } from './routes/_authenticated/_dashboardLayout/invoices'
 import { Route as AuthenticatedDashboardLayoutFaqImport } from './routes/_authenticated/_dashboardLayout/faq'
-import { Route as AuthenticatedDashboardLayoutDashboardImport } from './routes/_authenticated/_dashboardLayout/dashboard'
 import { Route as AuthenticatedDashboardLayoutAccountTypeImport } from './routes/_authenticated/_dashboardLayout/_accountType'
 import { Route as AuthLayoutRegistrationValidateImport } from './routes/_authLayout/registration/validate'
 import { Route as AuthLayoutRegistrationUserImport } from './routes/_authLayout/registration/user'
 import { Route as AuthLayoutRegistrationCompanyImport } from './routes/_authLayout/registration/company'
-import { Route as AuthenticatedDashboardLayoutAccountTypeProviderIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/index'
+import { Route as AuthenticatedDashboardLayoutBuyOrderIndexImport } from './routes/_authenticated/_dashboardLayout/buyOrder/index'
+import { Route as AuthenticatedDashboardLayoutBuyOrderOrderIdImport } from './routes/_authenticated/_dashboardLayout/buyOrder/$orderId'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/index'
+import { Route as AuthenticatedDashboardLayoutAccountTypeProviderSellsImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/sells'
+import { Route as AuthenticatedDashboardLayoutAccountTypeProviderSellDetailImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/sellDetail'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientSearchListsImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/searchLists'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientOrdersImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/orders'
+import { Route as AuthenticatedDashboardLayoutAccountTypeClientMisPedidosImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/mis-pedidos'
+import { Route as AuthenticatedDashboardLayoutAccountTypeProviderProOrdersIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/proOrders/index'
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/configuration/index'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/configuration/index'
+import { Route as AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId'
 
 // Create Virtual Routes
 
@@ -133,12 +138,6 @@ const AuthenticatedDashboardLayoutFaqRoute =
     getParentRoute: () => AuthenticatedDashboardLayoutRoute,
   } as any)
 
-const AuthenticatedDashboardLayoutDashboardRoute =
-  AuthenticatedDashboardLayoutDashboardImport.update({
-    path: '/dashboard',
-    getParentRoute: () => AuthenticatedDashboardLayoutRoute,
-  } as any)
-
 const AuthenticatedDashboardLayoutAccountTypeRoute =
   AuthenticatedDashboardLayoutAccountTypeImport.update({
     id: '/_accountType',
@@ -164,15 +163,33 @@ const AuthLayoutRegistrationCompanyRoute =
     getParentRoute: () => AuthLayoutRegistrationRoute,
   } as any)
 
-const AuthenticatedDashboardLayoutAccountTypeProviderIndexRoute =
-  AuthenticatedDashboardLayoutAccountTypeProviderIndexImport.update({
-    path: '/provider/',
-    getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
+const AuthenticatedDashboardLayoutBuyOrderIndexRoute =
+  AuthenticatedDashboardLayoutBuyOrderIndexImport.update({
+    path: '/buyOrder/',
+    getParentRoute: () => AuthenticatedDashboardLayoutRoute,
+  } as any)
+
+const AuthenticatedDashboardLayoutBuyOrderOrderIdRoute =
+  AuthenticatedDashboardLayoutBuyOrderOrderIdImport.update({
+    path: '/buyOrder/$orderId',
+    getParentRoute: () => AuthenticatedDashboardLayoutRoute,
   } as any)
 
 const AuthenticatedDashboardLayoutAccountTypeClientIndexRoute =
   AuthenticatedDashboardLayoutAccountTypeClientIndexImport.update({
     path: '/client/',
+    getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
+  } as any)
+
+const AuthenticatedDashboardLayoutAccountTypeProviderSellsRoute =
+  AuthenticatedDashboardLayoutAccountTypeProviderSellsImport.update({
+    path: '/provider/sells',
+    getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
+  } as any)
+
+const AuthenticatedDashboardLayoutAccountTypeProviderSellDetailRoute =
+  AuthenticatedDashboardLayoutAccountTypeProviderSellDetailImport.update({
+    path: '/provider/sellDetail',
     getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
   } as any)
 
@@ -185,6 +202,18 @@ const AuthenticatedDashboardLayoutAccountTypeClientSearchListsRoute =
 const AuthenticatedDashboardLayoutAccountTypeClientOrdersRoute =
   AuthenticatedDashboardLayoutAccountTypeClientOrdersImport.update({
     path: '/client/orders',
+    getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
+  } as any)
+
+const AuthenticatedDashboardLayoutAccountTypeClientMisPedidosRoute =
+  AuthenticatedDashboardLayoutAccountTypeClientMisPedidosImport.update({
+    path: '/client/mis-pedidos',
+    getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
+  } as any)
+
+const AuthenticatedDashboardLayoutAccountTypeProviderProOrdersIndexRoute =
+  AuthenticatedDashboardLayoutAccountTypeProviderProOrdersIndexImport.update({
+    path: '/provider/proOrders/',
     getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
   } as any)
 
@@ -201,6 +230,14 @@ const AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexRoute =
     path: '/client/configuration/',
     getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
   } as any)
+
+const AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdRoute =
+  AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdImport.update(
+    {
+      path: '/provider/proOrders/$preOrderId',
+      getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
+    } as any,
+  )
 
 // Populate the FileRoutesByPath interface
 
@@ -290,13 +327,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
       parentRoute: typeof AuthenticatedDashboardLayoutImport
     }
-    '/_authenticated/_dashboardLayout/dashboard': {
-      id: '/_authenticated/_dashboardLayout/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardLayoutDashboardImport
-      parentRoute: typeof AuthenticatedDashboardLayoutImport
-    }
     '/_authenticated/_dashboardLayout/faq': {
       id: '/_authenticated/_dashboardLayout/faq'
       path: '/faq'
@@ -339,6 +369,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardLayoutIndexLazyImport
       parentRoute: typeof AuthenticatedDashboardLayoutImport
     }
+    '/_authenticated/_dashboardLayout/buyOrder/$orderId': {
+      id: '/_authenticated/_dashboardLayout/buyOrder/$orderId'
+      path: '/buyOrder/$orderId'
+      fullPath: '/buyOrder/$orderId'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutBuyOrderOrderIdImport
+      parentRoute: typeof AuthenticatedDashboardLayoutImport
+    }
+    '/_authenticated/_dashboardLayout/buyOrder/': {
+      id: '/_authenticated/_dashboardLayout/buyOrder/'
+      path: '/buyOrder'
+      fullPath: '/buyOrder'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutBuyOrderIndexImport
+      parentRoute: typeof AuthenticatedDashboardLayoutImport
+    }
+    '/_authenticated/_dashboardLayout/_accountType/client/mis-pedidos': {
+      id: '/_authenticated/_dashboardLayout/_accountType/client/mis-pedidos'
+      path: '/client/mis-pedidos'
+      fullPath: '/client/mis-pedidos'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientMisPedidosImport
+      parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
+    }
     '/_authenticated/_dashboardLayout/_accountType/client/orders': {
       id: '/_authenticated/_dashboardLayout/_accountType/client/orders'
       path: '/client/orders'
@@ -353,6 +404,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientSearchListsImport
       parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
     }
+    '/_authenticated/_dashboardLayout/_accountType/provider/sellDetail': {
+      id: '/_authenticated/_dashboardLayout/_accountType/provider/sellDetail'
+      path: '/provider/sellDetail'
+      fullPath: '/provider/sellDetail'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderSellDetailImport
+      parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
+    }
+    '/_authenticated/_dashboardLayout/_accountType/provider/sells': {
+      id: '/_authenticated/_dashboardLayout/_accountType/provider/sells'
+      path: '/provider/sells'
+      fullPath: '/provider/sells'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderSellsImport
+      parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
+    }
     '/_authenticated/_dashboardLayout/_accountType/client/': {
       id: '/_authenticated/_dashboardLayout/_accountType/client/'
       path: '/client'
@@ -360,11 +425,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientIndexImport
       parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
     }
-    '/_authenticated/_dashboardLayout/_accountType/provider/': {
-      id: '/_authenticated/_dashboardLayout/_accountType/provider/'
-      path: '/provider'
-      fullPath: '/provider'
-      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderIndexImport
+    '/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId': {
+      id: '/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId'
+      path: '/provider/proOrders/$preOrderId'
+      fullPath: '/provider/proOrders/$preOrderId'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdImport
       parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
     }
     '/_authenticated/_dashboardLayout/_accountType/client/configuration/': {
@@ -379,6 +444,13 @@ declare module '@tanstack/react-router' {
       path: '/provider/configuration'
       fullPath: '/provider/configuration'
       preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexImport
+      parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
+    }
+    '/_authenticated/_dashboardLayout/_accountType/provider/proOrders/': {
+      id: '/_authenticated/_dashboardLayout/_accountType/provider/proOrders/'
+      path: '/provider/proOrders'
+      fullPath: '/provider/proOrders'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderProOrdersIndexImport
       parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
     }
   }
@@ -403,19 +475,24 @@ export const routeTree = rootRoute.addChildren({
       AuthenticatedDashboardLayoutRoute.addChildren({
         AuthenticatedDashboardLayoutAccountTypeRoute:
           AuthenticatedDashboardLayoutAccountTypeRoute.addChildren({
+            AuthenticatedDashboardLayoutAccountTypeClientMisPedidosRoute,
             AuthenticatedDashboardLayoutAccountTypeClientOrdersRoute,
             AuthenticatedDashboardLayoutAccountTypeClientSearchListsRoute,
+            AuthenticatedDashboardLayoutAccountTypeProviderSellDetailRoute,
+            AuthenticatedDashboardLayoutAccountTypeProviderSellsRoute,
             AuthenticatedDashboardLayoutAccountTypeClientIndexRoute,
-            AuthenticatedDashboardLayoutAccountTypeProviderIndexRoute,
+            AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdRoute,
             AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexRoute,
             AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexRoute,
+            AuthenticatedDashboardLayoutAccountTypeProviderProOrdersIndexRoute,
           }),
-        AuthenticatedDashboardLayoutDashboardRoute,
         AuthenticatedDashboardLayoutFaqRoute,
         AuthenticatedDashboardLayoutInvoicesRoute,
         AuthenticatedDashboardLayoutNotificationsRoute,
         AuthenticatedDashboardLayoutAboutLazyRoute,
         AuthenticatedDashboardLayoutIndexLazyRoute,
+        AuthenticatedDashboardLayoutBuyOrderOrderIdRoute,
+        AuthenticatedDashboardLayoutBuyOrderIndexRoute,
       }),
   }),
   FaqRoute,
@@ -479,12 +556,13 @@ export const routeTree = rootRoute.addChildren({
       "parent": "/_authenticated",
       "children": [
         "/_authenticated/_dashboardLayout/_accountType",
-        "/_authenticated/_dashboardLayout/dashboard",
         "/_authenticated/_dashboardLayout/faq",
         "/_authenticated/_dashboardLayout/invoices",
         "/_authenticated/_dashboardLayout/notifications",
         "/_authenticated/_dashboardLayout/about",
-        "/_authenticated/_dashboardLayout/"
+        "/_authenticated/_dashboardLayout/",
+        "/_authenticated/_dashboardLayout/buyOrder/$orderId",
+        "/_authenticated/_dashboardLayout/buyOrder/"
       ]
     },
     "/_authLayout/registration/company": {
@@ -503,17 +581,17 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "_authenticated/_dashboardLayout/_accountType.tsx",
       "parent": "/_authenticated/_dashboardLayout",
       "children": [
+        "/_authenticated/_dashboardLayout/_accountType/client/mis-pedidos",
         "/_authenticated/_dashboardLayout/_accountType/client/orders",
         "/_authenticated/_dashboardLayout/_accountType/client/searchLists",
+        "/_authenticated/_dashboardLayout/_accountType/provider/sellDetail",
+        "/_authenticated/_dashboardLayout/_accountType/provider/sells",
         "/_authenticated/_dashboardLayout/_accountType/client/",
-        "/_authenticated/_dashboardLayout/_accountType/provider/",
+        "/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId",
         "/_authenticated/_dashboardLayout/_accountType/client/configuration/",
-        "/_authenticated/_dashboardLayout/_accountType/provider/configuration/"
+        "/_authenticated/_dashboardLayout/_accountType/provider/configuration/",
+        "/_authenticated/_dashboardLayout/_accountType/provider/proOrders/"
       ]
-    },
-    "/_authenticated/_dashboardLayout/dashboard": {
-      "filePath": "_authenticated/_dashboardLayout/dashboard.tsx",
-      "parent": "/_authenticated/_dashboardLayout"
     },
     "/_authenticated/_dashboardLayout/faq": {
       "filePath": "_authenticated/_dashboardLayout/faq.tsx",
@@ -539,6 +617,18 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "_authenticated/_dashboardLayout/index.lazy.tsx",
       "parent": "/_authenticated/_dashboardLayout"
     },
+    "/_authenticated/_dashboardLayout/buyOrder/$orderId": {
+      "filePath": "_authenticated/_dashboardLayout/buyOrder/$orderId.tsx",
+      "parent": "/_authenticated/_dashboardLayout"
+    },
+    "/_authenticated/_dashboardLayout/buyOrder/": {
+      "filePath": "_authenticated/_dashboardLayout/buyOrder/index.tsx",
+      "parent": "/_authenticated/_dashboardLayout"
+    },
+    "/_authenticated/_dashboardLayout/_accountType/client/mis-pedidos": {
+      "filePath": "_authenticated/_dashboardLayout/_accountType/client/mis-pedidos.tsx",
+      "parent": "/_authenticated/_dashboardLayout/_accountType"
+    },
     "/_authenticated/_dashboardLayout/_accountType/client/orders": {
       "filePath": "_authenticated/_dashboardLayout/_accountType/client/orders.tsx",
       "parent": "/_authenticated/_dashboardLayout/_accountType"
@@ -547,12 +637,20 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "_authenticated/_dashboardLayout/_accountType/client/searchLists.tsx",
       "parent": "/_authenticated/_dashboardLayout/_accountType"
     },
+    "/_authenticated/_dashboardLayout/_accountType/provider/sellDetail": {
+      "filePath": "_authenticated/_dashboardLayout/_accountType/provider/sellDetail.tsx",
+      "parent": "/_authenticated/_dashboardLayout/_accountType"
+    },
+    "/_authenticated/_dashboardLayout/_accountType/provider/sells": {
+      "filePath": "_authenticated/_dashboardLayout/_accountType/provider/sells.tsx",
+      "parent": "/_authenticated/_dashboardLayout/_accountType"
+    },
     "/_authenticated/_dashboardLayout/_accountType/client/": {
       "filePath": "_authenticated/_dashboardLayout/_accountType/client/index.tsx",
       "parent": "/_authenticated/_dashboardLayout/_accountType"
     },
-    "/_authenticated/_dashboardLayout/_accountType/provider/": {
-      "filePath": "_authenticated/_dashboardLayout/_accountType/provider/index.tsx",
+    "/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId": {
+      "filePath": "_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId.tsx",
       "parent": "/_authenticated/_dashboardLayout/_accountType"
     },
     "/_authenticated/_dashboardLayout/_accountType/client/configuration/": {
@@ -561,6 +659,10 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_authenticated/_dashboardLayout/_accountType/provider/configuration/": {
       "filePath": "_authenticated/_dashboardLayout/_accountType/provider/configuration/index.tsx",
+      "parent": "/_authenticated/_dashboardLayout/_accountType"
+    },
+    "/_authenticated/_dashboardLayout/_accountType/provider/proOrders/": {
+      "filePath": "_authenticated/_dashboardLayout/_accountType/provider/proOrders/index.tsx",
       "parent": "/_authenticated/_dashboardLayout/_accountType"
     }
   }

@@ -31,3 +31,19 @@ export const ReplacementCriteriaValues = {
     label: 'Mismo producto, distinta presentación',
   },
 };
+
+export enum PRE_ORDER_STATUS {
+  pending = 'pending',
+  accepted = 'accepted',
+  rejected = 'rejected',
+  partialyAccepted = 'partialy-accepted',
+  timeout = 'timeout',
+  fail = 'fail',
+}
+
+export enum SERVER_SENT_EVENTS {
+  preOrderCreated = 'preOrder.created',
+  preOrderRejected = 'preOrder.rejected',
+  preOrderFail = 'preOrder.fail',
+  orderCreated = 'order.created',
+}

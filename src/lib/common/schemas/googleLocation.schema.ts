@@ -24,6 +24,8 @@ export const LocationSchema = z.object({
     ]),
   }),
   name: z.string(),
+  phoneNumber: z.string().optional(),
+  email: z.string().optional(),
 });
 
 export const ZoneLocationSchema = z.object({

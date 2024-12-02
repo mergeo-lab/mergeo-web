@@ -1,8 +1,16 @@
 import { axiosPrivate } from '@/lib/api/axios';
-import { SEARCH_PRODUCTS, PRE_ORDER } from './endpoints';
-import { CartProduct, ProductWithQuantity } from '@/store/search.store';
+import {
+  SEARCH_PRODUCTS,
+  PRE_ORDER,
+  BUY_ORDER,
+  ORDERS_EVENTS,
+} from './endpoints';
+import { ProductWithQuantity, CartProductQuantity } from '@/store/search.store';
 import { AxiosResponse, isAxiosError } from 'axios';
 import { ReplacementCriteria } from '@/lib/constants';
+import { OrderSchemaType, PreOrderSchemaType } from '@/lib/schemas';
+import { BuyOrderSchemaType } from '@/lib/schemas/orders.schema';
+import { SellProductSchemaType } from '@/lib/schemas/sell.schema';
 
 export type SearchParams = {
   branchId?: string;
@@ -21,7 +29,7 @@ export type SearchParams = {
 export async function getProducts(
   companyId: string,
   searchParams: SearchParams
-): Promise<{ count: number; products: CartProduct[] }> {
+): Promise<{ count: number; products: ProductWithQuantity[] }> {
   const {
     branchId,
     expectedDeliveryStartDay,
@@ -124,7 +132,7 @@ export async function getProducts(
   searchParams: SearchParams;
   reacteplacementCriteria: ReplacementCriteria;
   cartProducts: ProductWithQuantity[];
-}): Promise<string> {
+}): Promise<{ message: string; preOrderId: string }> {
   const {
     branchId,
     expectedDeliveryStartDay,
@@ -149,7 +157,7 @@ export async function getProducts(
     pickUpRadius,
   };
 
-  const productsWithQuantity: ProductWithQuantity[] = cartProducts.map(
+  const productsWithQuantity: CartProductQuantity[] = cartProducts.map(
     (product) => ({
       id: product.id,
       quantity: product.quantity ?? 1, // Use 0 as default if quantity is not defined
@@ -167,6 +175,195 @@ export async function getProducts(
     const { data: response }: AxiosResponse = await axiosPrivate.post(
       `${PRE_ORDER}/${userId}`,
       JSON.stringify({ ...payload })
+    );
+    return response;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+export async function getAllPreOrders(
+  companyId: string
+): Promise<{ count: number; preOrders: PreOrderSchemaType[] }> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${PRE_ORDER}/${companyId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+export async function getSellPreOrders(
+  companyId: string
+): Promise<PreOrderSchemaType[]> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${PRE_ORDER}/${companyId}/provider`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+export async function getSellPreOrdersById(
+  preOrderId: string
+): Promise<PreOrderSchemaType> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${PRE_ORDER}/${preOrderId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+export async function getAllBuyOrders(
+  companyId: string,
+  isClient: boolean = true
+): Promise<BuyOrderSchemaType[]> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${BUY_ORDER}/${companyId}/${isClient ? 'client' : 'provider'}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+export async function getOrderById(orderId: string): Promise<OrderSchemaType> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${BUY_ORDER}/${orderId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+export async function preOrderEvents(
+  companyId: string
+): Promise<{ count: number; preOrders: PreOrderSchemaType[] }> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${ORDERS_EVENTS}/${companyId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+// PROVIDER RESPONSE
+export async function preOrderProviderResponse({
+  orderId,
+  acceptedProducts,
+  rejectedProducts,
+}: {
+  orderId: string;
+  acceptedProducts: SellProductSchemaType[];
+  rejectedProducts: SellProductSchemaType[];
+}): Promise<{ count: number; preOrders: PreOrderSchemaType[] }> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.post(
+      `${PRE_ORDER}/${orderId}/provider-response`,
+      JSON.stringify({ acceptedProducts, rejectedProducts }),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
     );
     return response;
   } catch (error) {

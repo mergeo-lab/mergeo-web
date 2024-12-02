@@ -9,6 +9,11 @@ export type ProductWithQuantity = CartProduct & {
   quantity: number;
 };
 
+export type CartProductQuantity = Pick<
+  ProductWithQuantity,
+  'id' | 'providerId' | 'quantity'
+>;
+
 export type CartProduct = {
   id: string;
   name: string;

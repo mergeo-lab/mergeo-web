@@ -3,7 +3,6 @@ import ToggleSelect from "@/components/toggleSelct";
 import { Button } from "@/components/ui/button";
 import { DialogContent, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Toggle } from "@/components/ui/toggle";
 import { PickUpSchedulesSchemaType } from "@/lib/schemas/pickUp.schema";
 import { generateHourSlots, timeStringToNumber } from "@/lib/utils";
 import useDaysPickerStore from "@/store/daysPicker.store";

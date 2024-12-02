@@ -1,12 +1,12 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Building, ChevronDown, ChevronRight, ScrollText, Settings, UsersRound, WalletCards, Scale } from "lucide-react";
-import { Link, useNavigate, useRouter, useSearch } from '@tanstack/react-router';
-import { useState, useCallback } from "react";
+import { Building, ChevronDown, ScrollText, Settings, UsersRound, WalletCards, Scale, Archive } from "lucide-react";
+import { Link, useSearch } from '@tanstack/react-router';
+import { useState, useCallback, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Button } from '@/components/ui/button';
 import UseUserStore from "@/store/user.store";
 import { ACCOUNT } from "@/lib/constants";
-import UseSearchConfigStore from "@/store/searchConfiguration.store.";
+import NewOrderButton from "@/components/dashboard/newOrderButton";
+import SpecialLink from "@/components/dashboard/specialLink";
 
 type Props = {
     companyName: string
@@ -21,8 +21,10 @@ export function SideBarMenu({ companyName }: Props) {
     const { user } = UseUserStore();
     const [collapsibleIsOpen, setCollapsibleIsOpen] = useState(false);
     const search = useSearch({ from: "/_authenticated/_dashboardLayout" });
-    const { setConfigDialogOpen, setShouldResetConfig } = UseSearchConfigStore();
-    const navigate = useNavigate()
+
+    useEffect(() => {
+        console.log("SEARCH ::::: ", search);
+    });
 
     // Use useCallback to memoize the onCollapsibleChange function
     const onCollapsibleChange = useCallback((value: boolean) => {
@@ -35,11 +37,6 @@ export function SideBarMenu({ companyName }: Props) {
         }, 400);
     }
 
-    function handleNewOrder() {
-        setShouldResetConfig(true);
-        setConfigDialogOpen(true);
-        navigate({ to: "/client/orders" });
-    }
 
     return (
         <div className="h-screen min-h-full w-[12%] min-w-52 bg-secondary-background">
@@ -100,32 +97,47 @@ export function SideBarMenu({ companyName }: Props) {
                 </CollapsibleContent>
             </Collapsible>
 
-            <div className="mt-8">
+            <div className={cn("mt-8", { 'mt-0': user?.accountType === ACCOUNT.provider })}>
                 {user?.accountType === ACCOUNT.client &&
                     <div className="px-5">
-                        <div className="w-full" onClick={handleNewOrder}>
-                            <Button className="w-full text-md">
-                                Hacer Pedido
-                                <ChevronRight size={20} strokeWidth={3} className="ml-2" />
-                            </Button>
-                        </div>
+                        <NewOrderButton />
                     </div>
                 }
 
                 <ul className="py-4 pt-6 text-secondary-foreground [&>li]:multi-[w-full] [&>li>a]:multi-[flex;gap-2;text-sm;w-full;h-10;pl-6;py-6;items-center;] [&>li>a]:hover:multi-['hover:bg-secondary-foreground/20']">
                     {user?.accountType === ACCOUNT.client && (
-                        <li>
-                            <Link to="/client/searchLists">
-                                <ScrollText />
-                                Mis Listas
-                            </Link>
-                        </li>
+                        <>
+                            <li>
+                                <SpecialLink to="/client/mis-pedidos" >
+                                    <Archive />
+                                    Mis Pedidos
+                                </SpecialLink>
+
+                            </li>
+                            <li>
+                                <SpecialLink to="/client/searchLists">
+                                    <ScrollText />
+                                    Mis Listas
+                                </SpecialLink>
+
+                            </li>
+                        </>
+                    )}
+                    {user?.accountType === ACCOUNT.provider && (
+                        <>
+                            <li>
+                                <SpecialLink to="/provider/proOrders" activePaths={['/provider/proOrders']}>
+                                    <Archive />
+                                    Pedidos
+                                </SpecialLink>
+                            </li>
+                        </>
                     )}
                     <li>
-                        <Link to="/login">
+                        <SpecialLink to="/buyOrder" activePaths={['/buyOrder']}>
                             <WalletCards />
                             Ordenes de Compra
-                        </Link>
+                        </SpecialLink>
                     </li>
                     <li>
                         <Link to="/login">

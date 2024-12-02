@@ -67,7 +67,6 @@ function Login() {
       });
     } else if (response.data) {
       const { data } = response.data;
-      console.log("DATA COMPANY  ===> ", data.company)
       companyState.saveCompany(data.company);
       logIn(data.user);
     }
@@ -75,7 +74,7 @@ function Login() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      const redirectTo = "/dashboard";
+      const redirectTo = "/";
       router.history.push(redirectTo, { replace: true });
     }
   }, [isAuthenticated, router.history]);

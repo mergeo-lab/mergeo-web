@@ -5,6 +5,7 @@ import { HourSlot } from '@/types';
 import { ZoneSchemaPostGisType } from '@/lib/configuration/schemas/dropZone.schemas';
 
 const secretKey = import.meta.env.VITE_SEARCH_PARAMS_KEY;
+import { format } from 'date-fns';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -19,13 +20,15 @@ export function decryptQueryParam(encryptedParam: string): string {
   return bytes.toString(CryptoJS.enc.Utf8);
 }
 
-export function formatDate(dateString: string) {
+export function formatDate(dateString: string, shortFormat = false): string {
   const date = new Date(dateString);
 
   const day = date.getDate();
   const month = date.toLocaleString('es-ES', { month: 'long' });
   const year = date.getFullYear();
+  const monthNumber = date.getMonth() + 1;
 
+  if (shortFormat) return `${day}/${monthNumber}/${year}`;
   return `${day} de ${month} del ${year}`;
 }
 
@@ -110,4 +113,27 @@ export function numberToTimeString(time: number | undefined): string {
   const minutesString = minutes.toString().padStart(2, '0');
 
   return `${hoursString}:${minutesString}hs`;
+}
+
+/**
+ * Formats a number as Argentinian Pesos (ARS).
+ * @param amount - The number to format.
+ * @param options - Optional settings for formatting.
+ * @returns A string formatted as Argentinian Pesos.
+ */
+export function formatToArgentinianPesos(
+  amount: number,
+  options?: Intl.NumberFormatOptions
+): string {
+  const defaultOptions: Intl.NumberFormatOptions = {
+    style: 'currency',
+    currency: 'ARS',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  };
+
+  return new Intl.NumberFormat('es-AR', {
+    ...defaultOptions,
+    ...options,
+  }).format(amount);
 }

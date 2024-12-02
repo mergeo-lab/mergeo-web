@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProductSearch } from "@/hooks/useProductsSearch";
-import { CartProduct } from "@/store/search.store";
+import { ProductWithQuantity } from "@/store/search.store";
 import { Table, TableHeader, TableHead, TableBody, TableRow } from "@/components/ui/table";
 import ProductRow from "@/components/configuration/client/orders/productRow";
 import { Button } from "@/components/ui/button";
@@ -73,7 +73,7 @@ export default function ProductsTable({ configCompleted = false, configCanceled 
             <div className="h-[calc(100vh-280px)] overflow-y-auto px-2">
                 <Table>
                     <TableBody className="[&>*]:hover:bg-white">
-                        {data && data?.products.map((item: CartProduct) => (
+                        {data && data?.products.map((item: ProductWithQuantity) => (
                             <ProductRow key={item.id} data={item} cellsWidth={tableCellWidth} />
                         ))}
                     </TableBody>

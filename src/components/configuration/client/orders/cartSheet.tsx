@@ -1,13 +1,16 @@
+import QuantitySelector from "@/components/configuration/client/orders/quantitySelector";
 import { Button } from "@/components/ui/button";
+import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { cratePreOrder } from "@/lib/orders";
-import UseSearchStore from "@/store/search.store";
+import UseSearchStore, { CartProduct } from "@/store/search.store";
 import UseSearchConfigStore from "@/store/searchConfiguration.store.";
 import UseUserStore from "@/store/user.store";
 import { useMutation } from "@tanstack/react-query";
 import { ClipboardList } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from '@tanstack/react-router'
 
 type Props = {
     title?: string,
@@ -27,11 +30,11 @@ export function CartSheet({
     triggerButton }: Props) {
     const mutation = useMutation({ mutationFn: cratePreOrder })
     const [open, setOpen] = useState(false);
-
-    const { getAllSavedProducts } = UseSearchStore();
+    const { getAllSavedProducts, saveProduct, removeProduct } = UseSearchStore();
     const { getAllConfig } = UseSearchConfigStore();
     const { user } = UseUserStore();
     const products = getAllSavedProducts();
+    const router = useRouter();
 
     const totalPrice = products
         .reduce((sum, product) => {
@@ -45,6 +48,13 @@ export function CartSheet({
             setOpen(isOpen);
         }
     }, [isOpen]);
+
+    useEffect(() => {
+        if (mutation.isSuccess) {
+            router.navigate({ to: '/client/mis-pedidos', search: { id: mutation.data.preOrderId } });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mutation.isSuccess]);
 
     const closeModal = useCallback(() => {
         // Close the modal
@@ -79,6 +89,22 @@ export function CartSheet({
         callback();
     }
 
+    function checkProductsAmount() {
+        const savedProducts = getAllSavedProducts();
+        if (savedProducts.length < 1) {
+            closeModal();
+        }
+    }
+
+    function handleProductChange(product: CartProduct, quantity: number) {
+        if (quantity === 0) {
+            removeProduct(product.id, product.providerId);
+        } else {
+            saveProduct(product, quantity);
+        }
+        checkProductsAmount();
+    }
+
     return (
         <Sheet open={open} onOpenChange={(isOpen) => {
             if (!isOpen) {
@@ -101,6 +127,9 @@ export function CartSheet({
                     </SheetDescription>
                 </SheetHeader>
                 <div className="h-[calc(100vh-210px)] overflow-y-auto mt-5">
+                    {
+                        mutation.isPending && <OverlayLoadingIndicator />
+                    }
                     <Table>
                         <TableHeader className="sticky top-0 bg-white shadow-sm">
                             <TableRow className="hover:bg-white [&>*]:text-center">
@@ -117,7 +146,9 @@ export function CartSheet({
                                         <p className="text-sm text-muted-foreground">{product.name}, {product.brand} x {product.net_content}{product.measurementUnit}</p>
                                     </TableCell>
                                     <TableCell>
-                                        <p className="text-sm text-muted-foreground">{product.quantity}</p>
+                                        <div className="flex justify-center">
+                                            <QuantitySelector defaultValue={product.quantity} onChange={(quantity) => handleProductChange(product, quantity)} />
+                                        </div>
                                     </TableCell>
                                     <TableCell className="text-center">
                                         <p className="text-sm text-muted-foreground">${(+product.price).toFixed(2)}</p>

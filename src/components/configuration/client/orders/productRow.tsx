@@ -1,13 +1,13 @@
-import UseSearchStore, { CartProduct } from "@/store/search.store";
+import UseSearchStore, { ProductWithQuantity } from "@/store/search.store";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Image } from "lucide-react";
 import QuantitySelector from "@/components/configuration/client/orders/quantitySelector";
 
-export default function ProductRow({ data, cellsWidth }: { data: CartProduct, cellsWidth: string }) {
+export default function ProductRow({ data, cellsWidth }: { data: ProductWithQuantity, cellsWidth: string }) {
 
-    const { saveProduct, removeProduct } = UseSearchStore();
+    const { saveProduct, removeProduct, getAllSavedProducts } = UseSearchStore();
 
-    function handleProductChange(product: CartProduct, quantity: number) {
+    function handleProductChange(product: ProductWithQuantity, quantity: number) {
         console.log({ product, quantity })
         if (quantity === 0) {
             removeProduct(product.id, product.providerId);
@@ -41,7 +41,9 @@ export default function ProductRow({ data, cellsWidth }: { data: CartProduct, ce
                 data.net_content ? (+data.price * data.net_content) : 1}</TableCell>
             <TableCell className={`${cellsWidth} text-right`}>
                 <div className="flex justify-end">
-                    <QuantitySelector onChange={(quantity: number) => handleProductChange(data, quantity)} />
+                    <QuantitySelector
+                        defaultValue={getAllSavedProducts().find((item: ProductWithQuantity) => item.id === data.id)?.quantity}
+                        onChange={(quantity: number) => handleProductChange(data, quantity)} />
                 </div>
             </TableCell>
         </TableRow>
