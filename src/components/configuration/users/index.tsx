@@ -145,7 +145,7 @@ export function Users() {
                                                     </DialogTrigger>
                                                     <DialogContent className="w-fit p-10 flex justify-center items-center">
                                                         <Ban size={50} className="text-destructive" />
-                                                        <p className="text-2xl">No puedes borrar un usuario <br />con el rol de Admianistrador!</p>
+                                                        <p className="text-md">No puedes borrar un usuario <br />con el rol de Admianistrador!</p>
                                                     </DialogContent>
                                                 </Dialog>
                                                 :

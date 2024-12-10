@@ -5,6 +5,7 @@ type Props = {
     to: string;
     children: React.ReactNode;
     activePaths?: string[];
+    onClick?: () => void;
 };
 
 function matchDynamicRoute(pathname: string, to: string): boolean {
@@ -15,7 +16,7 @@ function matchDynamicRoute(pathname: string, to: string): boolean {
     return false;
 }
 
-export default function SpecialLink({ to, children, activePaths }: Props) {
+export default function SpecialLink({ to, children, activePaths, onClick }: Props) {
     const location = useLocation();
 
     // Check if the link is active
@@ -26,6 +27,7 @@ export default function SpecialLink({ to, children, activePaths }: Props) {
 
     return (
         <Link
+            onClick={onClick}
             to={to}
             className={cn(
                 'transition-all duration-300',

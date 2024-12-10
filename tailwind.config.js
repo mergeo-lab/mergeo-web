@@ -66,13 +66,14 @@ export default {
         lg: 'calc(var(--radius) + 8px)',
       },
       fontSize: {
-        xs: 'calc(var(--font-size) - 4px)',
-        sm: 'calc(var(--font-size) - 2px)',
+        xs: 'calc(var(--font-size) - 0.5rem)',
+        sm: 'calc(var(--font-size) - 0.2rem)',
         DEFAULT: 'var(--font-size)',
-        md: 'calc(var(--font-size) + 1px)',
-        lg: 'calc(var(--font-size) + 2px)',
-        xl: 'calc(var(--font-size) + 3px)',
-        '2xl': 'calc(var(--font-size) + 5px)',
+        md: 'calc(var(--font-size) + 0.5rem)',
+        lg: 'calc(var(--font-size) + 0.8rem)',
+        xl: 'calc(var(--font-size) + 1rem)',
+        '2xl': 'calc(var(--font-size) + 1.2rem)',
+        '3xl': 'calc(var(--font-size) + 1.5rem)',
       },
       keyframes: {
         "caret-blink": {

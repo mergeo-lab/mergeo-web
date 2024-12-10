@@ -12,7 +12,6 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Eye } from 'lucide-react';
 import { useEffect } from 'react';
-import { TrafficCone } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/sells')({
@@ -108,7 +107,7 @@ export default function Sells() {
             data?.length === 0 && (
               <div className='w-full h-full flex justify-center items-center absolute top-0 left-0 right-0 bottom-0'>
                 <div className='py-10 px-20 shadow rounded flex flex-col justify-center items-center gap-2'>
-                  <TrafficCone size={50} strokeWidth={1} className='text-highlight' />
+                  <img src={noOrders} alt="no tienes ordenes" />
                   <div>
                     <p className='text-center text-2xl font-thin text-secondary/60'>No tienes Pedios!</p>
                   </div>

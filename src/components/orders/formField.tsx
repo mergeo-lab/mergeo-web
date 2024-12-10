@@ -24,7 +24,7 @@ export default function BuyOrderFormField({ label, value, className }: Props) {
             context.font = `${computedStyles.fontSize} ${computedStyles.fontFamily}`;
 
             const words = String(value).split(" ");
-            const maxWidth = container.offsetWidth;
+            const maxWidth = container.offsetWidth - 50;
             const calculatedLines: string[] = [];
             let currentLine = "";
 
@@ -55,12 +55,12 @@ export default function BuyOrderFormField({ label, value, className }: Props) {
 
     return (
         <div className="flex items-start w-full">
-            <label className="block text-sm font-medium text-secondary text-left w-fit min-w-[160px] mb-1">
+            <label className="block text-sm font-medium text-secondary text-left w-fit min-w-[160px] mt-3">
                 {label}
             </label>
             <div
                 ref={containerRef}
-                className={cn("w-full text-md flex flex-col", className)}
+                className={cn("w-full flex flex-col", className)}
             >
                 {lines.map((line, index) => (
                     <div

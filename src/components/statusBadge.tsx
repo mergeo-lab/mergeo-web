@@ -7,9 +7,9 @@ export function StatusBadge({ status, className }: { status: string, className?:
         case PRE_ORDER_STATUS.pending:
             return <Badge className={cn('bg-highlight hover:bg-highlight', className)}>Pendiente</Badge>
         case PRE_ORDER_STATUS.accepted:
-            return <Badge className={cn('', className)}>Aceptada</Badge>
+            return <Badge className={cn('hover:bg-primary', className)}>Aceptada</Badge>
         case PRE_ORDER_STATUS.rejected:
-            return <Badge variant='destructive' className={cn('', className)}>Rechazada</Badge>
+            return <Badge variant='destructive' className={cn('hover:bg-destructive', className)}>Rechazada</Badge>
         case PRE_ORDER_STATUS.partialyAccepted:
             return <Badge variant='outline' className={cn('border-dashed border-primary text-primary', className)}>Parcialmente Aceptada</Badge>
         case PRE_ORDER_STATUS.timeout:

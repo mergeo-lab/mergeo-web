@@ -3,13 +3,14 @@ import { Users } from '@/components/configuration/users';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import React from 'react';
+import { ConfigTabs } from '@/lib/constants';
 
-type TabSearch = { tab: string };
+type TabSearch = { tab: ConfigTabs };
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/configuration/')({
   validateSearch: (search: Record<string, unknown>): TabSearch => {
     return {
-      tab: (search?.tab) as string || '',
+      tab: (search?.tab) as ConfigTabs || '',
     };
   },
   component: () => <Configuration />

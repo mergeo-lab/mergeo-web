@@ -8,3 +8,4 @@ export * from '../searchLists/searchLists.schemas';
 export * from './pickUp.schema';
 export * from './dropZone.schemas';
 export * from './configuration.schema';
+export * from './products.schema';

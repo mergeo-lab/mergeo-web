@@ -211,8 +211,16 @@ export function ManageRoles() {
                                                                         </TableRow>
 
                                                                     )
-                                                                    : <TableRow key={role.id} className="absolute top-2 right-4 flex gap-4 border-none hover:bg-white">
-                                                                        <Button variant="outline" className="" size="xs" onClick={() => setViewRole(role)}>{role.name}</Button>
+                                                                    : <TableRow key={role.id} className="absolute top-28 left-72 right-4 flex gap-4 border-none hover:bg-white">
+                                                                        <div>
+                                                                            <Button
+                                                                                variant="outline"
+                                                                                className=""
+                                                                                size="xs"
+                                                                                onClick={() => setViewRole(role)}>
+                                                                                {role.name}
+                                                                            </Button>
+                                                                        </div>
                                                                         <ArrowBigRight className={cn('text-primary opacity-0', {
                                                                             'opacity-100': viewRole?.id == role.id
                                                                         })} />

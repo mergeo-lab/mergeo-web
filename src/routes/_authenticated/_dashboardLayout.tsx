@@ -5,22 +5,37 @@ import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router';
 import { Bell, CircleHelp, Settings, ScrollText, Package, Archive, WalletCards, FileSearch } from 'lucide-react'
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout')({
-    component: () => <DashboardLayout />
+    component: () => <DashboardLayout />,
 })
 
-const routeTitles: Record<string, { text: string, icon: JSX.Element }> = {
-    '/': { text: 'Dashboard', icon: <ScrollText size={25} /> },
-    '/searchLists': { text: 'Mis Listas', icon: <ScrollText size={25} /> },
-    '/configuration': { text: 'Configuración de cuenta', icon: <Settings size={25} /> },
-    '/notifications': { text: 'Notificaciones', icon: <Bell size={25} /> },
-    '/faq': { text: 'Preguntas Frecuentes', icon: <CircleHelp size={25} /> },
-    '/orders': { text: 'Hacer Pedido', icon: <Package size={25} /> },
-    '/mis-pedidos': { text: 'Pedidos', icon: <Archive size={25} /> },
-    '/buyOrder': { text: 'Ordenes de Compra', icon: <WalletCards size={25} /> },
-    '/buyOrder/$orderId': { text: 'Detalle de la Orden de Compra', icon: <WalletCards size={25} /> },
-    '/provider/proOrders': { text: 'Pedidos', icon: <Archive size={25} /> },
-    '/provider/$proOrderId': { text: 'Detalle del Pedido', icon: <Archive size={25} /> },
-    '/sellDetail': { text: 'Detalle del Pedido', icon: <FileSearch size={25} /> },
+const iconProps = {
+    size: 30,
+    color: 'text-primary'
+}
+const routeTitles: Record<string, { text: string | JSX.Element, icon: JSX.Element }> = {
+    '/': { text: 'Dashboard', icon: <ScrollText size={iconProps.size} className={iconProps.color} /> },
+    '/searchLists': { text: 'Mis Listas', icon: <ScrollText size={iconProps.size} className={iconProps.color} /> },
+    '/configuration': { text: 'Configuración de cuenta', icon: <Settings size={iconProps.size} className={iconProps.color} /> },
+    '/notifications': { text: 'Notificaciones', icon: <Bell size={iconProps.size} className={iconProps.color} /> },
+    '/faq': { text: 'Preguntas Frecuentes', icon: <CircleHelp size={iconProps.size} className={iconProps.color} /> },
+    '/orders': { text: 'Hacer Pedido', icon: <Package size={iconProps.size} className={iconProps.color} /> },
+    '/mis-pedidos': { text: 'Pedidos', icon: <Archive size={iconProps.size} className={iconProps.color} /> },
+    '/buyOrder': { text: 'Ordenes de Compra', icon: <WalletCards size={iconProps.size} className={iconProps.color} /> },
+    '/buyOrder/$orderId': {
+        text: <p>Ordenes de Compra <span className='text-base border-l-2 border-muted pl-2 font-light'>Detalle de la orden de compra</span></p>,
+        icon: <WalletCards size={iconProps.size} className={iconProps.color} />
+    },
+    '/provider/proOrders': { text: 'Pedidos', icon: <Archive size={iconProps.size} className={iconProps.color} /> },
+    '/provider/proOrders/$orderId': {
+        text: <p>Pedidos <span className='text-base border-l-2 border-muted pl-2 font-light'>Detalle del pedido</span></p>,
+        icon: <Archive size={iconProps.size} className={iconProps.color} />
+    },
+    '/sellDetail': { text: 'Detalle del Pedido', icon: <FileSearch size={iconProps.size} className={iconProps.color} /> },
+    '/provider/products': { text: 'Productos', icon: <Package size={iconProps.size} className={iconProps.color} /> },
+    '/provider/products/newProducts': {
+        text: <p>Productos <span className='text-base border-l-2 border-muted pl-2 font-light'>Agregar Productos</span></p>,
+        icon: <Package size={iconProps.size} className={iconProps.color} />
+    },
 }
 
 function DashboardLayout() {
@@ -54,11 +69,11 @@ function DashboardLayout() {
     const { text, icon } = title;
 
     return (
-        <div className='w-full h-full flex'>
+        <div className='w-full h-full flex overflow-hidden'>
             <MemoizedSideBarMenu companyName={company?.name || ''} />
             <div className='w-full md:px-12 flex flex-col justify-center'>
                 <DashboardHeader title={{ text, icon }} />
-                <div className='w-full h-screen mt-0 my-10 border rounded shadow overflow-hidden lg:max-h-[calc(100vh-150px)] '>
+                <div className='w-[calc(100vw-300px)] h-screen mt-0 my-10 border rounded shadow overflow-hidden lg:max-h-[calc(100vh-150px)] bg-white'>
                     <Outlet />
                 </div>
             </div>

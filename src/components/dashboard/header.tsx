@@ -10,7 +10,7 @@ import { useEffect, useCallback, memo } from "react"
 type Props = {
     title?: {
         icon?: JSX.Element,
-        text?: string
+        text?: string | JSX.Element
     }
 }
 
@@ -62,7 +62,7 @@ export function DashboardHeader({ title }: Props) {
                 <div className="mr-2">
                     {title && title.icon && title.icon}
                 </div>
-                {title && <h1 className='text-2xl'>{title.text}</h1>}
+                {title && <h1 className='text-md'>{title.text}</h1>}
             </div>
             <div className="h-full flex items-center gap-6">
                 <Link to="/faq">

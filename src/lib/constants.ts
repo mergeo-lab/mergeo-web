@@ -3,6 +3,11 @@ export enum ACCOUNT {
   provider = 'PROVIDER',
 }
 
+export enum ConfigTabs {
+  COMPANY = 'company',
+  USER = 'user',
+}
+
 export const colorClasses = [
   'bg-primary',
   'bg-highlight',

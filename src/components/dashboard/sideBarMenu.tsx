@@ -1,7 +1,7 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Building, ChevronDown, ScrollText, Settings, UsersRound, WalletCards, Scale, Archive } from "lucide-react";
-import { Link, useSearch } from '@tanstack/react-router';
-import { useState, useCallback, useEffect } from "react";
+import { Building, ChevronDown, ScrollText, Settings, UsersRound, WalletCards, Scale, Archive, Package } from "lucide-react";
+import { Link, useLocation, useSearch } from '@tanstack/react-router';
+import { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import UseUserStore from "@/store/user.store";
 import { ACCOUNT } from "@/lib/constants";
@@ -20,11 +20,8 @@ export enum tabs {
 export function SideBarMenu({ companyName }: Props) {
     const { user } = UseUserStore();
     const [collapsibleIsOpen, setCollapsibleIsOpen] = useState(false);
-    const search = useSearch({ from: "/_authenticated/_dashboardLayout" });
-
-    useEffect(() => {
-        console.log("SEARCH ::::: ", search);
-    });
+    const search = useSearch({ from: "/_authenticated/_dashboardLayout" }) as { tab?: tabs };
+    const location = useLocation();
 
     // Use useCallback to memoize the onCollapsibleChange function
     const onCollapsibleChange = useCallback((value: boolean) => {
@@ -33,10 +30,18 @@ export function SideBarMenu({ companyName }: Props) {
 
     const onLinkClicked = () => {
         setTimeout(() => {
-            setCollapsibleIsOpen(!collapsibleIsOpen);
-        }, 400);
+            setCollapsibleIsOpen(false);
+        }, 200);
     }
 
+    function getConfigTab() {
+        const tab = search.tab;
+        if (location.pathname.includes("configuration")) {
+            return tab
+        } else {
+            return "company"
+        }
+    }
 
     return (
         <div className="h-screen min-h-full w-[12%] min-w-52 bg-secondary-background">
@@ -46,17 +51,19 @@ export function SideBarMenu({ companyName }: Props) {
 
             <Collapsible open={!!collapsibleIsOpen} onOpenChange={onCollapsibleChange} className="bg-secondary-foreground py-4 px-4 transition-all">
                 <div className="relative flex items-center">
-                    <CollapsibleTrigger className="flex items-center text-lg text-secondary-backgroundfont-bold w-full gap-2">
-                        <div className="w-10 min-w-10 h-10 flex justify-center items-center bg-primary rounded-full text-secondary-foreground text-lg font-extrabold">
-                            {companyName && companyName[0].toUpperCase()}
-                        </div>
-                        <div className="font-bold text-base text-bg-secondary-background flex items-center gap-1">
-                            <span>
-                                {companyName && companyName}
-                            </span>
-                            <ChevronDown size={15} strokeWidth={5} className={cn({ 'rotate-180': collapsibleIsOpen })} />
-                        </div>
-                    </CollapsibleTrigger>
+                    <Link to='/client/configuration' search={{ tab: getConfigTab() }} className='w-full'>
+                        <CollapsibleTrigger className="flex items-center text-secondary-backgroundfont-bold w-full gap-2">
+                            <div className="w-10 min-w-10 h-10 flex justify-center items-center bg-primary rounded-full text-secondary-foreground font-extrabold">
+                                {companyName && companyName[0].toUpperCase()}
+                            </div>
+                            <div className="font-bold text-base text-bg-secondary-background flex items-center gap-1">
+                                <span>
+                                    {companyName && companyName}
+                                </span>
+                                <ChevronDown size={15} strokeWidth={5} className={cn({ 'rotate-180': collapsibleIsOpen })} />
+                            </div>
+                        </CollapsibleTrigger>
+                    </Link>
                     <div className="absolute right-0 hover:multi-[transition-all;rotate-180]">
                         <Link to="/client/configuration" search={{ tab: 'company' }} onMouseEnter={(e) => e.preventDefault()}>
                             <Settings />
@@ -68,10 +75,9 @@ export function SideBarMenu({ companyName }: Props) {
                         <li>
                             <Link
                                 onMouseEnter={(e) => e.preventDefault()}
-                                onClick={onLinkClicked}
                                 to="/client/configuration"
                                 search={{ tab: tabs.company }}
-                                className={cn("font-light text-default", {
+                                className={cn("font-light", {
                                     'text-primary': search.tab === tabs.company,
                                 })}
                             >
@@ -82,10 +88,9 @@ export function SideBarMenu({ companyName }: Props) {
                         <li>
                             <Link
                                 onMouseEnter={(e) => e.preventDefault()}
-                                onClick={onLinkClicked}
                                 to="/client/configuration"
                                 search={{ tab: tabs.users }}
-                                className={cn("font-light text-default", {
+                                className={cn("font-light", {
                                     'text-primary': search.tab === tabs.users,
                                 })}
                             >
@@ -108,14 +113,20 @@ export function SideBarMenu({ companyName }: Props) {
                     {user?.accountType === ACCOUNT.client && (
                         <>
                             <li>
-                                <SpecialLink to="/client/mis-pedidos" >
+                                <SpecialLink
+                                    to="/client/mis-pedidos"
+                                    onClick={onLinkClicked}
+                                >
                                     <Archive />
                                     Mis Pedidos
                                 </SpecialLink>
 
                             </li>
                             <li>
-                                <SpecialLink to="/client/searchLists">
+                                <SpecialLink
+                                    to="/client/searchLists"
+                                    onClick={onLinkClicked}
+                                >
                                     <ScrollText />
                                     Mis Listas
                                 </SpecialLink>
@@ -126,7 +137,21 @@ export function SideBarMenu({ companyName }: Props) {
                     {user?.accountType === ACCOUNT.provider && (
                         <>
                             <li>
-                                <SpecialLink to="/provider/proOrders" activePaths={['/provider/proOrders']}>
+                                <SpecialLink
+                                    to="/provider/products"
+                                    activePaths={['/provider/products/newProducts']}
+                                    onClick={onLinkClicked}
+                                >
+                                    <Package />
+                                    Productos
+                                </SpecialLink>
+                            </li>
+                            <li>
+                                <SpecialLink
+                                    to="/provider/proOrders"
+                                    activePaths={['/provider/proOrders']}
+                                    onClick={onLinkClicked}
+                                >
                                     <Archive />
                                     Pedidos
                                 </SpecialLink>
@@ -134,7 +159,11 @@ export function SideBarMenu({ companyName }: Props) {
                         </>
                     )}
                     <li>
-                        <SpecialLink to="/buyOrder" activePaths={['/buyOrder']}>
+                        <SpecialLink
+                            to="/buyOrder"
+                            activePaths={['/buyOrder']}
+                            onClick={onLinkClicked}
+                        >
                             <WalletCards />
                             Ordenes de Compra
                         </SpecialLink>

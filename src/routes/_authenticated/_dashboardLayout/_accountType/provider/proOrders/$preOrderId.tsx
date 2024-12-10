@@ -3,10 +3,9 @@ import { StatusBadge } from '@/components/statusBadge';
 import { getSellPreOrdersById, preOrderProviderResponse } from '@/lib/orders';
 import { cn, formatDate } from '@/lib/utils';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { createFileRoute, Link, useParams } from '@tanstack/react-router'
+import { createFileRoute, useParams } from '@tanstack/react-router'
 import { useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
 import UseProviderSellStore from '@/store/providerSell';
 import { SellProductSchemaType } from '@/lib/schemas/sell.schema';
 import { PreOrderProductSchemaType } from '@/lib/schemas';
@@ -112,7 +111,7 @@ export function SellsDetail() {
             <div className='flex flex-col items-stretch'>
                 <div className={cn('bg-border/30 py-5 relative', {
                     'h-[calc(100vh-225px)]': order?.status !== PRE_ORDER_STATUS.pending,
-                    'h-[538px]': order?.status === PRE_ORDER_STATUS.pending
+                    'h-fit': order?.status === PRE_ORDER_STATUS.pending
                 })}>
                     {mutation.isPending &&
                         <div className='absolute inset-0 bg-white/60 w-full h-full z-20 flex justify-center items-center pointer-events-none'>

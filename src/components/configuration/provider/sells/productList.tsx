@@ -45,7 +45,7 @@ export default function ProductList({ orderStatus, data, providerId, acceptedPro
 
     return (
         <div className={cn('w-[calc(100%-32px)] h-full overflow-y-auto m-auto rounded shadow-sm', {
-            'h-fit': data && data?.length < 5
+            'h-fit': data && data?.length < 8
         })}>
             <Table>
                 <TableHeader className='sticky top-0 shadow-sm'>
