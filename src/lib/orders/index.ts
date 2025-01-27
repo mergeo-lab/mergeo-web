@@ -228,7 +228,7 @@ export async function getSellPreOrders(
         },
       }
     );
-    return response;
+    return response.data;
   } catch (error) {
     if (isAxiosError(error)) {
       if (error.response?.data.statusCode === 400) {

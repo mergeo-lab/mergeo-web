@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { formatToArgentinianPesos } from '@/lib/utils';
 import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
 import { toJpeg } from 'html-to-image';
+import { useReactToPrint } from "react-to-print";
 
 type Props = {
     client: ClientType | undefined;
@@ -12,18 +13,28 @@ type Props = {
     date: string;
     products: PreOrderProductSchemaType[] | undefined;
     fileDownloadComplete: () => void
+    filePrintComplete: () => void
 };
 
 const BuyOrderForm = forwardRef(function BuyOrderForm(
-    { client, provider, orderNumber, date, products, fileDownloadComplete }: Props,
+    { client, provider, orderNumber, date, products, fileDownloadComplete, filePrintComplete }: Props,
     ref
 ) {
     const componentRef = useRef<HTMLDivElement>(null)
-
+    const reactToPrintFn = useReactToPrint({
+        contentRef: componentRef,
+        documentTitle: `orden-de-compra-${orderNumber}`,
+        onAfterPrint: filePrintComplete,
+        pageStyle: 'transform: scale(.2);'
+    });
 
     const totalPrice = products?.reduce((acc, item) => acc + (+item.product.price * item.quantity), 0);
 
-    const onButtonClick = useCallback(() => {
+    const printClick = useCallback(() => {
+        reactToPrintFn();
+    }, [reactToPrintFn]);
+
+    const exportClick = useCallback(() => {
         if (componentRef.current === null) {
             return
         }
@@ -40,15 +51,16 @@ const BuyOrderForm = forwardRef(function BuyOrderForm(
             .catch((err) => {
                 console.log(err)
             })
-    }, [fileDownloadComplete])
+    }, [fileDownloadComplete, orderNumber])
 
     useImperativeHandle(ref, () => ({
-        onButtonClick,
+        exportClick,
+        printClick
     }));
 
     return (
-        <div className='min-w-[1600px]'>
-            <div className='px-20 py-10 relative bg-white' ref={componentRef}>
+        <div className='min-w-[1600px]' ref={componentRef}>
+            <div className='px-20 py-10 relative bg-white'>
                 <div className=" [&>div]:px-28 border-2">
                     <div className="text-center mb-8 bg-border/30 py-6">
                         <h1 className="text-lg my-5 font-bold">ORDEN DE COMPRA</h1>

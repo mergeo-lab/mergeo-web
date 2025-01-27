@@ -13,9 +13,11 @@ export const ProductsListSchema = z.object({
 
 export type ProductsListSchemaType = z.infer<typeof ProductsListSchema>;
 
-export const Gs1SearchSchema = z.object({
+export const ProviderProductSearch = z.object({
   name: z.string().optional(),
   brand: z.string().optional(),
+  ean: z.string().optional(),
+  companyId: z.string().optional(),
 });
 
-export type Gs1SearchSchemaType = z.infer<typeof Gs1SearchSchema>;
+export type ProviderProductSearchType = z.infer<typeof ProviderProductSearch>;

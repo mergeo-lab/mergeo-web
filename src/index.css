@@ -93,3 +93,26 @@
 .disabledStyle {
   @apply text-base text-black border-none bg-accent;
 }
+
+/* Set paper size and margins */
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .printable-content {
+    width: 210mm; /* A4 paper width */
+    height: 297mm; /* A4 paper height */
+    margin: 20mm; /* Margins around the content */
+    padding: 10mm; /* Inner padding */
+    box-sizing: border-box;
+    background-color: white; /* Ensure the background is white */
+  }
+
+  /* Scale the content */
+  .printable-content {
+    transform: scale(1);
+    transform-origin: top left;
+  }
+}

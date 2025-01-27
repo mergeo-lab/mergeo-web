@@ -1,10 +1,10 @@
 import { axiosPrivate } from '@/lib/api/axios';
-import { GS1_SEARCH, PRODUCT_LISTS } from './endpoints';
+import { PROVIDER_PRODUCT_SEARCH, PRODUCT_LISTS } from './endpoints';
 import { AxiosResponse, isAxiosError } from 'axios';
 import {
-  Gs1SearchSchemaType,
   PreOrderProductDetailSchemaType,
   ProductsListSchemaType,
+  ProviderProductSearchType,
 } from '@/lib/schemas';
 
 export type SearchParams = {
@@ -80,17 +80,19 @@ export async function createProductsList({
   }
 }
 
-export async function searchGs1Products(
-  searchParams: Gs1SearchSchemaType
-): Promise<PreOrderProductDetailSchemaType[]> {
+export async function providerProductsSearch(
+  searchParams: ProviderProductSearchType
+): Promise<{ products: PreOrderProductDetailSchemaType[]; count: number }> {
   try {
     const params: Record<string, string | number> = {};
 
     if (searchParams.name) params.name = searchParams.name;
     if (searchParams.brand) params.brand = searchParams.brand;
+    if (searchParams.ean) params.ean = searchParams.ean;
+    if (searchParams.companyId) params.companyId = searchParams.companyId;
 
     const { data: response }: AxiosResponse = await axiosPrivate.get(
-      `${GS1_SEARCH}`,
+      `${PROVIDER_PRODUCT_SEARCH}`,
       {
         params,
         headers: {
@@ -98,7 +100,9 @@ export async function searchGs1Products(
         },
       }
     );
-    return response;
+
+    console.log('Response /search:', response);
+    return response.data;
   } catch (error) {
     if (isAxiosError(error)) {
       if (error.response?.data.statusCode === 400) {

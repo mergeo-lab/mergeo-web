@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useParams } from '@tanstack/react-router'
 import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { FileDown } from 'lucide-react';
+import { FileDown, Printer } from 'lucide-react';
 import LoadingIndicator from '@/components/loadingIndicator';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/buyOrder/$orderId')({
@@ -16,6 +16,8 @@ export const Route = createFileRoute('/_authenticated/_dashboardLayout/buyOrder/
 export default function OdcDetail() {
   const { orderId } = useParams({ from: '/_authenticated/_dashboardLayout/buyOrder/$orderId' });
   const [fileDowloadLoading, setFileDowloadLoading] = useState(false);
+  const [filePrintLoading, setFilePrintLoading] = useState(false);
+
   const { data: order, isLoading, refetch } = useQuery({
     queryKey: ['orderDetail', orderId],
     queryFn: ({ queryKey }) => {
@@ -29,12 +31,19 @@ export default function OdcDetail() {
     enabled: !!orderId, // Ensure the query runs only if company ID exists
   });
 
-  const buyOrderFormRef = useRef<{ onButtonClick: () => void } | null>(null);
+  const buyOrderFormRef = useRef<{ exportClick: () => void, printClick: () => void } | null>(null);
+
+  const handlePrint = () => {
+    if (buyOrderFormRef.current) {
+      setFilePrintLoading(true);
+      buyOrderFormRef.current.printClick();
+    }
+  }
 
   const handleExport = () => {
     if (buyOrderFormRef.current) {
       setFileDowloadLoading(true);
-      buyOrderFormRef.current.onButtonClick();
+      buyOrderFormRef.current.exportClick();
     }
   };
 
@@ -62,19 +71,34 @@ export default function OdcDetail() {
           date={order?.created && formatDate(order?.created, true) || ""}
           products={order?.products}
           fileDownloadComplete={() => setFileDowloadLoading(false)}
+          filePrintComplete={() => setFilePrintLoading(false)}
         />
       </div>
       <div className='absolute bottom-0 h-20 w-full bg-white border-t flex justify-end items-center pr-20 shadow shadow-[0_-10px_3px_0x_rgba(0,0,0,1)]"'>
-        <Button
-          variant='outline'
-          className='w-26 px-5'
-          onClick={handleExport}>
-          <p className='mr-2 font-bold '>Descargar Orden</p>
-          {fileDowloadLoading
-            ? <LoadingIndicator />
-            : <FileDown />
-          }
-        </Button>
+        <div className='fit space-x-3'>
+          <Button
+            variant='outline'
+            className='w-26 px-5'
+            onClick={handleExport}>
+            <p className='mr-2 font-bold '>Descargar Orden</p>
+            {fileDowloadLoading
+              ? <LoadingIndicator />
+              : <FileDown />
+            }
+          </Button>
+          <Button
+            variant='outline'
+            className='w-26 px-5'
+            onClick={handlePrint}>
+            <p className='mr-2 font-bold '>Imprimir Orden</p>
+            {filePrintLoading
+              ? <LoadingIndicator />
+              : <Printer />
+            }
+          </Button>
+        </div>
+
+
       </div>
     </div>
   )

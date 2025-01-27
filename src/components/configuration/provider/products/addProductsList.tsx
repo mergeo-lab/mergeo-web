@@ -1,47 +1,43 @@
-import { useState, useEffect } from 'react';
 import { AddProduct, useProductStore } from "@/store/addProductItem.store";
-import { AddProductItem } from '@/components/configuration/provider/products/addProductItem';
-import DinamicGrid from '@/components/dinamicGrid';
+import { AddProductItem } from "@/components/configuration/provider/products/addProductItem";
+import DinamicGrid from "@/components/dinamicGrid";
 
 type Props = {
-    data: AddProduct[]
-}
+    data: AddProduct[];
+};
 
 export default function AddProductsList({ data }: Props) {
-    const [products, setProducts] = useState<AddProduct[]>(data); // Initialize products with data from props
-    const { addProduct, updateProduct, removeProduct } = useProductStore();
+    const { addProduct, removeProduct } = useProductStore();
 
-    useEffect(() => {
-        // You can also sync with your store if you need to keep this data in sync
-        setProducts(data);
-    }, [data]);
+    function handleSaveProduct(product: AddProduct, price: string) {
+        const newProduct = product;
+        newProduct.id = crypto.randomUUID();
+        newProduct.price = price;
+        addProduct(newProduct);
+    }
 
-    const handleUpdateProduct = (id: string, price: number) => {
-        updateProduct(id, price); // Update the price of the product in the store
-    };
-
-    const handleRemoveProduct = (id: string) => {
-        removeProduct(id); // Remove the product from the store
-        setProducts((prev) => prev.filter(product => product.id !== id)); // Remove from local state
-    };
+    function handleRemoveProduct(id: string) {
+        console.log("removing product: ", id)
+        removeProduct(id);
+    }
 
     return (
         <DinamicGrid>
-            {products && products.length && (
-                products.map(item => (
-                    <AddProductItem
-                        key={item.id}
-                        id={item.id}
-                        name={item.name}
-                        brand={item.brand}
-                        netContent={item.netContent}
-                        measurmentUnit={item.measurmentUnit}
-                        price={item.price}
-                        onSave={handleUpdateProduct} // Pass save function
-                        onRemove={handleRemoveProduct} // Pass remove function
-                    />
-                ))
-            )}
+            {data.map((item) => (
+                <AddProductItem
+                    key={item.id}
+                    id={item.id}
+                    name={item.name}
+                    brand={item.brand}
+                    netContent={item.net_content}
+                    measurmentUnit={item.measurementUnit}
+                    price={item.price}
+                    inInventory={item.inInventory}
+                    onSave={(id, price) => id === item.id && handleSaveProduct(item, price)}
+                    onRemove={(id) => handleRemoveProduct(id)}
+                    className={""}
+                />
+            ))}
         </DinamicGrid>
     );
 }

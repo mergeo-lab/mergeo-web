@@ -1,45 +1,33 @@
 import { create } from 'zustand';
+import { PreOrderProductDetailSchemaType } from '@/lib/schemas/index';
 
-export type AddProduct = {
-  id: string;
-  name: string;
-  brand: string;
-  netContent: number;
-  measurmentUnit: string;
-  price?: number; // Optional initially
-};
+export type AddProduct = PreOrderProductDetailSchemaType & { id: string };
 
 type ProductStore = {
-  products: Record<string, AddProduct>;
+  products: AddProduct[];
   addProduct: (product: AddProduct) => void;
-  updateProduct: (id: string, price: number) => void;
+  updateProduct: (id: string, price: string) => void;
   removeProduct: (id: string) => void;
   getProduct: (id: string) => AddProduct | undefined;
+  getAllProducts: () => AddProduct[];
 };
 
 export const useProductStore = create<ProductStore>((set, get) => ({
-  products: {},
+  products: [],
   addProduct: (product) =>
     set((state) => ({
-      products: {
-        ...state.products,
-        [product.id]: product,
-      },
+      products: [...state.products, product],
     })),
   updateProduct: (id, price) =>
     set((state) => ({
-      products: {
-        ...state.products,
-        [id]: {
-          ...state.products[id],
-          price, // Update price of only the specified product
-        },
-      },
+      products: state.products.map((product) =>
+        product.id === id ? { ...product, price } : product
+      ),
     })),
   removeProduct: (id) =>
-    set((state) => {
-      const { [id]: _, ...remainingProducts } = state.products;
-      return { products: remainingProducts };
-    }),
-  getProduct: (id) => get().products[id],
+    set((state) => ({
+      products: state.products.filter((product) => product.id !== id),
+    })),
+  getProduct: (id) => get().products.find((product) => product.id === id),
+  getAllProducts: () => get().products,
 }));

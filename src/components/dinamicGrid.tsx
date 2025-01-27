@@ -1,8 +1,14 @@
 import React from "react";
 
-const DynamicGrid: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+type Props = {
+    children: React.ReactNode,
+    nColumns?: number
+}
+
+export default function DynamicGrid({ children, nColumns }: Props) {
     const childrenArray = React.Children.toArray(children);
-    const numOfCols = Math.min(Math.max(childrenArray.length, 2), 4); // Min 2, Max 4
+    const cols = nColumns || 3;
+    const numOfCols = Math.min(Math.max(childrenArray.length, 2), cols); // Min 2, Max 4
 
     return (
         <div
@@ -18,6 +24,5 @@ const DynamicGrid: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             ))}
         </div>
     );
-};
+}
 
-export default DynamicGrid;
