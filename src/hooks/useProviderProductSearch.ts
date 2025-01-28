@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { providerProductsSearch } from '@/lib/products';
-import {
-  PreOrderProductDetailSchemaType,
-  ProviderProductSearchType,
-} from '@/lib/schemas';
+import { ProductSchemaType, ProviderProductSearchType } from '@/lib/schemas';
 
 export const useProviderProductSearch = () => {
   const [params, setParams] = useState<ProviderProductSearchType | null>(null);
@@ -14,7 +11,7 @@ export const useProviderProductSearch = () => {
   }, [params]);
 
   const { data, isLoading, isError, error } = useQuery<{
-    products: PreOrderProductDetailSchemaType[];
+    products: ProductSchemaType[];
     count: number;
   }>({
     queryKey: ['products', { ...params }],

@@ -18,7 +18,7 @@ export default function AddProductsList({ data, addProduct }: Props) {
     return (
         <DinamicGrid>
             {data.map((item) => (
-                < AddProductItem
+                <AddProductItem
                     key={item.gtin}
                     gtin={item.gtin}
                     name={item.name}

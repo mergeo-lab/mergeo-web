@@ -19,6 +19,10 @@ export function DashboardHeader({ title }: Props) {
     const { logOut, isAuthenticated } = useAuth();
     const router = useRouter();
 
+    useEffect(() => {
+        console.log("TITLE :: ", title)
+    }, [title])
+
     // Memoize the closeSession function to ensure it remains stable
     const closeSession = useCallback(async () => {
         const response = await mutation.mutateAsync();

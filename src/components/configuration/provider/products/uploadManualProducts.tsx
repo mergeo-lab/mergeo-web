@@ -1,5 +1,6 @@
 import AddProductsList from "@/components/configuration/provider/products/addProductsList";
 import { SelectedProductsSheet } from "@/components/configuration/provider/products/selecedProductsSheet";
+import ErrorMessage from "@/components/errorMessage";
 import LoadingIndicator from "@/components/loadingIndicator";
 import { Button } from "@/components/ui/button";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -74,7 +75,7 @@ export default function UploadManualProducts() {
     }, [])
 
     return (
-        <div className="grid grid-rows-[auto,1fr] h-[calc(100vh-305px)]">
+        <div className="grid grid-rows-[auto,1fr] h-[calc(100vh-250px)]">
             <div className="pl-10 shadow rounded mx-10 mt-5 p-5">
                 <div className="w-full flex justify-between items-center">
                     <h1 className="text-base font-bold text-nowrap">Busca el producto por nombre, marca o codigo EAN</h1>
@@ -197,25 +198,7 @@ export default function UploadManualProducts() {
 
             </div >
             <div className="mx-10 bg-border/50 mt-5 rounded overflow-y-auto">
-                {isError &&
-                    <div className="w-full h-full flex justify-center items-center">
-
-                        <div className="w-fit h-fit bg-white shadow rounded p-10 flex gap-5 items-center">
-
-                            <div className="bg-destructive w-fit h-fit p-2 rounded">
-                                <SearchX size={36} strokeWidth={1.5} className="text-white" />
-                            </div>
-                            <div>
-                                <p>
-                                    Ha ocurrido un error!
-                                </p>
-                                <p>
-                                    Intentalo nuevamente.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                }
+                {isError && <ErrorMessage />}
                 {isLoading &&
                     <div className="w-full h-full flex justify-center items-center">
 

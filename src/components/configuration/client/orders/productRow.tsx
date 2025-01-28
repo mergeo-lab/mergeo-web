@@ -8,7 +8,6 @@ export default function ProductRow({ data, cellsWidth }: { data: ProductWithQuan
     const { saveProduct, removeProduct, getAllSavedProducts } = UseSearchStore();
 
     function handleProductChange(product: ProductWithQuantity, quantity: number) {
-        console.log({ product, quantity })
         if (quantity === 0) {
             removeProduct(product.id, product.providerId);
         } else {

@@ -18,6 +18,7 @@ export const ProviderProductSearch = z.object({
   brand: z.string().optional(),
   ean: z.string().optional(),
   companyId: z.string().optional(),
+  includeInventory: z.boolean().optional(),
 });
 
 export type ProviderProductSearchType = z.infer<typeof ProviderProductSearch>;

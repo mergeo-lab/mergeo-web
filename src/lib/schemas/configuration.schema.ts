@@ -40,18 +40,17 @@ const ProductSchema = z.object({
   price: z.string(),
   description: z.string(),
   brand: z.string(),
-  variety: z.string(),
+  variety: z.string().optional(),
   net_content: z.number(),
-  segment: z.string(),
-  family: z.string(),
+  segment: z.string().optional(),
+  family: z.string().optional(),
   image: z.string().optional(),
   units: z.number(),
-  manufacturer_name: z.string(),
-  manufacturer_id: z.string(),
-  manufacturer_country: z.string(),
+  manufacturer_name: z.string().optional(),
+  manufacturer_id: z.string().optional(),
+  manufacturer_country: z.string().optional(),
   accepted: z.boolean().optional(),
   quantity: z.number().optional(),
-  inInventory: z.boolean().optional(),
 });
 
 // Define the PreOrderProduct schema
@@ -133,7 +132,7 @@ export const OrderSchema = z.object({
 
 // Define the TypeScript type
 export type PreOrderProductSchemaType = z.infer<typeof PreOrderProductSchema>;
-export type PreOrderProductDetailSchemaType = z.infer<typeof ProductSchema>;
+export type ProductSchemaType = z.infer<typeof ProductSchema>;
 export type PreOrderSchemaType = z.infer<typeof PreOrderSchema>;
 
 export type OrderSchemaType = z.infer<typeof OrderSchema>;

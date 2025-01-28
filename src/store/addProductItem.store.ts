@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { PreOrderProductDetailSchemaType } from '@/lib/schemas/index';
+import { ProductSchemaType } from '@/lib/schemas/index';
 
-export type AddProduct = PreOrderProductDetailSchemaType;
+export type AddProduct = ProductSchemaType;
 
 type ProductStore = {
   products: AddProduct[];

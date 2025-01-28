@@ -6,7 +6,7 @@ import {
 } from './endpoints';
 import { AxiosResponse, isAxiosError } from 'axios';
 import {
-  PreOrderProductDetailSchemaType,
+  ProductSchemaType,
   ProductsListSchemaType,
   ProviderProductSearchType,
 } from '@/lib/schemas';
@@ -87,11 +87,14 @@ export async function createProductsList({
 
 export async function providerProductsSearch(
   searchParams: ProviderProductSearchType
-): Promise<{ products: PreOrderProductDetailSchemaType[]; count: number }> {
+): Promise<{ products: ProductSchemaType[]; count: number }> {
   try {
-    const params: Record<string, string | number> = {};
+    const params: Record<string, string | number | boolean> = {};
 
     if (searchParams.companyId) params.companyId = searchParams.companyId;
+    if (searchParams.includeInventory)
+      params.includeInventory = searchParams.includeInventory;
+
     // if ean present we just send the EAN
     if (searchParams.ean) params.ean = searchParams.ean;
     else {
@@ -127,7 +130,7 @@ export async function providerProductsSearch(
 export async function saveMultipleProducts(
   products: Partial<AddProduct>[],
   companyId: string
-): Promise<PreOrderProductDetailSchemaType[]> {
+): Promise<ProductSchemaType[]> {
   try {
     const { data: response }: AxiosResponse = await axiosPrivate.post(
       `${PRODUCT_ADD_MULTIPLE}/${companyId}`,
