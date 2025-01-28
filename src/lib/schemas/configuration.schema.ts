@@ -33,6 +33,7 @@ const ProductSchema = z.object({
   created: z.string(),
   updated: z.string(),
   id: z.string(),
+  gtin: z.string(),
   name: z.string(),
   measurementUnit: z.string(),
   unitConversionFactor: z.string(),

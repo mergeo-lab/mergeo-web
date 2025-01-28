@@ -1,11 +1,16 @@
 import { axiosPrivate } from '@/lib/api/axios';
-import { PROVIDER_PRODUCT_SEARCH, PRODUCT_LISTS } from './endpoints';
+import {
+  PROVIDER_PRODUCT_SEARCH,
+  PRODUCT_LISTS,
+  PRODUCT_ADD_MULTIPLE,
+} from './endpoints';
 import { AxiosResponse, isAxiosError } from 'axios';
 import {
   PreOrderProductDetailSchemaType,
   ProductsListSchemaType,
   ProviderProductSearchType,
 } from '@/lib/schemas';
+import { AddProduct } from '@/store/addProductItem.store';
 
 export type SearchParams = {
   branchId?: string;
@@ -86,10 +91,13 @@ export async function providerProductsSearch(
   try {
     const params: Record<string, string | number> = {};
 
-    if (searchParams.name) params.name = searchParams.name;
-    if (searchParams.brand) params.brand = searchParams.brand;
-    if (searchParams.ean) params.ean = searchParams.ean;
     if (searchParams.companyId) params.companyId = searchParams.companyId;
+    // if ean present we just send the EAN
+    if (searchParams.ean) params.ean = searchParams.ean;
+    else {
+      if (searchParams.name) params.name = searchParams.name;
+      if (searchParams.brand) params.brand = searchParams.brand;
+    }
 
     const { data: response }: AxiosResponse = await axiosPrivate.get(
       `${PROVIDER_PRODUCT_SEARCH}`,
@@ -112,6 +120,33 @@ export async function providerProductsSearch(
       }
     }
 
+    throw error;
+  }
+}
+
+export async function saveMultipleProducts(
+  products: Partial<AddProduct>[],
+  companyId: string
+): Promise<PreOrderProductDetailSchemaType[]> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.post(
+      `${PRODUCT_ADD_MULTIPLE}/${companyId}`,
+      JSON.stringify(products),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
     throw error;
   }
 }

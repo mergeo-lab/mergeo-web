@@ -49,6 +49,5 @@ export default function UploadProducts() {
                 </Tabs >
             </div>
         </div>
-
     )
 }

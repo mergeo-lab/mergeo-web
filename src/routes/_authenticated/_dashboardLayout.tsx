@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from 'react'; // Import React, memo, and useMemo
 import { DashboardHeader, SideBarMenu } from '@/components/dashboard'
 import UseCompanyStore from '@/store/company.store';
-import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router';
+import { createFileRoute, Outlet, useRouter, Link } from '@tanstack/react-router';
 import { Bell, CircleHelp, Settings, ScrollText, Package, Archive, WalletCards, FileSearch } from 'lucide-react'
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout')({
@@ -33,7 +33,7 @@ const routeTitles: Record<string, { text: string | JSX.Element, icon: JSX.Elemen
     '/sellDetail': { text: 'Detalle del Pedido', icon: <FileSearch size={iconProps.size} className={iconProps.color} /> },
     '/provider/products': { text: 'Productos', icon: <Package size={iconProps.size} className={iconProps.color} /> },
     '/provider/products/newProducts': {
-        text: <p>Productos <span className='text-base border-l-2 border-muted pl-2 font-light'>Agregar Productos</span></p>,
+        text: <p><Link to='/provider/products'>Productos</Link> <span className='text-base border-l-2 border-muted pl-2 font-light'>Agregar Productos</span></p>,
         icon: <Package size={iconProps.size} className={iconProps.color} />
     },
 }
@@ -44,7 +44,7 @@ function DashboardLayout() {
 
     // Use useMemo to memoize the title object
     // Utility function to match dynamic routes
-    const matchRoute = (pathname: string): { text: string; icon: JSX.Element } | undefined => {
+    const matchRoute = (pathname: string): { text: string | JSX.Element; icon: JSX.Element } | undefined => {
         for (const [route, title] of Object.entries(routeTitles)) {
             if (route.includes('$')) {
                 // Convert dynamic route to regex

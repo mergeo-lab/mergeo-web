@@ -1,14 +1,15 @@
 import { create } from 'zustand';
 import { PreOrderProductDetailSchemaType } from '@/lib/schemas/index';
 
-export type AddProduct = PreOrderProductDetailSchemaType & { id: string };
+export type AddProduct = PreOrderProductDetailSchemaType;
 
 type ProductStore = {
   products: AddProduct[];
   addProduct: (product: AddProduct) => void;
-  updateProduct: (id: string, price: string) => void;
-  removeProduct: (id: string) => void;
-  getProduct: (id: string) => AddProduct | undefined;
+  updateProduct: (gtin: string, price: string) => void;
+  removeProduct: (gtin: string) => void;
+  removeAllProducts: () => void;
+  getProduct: (gtin: string) => AddProduct | undefined;
   getAllProducts: () => AddProduct[];
 };
 
@@ -18,16 +19,17 @@ export const useProductStore = create<ProductStore>((set, get) => ({
     set((state) => ({
       products: [...state.products, product],
     })),
-  updateProduct: (id, price) =>
+  updateProduct: (gtin, price) =>
     set((state) => ({
       products: state.products.map((product) =>
-        product.id === id ? { ...product, price } : product
+        product.gtin === gtin ? { ...product, price } : product
       ),
     })),
-  removeProduct: (id) =>
+  removeProduct: (gtin) =>
     set((state) => ({
-      products: state.products.filter((product) => product.id !== id),
+      products: state.products.filter((product) => product.gtin !== gtin),
     })),
-  getProduct: (id) => get().products.find((product) => product.id === id),
+  removeAllProducts: () => set(() => ({ products: [] })),
+  getProduct: (gtin) => get().products.find((product) => product.gtin === gtin),
   getAllProducts: () => get().products,
 }));

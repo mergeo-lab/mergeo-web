@@ -10,40 +10,68 @@ import { useProductStore } from "@/store/addProductItem.store";
 import UseCompanyStore from "@/store/company.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Search, SearchX, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
 
 export default function UploadManualProducts() {
-    const { getAllProducts } = useProductStore();
+    const { getAllProducts, addProduct, removeProduct, removeAllProducts } = useProductStore();
     const allProducts = getAllProducts();
     const [formSubmited, setFormSubmited] = useState(false);
     const { company } = UseCompanyStore();
     const { data, isLoading, isError, handleSearch, resetSearch } = useProviderProductSearch();
+    const filteredProducts = data?.products.filter(product => !allProducts.some(p => p.gtin === product.gtin)) || [];
 
     const form = useForm<ProviderProductSearchType>({
         resolver: zodResolver(ProviderProductSearch),
         disabled: isLoading,
-    })
+    });
     const { name, brand, ean } = form.watch();
     const isDisabled = !name && !brand && !ean; // Disable if both fields are empty
+    const companyId = company?.id ?? undefined;
 
     async function onSubmit(fields: ProviderProductSearchType) {
         const { name, brand, ean } = fields;
-        const companyId = company?.id ?? undefined;
-        handleSearch({ name, brand, ean, companyId });
-        setFormSubmited(true);
+        console.log(`
+            name:${name}\n
+            brand:${brand}\n
+            ean:${ean}\n
+        `)
+        if (!name && !brand && !ean) {
+            resetSearch();
+            setFormSubmited(false);
+        } else {
+            handleSearch({ name, brand, ean, companyId });
+            setFormSubmited(true);
+        }
     }
 
     function resetField(field: "name" | "brand" | "ean") {
         form.setValue(field, "");
-        resetSearch();
 
-        // Trigger search only if both fields are cleared
-        if (!name && !brand && !ean) {
-            setFormSubmited(false);
+        const fields = {
+            name: field == "name" ? "" : name,
+            brand: field == "brand" ? "" : brand,
+            ean: field == "ean" ? "" : ean,
         }
+        onSubmit(fields)
     }
+
+    function savedProductsCallback() {
+        form.reset({
+            name: "",
+            brand: "",
+            ean: ""
+        });
+        resetSearch()
+        removeAllProducts();
+    }
+
+    useEffect(() => {
+        return () => {
+            removeAllProducts();
+        }
+    }, [])
 
     return (
         <div className="grid grid-rows-[auto,1fr] h-[calc(100vh-305px)]">
@@ -59,102 +87,111 @@ export default function UploadManualProducts() {
                                     <div className="w-3 h-3 rounded bg-info animate-pulse duration-700"></div>
                                 }
                                 <p>Ver productos seleccionados</p>
-                            </Button>}
+                            </Button>
+                        }
+                        removeProduct={removeProduct}
+                        onSaveCallback={savedProductsCallback}
                     />
                 </div>
-                <div className=" mt-5 p-2 flex justify-start gap-5 [&>div]:multi-[flex;flex-row;gap-2;text-nowrap;items-center;] [&>div>input]:multi-[w-[300px]]">
+                <div>
                     <FormProvider {...form}>
-                        <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <div className="flex items-center gap-2 w-fit">
-                                        <FormLabel id='name'>Nombre</FormLabel>
-                                        <div className="relative">
-                                            <FormControl>
-                                                <Input {...field} className="w-72" />
-                                            </FormControl>
-                                            {field.value && field.value?.length > 0 &&
-                                                <Button
-                                                    variant='ghost'
-                                                    className="absolute right-0 top-[50%] -translate-y-[50%]"
-                                                    onClick={() => resetField(field.name)}
-                                                >
-                                                    <X size={20} strokeWidth={3} />
-                                                </Button>
-                                            }
+                        <form onSubmit={form.handleSubmit(onSubmit)}
+                            className=" mt-5 p-2 flex justify-start gap-5 [&>div]:multi-[flex;flex-row;gap-2;text-nowrap;items-center;] [&>div>input]:multi-[w-[300px]]">
+                            <FormField
+                                control={form.control}
+                                name="name"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <div className="flex items-center gap-2 w-fit">
+                                            <FormLabel id='name'>Nombre</FormLabel>
+                                            <div className="relative">
+                                                <FormControl>
+                                                    <Input {...field} className="w-72" />
+                                                </FormControl>
+                                                {field.value && field.value?.length > 0 &&
+                                                    <Button
+                                                        type="button"
+                                                        variant='ghost'
+                                                        className="absolute right-0 top-[50%] -translate-y-[50%]"
+                                                        onClick={() => resetField(field.name)}
+                                                    >
+                                                        <X size={20} strokeWidth={3} />
+                                                    </Button>
+                                                }
+                                            </div>
+                                            <FormMessage />
                                         </div>
-                                        <FormMessage />
-                                    </div>
-                                </FormItem>
-                            )}
-                        />
+                                    </FormItem>
+                                )}
+                            />
 
-                        <FormField
-                            control={form.control}
-                            name="brand"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <div className="flex items-center gap-2 w-fit">
-                                        <FormLabel id='brand'>Marca</FormLabel>
-                                        <div className="relative">
-                                            <FormControl>
-                                                <Input {...field} className="w-72 pr-14" />
-                                            </FormControl>
-                                            {field.value && field.value?.length > 0 &&
-                                                <Button
-                                                    variant='ghost'
-                                                    className="absolute right-0 top-[50%] -translate-y-[50%]"
-                                                    onClick={() => resetField(field.name)}
-                                                >
-                                                    <X size={20} strokeWidth={3} />
-                                                </Button>
-                                            }
+                            <FormField
+                                control={form.control}
+                                name="brand"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <div className="flex items-center gap-2 w-fit">
+                                            <FormLabel id='brand'>Marca</FormLabel>
+                                            <div className="relative">
+                                                <FormControl>
+                                                    <Input {...field} className="w-72 pr-14" />
+                                                </FormControl>
+                                                {field.value && field.value?.length > 0 &&
+                                                    <Button
+                                                        type="button"
+                                                        variant='ghost'
+                                                        className="absolute right-0 top-[50%] -translate-y-[50%]"
+                                                        onClick={() => resetField(field.name)}
+                                                    >
+                                                        <X size={20} strokeWidth={3} />
+                                                    </Button>
+                                                }
+                                            </div>
+                                            <FormMessage />
                                         </div>
-                                        <FormMessage />
-                                    </div>
-                                </FormItem>
-                            )}
-                        />
+                                    </FormItem>
+                                )}
+                            />
 
-                        <div>o</div>
+                            <div>o</div>
 
-                        <FormField
-                            control={form.control}
-                            name="ean"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <div className="flex items-center gap-2 w-fit">
-                                        <FormLabel id='brand'>Código Ean</FormLabel>
-                                        <div className="relative">
-                                            <FormControl>
-                                                <Input {...field} className="w-72 pr-14" />
-                                            </FormControl>
-                                            {field.value && field.value?.length > 0 &&
-                                                <Button
-                                                    variant='ghost'
-                                                    className="absolute right-0 top-[50%] -translate-y-[50%]"
-                                                    onClick={() => resetField(field.name)}
-                                                >
-                                                    <X size={20} strokeWidth={3} />
-                                                </Button>
-                                            }
+                            <FormField
+                                control={form.control}
+                                name="ean"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <div className="flex items-center gap-2 w-fit">
+                                            <FormLabel id='brand'>Código Ean</FormLabel>
+                                            <div className="relative">
+                                                <FormControl>
+                                                    <Input {...field} className="w-72 pr-14" />
+                                                </FormControl>
+                                                {field.value && field.value?.length > 0 &&
+                                                    <Button
+                                                        type="button"
+                                                        variant='ghost'
+                                                        className="absolute right-0 top-[50%] -translate-y-[50%]"
+                                                        onClick={() => resetField(field.name)}
+                                                    >
+                                                        <X size={20} strokeWidth={3} />
+                                                    </Button>
+                                                }
+                                            </div>
+                                            <FormMessage />
                                         </div>
-                                        <FormMessage />
-                                    </div>
-                                </FormItem>
-                            )}
-                        />
+                                    </FormItem>
+                                )}
+                            />
 
-                        <Button
-                            className="flex gap-3 px-10"
-                            onClick={form.handleSubmit(onSubmit)}
-                            disabled={isDisabled}
-                        >
-                            <Search />
-                            Buscar
-                        </Button>
+                            <Button
+                                type="submit"
+                                className="flex gap-3 px-10"
+                                disabled={isDisabled}
+                            >
+                                <Search />
+                                Buscar
+                            </Button>
+                        </form>
                     </FormProvider>
                 </div>
 
@@ -219,7 +256,10 @@ export default function UploadManualProducts() {
                 )
                 }
                 {data && data.count > 0 && (
-                    <AddProductsList data={data.products} />
+                    <AddProductsList
+                        data={filteredProducts}
+                        addProduct={addProduct}
+                    />
                 )}
             </div>
         </div >

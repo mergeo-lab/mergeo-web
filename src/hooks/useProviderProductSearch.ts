@@ -28,7 +28,6 @@ export const useProviderProductSearch = () => {
   });
 
   const handleSearch = (newParams: ProviderProductSearchType) => {
-    console.log('handleSearch :: ', newParams);
     setParams(newParams); // Update params and trigger the query
   };
 

@@ -38,10 +38,13 @@ export default function Products() {
                 </div>
             </div>
 
-            {data && data.length > 0 ? (
+            {data && data.products.length > 0 ? (
                 <div className='h-full overflow-y-auto'>
-                    {data && data.map(product => {
-                        return <ProductRow data={{ ...product, providerId: company ? company?.id : '', unitConversionFactor: Number(product.unitConversionFactor), quantity: product.quantity ?? 0 }} key={product.id} cellsWidth='w-full' />
+                    {data && data.products.map(product => {
+                        return <ProductRow
+                            data={{ ...product, providerId: company ? company?.id : '', unitConversionFactor: Number(product.unitConversionFactor), quantity: product.quantity ?? 0 }}
+                            key={product.gtin}
+                            cellsWidth='w-full' />
                     })}
                 </div>
             ) : (

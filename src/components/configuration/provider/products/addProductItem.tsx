@@ -6,8 +6,8 @@ import { MessageCircleWarning } from 'lucide-react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 
 type Props = {
-    className: string;
-    id: string; // Unique identifier
+    className?: string;
+    gtin: string; // Unique identifier
     name: string;
     brand: string;
     netContent: number;
@@ -21,37 +21,28 @@ type Props = {
 
 export const AddProductItem = ({
     className,
-    id,
+    gtin,
     name,
     brand,
     netContent,
     measurmentUnit,
-    price,
     finalPrice,
     inInventory,
     onSave,
     onRemove,
 }: Props) => {
-    const [hasPrice, setHasPrice] = useState<boolean>(price ? true : false);
-    const [localPrice, setLocalPrice] = useState<string>(price || "");
+    const [localPrice, setLocalPrice] = useState<string>("");
     const [show, setShow] = useState<boolean>(false);
 
     useEffect(() => {
-        setShow(true)
-        console.log("PRICE ::: ", finalPrice)
+        setShow(true);
+        setLocalPrice("");
     }, [])
 
     function handleSave(newPrice: string) {
         if (newPrice != "" && +newPrice > 0) {
-            setHasPrice(true);
-            onSave && onSave(id, newPrice);
+            onSave && onSave(gtin, newPrice);
         }
-    }
-
-    function handleRemove() {
-        setHasPrice(false);
-        setLocalPrice("") // Clear the input
-        onRemove && onRemove(id); // Notify the parent to remove the item
     }
 
     return (
@@ -99,56 +90,29 @@ export const AddProductItem = ({
                 'items-end': onRemove && !onSave,
                 "hidden": finalPrice
             })}>
-                {onRemove && !onSave &&
-                    <Button
-                        variant="link"
-                        size="sm"
-                        className="w-32 text-destructive h-fit"
-                        onClick={() => handleRemove()}>
-                        Remover de la lista
-                    </Button>
-                }
-                {hasPrice ? (
-                    <div className={cn("text-sm text-muted flex gap-2", {
-                        'flex-col gap-0': onSave && onRemove
-                    })}>
-                        <span>Precio guardado:</span>
-                        <span className='font-bold text-info'>{formatToArgentinianPesos(+localPrice)}</span>
-                    </div>
-                ) :
-                    <div className="relative">
-                        <Input
-                            type="number"
-                            value={localPrice}
-                            placeholder="Agregar precio"
-                            onChange={(e) => setLocalPrice(e.target.value)}
-                            className=" pr-8"
-                        />
-                        <span className="absolute top-[50%] -translate-y-[50%] right-4">$</span>
-                    </div>
-                }
 
-                {(onSave && onRemove) && (
-                    hasPrice ? (
-                        <Button
-                            variant="destructive"
-                            size="sm"
-                            className="w-32"
-                            onClick={handleRemove}
-                        >
-                            Eliminar
-                        </Button>
-                    ) : (
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-32"
-                            onClick={() => handleSave(localPrice)}
-                            disabled={localPrice == ""}
-                        >
-                            Agregar
-                        </Button>
-                    )
+                <div className="relative">
+                    <Input
+                        type="number"
+                        value={localPrice}
+                        placeholder="Agregar precio"
+                        onChange={(e) => setLocalPrice(e.target.value)}
+                        className=" pr-8"
+                    />
+                    <span className="absolute top-[50%] -translate-y-[50%] right-4">$</span>
+                </div>
+
+
+                {(onSave) && (
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-32"
+                        onClick={() => handleSave(localPrice)}
+                        disabled={localPrice == ""}
+                    >
+                        Agregar
+                    </Button>
                 )}
 
             </div>
