@@ -1,6 +1,8 @@
 import { API_BASE } from '../api/config';
 
-const PRODUCT = `${API_BASE}/product`;
-export const PROVIDER_PRODUCT_SEARCH = `${PRODUCT}/search`;
-export const PRODUCT_LISTS = `${PRODUCT}/lists`;
-export const PRODUCT_ADD_MULTIPLE = `${PRODUCT}/add`;
+const BASE = `${API_BASE}/product`;
+export const PRODUCT = `${BASE}`;
+export const PROVIDER_PRODUCT_SEARCH = `${BASE}/search`;
+export const PRODUCT_LISTS = `${BASE}/lists`;
+export const PRODUCT_ADD_MULTIPLE = `${BASE}/add`;
+export const PRODUCT_METADATA = `${BASE}/metadata`;

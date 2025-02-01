@@ -11,7 +11,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { CircleAlert, ListPlus, PackagePlus, Pencil, Search, Trash2, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { SearchListProductType, SearchListType } from '@/lib/searchLists/searchLists.schemas';
-import OverlayLoadingIndicator from '@/components/ui/overlayLoadingIndicator';
+import OverlayLoadingIndicator from '@/components/overlayLoadingIndicator';
 import { Input } from '@/components/ui/input';
 import { DropdownMenuCheckboxes } from '@/components/dropdownMenuCheckboxes';
 import emptyBox from '../../../../../assets/emptyBox.svg';

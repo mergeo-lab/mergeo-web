@@ -12,7 +12,7 @@ import { useMutation } from "@tanstack/react-query";
 import { MapPin, Store } from "lucide-react";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
+import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 
 type Props = {
     title?: string,

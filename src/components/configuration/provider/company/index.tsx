@@ -10,7 +10,7 @@ import { Map, Marker } from '@vis.gl/react-google-maps';
 import UseCompanyStore from "@/store/company.store";
 import { MapPin, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
-import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
+import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import { GoogleAutoComplete } from "@/components/googleAutoComplete";
 import { useMutation } from "@tanstack/react-query";
 import { updateCompany } from "@/lib/configuration/company";

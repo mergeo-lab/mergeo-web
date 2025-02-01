@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ProductSchemaType } from "@/lib/schemas"
 import { formatDate, formatToArgentinianPesos } from "@/lib/utils"
+import { Link } from "@tanstack/react-router"
 import { Edit, Trash, Eye } from "lucide-react"
 
 type Props = {
@@ -10,18 +11,10 @@ type Props = {
 }
 
 export default function ProviderProductsTable({ products }: Props) {
+
     const handleDelete = (prductId: string) => {
         alert(`Delete product with ID: ${prductId}`)
     }
-
-    const handleEdit = (prductId: string) => {
-        alert(`Edit product with ID: ${prductId}`)
-    }
-
-    const handleViewDetails = (prductId: string) => {
-        alert(`View details of product with ID: ${prductId}`)
-    }
-
     return (
         <div className="max-h-[40rem] overflow-y-auto mt-5 mx-5 border border-border rounded">
             <Table className="w-full">
@@ -51,13 +44,23 @@ export default function ProviderProductsTable({ products }: Props) {
                             <TableCell>
                                 <p>{formatDate(product.updated)}</p>
                             </TableCell>
-                            <TableCell className="flex justify-end space-x-2 [&>button]:h-8 mt-2 mr-5">
-                                <Button className="hover:multi-[bg-primary;text-white]" variant="outlineSecondary" onClick={() => handleViewDetails(product.id)}>
-                                    <Eye className="h-4 w-4" />
-                                </Button>
-                                <Button className="hover:multi-[bg-primary;text-white]" variant="outlineSecondary" onClick={() => handleEdit(product.id)}>
-                                    <Edit className="h-4 w-4" />
-                                </Button>
+                            <TableCell className="flex justify-end space-x-2 [&>a>button]:h-8 [&>button]:h-8 mt-2 mr-5">
+                                <Link to="/provider/products/$productId" params={{ productId: product.id }} search={{ edit: false }}>
+                                    <Button
+                                        className="hover:multi-[bg-primary;text-white]"
+                                        variant="outlineSecondary"
+                                    >
+                                        <Eye className="h-4 w-4" />
+                                    </Button>
+                                </Link>
+                                <Link to="/provider/products/$productId" params={{ productId: product.id }} search={{ edit: true }}>
+                                    <Button
+                                        className="hover:multi-[bg-primary;text-white]"
+                                        variant="outlineSecondary"
+                                    >
+                                        <Edit className="h-4 w-4" />
+                                    </Button>
+                                </Link>
                                 <Button className="hover:multi-[bg-primary;text-white]" variant="outlineSecondary" onClick={() => handleDelete(product.id)}>
                                     <Trash className="h-4 w-4" />
                                 </Button>
@@ -66,6 +69,6 @@ export default function ProviderProductsTable({ products }: Props) {
                     ))}
                 </TableBody>
             </Table>
-        </div>
+        </div >
     )
 }

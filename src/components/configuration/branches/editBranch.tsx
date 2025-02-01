@@ -12,7 +12,7 @@ import { useMutation } from "@tanstack/react-query";
 import { MapPin, Store, Trash2 } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
+import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import { DeleteConfirmationDialog } from "@/components/deleteConfirmationDialog";
 import { cn } from "@/lib/utils";
 

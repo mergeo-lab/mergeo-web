@@ -18,7 +18,7 @@ import { MapPinned } from "lucide-react";
 import UseDropZonesStore from "@/store/dropZones.store";
 import DropZoneList from "@/components/configuration/provider/dropZone/dropZoneList";
 import { ShowDropZoneMap } from "@/components/configuration/provider/dropZone/showDropZoneMap";
-import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
+import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import { DeleteConfirmationDialog } from "@/components/deleteConfirmationDialog";
 import { cn } from "@/lib/utils";
 

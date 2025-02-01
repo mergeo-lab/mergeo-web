@@ -16,6 +16,16 @@ export const colorClasses = [
   'bg-coaccent-foreground',
 ];
 
+export const ActivityType: Record<string, { type: string; classname: string }> =
+  {
+    CREATED: { type: 'CREADO', classname: 'bg-info text-white font-bold' },
+    UPDATED: {
+      type: 'MODIFICADO',
+      classname: 'bg-highlight font-bold text-white',
+    },
+    DELETED: { type: 'BORRADO', classname: 'destructive' },
+  };
+
 export enum ReplacementCriteria {
   BEST_PRICE_SAME_UNIT = 'best_price_same_unit',
   SAME_PRICE_SAME_UNIT = 'same_price_same_unit',

@@ -2,7 +2,7 @@ import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetT
 import { useMutation } from "@tanstack/react-query";
 import { CloudUpload, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
+import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import { cn } from "@/lib/utils";
 import { AddProduct } from "@/store/addProductItem.store";
 import { Button } from "@/components/ui/button";

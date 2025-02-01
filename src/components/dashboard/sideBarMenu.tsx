@@ -1,12 +1,12 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Building, ChevronDown, ScrollText, Settings, UsersRound, WalletCards, Scale, Archive, Package } from "lucide-react";
-import { Link, useLocation, useSearch } from '@tanstack/react-router';
 import { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import UseUserStore from "@/store/user.store";
-import { ACCOUNT } from "@/lib/constants";
+import { ACCOUNT, ConfigTabs } from "@/lib/constants";
 import NewOrderButton from "@/components/dashboard/newOrderButton";
 import SpecialLink from "@/components/dashboard/specialLink";
+import { Link, useLocation, useSearch } from "@tanstack/react-router";
 
 type Props = {
     companyName: string
@@ -16,6 +16,7 @@ export enum tabs {
     company = "company",
     users = "users"
 }
+
 
 export function SideBarMenu({ companyName }: Props) {
     const { user } = UseUserStore();
@@ -51,7 +52,7 @@ export function SideBarMenu({ companyName }: Props) {
 
             <Collapsible open={!!collapsibleIsOpen} onOpenChange={onCollapsibleChange} className="bg-secondary-foreground py-4 px-4 transition-all">
                 <div className="relative flex items-center">
-                    <Link to='/client/configuration' search={{ tab: getConfigTab() }} className='w-full'>
+                    <Link to='/client/configuration' search={{ tab: getConfigTab() as unknown as ConfigTabs }} className='w-full'>
                         <CollapsibleTrigger className="flex items-center text-secondary-backgroundfont-bold w-full gap-2">
                             <div className="w-10 min-w-10 h-10 flex justify-center items-center bg-primary rounded-full text-secondary-foreground font-extrabold">
                                 {companyName && companyName[0].toUpperCase()}
@@ -65,7 +66,7 @@ export function SideBarMenu({ companyName }: Props) {
                         </CollapsibleTrigger>
                     </Link>
                     <div className="absolute right-0 hover:multi-[transition-all;rotate-180]">
-                        <Link to="/client/configuration" search={{ tab: 'company' }} onMouseEnter={(e) => e.preventDefault()}>
+                        <Link to="/client/configuration" search={{ tab: tabs.company as unknown as ConfigTabs }} onMouseEnter={(e) => e.preventDefault()}>
                             <Settings />
                         </Link>
                     </div>
@@ -76,7 +77,7 @@ export function SideBarMenu({ companyName }: Props) {
                             <Link
                                 onMouseEnter={(e) => e.preventDefault()}
                                 to="/client/configuration"
-                                search={{ tab: tabs.company }}
+                                search={{ tab: tabs.company as unknown as ConfigTabs }}
                                 className={cn("font-light", {
                                     'text-primary': search.tab === tabs.company,
                                 })}
@@ -89,7 +90,7 @@ export function SideBarMenu({ companyName }: Props) {
                             <Link
                                 onMouseEnter={(e) => e.preventDefault()}
                                 to="/client/configuration"
-                                search={{ tab: tabs.users }}
+                                search={{ tab: tabs.users as unknown as ConfigTabs }}
                                 className={cn("font-light", {
                                     'text-primary': search.tab === tabs.users,
                                 })}
@@ -139,7 +140,7 @@ export function SideBarMenu({ companyName }: Props) {
                             <li>
                                 <SpecialLink
                                     to="/provider/products"
-                                    activePaths={['/provider/products/newProducts']}
+                                    activePaths={['/provider/products/newProducts', '/provider/products/']}
                                     onClick={onLinkClicked}
                                 >
                                     <Package />

@@ -11,7 +11,7 @@ import UseCompanyStore from "@/store/company.store";
 import { MapPin, Pencil } from "lucide-react";
 import { BranchPicker } from "@/components/configuration/branches/branchPicker";
 import { useEffect, useState, memo } from "react";
-import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
+import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import { useMutation } from "@tanstack/react-query";
 import { updateCompany } from "@/lib/configuration/company";
 import { toast } from "@/components/ui/use-toast";

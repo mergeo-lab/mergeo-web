@@ -1,6 +1,6 @@
 import QuantitySelector from "@/components/configuration/client/orders/quantitySelector";
 import { Button } from "@/components/ui/button";
-import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
+import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { cratePreOrder } from "@/lib/orders";

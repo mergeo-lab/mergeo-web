@@ -3,9 +3,12 @@ import {
   PROVIDER_PRODUCT_SEARCH,
   PRODUCT_LISTS,
   PRODUCT_ADD_MULTIPLE,
+  PRODUCT,
+  PRODUCT_METADATA,
 } from './endpoints';
 import { AxiosResponse, isAxiosError } from 'axios';
 import {
+  ProductMetadataType,
   ProductSchemaType,
   ProductsListSchemaType,
   ProviderProductSearchType,
@@ -106,6 +109,98 @@ export async function providerProductsSearch(
       `${PROVIDER_PRODUCT_SEARCH}`,
       {
         params,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    console.log('Response /search:', response);
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+export async function getProductById(
+  porductId: string
+): Promise<ProductSchemaType> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${PRODUCT}/${porductId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    console.log('Response /search:', response);
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+export async function modifyProduct(
+  porductId: string,
+  price: string,
+  description: string | undefined
+): Promise<ProductSchemaType> {
+  try {
+    const params: Record<string, string | number | boolean> = {};
+
+    if (price) params.price = price;
+    if (description) params.description = description;
+
+    const { data: response }: AxiosResponse = await axiosPrivate.patch(
+      `${PRODUCT}/${porductId}`,
+      JSON.stringify(params),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    console.log('Response /search:', response);
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+export async function getProductMetadata(
+  porductId: string
+): Promise<ProductMetadataType> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${PRODUCT_METADATA}/${porductId}`,
+      {
         headers: {
           'Content-Type': 'application/json',
         },

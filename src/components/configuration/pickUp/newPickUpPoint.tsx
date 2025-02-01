@@ -11,7 +11,7 @@ import { useMutation } from "@tanstack/react-query";
 import { MapPin, Store } from "lucide-react";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import OverlayLoadingIndicator from "@/components/ui/overlayLoadingIndicator";
+import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import DaysPicker from "@/components/daysPicker";
 import useDaysPickerStore from "@/store/daysPicker.store";
 import { newPickUpPoints } from "@/lib/configuration/pickUp";

@@ -42,6 +42,7 @@ import { Route as AuthenticatedDashboardLayoutAccountTypeProviderProOrdersIndexI
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/configuration/index'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/configuration/index'
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderProductsNewProductsImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/products/newProducts'
+import { Route as AuthenticatedDashboardLayoutAccountTypeProviderProductsProductIdImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/products/$productId'
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId'
 
 // Create Virtual Routes
@@ -247,6 +248,14 @@ const AuthenticatedDashboardLayoutAccountTypeProviderProductsNewProductsRoute =
     } as any,
   )
 
+const AuthenticatedDashboardLayoutAccountTypeProviderProductsProductIdRoute =
+  AuthenticatedDashboardLayoutAccountTypeProviderProductsProductIdImport.update(
+    {
+      path: '/provider/products/$productId',
+      getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
+    } as any,
+  )
+
 const AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdRoute =
   AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdImport.update(
     {
@@ -448,6 +457,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdImport
       parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
     }
+    '/_authenticated/_dashboardLayout/_accountType/provider/products/$productId': {
+      id: '/_authenticated/_dashboardLayout/_accountType/provider/products/$productId'
+      path: '/provider/products/$productId'
+      fullPath: '/provider/products/$productId'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderProductsProductIdImport
+      parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
+    }
     '/_authenticated/_dashboardLayout/_accountType/provider/products/newProducts': {
       id: '/_authenticated/_dashboardLayout/_accountType/provider/products/newProducts'
       path: '/provider/products/newProducts'
@@ -512,6 +528,7 @@ export const routeTree = rootRoute.addChildren({
             AuthenticatedDashboardLayoutAccountTypeProviderSellsRoute,
             AuthenticatedDashboardLayoutAccountTypeClientIndexRoute,
             AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdRoute,
+            AuthenticatedDashboardLayoutAccountTypeProviderProductsProductIdRoute,
             AuthenticatedDashboardLayoutAccountTypeProviderProductsNewProductsRoute,
             AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexRoute,
             AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexRoute,
@@ -620,6 +637,7 @@ export const routeTree = rootRoute.addChildren({
         "/_authenticated/_dashboardLayout/_accountType/provider/sells",
         "/_authenticated/_dashboardLayout/_accountType/client/",
         "/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId",
+        "/_authenticated/_dashboardLayout/_accountType/provider/products/$productId",
         "/_authenticated/_dashboardLayout/_accountType/provider/products/newProducts",
         "/_authenticated/_dashboardLayout/_accountType/client/configuration/",
         "/_authenticated/_dashboardLayout/_accountType/provider/configuration/",
@@ -685,6 +703,10 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId": {
       "filePath": "_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId.tsx",
+      "parent": "/_authenticated/_dashboardLayout/_accountType"
+    },
+    "/_authenticated/_dashboardLayout/_accountType/provider/products/$productId": {
+      "filePath": "_authenticated/_dashboardLayout/_accountType/provider/products/$productId.tsx",
       "parent": "/_authenticated/_dashboardLayout/_accountType"
     },
     "/_authenticated/_dashboardLayout/_accountType/provider/products/newProducts": {
