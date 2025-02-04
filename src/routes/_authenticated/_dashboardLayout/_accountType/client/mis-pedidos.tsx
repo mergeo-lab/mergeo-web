@@ -12,7 +12,7 @@ import { Table, TableCell, TableHead, TableHeader, TableRow, } from '@/component
 import { Eye } from 'lucide-react';
 import { PreOrderProductsSheet } from '@/components/configuration/client/orders/preOrderProducts.sheet';
 import { Button } from '@/components/ui/button';
-import { PRE_ORDER_STATUS, SERVER_SENT_EVENTS } from '@/lib/constants';
+import { PRE_ORDER_STATUS } from '@/lib/constants';
 import { Badge } from '@/components/ui/badge';
 import sinPedidos from '@/assets/sinPedidos.png'
 import NewOrderButton from '@/components/dashboard/newOrderButton';
@@ -27,7 +27,7 @@ export default function Pedidos() {
     const companyId = company?.id;
     const { data: preOrderStream } = UseSse(`${ORDERS_EVENTS}${companyId}`);
 
-    const { data, isLoading, isError, refetch } = useQuery({
+    const { data, isLoading, refetch } = useQuery({
         queryKey: ['preOrders', company?.id],
         queryFn: ({ queryKey }) => {
             const companyId = queryKey[1];

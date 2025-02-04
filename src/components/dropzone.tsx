@@ -4,6 +4,9 @@ import { useCallback, useState } from 'react';
 import { FileRejection, useDropzone } from 'react-dropzone';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useMutation } from '@tanstack/react-query';
+import { uploadProductsFile } from '@/lib/products';
+import { forwardRef, useImperativeHandle } from 'react';
 
 type Props = {
     errorMessages: {
@@ -12,13 +15,29 @@ type Props = {
     }
     label: string,
     acceptedFileTypes: Record<string, string[]>;
-    dzHeight?: number
+    dzHeight?: number,
+    companyId?: string;
+    onSuccess: () => void;
 }
 
-export default function DropZone({ errorMessages, label, acceptedFileTypes, dzHeight }: Props) {
+export interface DropZoneRef {
+    reset: () => void;
+}
+
+const DropZone = forwardRef<DropZoneRef, Props>(({ errorMessages, label, acceptedFileTypes, dzHeight, companyId, onSuccess }, ref) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [uploadProgress, setUploadProgress] = useState<number>(0);
+
+    useImperativeHandle(ref, () => ({
+        reset: () => {
+            setSelectedFile(null);
+            setErrorMessage(null);
+            setUploadProgress(0);
+        }
+    }));
+
+    const mutation = useMutation({ mutationFn: uploadProductsFile });
 
     const onDrop = useCallback((acceptedFiles: File[], fileRejections: FileRejection[]) => {
         setErrorMessage(null);
@@ -34,7 +53,7 @@ export default function DropZone({ errorMessages, label, acceptedFileTypes, dzHe
         }
     }, []);
 
-    const handleUpload = () => {
+    const handleUpload = async () => {
         if (!selectedFile) {
             setErrorMessage(errorMessages.noFile);
             return;
@@ -48,6 +67,7 @@ export default function DropZone({ errorMessages, label, acceptedFileTypes, dzHe
             setUploadProgress((prev) => {
                 if (prev >= 100) {
                     clearInterval(interval);
+                    onSuccess();
                     return 100;
                 }
                 return prev + 10;
@@ -55,7 +75,11 @@ export default function DropZone({ errorMessages, label, acceptedFileTypes, dzHe
         }, 200);
 
         // Aquí implementa la lógica real de subida (ej. con Axios o Fetch)
+        if (!companyId) return;
+        const formData = new FormData();
+        formData.append('file', selectedFile);
         console.log('Subiendo archivo:', selectedFile);
+        await mutation.mutateAsync({ companyId, body: formData });
     };
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -121,4 +145,6 @@ export default function DropZone({ errorMessages, label, acceptedFileTypes, dzHe
             </div>
         </div>
     );
-}
+});
+
+export default DropZone;

@@ -6,3 +6,4 @@ export const PROVIDER_PRODUCT_SEARCH = `${BASE}/search`;
 export const PRODUCT_LISTS = `${BASE}/lists`;
 export const PRODUCT_ADD_MULTIPLE = `${BASE}/add`;
 export const PRODUCT_METADATA = `${BASE}/metadata`;
+export const PRODUCT_UPLOAD = `${BASE}/upload`;

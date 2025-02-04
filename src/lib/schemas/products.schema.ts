@@ -31,14 +31,12 @@ export const ProductMetadataSchema = z.object({
       action: z.string(),
       timestamp: z.string(),
       user: z.string(),
-      details: z
-        .object({
-          price: z.object({ old: z.string(), new: z.string() }).optional(),
-          description: z
-            .object({ old: z.string(), new: z.string() })
-            .optional(),
-        })
-        .or(z.string()),
+      fileName: z.string().optional(),
+      details: z.object({
+        price: z.object({ old: z.string(), new: z.string() }).optional(),
+        description: z.object({ old: z.string(), new: z.string() }).optional(),
+        message: z.string().optional(),
+      }),
     })
   ),
 });
@@ -53,5 +51,13 @@ export const ProviderProductSearch = z.object({
   includeInventory: z.boolean().optional(),
 });
 
+export const Pagination = z.object({
+  page: z.number().optional(),
+  pageSize: z.number().optional(),
+  orderBy: z.string().optional(),
+  sortOrder: z.enum(['asc', 'desc']).optional(),
+});
+
 export type ProviderProductSearchType = z.infer<typeof ProviderProductSearch>;
 export type ProductMetadataType = z.infer<typeof ProductMetadataSchema>;
+export type PaginationType = z.infer<typeof Pagination>;

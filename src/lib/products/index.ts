@@ -5,9 +5,11 @@ import {
   PRODUCT_ADD_MULTIPLE,
   PRODUCT,
   PRODUCT_METADATA,
+  PRODUCT_UPLOAD,
 } from './endpoints';
 import { AxiosResponse, isAxiosError } from 'axios';
 import {
+  PaginationType,
   ProductMetadataType,
   ProductSchemaType,
   ProductsListSchemaType,
@@ -89,10 +91,22 @@ export async function createProductsList({
 }
 
 export async function providerProductsSearch(
-  searchParams: ProviderProductSearchType
-): Promise<{ products: ProductSchemaType[]; count: number }> {
+  searchParams: ProviderProductSearchType,
+  pagination: PaginationType
+): Promise<{
+  products: ProductSchemaType[];
+  currentPage: number;
+  total: number;
+  totalPages: number;
+}> {
   try {
     const params: Record<string, string | number | boolean> = {};
+
+    // pagination
+    params.page = pagination.page || 1;
+    params.pageSize = pagination.pageSize || 10;
+    params.sortOrder = pagination.sortOrder || 'asc';
+    if (pagination.orderBy) params.orderBy = pagination.orderBy;
 
     if (searchParams.companyId) params.companyId = searchParams.companyId;
     if (searchParams.includeInventory)
@@ -143,7 +157,6 @@ export async function getProductById(
       }
     );
 
-    console.log('Response /search:', response);
     return response.data;
   } catch (error) {
     if (isAxiosError(error)) {
@@ -207,7 +220,6 @@ export async function getProductMetadata(
       }
     );
 
-    console.log('Response /search:', response);
     return response.data;
   } catch (error) {
     if (isAxiosError(error)) {
@@ -245,6 +257,38 @@ export async function saveMultipleProducts(
         error.message = error.response?.data.message;
       }
     }
+    throw error;
+  }
+}
+
+export async function uploadProductsFile({
+  companyId,
+  body,
+}: {
+  companyId: string;
+  body: FormData;
+}): Promise<{ data: { products: ProductSchemaType[]; count: number } }> {
+  try {
+    const response: AxiosResponse = await axiosPrivate.post(
+      `${PRODUCT_UPLOAD}/${companyId}`,
+      body,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
     throw error;
   }
 }

@@ -1,3 +1,5 @@
+import BackLink from '@/components/backLink';
+import FileNameBadge from '@/components/fileNameBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,16 +14,19 @@ import { useEffect, useState } from 'react';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/products/$productId')({
     component: () => <ProductDetail />,
-    validateSearch: (search: Record<string, boolean>) => {
+    validateSearch: (search: Record<string, unknown>) => {
         return ({
-            edit: search.edit
+            edit: search.edit as boolean,
+            currentPage: search.currentPage as string
         })
     }
 })
 
 export default function ProductDetail() {
     const { productId } = useParams({ from: '/_authenticated/_dashboardLayout/_accountType/provider/products/$productId' });
-    const { edit } = useSearch({ from: '/_authenticated/_dashboardLayout/_accountType/provider/products/$productId' });
+    const { edit, currentPage } = useSearch({
+        from: '/_authenticated/_dashboardLayout/_accountType/provider/products/$productId'
+    });
     const [isEditing, setIsEditing] = useState(false);
     const [changes, setChanges] = useState<{ price: number, description?: string | undefined } | null>(null);
 
@@ -45,17 +50,33 @@ export default function ProductDetail() {
 
     async function saveChanges() {
         if (changes?.price || changes?.description) {
-            const update = await mutation.mutateAsync({ productId, price: changes.price.toString(), description: changes && changes?.description });
+            const formattedPrice = changes.price.toFixed(2); // Ensure consistent decimal places
+            const update = await mutation.mutateAsync({
+                productId,
+                price: formattedPrice,
+                description: changes?.description
+            });
 
-            setIsEditing(false);
             if (update) {
-                refetch();
+                setChanges({
+                    price: Number(update.price), // Convert price to number
+                    description: update.description
+                }); // Reset changes after successful update
+                await refetch(); // Add await to ensure the refetch completes
             }
+            setIsEditing(false);
         }
     }
 
     const mutation = useMutation({
-        mutationFn: ({ productId, price, description }: { productId: string, price: string, description: string | undefined }) => modifyProduct(productId, price, description)
+        mutationFn: ({ productId, price, description }: {
+            productId: string,
+            price: string,
+            description: string | undefined
+        }) => modifyProduct(productId, price, description),
+        onSuccess: () => {
+            refetch();
+        },
     })
 
     useEffect(() => {
@@ -65,6 +86,10 @@ export default function ProductDetail() {
         setIsEditing(edit);
     }, [edit]);
 
+    if (isError) {
+        return <div>Error</div>
+    }
+
     return (
         <div className='relative h-full overflow-y-hidden'>
             {isLoading || mutation.isPending ?
@@ -73,6 +98,7 @@ export default function ProductDetail() {
                     <div className='flex flex-col px-10'>
 
                         <div className='flex items-center px-6 pt-6 pb-3 gap-2'>
+                            <BackLink className='-ml-6' location={{ path: '/provider/products', search: { currentPage } }} />
                             <h1 className="text-md font-bold leading-none">{data?.product?.name}</h1>
                             <Button
                                 className={cn('fill-mode-forwards', {
@@ -128,7 +154,7 @@ export default function ProductDetail() {
                                             </h2>
                                             :
                                             <Input
-                                                defaultValue={data?.product?.price}
+                                                defaultValue={changes?.price || data?.product?.price}
                                                 onChange={(e) => {
                                                     const newPrice = parseFloat(e.target.value.replace(",", ".")); // Ensure it's a valid number
                                                     setChanges((prev) => ({
@@ -148,7 +174,6 @@ export default function ProductDetail() {
                             <div className='flex flex-col gap-5'>
                                 {data?.productMetadata?.userActivity.map((activity) => {
                                     const getActivity = ActivityType[activity.action.toUpperCase()];
-                                    console.log(getActivity.classname)
 
                                     return <div key={activity.timestamp + activity.user}>
                                         <div className='flex gap-2'>
@@ -161,37 +186,47 @@ export default function ProductDetail() {
                                             <div className='font-light text-black/50'>{formatDate(activity.timestamp)}</div>
                                         </div>
                                         <div className='border border-border rounded p-2'>
-                                            {typeof activity.details === "string" ? (
-                                                activity.details
-                                            ) : (
-                                                <>
-                                                    <span className='underline'>Cambios</span>
-                                                    {activity?.details?.price && (
-                                                        <div>
-                                                            <span>Precio:</span>
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="text-muted">
-                                                                    {formatToArgentinianPesos(+(activity.details?.price?.old ?? 0))}
-                                                                </span>
-                                                                <MoveRight className="text-info" />
-                                                                {formatToArgentinianPesos(+(activity.details?.price?.new ?? 0))}
-                                                            </div>
-                                                        </div>
+                                            {
+                                                activity?.details?.message ? (
+                                                    <div className='flex gap-2'>
+                                                        <div>{activity?.details?.message}</div>
+                                                        <FileNameBadge fileName={activity?.fileName} />
+                                                    </div>
+                                                )
+                                                    : (
+                                                        <>
+                                                            {activity?.details?.price && (
+                                                                <div>
+                                                                    <span>Precio:</span>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className="text-muted">
+                                                                            {formatToArgentinianPesos(+(activity.details?.price?.old ?? 0))}
+                                                                        </span>
+                                                                        <MoveRight className="text-info" />
+                                                                        {formatToArgentinianPesos(+(activity.details?.price?.new ?? 0))}
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                            {activity?.details?.description && (
+                                                                <div>
+                                                                    <span>Descripción:</span>
+                                                                    <div className="flex items-start gap-2">
+                                                                        <span className="text-muted">
+                                                                            {activity.details?.description?.old ?? ""}
+                                                                        </span>
+                                                                        <MoveRight className="text-info" />
+                                                                        {activity.details?.description?.new ?? ""}
+                                                                    </div>
+                                                                    {activity?.fileName &&
+                                                                        <div className='flex gap-2'>
+                                                                            <div>Modificado desde archivo</div>
+                                                                            <FileNameBadge fileName={activity?.fileName} />
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            )}
+                                                        </>
                                                     )}
-                                                    {activity?.details?.description && (
-                                                        <div>
-                                                            <span>Descripción:</span>
-                                                            <div className="flex items-start gap-2">
-                                                                <span className="text-muted">
-                                                                    {activity.details?.description?.old ?? ""}
-                                                                </span>
-                                                                <MoveRight className="text-info" />
-                                                                {activity.details?.description?.new ?? ""}
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </>
-                                            )}
                                         </div>
                                     </div>
                                 })}

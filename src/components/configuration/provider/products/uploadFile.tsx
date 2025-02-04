@@ -1,7 +1,27 @@
-import Dropzone from "@/components/dropzone";
+import { UploadEvents } from "@/components/configuration/provider/products/uploadEvents";
+import Dropzone, { DropZoneRef } from "@/components/dropzone";
 import { cn } from "@/lib/utils";
+import UseCompanyStore from "@/store/company.store";
+import { useRef, useState } from "react";
 
 export default function UploadFile() {
+    const [fileSuccess, setFileSucsess] = useState(false);
+    const { company } = UseCompanyStore();
+    const companyId = company?.id;
+    const dropzoneRef = useRef<DropZoneRef>(null);
+
+
+    function fileUploadedCallback() {
+        console.log("Success file upload")
+        setFileSucsess(true);
+    }
+
+    function productsQueueFinishCallback() {
+        console.log("PRODUCTS PROCESS DONE!!!!!")
+        dropzoneRef.current?.reset();
+        setFileSucsess(false);
+    }
+
     return (
         <div className='p-10'>
             <div className={cn('transition-all rounded-sm p-5 relative')}>
@@ -21,6 +41,7 @@ export default function UploadFile() {
                     </div>
                 </div>
                 <Dropzone
+                    ref={dropzoneRef}
                     acceptedFileTypes={{
                         'application/vnd.ms-excel': ['.xls'],
                         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
@@ -32,7 +53,18 @@ export default function UploadFile() {
                     }}
                     label="Arrastra y suelta un archivo aquí, o haz clic para seleccionarlo."
                     dzHeight={200}
+                    companyId={companyId}
+                    onSuccess={fileUploadedCallback}
                 />
+            </div>
+            <div>
+                {companyId &&
+                    <UploadEvents
+                        companyId={companyId}
+                        start={fileSuccess}
+                        onFinish={productsQueueFinishCallback}
+                    />
+                }
             </div>
         </div>
 

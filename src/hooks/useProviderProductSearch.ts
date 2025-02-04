@@ -1,10 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { providerProductsSearch } from '@/lib/products';
-import { ProductSchemaType, ProviderProductSearchType } from '@/lib/schemas';
+import {
+  PaginationType,
+  ProductSchemaType,
+  ProviderProductSearchType,
+} from '@/lib/schemas';
 
 export const useProviderProductSearch = () => {
   const [params, setParams] = useState<ProviderProductSearchType | null>(null);
+  const [pagination, setPagination] = useState<PaginationType>({
+    page: 1,
+    pageSize: 10,
+    orderBy: 'created',
+    sortOrder: 'desc',
+  });
 
   useEffect(() => {
     console.log('Params updated:', params);
@@ -12,24 +22,44 @@ export const useProviderProductSearch = () => {
 
   const { data, isLoading, isError, error } = useQuery<{
     products: ProductSchemaType[];
-    count: number;
+    currentPage: number;
+    total: number;
+    totalPages: number;
   }>({
-    queryKey: ['products', { ...params }],
-    queryFn: () => {
-      if (!params) {
-        return Promise.resolve({ products: [], count: 0 }); // Return an empty object with products and count when no params
-      }
-      return providerProductsSearch(params); // Call the API with the current params
+    queryKey: ['products', { ...params, pagination }],
+    queryFn: async () => {
+      const result = !params
+        ? {
+            products: [],
+            currentPage: 1,
+            total: 0,
+            totalPages: 0,
+          }
+        : await providerProductsSearch(params, pagination);
+
+      // Transform the API response to match the expected type
+      return {
+        products: result.products,
+        currentPage: result.currentPage,
+        total: result.total || 0,
+        totalPages: result.totalPages,
+      };
     },
-    enabled: !!params, // Only run the query if params exist
+    enabled: !!params,
   });
 
   const handleSearch = (newParams: ProviderProductSearchType) => {
-    setParams(newParams); // Update params and trigger the query
+    setParams(newParams);
   };
 
   const resetSearch = () => {
     setParams(null);
+    setPagination({
+      page: 1,
+      pageSize: 10,
+      orderBy: 'created',
+      sortOrder: 'desc',
+    });
   };
 
   return {
@@ -39,5 +69,6 @@ export const useProviderProductSearch = () => {
     error,
     handleSearch,
     resetSearch,
+    setPagination,
   };
 };

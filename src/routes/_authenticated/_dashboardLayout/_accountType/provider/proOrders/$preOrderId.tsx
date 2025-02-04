@@ -72,7 +72,6 @@ export function SellsDetail() {
 
     const sellProduct = useCallback(() => {
         if (!companyId || !order) return;
-        console.log("order ======> ", order)
         return order?.preOrderProducts.map((item: PreOrderProductSchemaType): SellProductSchemaType => {
             return {
                 id: item.id,

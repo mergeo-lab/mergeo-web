@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useSearch } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
 import noProductsImage from '@/assets/no-products.png'
 import { useProviderProductSearch } from '@/hooks/useProviderProductSearch'
@@ -9,19 +9,35 @@ import ErrorMessage from '@/components/errorMessage'
 import ProviderProductsTable from '@/components/configuration/provider/products/providerProductsTable'
 import { cn } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
+import { PaginationCustom } from '@/components/pagination'
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/products/')({
     component: () => <Products />,
+    validateSearch: (search: Record<string, unknown>) => {
+        return ({
+            currentPage: search.currentPage as string
+        })
+    }
 })
 
 export default function Products() {
     const { company } = UseCompanyStore();
-    const { data, isLoading, isError, handleSearch } = useProviderProductSearch();
+    const { data, isLoading, isError, handleSearch, setPagination } = useProviderProductSearch();
+    const { currentPage } = useSearch({ from: '/_authenticated/_dashboardLayout/_accountType/provider/products/' });
 
     useEffect(() => {
         handleSearch({ companyId: company?.id, includeInventory: true });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [company?.id]);
 
+    useEffect(() => {
+        console.log('currentPage :: ', currentPage);
+        if (currentPage) {
+            setPagination(prev => ({ ...prev, page: +currentPage }));
+
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentPage]);
 
     {
         isError &&
@@ -53,7 +69,18 @@ export default function Products() {
                 </div>
                 :
                 data && data.products.length > 0
-                    ? <ProviderProductsTable products={data.products} />
+                    ? <div className='h-full flex flex-col justify-center items-stretch'>
+                        <ProviderProductsTable products={data.products} currentPage={`${data.currentPage}`} />
+                        <PaginationCustom className="mb-10"
+                            currentPage={data.currentPage}
+                            prev={data.currentPage > 1}
+                            next={data.currentPage < data.totalPages}
+                            pages={data.totalPages}
+                            onPageBack={() => setPagination(prev => ({ ...prev, page: +data.currentPage - 1 }))}
+                            onPageForward={() => setPagination(prev => ({ ...prev, page: +data.currentPage + 1 }))}
+                            onPageChange={(page: number) => setPagination(prev => ({ ...prev, page }))}
+                        />
+                    </div>
                     : (
                         <div className={cn("p-4 h-full overflow-y-auto z-10 hidden", {
                             "visible": !isLoading

@@ -6,12 +6,16 @@ type SseData = {
   clientId: string;
   providerId: string;
   message: string;
+  upload_percent?: number;
+  gtin?: string | null;
 };
 
 export function UseSse(connectionPath: string) {
+  const [start, setStart] = useState(false);
   const [data, setData] = useState<SseData | null>();
 
   useEffect(() => {
+    if (start === false) return;
     const evtSource = new EventSource(`${BASE_URL}${connectionPath}`);
 
     evtSource.onmessage = (event) => {
@@ -24,7 +28,7 @@ export function UseSse(connectionPath: string) {
     return () => {
       evtSource.close();
     };
-  }, [connectionPath]);
+  }, [connectionPath, start]);
 
-  return { data };
+  return { data, setStart };
 }

@@ -7,17 +7,18 @@ import { Link } from "@tanstack/react-router"
 import { Edit, Trash, Eye } from "lucide-react"
 
 type Props = {
-    products: ProductSchemaType[]
+    products: ProductSchemaType[],
+    currentPage: string
 }
 
-export default function ProviderProductsTable({ products }: Props) {
+export default function ProviderProductsTable({ products, currentPage }: Props) {
 
     const handleDelete = (prductId: string) => {
         alert(`Delete product with ID: ${prductId}`)
     }
     return (
-        <div className="max-h-[40rem] overflow-y-auto mt-5 mx-5 border border-border rounded">
-            <Table className="w-full">
+        <div className="h-[85%] overflow-y-auto my-8 mx-5 border border-border rounded">
+            <Table className="w-full h-fit">
                 <TableHeader className="sticky top-0 bg-white z-10">
                     <TableRow className="hover:bg-white">
                         <TableHead>Nombre</TableHead>
@@ -30,7 +31,7 @@ export default function ProviderProductsTable({ products }: Props) {
                 </TableHeader>
                 <TableBody>
                     {products.map((product: ProductSchemaType) => (
-                        <TableRow key={product.id} className="h-12 p-0 m-0 [&>*]:h-0 [&>*]:p-0 [&>*]:border-0 [&>*]:border-collapse">
+                        <TableRow key={product.id} className="m-0 [&>*]:multi-[border-0;border-collapse;h-5]">
                             <TableCell className="font-semibold">
                                 <p className="pl-5">
                                     {product.name}
@@ -44,8 +45,8 @@ export default function ProviderProductsTable({ products }: Props) {
                             <TableCell>
                                 <p>{formatDate(product.updated)}</p>
                             </TableCell>
-                            <TableCell className="flex justify-end space-x-2 [&>a>button]:h-8 [&>button]:h-8 mt-2 mr-5">
-                                <Link to="/provider/products/$productId" params={{ productId: product.id }} search={{ edit: false }}>
+                            <TableCell className="flex justify-end space-x-2 [&>a>button]:h-8 [&>button]:h-8 -mt-2 mr-5">
+                                <Link to="/provider/products/$productId" params={{ productId: product.id }} search={{ edit: false, currentPage }}>
                                     <Button
                                         className="hover:multi-[bg-primary;text-white]"
                                         variant="outlineSecondary"
@@ -53,7 +54,7 @@ export default function ProviderProductsTable({ products }: Props) {
                                         <Eye className="h-4 w-4" />
                                     </Button>
                                 </Link>
-                                <Link to="/provider/products/$productId" params={{ productId: product.id }} search={{ edit: true }}>
+                                <Link to="/provider/products/$productId" params={{ productId: product.id }} search={{ edit: true, currentPage }}>
                                     <Button
                                         className="hover:multi-[bg-primary;text-white]"
                                         variant="outlineSecondary"

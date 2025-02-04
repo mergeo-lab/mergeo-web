@@ -8,6 +8,16 @@ export enum ConfigTabs {
   USER = 'user',
 }
 
+export enum BackLinkType {
+  LINK = 'link',
+  BUTTON = 'button',
+}
+
+export enum BackLinkArrowPosition {
+  LEFT = 'left',
+  RIGHT = 'right',
+}
+
 export const colorClasses = [
   'bg-primary',
   'bg-highlight',
