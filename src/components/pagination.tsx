@@ -9,7 +9,7 @@ import { BackLinkArrowPosition, BackLinkType } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 
 type Props = {
-    className: string,
+    className?: string,
     prev: boolean,
     next: boolean,
     pages: number,

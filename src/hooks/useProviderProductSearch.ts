@@ -13,7 +13,7 @@ export const useProviderProductSearch = () => {
     page: 1,
     pageSize: 10,
     orderBy: 'created',
-    sortOrder: 'desc',
+    sortOrder: 'asc',
   });
 
   useEffect(() => {

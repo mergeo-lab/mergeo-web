@@ -6,7 +6,6 @@ import { PRE_ORDER_STATUS } from '@/lib/constants';
 import { PreOrderProductSchemaType } from '@/lib/schemas';
 import { SellProductSchemaType } from '@/lib/schemas/sell.schema';
 import { cn, formatToArgentinianPesos } from '@/lib/utils';
-import { Fragment } from 'react/jsx-runtime';
 
 type Props = {
     orderStatus: PRE_ORDER_STATUS | undefined,
@@ -93,50 +92,48 @@ export default function ProductList({ orderStatus, data, providerId, acceptedPro
                                 data && data.map((item) => {
                                     const product = item.product
                                     return (
-                                        <Fragment key={item.id}>
-                                            <TableRow className="hover:bg-white first:border-t-none">
-                                                <TableCell>
-                                                    <div> {product?.name}</div>
-                                                    <div className='text-muted font-thin'>{product?.brand}</div>
-                                                </TableCell>
-                                                <TableCell>{product?.net_content}{product?.measurementUnit}</TableCell>
-                                                <TableCell>{item.quantity}</TableCell>
-                                                <TableCell>{formatToArgentinianPesos(+product?.price)}</TableCell>
-                                                <TableCell>{formatToArgentinianPesos(item.quantity * +product?.price)}</TableCell>
-                                                <TableCell className='text-right w-72'>
-                                                    <div className='flex justify-end mr-20'>
-                                                        {orderStatus === PRE_ORDER_STATUS.pending
-                                                            ? <Checkbox
-                                                                disabled={
-                                                                    orderStatus !== PRE_ORDER_STATUS.pending && !product.accepted}
-                                                                checked={
-                                                                    orderStatus === PRE_ORDER_STATUS.pending
-                                                                        ? !!(acceptedProducts || []).find((p) => p.id === item.id)
-                                                                        : product.accepted
-                                                                }
-                                                                onClick={() => {
-                                                                    onSelect({
-                                                                        id: item.id,
-                                                                        quantity: item.quantity,
-                                                                        providerId: providerId || '',
-                                                                    })
-                                                                }} />
-                                                            : (
-                                                                item.accepted
-                                                                    ? <Label className='text-sm font-thin text-primary'>Aceptado</Label>
-                                                                    : <Label className='text-sm font-thin text-destructive'>Rechazado</Label>
-                                                            )
-                                                        }
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                            <TableRow className="bg-border/30 hover:bg-border/30">
-                                                <TableCell colSpan={6} className="h-[1px] p-1"></TableCell>
-                                            </TableRow>
-                                        </Fragment>
+                                        <TableRow key={item.id} className="hover:bg-white first:border-t-none">
+                                            <TableCell>
+                                                <div> {product?.name}</div>
+                                                <div className='text-muted font-thin'>{product?.brand}</div>
+                                            </TableCell>
+                                            <TableCell>{product?.net_content}{product?.measurementUnit}</TableCell>
+                                            <TableCell>{item.quantity}</TableCell>
+                                            <TableCell>{formatToArgentinianPesos(+product?.price)}</TableCell>
+                                            <TableCell>{formatToArgentinianPesos(item.quantity * +product?.price)}</TableCell>
+                                            <TableCell className='text-right w-72'>
+                                                <div className='flex justify-end mr-20'>
+                                                    {orderStatus === PRE_ORDER_STATUS.pending
+                                                        ? <Checkbox
+                                                            disabled={
+                                                                orderStatus !== PRE_ORDER_STATUS.pending && !product.accepted}
+                                                            checked={
+                                                                orderStatus === PRE_ORDER_STATUS.pending
+                                                                    ? !!(acceptedProducts || []).find((p) => p.id === item.id)
+                                                                    : product.accepted
+                                                            }
+                                                            onClick={() => {
+                                                                onSelect({
+                                                                    id: item.id,
+                                                                    quantity: item.quantity,
+                                                                    providerId: providerId || '',
+                                                                })
+                                                            }} />
+                                                        : (
+                                                            item.accepted
+                                                                ? <Label className='text-sm font-thin text-primary'>Aceptado</Label>
+                                                                : <Label className='text-sm font-thin text-destructive'>Rechazado</Label>
+                                                        )
+                                                    }
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
                                     )
                                 })
                             }
+                            <TableRow className="bg-border/30 hover:bg-border/30">
+                                <TableCell colSpan={6} className="h-[1px] p-1"></TableCell>
+                            </TableRow>
                         </TableBody>
                         <TableBody className="bg-white sticky bottom-[-1px] shadow">
                             <TableRow className='bg-white hover:bg-white'>

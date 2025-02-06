@@ -17,7 +17,7 @@ export default function ProviderProductsTable({ products, currentPage }: Props) 
         alert(`Delete product with ID: ${prductId}`)
     }
     return (
-        <div className="h-[85%] overflow-y-auto my-8 mx-5 border border-border rounded">
+        <div className="max-h-full overflow-y-auto mb-0 mx-5 border border-border rounded">
             <Table className="w-full h-fit">
                 <TableHeader className="sticky top-0 bg-white z-10">
                     <TableRow className="hover:bg-white">

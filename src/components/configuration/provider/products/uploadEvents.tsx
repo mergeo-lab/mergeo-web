@@ -1,8 +1,9 @@
 import { Progress } from "@/components/ui/progress";
 import { UseSse } from "@/hooks/useSse";
 import { PRODUCT_UPLOAD_EVENTS } from "@/lib/orders/endpoints";
+import { cn } from "@/lib/utils";
 import { FolderCheck } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 
 type Props = {
@@ -13,19 +14,26 @@ type Props = {
 
 export function UploadEvents({ companyId, start, onFinish }: Props) {
     const { data: productUploadStream, setStart } = UseSse(`${PRODUCT_UPLOAD_EVENTS}${companyId}`);
+    const [show, setShow] = useState(false);
 
     useEffect(() => {
-        start && setStart(true);
+        if (start) {
+            setStart(true);
+            setShow(true);
+        }
     }, [setStart, start]);
 
     useEffect(() => {
         if (productUploadStream?.upload_percent === 100) {
             onFinish();
+            setShow(false);
         }
     }, [productUploadStream, onFinish]);
 
     return (
-        <div className="flex items-center gap-5 w-full p-5 rounded shadow">
+        <div className={cn("flex items-center gap-5 w-full p-5 rounded shadow", {
+            "hidden": !show
+        })}>
             <p>
                 Porcesando producto con EAN/GTIN <span className="text-info font-bold">{productUploadStream?.gtin}</span>
             </p>

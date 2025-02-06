@@ -48,7 +48,12 @@ export const ProviderProductSearch = z.object({
   brand: z.string().optional(),
   ean: z.string().optional(),
   companyId: z.string().optional(),
-  includeInventory: z.boolean().optional(),
+  includeInventory: z.boolean().optional().default(true),
+});
+
+export const ProductsFormFinder = z.object({
+  name: z.string().optional(),
+  brand: z.string().optional(),
 });
 
 export const Pagination = z.object({
@@ -59,5 +64,11 @@ export const Pagination = z.object({
 });
 
 export type ProviderProductSearchType = z.infer<typeof ProviderProductSearch>;
+export type NewProductSearchType = Omit<
+  ProviderProductSearchType,
+  'includeInventory'
+>;
+
+export type ProductsFormFinderType = z.infer<typeof ProductsFormFinder>;
 export type ProductMetadataType = z.infer<typeof ProductMetadataSchema>;
 export type PaginationType = z.infer<typeof Pagination>;

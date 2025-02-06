@@ -3,13 +3,18 @@ import { createFileRoute, Link, useSearch } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
 import noProductsImage from '@/assets/no-products.png'
 import { useProviderProductSearch } from '@/hooks/useProviderProductSearch'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import UseCompanyStore from '@/store/company.store'
 import ErrorMessage from '@/components/errorMessage'
 import ProviderProductsTable from '@/components/configuration/provider/products/providerProductsTable'
 import { cn } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PaginationCustom } from '@/components/pagination'
+import UseProviderInventoryPaginationState, { sortOptions, SortOptionsType } from '@/store/providerInventoryPagination.store'
+import ProductFormFinder from '@/components/configuration/provider/products/productFormFinder'
+import { ProductsFormFinderType } from '@/lib/schemas'
+import NoProductsFound from '@/components/configuration/provider/products/noProductsFound'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/products/')({
     component: () => <Products />,
@@ -24,17 +29,37 @@ export default function Products() {
     const { company } = UseCompanyStore();
     const { data, isLoading, isError, handleSearch, setPagination } = useProviderProductSearch();
     const { currentPage } = useSearch({ from: '/_authenticated/_dashboardLayout/_accountType/provider/products/' });
+    const { sort, setSort, search, setSearch, setPage } = UseProviderInventoryPaginationState()
+    const [isSearching, setIsSearching] = useState(false);
+
+    async function onSearchChange(fields: ProductsFormFinderType) {
+        if (fields.name || fields.brand) setIsSearching(true)
+        else setIsSearching(false)
+        setSearch(fields);
+        handleSearch({ companyId: company?.id, includeInventory: true, ...fields });
+    }
+
+    const sortBySelection = (value: string) => {
+        if (!value) return;
+        const selected = sortOptions.find(item => item.id === value) as SortOptionsType;
+
+        setPagination(prev => ({ ...prev, orderBy: selected?.id, sortOrder: selected?.sort as "asc" | "desc" }));
+        setSort(selected);
+    }
 
     useEffect(() => {
-        handleSearch({ companyId: company?.id, includeInventory: true });
+        if (search.brand != "" || search.name != "") {
+            handleSearch({ companyId: company?.id, includeInventory: true, ...search });
+        } else {
+            handleSearch({ companyId: company?.id, includeInventory: true });
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [company?.id]);
+    }, [company?.id, search]);
 
     useEffect(() => {
-        console.log('currentPage :: ', currentPage);
         if (currentPage) {
-            setPagination(prev => ({ ...prev, page: +currentPage }));
-
+            const selected = sortOptions.find(item => item.id === sort.id) as SortOptionsType;
+            setPagination(prev => ({ ...prev, page: +currentPage, orderBy: selected?.id, sortOrder: selected?.sort as "asc" | "desc" }));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage]);
@@ -49,6 +74,25 @@ export default function Products() {
     return (
         <div className="grid grid-rows-[auto_1fr] h-full w-full">
             <div className="bg-accent h-20 px-10 shadow z-20 flex justify-between items-center">
+
+                <div className='w-full flex gap-5'>
+                    <ProductFormFinder onChange={onSearchChange} disabled={isLoading} defaults={search} />
+                    <div className='flex items-center gap-2 [&>p]:text-nowrap'>
+                        <p>Ordenar por</p>
+                        <Select onValueChange={sortBySelection} value={sort.id}>
+                            <SelectTrigger className='px-5 w-fit'>
+                                <SelectValue placeholder="" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {sortOptions.map((item) => (
+                                    <SelectItem key={item.id} value={item.id || ''}>
+                                        {item.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
 
                 <div className='flex justify-center items-center w-fit'>
                     <Link to="/provider/products/newProducts">
@@ -69,19 +113,36 @@ export default function Products() {
                 </div>
                 :
                 data && data.products.length > 0
-                    ? <div className='h-full flex flex-col justify-center items-stretch'>
-                        <ProviderProductsTable products={data.products} currentPage={`${data.currentPage}`} />
-                        <PaginationCustom className="mb-10"
-                            currentPage={data.currentPage}
-                            prev={data.currentPage > 1}
-                            next={data.currentPage < data.totalPages}
-                            pages={data.totalPages}
-                            onPageBack={() => setPagination(prev => ({ ...prev, page: +data.currentPage - 1 }))}
-                            onPageForward={() => setPagination(prev => ({ ...prev, page: +data.currentPage + 1 }))}
-                            onPageChange={(page: number) => setPagination(prev => ({ ...prev, page }))}
-                        />
+                    ? <div className='flex flex-col w-full'>
+                        <div className={cn('my-5', {
+                            'h-[85%]': data.totalPages > 1,
+                            'h-[38rem]': data.totalPages <= 1,
+                        })}>
+                            <ProviderProductsTable products={data.products} currentPage={`${data.currentPage}`} />
+                        </div>
+                        {data.totalPages > 1 &&
+                            <PaginationCustom
+                                currentPage={data.currentPage}
+                                prev={data.currentPage > 1}
+                                next={data.currentPage < data.totalPages}
+                                pages={data.totalPages}
+                                onPageBack={() => {
+                                    setPagination(prev => ({ ...prev, page: +data.currentPage - 1 }));
+                                    setPage(+data.currentPage - 1);
+                                }}
+                                onPageForward={() => {
+                                    setPagination(prev => ({ ...prev, page: +data.currentPage + 1 }));
+                                    setPage(+data.currentPage + 1);
+                                }}
+                                onPageChange={(page: number) => {
+                                    setPagination(prev => ({ ...prev, page }));
+                                    setPage(page);
+                                }}
+                            />
+                        }
                     </div>
-                    : (
+                    : isSearching ? <NoProductsFound />
+                        :
                         <div className={cn("p-4 h-full overflow-y-auto z-10 hidden", {
                             "visible": !isLoading
                         })}>
@@ -97,8 +158,6 @@ export default function Products() {
                                 </Link>
                             </div>
                         </div>
-
-                    )
             }
         </div >
     )

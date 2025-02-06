@@ -5,7 +5,7 @@ import LoadingIndicator from "@/components/loadingIndicator";
 import { Button } from "@/components/ui/button";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useProviderProductSearch } from "@/hooks/useProviderProductSearch";
+import { UseNewProductSearch } from "@/hooks/useNewProductSearch";
 import { ProviderProductSearch, ProviderProductSearchType } from "@/lib/schemas";
 import { useProductStore } from "@/store/addProductItem.store";
 import UseCompanyStore from "@/store/company.store";
@@ -20,7 +20,8 @@ export default function UploadManualProducts() {
     const allProducts = getAllProducts();
     const [formSubmited, setFormSubmited] = useState(false);
     const { company } = UseCompanyStore();
-    const { data, isLoading, isError, handleSearch, resetSearch } = useProviderProductSearch();
+    const { data, isLoading, isError, handleSearch, resetSearch } = UseNewProductSearch();
+    console.log("DATA :::::: ", data)
     const filteredProducts = data?.products.filter(product => !allProducts.some(p => p.gtin === product.gtin)) || [];
 
     const form = useForm<ProviderProductSearchType>({
@@ -33,11 +34,7 @@ export default function UploadManualProducts() {
 
     async function onSubmit(fields: ProviderProductSearchType) {
         const { name, brand, ean } = fields;
-        console.log(`
-            name:${name}\n
-            brand:${brand}\n
-            ean:${ean}\n
-        `)
+
         if (!name && !brand && !ean) {
             resetSearch();
             setFormSubmited(false);
@@ -54,6 +51,8 @@ export default function UploadManualProducts() {
             name: field == "name" ? "" : name,
             brand: field == "brand" ? "" : brand,
             ean: field == "ean" ? "" : ean,
+            includeInventory: false,
+            companyId
         }
         onSubmit(fields)
     }
@@ -218,7 +217,7 @@ export default function UploadManualProducts() {
                         </div>
                     </div>
                 )}
-                {data && data.count === 0 && (name || brand || ean) && formSubmited && (
+                {data && data.products.length === 0 && (name || brand || ean) && formSubmited && (
                     <div className="w-full h-full flex justify-center items-center">
 
                         <div className="w-fit h-fit bg-white shadow rounded p-10 flex gap-5 items-center">
@@ -238,7 +237,7 @@ export default function UploadManualProducts() {
                     </div>
                 )
                 }
-                {data && data.count > 0 && (
+                {data && data.products.length > 0 && (
                     <AddProductsList
                         data={filteredProducts}
                         addProduct={addProduct}

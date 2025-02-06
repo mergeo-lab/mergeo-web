@@ -4,7 +4,7 @@ import { getBranches } from "@/lib/configuration/branch";
 import { BranchesSchemaType } from "@/lib/schemas";
 import UseCompanyStore from "@/store/company.store";
 import { useQuery } from "@tanstack/react-query";
-import { useCallback, useEffect, useState } from "react";
+import { SetStateAction, useCallback, useEffect, useState } from "react";
 
 export function BranchSlector({ defaultValue, onChange }: { defaultValue: string, onChange: (value: BranchesSchemaType) => void }) {
 
@@ -26,7 +26,7 @@ export function BranchSlector({ defaultValue, onChange }: { defaultValue: string
 
     const onItemSelected = useCallback((value: string) => {
         if (!value) return;
-        setselectedOption(value);
+        setselectedOption(value as unknown as SetStateAction<undefined>);
         const selectedBranch = data?.data?.company.branches.find((item: BranchesSchemaType) => item.id === value);
         if (selectedBranch) {
             onChange(selectedBranch);

@@ -108,7 +108,7 @@ export default function Sells() {
                                                         </div>
                                                     </TableCell>
                                                     <TableCell className='text-center'>
-                                                        <Link to={`/provider/proOrders/${order.id}`}>
+                                                        <Link to={`/provider/proOrders/$preOrderId`} params={{ preOrderId: order.id }}>
                                                             <Button variant='ghost' className='space-x-2'>
                                                                 <Eye className='cursor-pointer' size={20} />
                                                                 <p>Ver Pedido</p>
@@ -118,7 +118,7 @@ export default function Sells() {
                                                     <TableCell className='text-right'>
                                                         {order.buyOrder
                                                             ? (
-                                                                <Link to={`/buyOrder/${order.buyOrder.id}`}>
+                                                                <Link to={`/buyOrder/$orderId`} params={{ orderId: order.buyOrder.id }} key={order.buyOrder.id}>
                                                                     <Button variant='ghost' className='space-x-2'>
                                                                         <Eye className='cursor-pointer' size={20} />
                                                                         <p>Ver Ordern de Compra</p>

@@ -6,9 +6,11 @@ import {
   PRODUCT,
   PRODUCT_METADATA,
   PRODUCT_UPLOAD,
+  PROVIDER_NEW_PRODUCT_SEARCH,
 } from './endpoints';
 import { AxiosResponse, isAxiosError } from 'axios';
 import {
+  NewProductSearchType,
   PaginationType,
   ProductMetadataType,
   ProductSchemaType,
@@ -106,11 +108,10 @@ export async function providerProductsSearch(
     params.page = pagination.page || 1;
     params.pageSize = pagination.pageSize || 10;
     params.sortOrder = pagination.sortOrder || 'asc';
-    if (pagination.orderBy) params.orderBy = pagination.orderBy;
+    params.includeInventory = searchParams.includeInventory;
 
+    if (pagination.orderBy) params.orderBy = pagination.orderBy;
     if (searchParams.companyId) params.companyId = searchParams.companyId;
-    if (searchParams.includeInventory)
-      params.includeInventory = searchParams.includeInventory;
 
     // if ean present we just send the EAN
     if (searchParams.ean) params.ean = searchParams.ean;
@@ -130,6 +131,46 @@ export async function providerProductsSearch(
     );
 
     console.log('Response /search:', response);
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+export async function newProductsSearch(
+  searchParams: NewProductSearchType
+): Promise<{
+  products: ProductSchemaType[];
+}> {
+  try {
+    const params: Record<string, string | number | boolean> = {};
+
+    if (searchParams.companyId) params.companyId = searchParams.companyId;
+    // if ean present we just send the EAN
+    if (searchParams.ean) params.ean = searchParams.ean;
+    else {
+      if (searchParams.name) params.name = searchParams.name;
+      if (searchParams.brand) params.brand = searchParams.brand;
+    }
+
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${PROVIDER_NEW_PRODUCT_SEARCH}`,
+      {
+        params,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    console.log('PRODUCTOS NUEVOS :', response.data);
     return response.data;
   } catch (error) {
     if (isAxiosError(error)) {

@@ -1,8 +1,10 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { DashboardHeader, SideBarMenu } from '@/components/dashboard';
 import UseCompanyStore from '@/store/company.store';
-import { createFileRoute, Outlet, useRouter, Link } from '@tanstack/react-router';
+import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router';
 import { Bell, CircleHelp, Settings, ScrollText, Package, Archive, WalletCards, FileSearch } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import UseProviderInventoryPaginationState from '@/store/providerInventoryPagination.store';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout')({
     component: () => <DashboardLayout />,
@@ -13,57 +15,66 @@ const iconProps = {
     className: 'text-primary'
 };
 
-function SubLink({ to, texts }: { to: string, texts: string[] }) {
+function SubLink({ to, texts, search }: { to: string, texts: string[], search?: Record<string, unknown> }) {
+    const { navigate } = useRouter()
     return (
         <p>
-            <Link to={to}>
+            <Button variant='link' onClick={() => navigate({ to: to, search: search })} className='text-md hover:no-underline leading-0 py-0 px-2 '>
                 <span className='border-b-[1px] border-secondary/60 hover:multi-[border-primary;text-primary]'>{texts[0]}</span>
-            </Link>{' '}
+            </Button>{' '}
             <span className='text-base border-l-2 border-muted pl-2 font-light'>{texts[1]}</span>
         </p>
     )
 }
 
-const routeTitles: Record<string, { text: string | JSX.Element; icon: JSX.Element }> = {
-    '/': { text: 'Dashboard', icon: <ScrollText {...iconProps} /> },
-    '/searchLists': { text: 'Mis Listas', icon: <ScrollText {...iconProps} /> },
-    '/configuration': { text: 'Configuración de cuenta', icon: <Settings {...iconProps} /> },
-    '/notifications': { text: 'Notificaciones', icon: <Bell {...iconProps} /> },
-    '/faq': { text: 'Preguntas Frecuentes', icon: <CircleHelp {...iconProps} /> },
-    '/orders': { text: 'Hacer Pedido', icon: <Package {...iconProps} /> },
-    '/mis-pedidos': { text: 'Pedidos', icon: <Archive {...iconProps} /> },
-    '/buyOrder': { text: 'Ordenes de Compra', icon: <WalletCards {...iconProps} /> },
-    '/buyOrder/$orderId': {
-        text: <SubLink to={'/buyOrder'} texts={['Ordenes de Compra', 'Detalle de la orden de compra']} />,
-        icon: <WalletCards {...iconProps} />
-    },
-    '/provider/proOrders': { text: 'Pedidos', icon: <Archive {...iconProps} /> },
-    '/provider/proOrders/$orderId': {
-        text: <SubLink to={'/provider/proOrders'} texts={['Pedidos', 'Detalle del pedido']} />,
-        icon: <Archive {...iconProps} />
-    },
-    '/sellDetail': { text: 'Detalle del Pedido', icon: <FileSearch {...iconProps} /> },
-    '/provider/products': { text: 'Productos', icon: <Package {...iconProps} /> },
-    '/provider/products/newProducts': {
-        text: <SubLink to={'/provider/products'} texts={['Productos', 'Agregar Productos']} />,
-        icon: <Package {...iconProps} />
-    },
-    '/provider/products/$productId': {
-        text: <SubLink to={'/provider/products'} texts={['Productos', 'Detalle del Producto']} />,
-        icon: <Package {...iconProps} />
-    }
-};
+const getRoutTitles = (currentPage: number) => {
+    console.log("CURRENT PAGE :: ", currentPage)
+    const titles: Record<string, { text: string | JSX.Element; icon: JSX.Element }> = {
+        '/': { text: 'Dashboard', icon: <ScrollText {...iconProps} /> },
+        '/searchLists': { text: 'Mis Listas', icon: <ScrollText {...iconProps} /> },
+        '/configuration': { text: 'Configuración de cuenta', icon: <Settings {...iconProps} /> },
+        '/notifications': { text: 'Notificaciones', icon: <Bell {...iconProps} /> },
+        '/faq': { text: 'Preguntas Frecuentes', icon: <CircleHelp {...iconProps} /> },
+        '/orders': { text: 'Hacer Pedido', icon: <Package {...iconProps} /> },
+        '/mis-pedidos': { text: 'Pedidos', icon: <Archive {...iconProps} /> },
+        '/buyOrder': { text: 'Ordenes de Compra', icon: <WalletCards {...iconProps} /> },
+        '/buyOrder/$orderId': {
+            text: <SubLink to={'/buyOrder'} texts={['Ordenes de Compra', 'Detalle de la orden de compra']} />,
+            icon: <WalletCards {...iconProps} />
+        },
+        '/provider/proOrders': { text: 'Pedidos', icon: <Archive {...iconProps} /> },
+        '/provider/proOrders/$orderId': {
+            text: <SubLink to={'/provider/proOrders'} texts={['Pedidos', 'Detalle del pedido']} />,
+            icon: <Archive {...iconProps} />
+        },
+        '/sellDetail': { text: 'Detalle del Pedido', icon: <FileSearch {...iconProps} /> },
+        '/provider/products': { text: 'Productos', icon: <Package {...iconProps} /> },
+        '/provider/products/newProducts': {
+            text: <SubLink to={'/provider/products'} texts={['Productos', 'Agregar Productos']} />,
+            icon: <Package {...iconProps} />
+        },
+        '/provider/products/$productId': {
+            text: <SubLink to={'/provider/products'} texts={['Productos', 'Detalle del Producto']} search={{ currentPage: currentPage }} />,
+            icon: <Package {...iconProps} />
+        }
+    };
+
+    return titles;
+}
 
 function DashboardLayout() {
     const router = useRouter();
     const { company } = UseCompanyStore();
+    const { getPage } = UseProviderInventoryPaginationState()
+    const routeTitles = getRoutTitles(getPage());
 
     // Store both text & icon in the state
     const [currentTitle, setCurrentTitle] = useState(routeTitles['/configuration']);
-
+    console.log("ROUT TITLES :::::: ", routeTitles)
     // Utility function to match dynamic routes
-    const matchRoute = (pathname: string) => {
+    const matchRoute = useCallback((pathname: string) => {
         for (const [route, title] of Object.entries(routeTitles)) {
+            console.log("ROUTE :::::: ", route)
             if (route.includes('$')) {
                 const regex = new RegExp(`^${route.replace(/\$[a-zA-Z]+/g, '[^/]+')}$`);
                 if (regex.test(pathname)) {
@@ -74,7 +85,7 @@ function DashboardLayout() {
             }
         }
         return routeTitles['/configuration'];
-    };
+    }, [routeTitles]);
 
     // Subscribe to route changes and update title & icon
     useEffect(() => {
@@ -87,7 +98,7 @@ function DashboardLayout() {
         return () => {
             unsubscribe();
         };
-    }, [router]);
+    }, [matchRoute, router]);
 
     return (
         <div className='w-full h-full flex overflow-hidden'>
