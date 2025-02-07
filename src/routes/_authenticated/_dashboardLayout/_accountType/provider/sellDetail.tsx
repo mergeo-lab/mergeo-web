@@ -1,6 +1,5 @@
 import ProductList from '@/components/configuration/provider/sells/productList';
 import { StatusBadge } from '@/components/statusBadge';
-import { Skeleton } from '@/components/ui/skeleton';
 import { getSellPreOrdersById, preOrderProviderResponse } from '@/lib/orders';
 import { cn, formatDate } from '@/lib/utils';
 import { useMutation, useQuery } from '@tanstack/react-query';

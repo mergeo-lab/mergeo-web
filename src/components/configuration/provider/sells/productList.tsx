@@ -92,7 +92,7 @@ export default function ProductList({ orderStatus, data, providerId, acceptedPro
                                 data && data.map((item) => {
                                     const product = item.product
                                     return (
-                                        <TableRow key={item.id} className="hover:bg-white first:border-t-none">
+                                        <TableRow key={item.product.id} className="hover:bg-white first:border-t-none">
                                             <TableCell>
                                                 <div> {product?.name}</div>
                                                 <div className='text-muted font-thin'>{product?.brand}</div>

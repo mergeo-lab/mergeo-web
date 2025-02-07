@@ -11,15 +11,13 @@ type SseData = {
 };
 
 export function UseSse(connectionPath: string) {
-  const [start, setStart] = useState(false);
   const [data, setData] = useState<SseData | null>();
 
   useEffect(() => {
-    if (start === false) return;
     const evtSource = new EventSource(`${BASE_URL}${connectionPath}`);
+    console.log('EVENT SOURCE :: ', evtSource);
 
     evtSource.onmessage = (event) => {
-      console.log('EVENT ::::::::: ', event.data);
       if (event.data) {
         setData(JSON.parse(event.data));
       }
@@ -28,7 +26,7 @@ export function UseSse(connectionPath: string) {
     return () => {
       evtSource.close();
     };
-  }, [connectionPath, start]);
+  }, [connectionPath]);
 
-  return { data, setStart };
+  return { data };
 }

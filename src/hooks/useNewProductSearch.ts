@@ -14,10 +14,10 @@ export const UseNewProductSearch = () => {
     products: ProductSchemaType[];
   }>({
     queryKey: ['products', { ...params }],
-    queryFn: async () => {
+    queryFn: async (): Promise<{ products: ProductSchemaType[] }> => {
       if (!params) throw new Error('Search parameters are required');
       const result = await newProductsSearch(params);
-      return { products: result };
+      return { products: result as unknown as ProductSchemaType[] };
     },
     enabled: !!params,
   });

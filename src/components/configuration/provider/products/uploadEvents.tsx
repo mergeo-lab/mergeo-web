@@ -7,21 +7,19 @@ import { useEffect, useState } from "react";
 
 
 type Props = {
-    companyId: string;
+    companyId: string | undefined;
     start: boolean;
     onFinish: () => void;
 }
 
 export function UploadEvents({ companyId, start, onFinish }: Props) {
-    const { data: productUploadStream, setStart } = UseSse(`${PRODUCT_UPLOAD_EVENTS}${companyId}`);
+    const { data: productUploadStream } = UseSse(`${PRODUCT_UPLOAD_EVENTS}${companyId}`);
     const [show, setShow] = useState(false);
 
     useEffect(() => {
-        if (start) {
-            setStart(true);
-            setShow(true);
-        }
-    }, [setStart, start]);
+        setShow(true);
+
+    }, []);
 
     useEffect(() => {
         if (productUploadStream?.upload_percent === 100) {
@@ -31,8 +29,8 @@ export function UploadEvents({ companyId, start, onFinish }: Props) {
     }, [productUploadStream, onFinish]);
 
     return (
-        <div className={cn("flex items-center gap-5 w-full p-5 rounded shadow", {
-            "hidden": !show
+        <div className={cn("flex items-center gap-5 w-full p-5 rounded shadow opacity-0", {
+            "opacity-100": show
         })}>
             <p>
                 Porcesando producto con EAN/GTIN <span className="text-info font-bold">{productUploadStream?.gtin}</span>

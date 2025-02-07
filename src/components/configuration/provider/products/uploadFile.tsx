@@ -58,13 +58,12 @@ export default function UploadFile() {
                 />
             </div>
             <div>
-                {companyId &&
-                    <UploadEvents
-                        companyId={companyId}
-                        start={fileSuccess}
-                        onFinish={productsQueueFinishCallback}
-                    />
-                }
+                <UploadEvents
+                    companyId={companyId}
+                    start={fileSuccess}
+                    onFinish={productsQueueFinishCallback}
+                />
+
             </div>
         </div>
 
