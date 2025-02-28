@@ -19,7 +19,7 @@ export default function ProviderProductsTable({ products, currentPage }: Props) 
     return (
         <div className="max-h-full overflow-y-auto mb-0 mx-5 border border-border rounded">
             <Table className="w-full h-fit">
-                <TableHeader className="sticky top-0 bg-white z-10">
+                <TableHeader className="sticky top-0 bg-white z-10 shadow-sm">
                     <TableRow className="hover:bg-white">
                         <TableHead>Nombre</TableHead>
                         <TableHead>Marca</TableHead>

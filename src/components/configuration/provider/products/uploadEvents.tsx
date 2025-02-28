@@ -12,7 +12,7 @@ type Props = {
     onFinish: () => void;
 }
 
-export function UploadEvents({ companyId, start, onFinish }: Props) {
+export function UploadEvents({ companyId, onFinish }: Props) {
     const { data: productUploadStream } = UseSse(`${PRODUCT_UPLOAD_EVENTS}${companyId}`);
     const [show, setShow] = useState(false);
 

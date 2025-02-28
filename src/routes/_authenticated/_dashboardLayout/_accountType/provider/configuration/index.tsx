@@ -1,7 +1,7 @@
 import { Company } from '@/components/configuration/provider';
 import { Users } from '@/components/configuration/users';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
 
 type TabSearch = { tab: string };
 
@@ -19,14 +19,14 @@ const tabsTriggerClassName = 'rounded w-52 data-[state=active]:multi-[bg-primary
 function Configuration() {
   const { tab } = Route.useSearch();
   const router = useRouter();
+  const navigate = useNavigate();
 
   const onTabChange = (value: string) => {
-    if (router)
-      router.navigate({
-        search: { tab: value },
-        replace: true,
-      });
-  }
+    if (router) {
+      navigate({ to: '', search: { tab: value }, replace: true });
+    }
+  };
+
 
   return (
     <Tabs value={tab} className="w-full h-full rounded relative" onValueChange={onTabChange}>

@@ -3,6 +3,11 @@ export enum ACCOUNT {
   provider = 'PROVIDER',
 }
 
+export enum tabs {
+  company = 'company',
+  users = 'users',
+}
+
 export enum ConfigTabs {
   COMPANY = 'company',
   USER = 'user',

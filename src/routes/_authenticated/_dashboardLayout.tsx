@@ -2,7 +2,7 @@ import React, { memo, useCallback, useEffect, useState } from 'react';
 import { DashboardHeader, SideBarMenu } from '@/components/dashboard';
 import UseCompanyStore from '@/store/company.store';
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router';
-import { Bell, CircleHelp, Settings, ScrollText, Package, Archive, WalletCards, FileSearch } from 'lucide-react';
+import { Bell, CircleHelp, Settings, ScrollText, Package, Archive, WalletCards, FileSearch, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import UseProviderInventoryPaginationState from '@/store/providerInventoryPagination.store';
 
@@ -42,6 +42,14 @@ const getRoutTitles = (currentPage: number) => {
             text: <SubLink to={'/buyOrder'} texts={['Ordenes de Compra', 'Detalle de la orden de compra']} />,
             icon: <WalletCards {...iconProps} />
         },
+        '/client/orders': { text: 'Hacer Pedido', icon: <ShoppingCart {...iconProps} /> },
+        '/client/proOrders': { text: 'Pedidos', icon: <Archive {...iconProps} /> },
+        '/client/proOrders/$orderId': {
+            text: <SubLink to={'/client/proOrders'} texts={['Pedidos', 'Detalle del pedido']} />,
+            icon: <Archive {...iconProps} />
+        },
+        '/client/searchLists': { text: 'Mis Listas', icon: <ScrollText {...iconProps} /> },
+
         '/provider/proOrders': { text: 'Pedidos', icon: <Archive {...iconProps} /> },
         '/provider/proOrders/$orderId': {
             text: <SubLink to={'/provider/proOrders'} texts={['Pedidos', 'Detalle del pedido']} />,
@@ -70,11 +78,9 @@ function DashboardLayout() {
 
     // Store both text & icon in the state
     const [currentTitle, setCurrentTitle] = useState(routeTitles['/configuration']);
-    console.log("ROUT TITLES :::::: ", routeTitles)
     // Utility function to match dynamic routes
     const matchRoute = useCallback((pathname: string) => {
         for (const [route, title] of Object.entries(routeTitles)) {
-            console.log("ROUTE :::::: ", route)
             if (route.includes('$')) {
                 const regex = new RegExp(`^${route.replace(/\$[a-zA-Z]+/g, '[^/]+')}$`);
                 if (regex.test(pathname)) {

@@ -115,7 +115,7 @@ export default function Products() {
                 data && data.products.length > 0
                     ? <div className='flex flex-col w-full'>
                         <div className={cn('my-5', {
-                            'h-[85%]': data.totalPages > 1,
+                            'h-[53%]': data.totalPages > 1,
                             'h-[38rem]': data.totalPages <= 1,
                         })}>
                             <ProviderProductsTable products={data.products} currentPage={`${data.currentPage}`} />

@@ -46,6 +46,7 @@ export default function ProductsList({ configCanceled, isVisible = false, select
             setActiveSearchItem(data?.products[0]);
             handleSearchItem(data?.products[0].name);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, setActiveSearchItem])
 
     if (!isVisible && configCanceled || !listId) {
@@ -55,7 +56,7 @@ export default function ProductsList({ configCanceled, isVisible = false, select
                     <ListX className="text-destructive" size={25} />
                     <p className="text-secondary/60">No seleccionaste una lista</p>
                 </div>
-                <p className="text-secondary/60 font-light text-md leading-5 pb-3 text-center">
+                <p className="text-secondary/60 font-light text-base leading-5 pb-5 text-center">
                     Puedes seleccionar una liste en la pantalla de configuración
                 </p>
                 <Button onClick={selectList} variant='outline' className="w-full">Configuración</Button>

@@ -71,8 +71,10 @@ export async function getProducts(
       }
     );
 
+    console.log('SEARCH RESPONSE ::::: ', response);
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const products = response.products.map((product: any) => {
+    const products = response.data.products.map((product: any) => {
       const { company, ...rest } = product; // Destructure to exclude 'company'
       return {
         providerId: company.id, // Extracting the company ID
@@ -195,14 +197,14 @@ export async function getAllPreOrders(
 ): Promise<{ count: number; preOrders: PreOrderSchemaType[] }> {
   try {
     const { data: response }: AxiosResponse = await axiosPrivate.get(
-      `${PRE_ORDER}/${companyId}`,
+      `${PRE_ORDER}/${companyId}/client`,
       {
         headers: {
           'Content-Type': 'application/json',
         },
       }
     );
-    return response;
+    return response.data;
   } catch (error) {
     if (isAxiosError(error)) {
       if (error.response?.data.statusCode === 400) {

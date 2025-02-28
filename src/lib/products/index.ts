@@ -7,6 +7,8 @@ import {
   PRODUCT_METADATA,
   PRODUCT_UPLOAD,
   PROVIDER_NEW_PRODUCT_SEARCH,
+  PRODUCT_FAVORITE,
+  PRODUCT_BLACKLIST,
 } from './endpoints';
 import { AxiosResponse, isAxiosError } from 'axios';
 import {
@@ -330,6 +332,89 @@ export async function uploadProductsFile({
       }
     }
 
+    throw error;
+  }
+}
+
+export async function getFavorites(
+  companyId: string
+): Promise<ProductSchemaType[]> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${PRODUCT_FAVORITE}/${companyId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    console.log('FAVORITOS :', response.data);
+    return response.data.products;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+    throw error;
+  }
+}
+
+export async function toggleFavorite(
+  companyId: string,
+  productId: string,
+  newState: boolean
+): Promise<ProductSchemaType[]> {
+  try {
+    const path = newState
+      ? `${PRODUCT_FAVORITE}/${companyId}/product/${productId}`
+      : `${PRODUCT_FAVORITE}/${companyId}/product/${productId}/remove`;
+
+    const { data: response }: AxiosResponse = await axiosPrivate.post(path, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+    throw error;
+  }
+}
+
+export async function addToBlackList(
+  companyId: string,
+  productId: string
+): Promise<ProductSchemaType[]> {
+  try {
+    const path = `${PRODUCT_BLACKLIST}/${companyId}`;
+
+    const { data: response }: AxiosResponse = await axiosPrivate.post(
+      path,
+      JSON.stringify([productId]),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
     throw error;
   }
 }

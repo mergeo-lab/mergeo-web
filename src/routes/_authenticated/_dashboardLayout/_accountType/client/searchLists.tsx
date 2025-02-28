@@ -217,11 +217,6 @@ export function SearchLists() {
         <Trash2 size={18} />
     ), []);
 
-    // Memoize the Search icon to prevent unnecessary re-renders
-    const memoizedSearchIcon = useMemo(() => (
-        <Search className='absolute top-2 left-3' />
-    ), []);
-
     return (
         <div className='w-full flex h-full'>
             {searchListsLoading ?
@@ -281,7 +276,7 @@ export function SearchLists() {
                                 <div className='h-20 flex items-center justify-between px-8 border-b'>
                                     <div className='flex gap-4 items-center'>
                                         <div className='relative'>
-                                            {memoizedSearchIcon}
+                                            <Search className='absolute top-2 left-3' />
                                             <Input
                                                 onChange={(e) => setSearchQuery(e.target.value)}
                                                 disabled={!!selectedList && selectedList.products.length <= 1}
@@ -336,7 +331,7 @@ export function SearchLists() {
                                     title="Eliminar producto!"
                                     question="¿Seguro que quieres borrar producto"
                                     onLoading={handleIsLoading}
-                                    mutationFn={deleteProduct}
+                                    mutationFn={(args: unknown) => deleteProduct(args as { id: string; otherMutationProp: string })}
                                     callback={handleDeleteProductCallback}
                                     onClose={() => setDeleteListProduct({ data: null, isOpen: false })}
                                 />
@@ -348,7 +343,7 @@ export function SearchLists() {
                                     title="Eliminar Lista!"
                                     question="¿Seguro que quieres borrar la lista"
                                     onLoading={handleIsLoading}
-                                    mutationFn={deleteSearchList}
+                                    mutationFn={(args: unknown) => deleteSearchList(args as { id: string })}
                                     callback={handleDeleteListCallback}
                                     onClose={() => setDeleteList({ data: null, isOpen: false })}
                                 />

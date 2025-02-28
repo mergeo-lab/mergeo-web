@@ -8,3 +8,5 @@ export const PRODUCT_LISTS = `${BASE}/lists`;
 export const PRODUCT_ADD_MULTIPLE = `${BASE}/add`;
 export const PRODUCT_METADATA = `${BASE}/metadata`;
 export const PRODUCT_UPLOAD = `${BASE}/upload`;
+export const PRODUCT_FAVORITE = `${BASE}/favorite`;
+export const PRODUCT_BLACKLIST = `${BASE}/blacklist`;

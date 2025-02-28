@@ -11,7 +11,7 @@ export const useProviderProductSearch = () => {
   const [params, setParams] = useState<ProviderProductSearchType | null>(null);
   const [pagination, setPagination] = useState<PaginationType>({
     page: 1,
-    pageSize: 10,
+    pageSize: 20,
     orderBy: 'created',
     sortOrder: 'asc',
   });

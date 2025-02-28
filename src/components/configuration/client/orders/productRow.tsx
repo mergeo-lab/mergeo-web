@@ -22,10 +22,6 @@ export default function ProductRow({ data, cellsWidth }: { data: ProductWithQuan
                     <div className="bg-border rounded p-4">
                         <Image size={50} className="text-white" />
                     </div>
-                    {/* {data.image !== ""
-                    ? <img src={data.image} alt="" />
-                    : <Image size={50} className="text-muted" />
-                    } */}
                     <div className="flex flex-col ml-2">
                         <div className="font-semibold">{data.name}</div>
                         <div className="text-muted font-thin text-sm">{data.brand}</div>
