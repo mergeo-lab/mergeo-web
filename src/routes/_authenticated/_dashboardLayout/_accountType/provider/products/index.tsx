@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { PaginationCustom } from '@/components/pagination'
 import UseProviderInventoryPaginationState, { sortOptions, SortOptionsType } from '@/store/providerInventoryPagination.store'
 import ProductFormFinder from '@/components/configuration/provider/products/productFormFinder'
-import { ProductsFormFinderType } from '@/lib/schemas'
+import { PaginationSort, ProductsFormFinderType } from '@/lib/schemas'
 import NoProductsFound from '@/components/configuration/provider/products/noProductsFound'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
@@ -43,7 +43,7 @@ export default function Products() {
         if (!value) return;
         const selected = sortOptions.find(item => item.id === value) as SortOptionsType;
 
-        setPagination(prev => ({ ...prev, orderBy: selected?.id, sortOrder: selected?.sort as "asc" | "desc" }));
+        setPagination(prev => ({ ...prev, orderBy: selected?.id, sortOrder: selected?.sort as PaginationSort.ASC | PaginationSort.DESC }));
         setSort(selected);
     }
 
@@ -59,7 +59,7 @@ export default function Products() {
     useEffect(() => {
         if (currentPage) {
             const selected = sortOptions.find(item => item.id === sort.id) as SortOptionsType;
-            setPagination(prev => ({ ...prev, page: +currentPage, orderBy: selected?.id, sortOrder: selected?.sort as "asc" | "desc" }));
+            setPagination(prev => ({ ...prev, page: +currentPage, orderBy: selected?.id, sortOrder: selected?.sort as PaginationSort.ASC | PaginationSort.DESC }));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage]);

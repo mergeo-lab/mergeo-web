@@ -56,11 +56,16 @@ export const ProductsFormFinder = z.object({
   brand: z.string().optional(),
 });
 
+export enum PaginationSort {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
+
 export const Pagination = z.object({
   page: z.number().optional(),
   pageSize: z.number().optional(),
   orderBy: z.string().optional(),
-  sortOrder: z.enum(['asc', 'desc']).optional(),
+  sortOrder: z.enum([PaginationSort.ASC, PaginationSort.DESC]).optional(),
 });
 
 export type ProviderProductSearchType = z.infer<typeof ProviderProductSearch>;

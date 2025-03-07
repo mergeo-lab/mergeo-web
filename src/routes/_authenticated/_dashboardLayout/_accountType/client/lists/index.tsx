@@ -14,12 +14,12 @@ import { SearchListProductType, SearchListType } from '@/lib/searchLists/searchL
 import OverlayLoadingIndicator from '@/components/overlayLoadingIndicator';
 import { Input } from '@/components/ui/input';
 import { DropdownMenuCheckboxes } from '@/components/dropdownMenuCheckboxes';
-import emptyBox from '../../../../../assets/emptyBox.svg';
+import emptyBox from '@/assets/emptyBox.svg';
 import { useDebounceCallback } from 'usehooks-ts';
 import { formatDate } from '@/lib/utils';
 import EditNameDialog from '@/components/editNameDialog';
 
-export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/searchLists')({
+export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/lists/')({
     component: () => <SearchLists />
 })
 

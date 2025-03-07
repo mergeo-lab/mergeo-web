@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { startTransition, useState } from "react";
+import { useOptimistic } from "react";
 
 interface OptimisticToggleButtonProps<T> {
     itemId: T;
@@ -22,34 +22,34 @@ export function OptimisticToggleButton<T>({
     disabled,
     tooltip,
 }: OptimisticToggleButtonProps<T>) {
-    const [optimisticState, setOptimisticState] = useState(defaultState);
+    const [optimisticState, setOptimisticState] = useOptimistic(defaultState);
 
-    function handleClick() {
-        startTransition(() => {
-            setOptimisticState((prev) => !prev);
-        });
+    async function handleClick() {
+        setOptimisticState((prev) => !prev); // Update optimistically
 
-        onToggle(itemId, !optimisticState).catch(() => {
-            // Optionally handle rollback on failure
-            startTransition(() => {
-                setOptimisticState(optimisticState); // Revert
-            });
-        });
+        try {
+            await onToggle(itemId, !optimisticState);
+        } catch {
+            setOptimisticState(defaultState); // Rollback on failure
+        }
     }
 
     return (
         <TooltipProvider>
             <Tooltip>
                 <TooltipTrigger className={cn({ "cursor-default": disabled })}>
-                    <Button disabled={disabled} variant="ghost" onClick={handleClick} className={cn("p-0 m-0 w-12", {
-                        "text-muted/50": disabled
-                    })}>
+                    <Button
+                        disabled={disabled}
+                        variant="ghost"
+                        onClick={handleClick}
+                        className={cn("p-0 m-0 w-12", {
+                            "text-muted/50": disabled
+                        })}
+                    >
                         {optimisticState ? activeIcon : inactiveIcon}
                     </Button>
                 </TooltipTrigger>
-                {!disabled &&
-                    <TooltipContent>{tooltip}</TooltipContent>
-                }
+                {!disabled && <TooltipContent>{tooltip}</TooltipContent>}
             </Tooltip>
         </TooltipProvider>
     );

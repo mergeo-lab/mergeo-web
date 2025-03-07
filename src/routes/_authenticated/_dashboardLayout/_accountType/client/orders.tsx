@@ -44,6 +44,7 @@ function OrdersPage() {
     } = UseSearchConfigStore();
     const { getAllSavedProducts, reset } = UseSearchStore();
     const savedProducts = getAllSavedProducts();
+    const [configSubmitted, setConfigSubmitted] = useState(false);
 
     function onTabChange(value: string) {
         const selectedTab = value as TabsEnum;
@@ -137,6 +138,7 @@ function OrdersPage() {
                 <ProductsTable
                     configCompleted={configDataSubmitted}
                     configCanceled={configCanceled}
+                    configSubmitted={configSubmitted}
                 />
             </div>
 
@@ -148,6 +150,8 @@ function OrdersPage() {
                     setTab(TabsEnum.LISTA_DE_PRODUCTOS);
                     setConfigDataSubmitted(true);
                     setConfigDialogOpen(false);
+                    setConfigSubmitted(prev => !prev);
+
                 }}
                 onLoading={() => { }}
                 openDialog={configDialogOpen}

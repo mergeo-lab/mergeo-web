@@ -1,6 +1,5 @@
 import { LocationSchema } from '@/lib/common/schemas/googleLocation.schema';
 import { ReplacementCriteria } from '@/lib/constants';
-import { BranchesSchema } from '@/lib/schemas/branches.schemas';
 import { CompanySchema } from '@/lib/schemas/company.schema';
 import * as z from 'zod';
 
@@ -46,6 +45,7 @@ const ProductSchema = z.object({
   family: z.string().optional(),
   image: z.string().optional(),
   units: z.number(),
+  providerId: z.string().optional(),
   manufacturer_name: z.string().optional(),
   manufacturer_id: z.string().optional(),
   manufacturer_country: z.string().optional(),

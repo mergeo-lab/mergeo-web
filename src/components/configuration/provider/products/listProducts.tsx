@@ -19,7 +19,7 @@ export default function ListProducts() {
                     <AddProductItem
                         className="shadow"
                         key={item.id}
-                        id={item.id}
+                        gtin={item.gtin}
                         name={item.name}
                         brand={item.brand}
                         netContent={item.net_content}

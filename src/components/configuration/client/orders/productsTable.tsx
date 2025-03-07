@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProductSearch } from "@/hooks/useProductsSearch";
-import UseSearchStore, { ProductWithQuantity } from "@/store/search.store";
+import UseSearchStore from "@/store/search.store";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { Heart, Image as ImageIcon, ThumbsDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,18 +12,27 @@ import { OptimisticToggleButton } from "@/components/optimisticToggleButton";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import UseCompanyStore from "@/store/company.store";
 import { addToBlackList, getFavorites, toggleFavorite } from "@/lib/products";
-import { useEffect, useState } from "react";
+import { memo, startTransition, useEffect, useRef, useState } from "react";
+import { ProductSchemaType } from "@/lib/schemas";
+import { PaginationCustom } from "@/components/pagination";
+import UseProviderInventoryPaginationState from "@/store/providerInventoryPagination.store";
 
 type Params = {
     configCompleted: boolean,
-    configCanceled: boolean
+    configCanceled: boolean,
+    configSubmitted: boolean,
 }
 
-export default function ProductsTable({ configCompleted = false, configCanceled }: Params) {
+export default function ProductsTable({ configCompleted = false, configCanceled, configSubmitted }: Params) {
     const { setConfigDialogOpen, searchParams, setConfigDataSubmitted } = UseSearchConfigStore();
     const { saveProduct, removeProduct, getAllSavedProducts } = UseSearchStore();
+    const { setPage, page } = UseProviderInventoryPaginationState()
+
     const { company } = UseCompanyStore()
     const queryClient = useQueryClient();
+    const [filteredProducts, setFilteredProducts] = useState<ProductSchemaType[]>([]);
+    const tableRef = useRef<HTMLDivElement>(null);
+
     const { mutate: toggleFavoriteMutation } = useMutation({
         mutationFn: ({ productId, newState }: { productId: string, newState: boolean }) => {
             if (!company?.id) {
@@ -31,10 +40,38 @@ export default function ProductsTable({ configCompleted = false, configCanceled 
             }
             return toggleFavorite(company.id, productId, newState);
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["favorites"] });
+        onMutate: async ({ productId, newState }) => {
+            // Cancel any ongoing refetches to prevent overwriting the optimistic update
+            await queryClient.cancelQueries({ queryKey: ["favorites", company?.id] });
+
+            // Snapshot the previous state
+            const previousFavorites = queryClient.getQueryData(["favorites", company?.id]);
+
+            // Optimistically update the UI inside startTransition
+            startTransition(() => {
+                queryClient.setQueryData(["favorites", company?.id], (oldFavorites: unknown) => {
+                    if (!oldFavorites) return [];
+                    return newState
+                        ? [...(oldFavorites as Array<{ id: string }>), { id: productId }] // Add to favorites
+                        : (oldFavorites as Array<{ id: string }>).filter((fav) => fav.id !== productId); // Remove from favorites
+                });
+            });
+
+            // Return the previous state to rollback if mutation fails
+            return { previousFavorites };
+        },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        onError: (_err, _variables, context) => {
+            // Rollback to the previous state if mutation fails
+            if (context?.previousFavorites) {
+                queryClient.setQueryData(["favorites", company?.id], context.previousFavorites);
+            }
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ["favorites", company?.id] });
         }
     });
+
     const { mutate: addProductToBlackList } = useMutation({
         mutationFn: ({ productId }: { productId: string }) => {
             if (!company?.id) {
@@ -42,21 +79,54 @@ export default function ProductsTable({ configCompleted = false, configCanceled 
             }
             return addToBlackList(company.id, productId);
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["favorites"] });
+        onMutate: async ({ productId }) => {
+            // Cancel any ongoing refetches to prevent overwriting the optimistic update
+            await queryClient.cancelQueries({ queryKey: ["blacklist"] });
+
+            // Snapshot the previous state
+            const previousProducts = filteredProducts;
+
+            // Optimistically update the UI by filtering out the blacklisted product
+            setFilteredProducts((prev) => prev.filter(product => product.id !== productId));
+
+            // Return the previous state to rollback if mutation fails
+            return { previousProducts };
+        },
+        onError: (_err, _variables, context) => {
+            // Rollback to the previous state if mutation fails
+            if (context?.previousProducts) {
+                setFilteredProducts(context.previousProducts);
+            }
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ["blacklist"] });
         }
     });
 
-    const { data, isLoading, error } = useProductSearch({
+    const scrollToTop = () => {
+        tableRef.current?.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    };
+
+    const { data, isLoading, error, setPagination, refetch } = useProductSearch({
         name: searchParams.name,
         brand: searchParams.brand,
+        branchId: searchParams.branchId,
     }, configCompleted);
 
-    const [filteredProducts, setFilteredProducts] = useState(data?.products || []);
+    useEffect(() => {
+        if (configCompleted && configSubmitted) {
+            refetch();
+        }
+    }, [configSubmitted, configCompleted, refetch]);
 
     useEffect(() => {
-        setFilteredProducts(data?.products || [])
-    }, [data])
+        if (!data) return;
+        setFilteredProducts(data?.products || []);
+    }, [data]);
+
 
     const { data: favorites = [], isLoading: favoritesLoading } = useQuery({
         queryKey: ['favorites', company?.id],
@@ -72,10 +142,8 @@ export default function ProductsTable({ configCompleted = false, configCanceled 
     });
 
 
-
-    function FavoriteButton({ productId }: { productId: string }) {
+    const FavoriteButton = memo(({ productId }: { productId: string }) => {
         const isFavorite = favorites.some(favorite => favorite.id === productId);
-
         return (
             <OptimisticToggleButton
                 itemId={productId}
@@ -88,11 +156,10 @@ export default function ProductsTable({ configCompleted = false, configCanceled 
                 tooltip="Agregar a favoritos"
             />
         );
-    }
+    });
 
-    function BlackListButton({ productId }: { productId: string }) {
+    const BlackListButton = memo(({ productId }: { productId: string }) => {
         const isFavorite = favorites.some(favorite => favorite.id === productId);
-
         return (
             <OptimisticToggleButton
                 disabled={isFavorite}
@@ -101,8 +168,6 @@ export default function ProductsTable({ configCompleted = false, configCanceled 
                 onToggle={async (id) => {
                     try {
                         await addProductToBlackList({ productId: id });
-
-                        // Filter out the blacklisted product from the list
                         setFilteredProducts((prev) => prev.filter(product => product.id !== id));
                     } catch (error) {
                         console.error("Error adding to blacklist", error);
@@ -113,8 +178,51 @@ export default function ProductsTable({ configCompleted = false, configCanceled 
                 tooltip="Agregar a Lista Negra"
             />
         );
-    }
+    });
 
+    const ProductRow = memo(({ product, onQuantityChange, savedProducts }: {
+        product: ProductSchemaType,
+        onQuantityChange: (product: ProductSchemaType, quantity: number) => void,
+        savedProducts: ProductSchemaType[]
+    }) => {
+        return (
+            <TableRow>
+                <TableCell className="p-0 m-0 ">
+                    <div className="flex justify-center flex-col gap-1">
+                        <FavoriteButton productId={product.id} />
+                        <BlackListButton productId={product.id} />
+                    </div>
+                </TableCell>
+                <TableCell className="p-0 m-0 py-2">
+                    <div className="flex justify-start items-center w-full">
+
+                        <div className="bg-border rounded p-4">
+                            <ImageIcon size={50} className="text-white" />
+                        </div>
+                        <div className="flex flex-col ml-2">
+                            <div className="font-semibold">{product.name}</div>
+                            <div className="text-muted font-thin text-sm">{product.brand}</div>
+                        </div>
+                    </div>
+                </TableCell>
+
+                <TableCell className={`text-center`}>{product.net_content}</TableCell>
+                <TableCell className={`text-center`}>{product.measurementUnit}</TableCell>
+                <TableCell className={`text-center`}>{product.price}</TableCell>
+                <TableCell className={`text-center`}>{
+                    product.net_content ? (+product.price * product.net_content) : 1}
+                </TableCell>
+                <TableCell className={`text-right`}>
+                    <div className="flex justify-end">
+                        <QuantitySelector
+                            defaultValue={savedProducts.find((item) => item.id === product.id)?.quantity}
+                            onChange={(quantity: number) => onQuantityChange(product, quantity)}
+                        />
+                    </div>
+                </TableCell>
+            </TableRow>
+        );
+    });
 
     if (!configCompleted && configCanceled) {
         return (
@@ -131,7 +239,7 @@ export default function ProductsTable({ configCompleted = false, configCanceled 
         )
     }
 
-    if (filteredProducts.length === 0) {
+    if (!isLoading && filteredProducts.length === 0) {
         return (
             <div className={
                 "w-full h-full flex flex-col gap-10 pt-10 items-center [&>p]:multi-[font-thin;text-secondary/80;text-center;leading-3;p-0;m-0]"}>
@@ -157,9 +265,10 @@ export default function ProductsTable({ configCompleted = false, configCanceled 
         )
     }
 
-    function handleProductChange(product: ProductWithQuantity, quantity: number) {
+    function handleProductChange(product: ProductSchemaType, quantity: number) {
         if (quantity === 0) {
-            removeProduct(product.id, product.providerId);
+            // Ensure providerId is defined before passing it
+            removeProduct(product.id, product.providerId || '');
         } else {
             saveProduct(product, quantity);
         }
@@ -170,7 +279,7 @@ export default function ProductsTable({ configCompleted = false, configCanceled 
     return (
         <div className="relative">
             {/* <div className="h-1 w-full bg-transparent shadow-sm"></div> */}
-            <div className="h-[calc(100vh-220px)] overflow-y-auto px-2">
+            <div ref={tableRef} className="h-[calc(100vh-320px)] overflow-y-auto px-2">
                 <Table>
                     <TableHeader className="sticky top-0 bg-white z-10 shadow-sm">
                         <TableRow className="hover:bg-white">
@@ -188,40 +297,12 @@ export default function ProductsTable({ configCompleted = false, configCanceled 
                             isLoading || favoritesLoading || !configCompleted
                                 ? loadingIndicator()
                                 : (
-                                    filteredProducts && filteredProducts.map((product: ProductWithQuantity) => (
-                                        <TableRow key={product.id}>
-                                            <TableCell className="p-0 m-0 ">
-                                                <div className="flex justify-center flex-col gap-1">
-                                                    <FavoriteButton productId={product.id} />
-                                                    <BlackListButton productId={product.id} />
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="p-0 m-0 py-2">
-                                                <div className="flex justify-start items-center w-full">
-
-                                                    <div className="bg-border rounded p-4">
-                                                        <ImageIcon size={50} className="text-white" />
-                                                    </div>
-                                                    <div className="flex flex-col ml-2">
-                                                        <div className="font-semibold">{product.name}</div>
-                                                        <div className="text-muted font-thin text-sm">{product.brand}</div>
-                                                    </div>
-                                                </div>
-                                            </TableCell>
-
-                                            <TableCell className={`text-center`}>{product.net_content}</TableCell>
-                                            <TableCell className={`text-center`}>{product.measurementUnit}</TableCell>
-                                            <TableCell className={`text-center`}>{product.price}</TableCell>
-                                            <TableCell className={`text-center`}>{
-                                                product.net_content ? (+product.price * product.net_content) : 1}</TableCell>
-                                            <TableCell className={`text-right`}>
-                                                <div className="flex justify-end">
-                                                    <QuantitySelector
-                                                        defaultValue={getAllSavedProducts().find((item: ProductWithQuantity) => item.id === product.id)?.quantity}
-                                                        onChange={(quantity: number) => handleProductChange(product, quantity)} />
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
+                                    filteredProducts && filteredProducts.map((product: ProductSchemaType) => (
+                                        <ProductRow
+                                            key={product.id}
+                                            product={product}
+                                            onQuantityChange={(product, quantity) => handleProductChange(product, quantity)}
+                                            savedProducts={getAllSavedProducts()} />
                                     ))
                                 )
 
@@ -229,6 +310,31 @@ export default function ProductsTable({ configCompleted = false, configCanceled 
                     </TableBody>
                 </Table>
             </div>
+            {data && data.totalPages > 1 &&
+                <PaginationCustom
+                    className="mt-10"
+                    currentPage={page}
+                    prev={page > 1}
+                    next={page < data.totalPages}
+                    pages={data.totalPages}
+                    onPageBack={() => {
+                        setPagination(prev => ({ ...prev, page: +data.currentPage - 1 }));
+                        setPage(page - 1);
+                        scrollToTop();
+                    }}
+                    onPageForward={() => {
+                        setPagination(prev => ({ ...prev, page: +data.currentPage + 1 }));
+                        setPage(page + 1);
+                        scrollToTop();
+
+                    }}
+                    onPageChange={(page: number) => {
+                        setPagination(prev => ({ ...prev, page }));
+                        setPage(page);
+                        scrollToTop();
+                    }}
+                />
+            }
         </div>
     )
 }

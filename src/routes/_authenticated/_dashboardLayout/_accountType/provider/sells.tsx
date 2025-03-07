@@ -13,6 +13,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { Eye } from 'lucide-react';
 import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { closestIndexTo } from 'date-fns';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/sells')({
   component: () => <Sells />
@@ -72,7 +73,7 @@ export default function Sells() {
                 {isLoading
                   ? (
                     Array.from({ length: 6 }).map((_, index) => (
-                      <TableRow className="hover:bg-transparent border-none">
+                      <TableRow key={index} className="hover:bg-transparent border-none">
                         <TableCell colSpan={6} className="h-0 p-2 border-none hover:none ">
                           <Skeleton key={index} className="h-14 w-full opacity-10 bg-muted/30 rounded-sm" />
                         </TableCell>

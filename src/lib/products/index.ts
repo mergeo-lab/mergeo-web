@@ -418,3 +418,28 @@ export async function addToBlackList(
     throw error;
   }
 }
+
+export async function getBlackList(
+  companyId: string
+): Promise<ProductSchemaType[]> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${PRODUCT_BLACKLIST}/${companyId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data.products;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+    throw error;
+  }
+}

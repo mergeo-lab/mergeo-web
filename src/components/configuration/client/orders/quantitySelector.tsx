@@ -2,40 +2,51 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Minus, Plus } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
+import debounce from 'lodash/debounce';
 
 type Props = {
     defaultValue?: number
     onChange: (quantity: number) => void
 }
 
-export default function QuantitySelector({ defaultValue, onChange }: Props) {
+export default memo(function QuantitySelector({ defaultValue, onChange }: Props) {
     const [quantity, setQuantity] = useState(defaultValue || 0);
     const [inputQuantity, setInputQuantity] = useState(defaultValue || 0);
     const [showControls, setShowControls] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    function handleQuantityChange(add: boolean = true) {
-        const newQuantity = add ? quantity + 1 : quantity - 1;
-        setInputQuantity(newQuantity);
-        onChange(newQuantity);
-    }
+    // Debounce the onChange callback
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const debouncedOnChange = useCallback(
+        debounce((value: number) => {
+            onChange(value);
+        }, 100),
+        [onChange]
+    );
 
-    function changeOnInput(e: React.ChangeEvent<HTMLInputElement>) {
+    const handleQuantityChange = useCallback((add: boolean = true) => {
+        const newQuantity = add ? quantity + 1 : quantity - 1;
+        setQuantity(newQuantity);
+        setInputQuantity(newQuantity);
+        debouncedOnChange(newQuantity);
+    }, [quantity, debouncedOnChange]);
+
+    const changeOnInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         let newQuantity = parseInt(e.target.value);
         if (isNaN(newQuantity)) {
             newQuantity = 0;
         }
         setInputQuantity(newQuantity);
-    }
+    }, []);
 
-    function handleBlur() {
+    const handleBlur = useCallback(() => {
         setQuantity(inputQuantity);
-        onChange(inputQuantity);
-    }
+        debouncedOnChange(inputQuantity);
+    }, [inputQuantity, debouncedOnChange]);
 
     useEffect(() => {
-        if (inputRef.current && quantity == 0) {
+        if (inputRef.current && quantity === 0) {
             inputRef.current.focus();
         }
     }, [quantity]);
@@ -45,9 +56,17 @@ export default function QuantitySelector({ defaultValue, onChange }: Props) {
         setInputQuantity(defaultValue || 0);
     }, [defaultValue]);
 
+    // Cleanup debounce on unmount
+    useEffect(() => {
+        return () => {
+            debouncedOnChange.cancel();
+        };
+    }, [debouncedOnChange]);
+
     if (quantity >= 1) {
         return (
-            <div onMouseOver={() => setShowControls(true)}
+            <div
+                onMouseEnter={() => setShowControls(true)}
                 onMouseLeave={() => setShowControls(false)}
                 className="flex w-fit h-fit rounded border border-border justify-between items-center"
             >
@@ -57,12 +76,11 @@ export default function QuantitySelector({ defaultValue, onChange }: Props) {
                     onClick={() => handleQuantityChange(false)}
                     size='xs'>
                     <Minus size={10} />
-
                 </Button>
                 <Input
                     ref={inputRef}
-                    onBlur={() => handleBlur()}
-                    onInput={changeOnInput}
+                    onBlur={handleBlur}
+                    onChange={changeOnInput}
                     value={inputQuantity}
                     className="border-none h-6 p-0 w-10 text-center zIndex-10"
                 />
@@ -74,9 +92,10 @@ export default function QuantitySelector({ defaultValue, onChange }: Props) {
                     <Plus size={10} />
                 </Button>
             </div>
-        )
+        );
     }
+
     return (
         <Button onClick={() => handleQuantityChange(true)} size='xs'>Agregar</Button>
-    )
-}
+    );
+});

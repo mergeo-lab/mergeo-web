@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useEffect, useState } from "react";
+import { JSX, useEffect, useState } from "react";
 import { DeliveryTimeSelector } from "@/components/configuration/client/orders/searchConfig/deliveryTimeSelector";
 import { DateRange } from "react-day-picker";
 import { BranchSlector } from "@/components/configuration/client/orders/searchConfig/branchsSelector";

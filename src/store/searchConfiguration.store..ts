@@ -10,7 +10,7 @@ type PickUpLocationArea = {
 };
 
 type SearchConfigState = {
-  searchParams: { name: string; brand: string };
+  searchParams: { name: string; brand: string; branchId: string };
   deliveryTime: DateRange;
   branch: BranchesSchemaType | null;
   pickUp: boolean;
@@ -24,7 +24,11 @@ type SearchConfigState = {
   configDialogOpen: boolean;
   configDataSubmitted: boolean;
   shouldResetConfig: boolean;
-  setSearchParams: (params: { name?: string; brand?: string }) => void;
+  setSearchParams: (params: {
+    name?: string;
+    brand?: string;
+    branchId?: string;
+  }) => void;
   setShouldResetConfig: (value: boolean) => void;
   setConfigDataSubmitted: (value: boolean) => void;
   setConfigDialogOpen: (open: boolean) => void;
@@ -53,7 +57,7 @@ type SearchConfigState = {
 };
 
 const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
-  searchParams: { name: '', brand: '' },
+  searchParams: { name: '', brand: '', branchId: '' },
   configDialogOpen: false,
   deliveryTime: { from: new Date(), to: addDays(new Date(), 1) },
   branch: null,
@@ -74,11 +78,16 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
   configDataSubmitted: false,
   shouldResetConfig: false,
 
-  setSearchParams: (params: { name?: string; brand?: string }) => {
+  setSearchParams: (params: {
+    name?: string;
+    brand?: string;
+    branchId?: string;
+  }) => {
     set((state) => ({
       searchParams: {
         name: params.name ?? state.searchParams.name,
         brand: params.brand ?? state.searchParams.brand,
+        branchId: params.branchId ?? state.searchParams.branchId,
       },
     }));
   },
@@ -173,7 +182,7 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
   // Reset function to clear all saved data
   resetConfig: () =>
     set({
-      searchParams: { name: '', brand: '' },
+      searchParams: { name: '', brand: '', branchId: '' },
       configDialogOpen: true,
       deliveryTime: { from: new Date(), to: addDays(new Date(), 1) },
       branch: null,

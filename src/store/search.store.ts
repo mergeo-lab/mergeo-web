@@ -1,4 +1,4 @@
-import { SearchListProductType } from '@/lib/schemas';
+import { ProductSchemaType, SearchListProductType } from '@/lib/schemas';
 import { create } from 'zustand';
 
 type SavedProducts = {
@@ -14,25 +14,7 @@ export type CartProductQuantity = Pick<
   'id' | 'providerId' | 'quantity'
 >;
 
-export type CartProduct = {
-  id: string;
-  name: string;
-  measurementUnit: string;
-  unitConversionFactor: number;
-  price: string;
-  providerId: string;
-  brand: string;
-  description?: string;
-  variety?: string;
-  net_content?: number;
-  segment?: string;
-  family?: string;
-  image?: string;
-  units?: number;
-  manufacturer_name?: string;
-  manufacturer_id?: string;
-  manufacturer_country?: string;
-};
+export type CartProduct = ProductSchemaType;
 
 type SearchState = {
   activeSearchItem: SearchListProductType | null;

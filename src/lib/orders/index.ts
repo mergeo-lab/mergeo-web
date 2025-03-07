@@ -8,7 +8,13 @@ import {
 import { ProductWithQuantity, CartProductQuantity } from '@/store/search.store';
 import { AxiosResponse, isAxiosError } from 'axios';
 import { ReplacementCriteria } from '@/lib/constants';
-import { OrderSchemaType, PreOrderSchemaType } from '@/lib/schemas';
+import {
+  OrderSchemaType,
+  PaginationSort,
+  PaginationType,
+  PreOrderSchemaType,
+  ProductSchemaType,
+} from '@/lib/schemas';
 import { BuyOrderSchemaType } from '@/lib/schemas/orders.schema';
 import { SellProductSchemaType } from '@/lib/schemas/sell.schema';
 
@@ -28,8 +34,14 @@ export type SearchParams = {
 
 export async function getProducts(
   companyId: string,
-  searchParams: SearchParams
-): Promise<{ count: number; products: ProductWithQuantity[] }> {
+  searchParams: SearchParams,
+  pagination: PaginationType
+): Promise<{
+  products: ProductSchemaType[];
+  currentPage: number;
+  total: number;
+  totalPages: number;
+}> {
   const {
     branchId,
     expectedDeliveryStartDay,
@@ -52,6 +64,12 @@ export async function getProducts(
     endHour,
   };
 
+  // pagination
+  params.page = pagination.page || 1;
+  params.pageSize = pagination.pageSize || 10;
+  params.sortOrder = pagination.sortOrder || PaginationSort.ASC;
+  if (pagination.orderBy) params.orderBy = pagination.orderBy;
+
   // Add optional parameters if they are defined
   if (name) params.name = name;
   if (brand) params.brand = brand;
@@ -59,6 +77,8 @@ export async function getProducts(
   if (pickUpLat !== undefined) params.pickUpLat = pickUpLat;
   if (pickUpLng !== undefined) params.pickUpLng = pickUpLng;
   if (pickUpRadius !== undefined) params.pickUpRadius = pickUpRadius;
+
+  console.log('BUSCANDO PRODUCTOS');
 
   try {
     const { data: response }: AxiosResponse = await axiosPrivate.get(
@@ -73,19 +93,7 @@ export async function getProducts(
 
     console.log('SEARCH RESPONSE ::::: ', response);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const products = response.data.products.map((product: any) => {
-      const { company, ...rest } = product; // Destructure to exclude 'company'
-      return {
-        providerId: company.id, // Extracting the company ID
-        ...rest, // Spread remaining properties
-      };
-    });
-
-    return {
-      count: response.count,
-      products: products,
-    };
+    return response.data;
   } catch (error) {
     if (isAxiosError(error)) {
       if (error.response?.data.statusCode === 400) {

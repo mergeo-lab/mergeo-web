@@ -2,9 +2,10 @@ import React, { memo, useCallback, useEffect, useState } from 'react';
 import { DashboardHeader, SideBarMenu } from '@/components/dashboard';
 import UseCompanyStore from '@/store/company.store';
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router';
-import { Bell, CircleHelp, Settings, ScrollText, Package, Archive, WalletCards, FileSearch, ShoppingCart } from 'lucide-react';
+import { Bell, CircleHelp, Settings, ScrollText, Package, Archive, WalletCards, FileSearch, ShoppingCart, Heart, ThumbsDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import UseProviderInventoryPaginationState from '@/store/providerInventoryPagination.store';
+import { cn } from '@/lib/utils';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout')({
     component: () => <DashboardLayout />,
@@ -15,12 +16,17 @@ const iconProps = {
     className: 'text-primary'
 };
 
-function SubLink({ to, texts, search }: { to: string, texts: string[], search?: Record<string, unknown> }) {
+function SubLink({ to, texts, search }: { to?: string | undefined, texts: string[], search?: Record<string, unknown> }) {
     const { navigate } = useRouter()
     return (
         <p>
-            <Button variant='link' onClick={() => navigate({ to: to, search: search })} className='text-md hover:no-underline leading-0 py-0 px-2 '>
-                <span className='border-b-[1px] border-secondary/60 hover:multi-[border-primary;text-primary]'>{texts[0]}</span>
+            <Button variant='link' onClick={() => to && navigate({ to: to, search: search })} className={cn('text-md hover:no-underline leading-0 py-0 px-2', {
+                'no-underline hover:text-secondary cursor-default': to === undefined
+            })}>
+                <span className={cn('border-b-[1px]', {
+                    'border-secondary/60 hover:multi-[border-primary;text-primary]': to,
+                    'border-none': !to
+                })}>{texts[0]}</span>
             </Button>{' '}
             <span className='text-base border-l-2 border-muted pl-2 font-light'>{texts[1]}</span>
         </p>
@@ -48,7 +54,19 @@ const getRoutTitles = (currentPage: number) => {
             text: <SubLink to={'/client/proOrders'} texts={['Pedidos', 'Detalle del pedido']} />,
             icon: <Archive {...iconProps} />
         },
-        '/client/searchLists': { text: 'Mis Listas', icon: <ScrollText {...iconProps} /> },
+
+        '/client/lists': {
+            text: <SubLink texts={['Mis Listas', 'Productos']} />,
+            icon: <ScrollText {...iconProps} />
+        },
+        '/client/lists/favorites': {
+            text: <SubLink texts={['Mis Listas', 'Favoritos']} />,
+            icon: <Heart {...iconProps} />
+        },
+        '/client/lists/blackList': {
+            text: <SubLink texts={['Mis Listas', 'Lista Negra']} />,
+            icon: <ThumbsDown {...iconProps} />
+        },
 
         '/provider/proOrders': { text: 'Pedidos', icon: <Archive {...iconProps} /> },
         '/provider/proOrders/$orderId': {

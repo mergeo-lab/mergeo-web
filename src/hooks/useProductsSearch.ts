@@ -2,45 +2,101 @@ import { useQuery } from '@tanstack/react-query';
 import UseCompanyStore from '@/store/company.store';
 import UseSearchConfigStore from '@/store/searchConfiguration.store.';
 import { getProducts, SearchParams } from '@/lib/orders';
+import { useEffect, useState } from 'react';
+import {
+  PaginationSort,
+  PaginationType,
+  ProductSchemaType,
+} from '@/lib/schemas';
 
 export function useProductSearch(
   searchParams: Partial<SearchParams>,
   configCompleted: boolean
 ) {
   const { company } = UseCompanyStore();
-  const { getAllConfig } = UseSearchConfigStore();
+  const { getAllConfig, resetConfig } = UseSearchConfigStore();
   const config = getAllConfig();
-
-  return useQuery({
-    queryKey: ['products', company?.id, searchParams.name, searchParams.brand],
-    queryFn: ({ queryKey }) => {
-      const companyId = queryKey[1];
-
-      if (!companyId) {
-        return Promise.reject(new Error('Company ID is undefined'));
-      }
-      // There are somoe parameters that are required to get the products
-      // that are comming from the search configuration
-      // the other params are optional
-      return getProducts(companyId, {
-        branchId:
-          config.branch && config.branch !== null ? config.branch.id : '',
-        expectedDeliveryStartDay:
-          config.deliveryTime &&
-          config.deliveryTime?.from?.toISOString().split('T')[0],
-        expectedDeliveryEndDay:
-          config.deliveryTime.to &&
-          config?.deliveryTime?.to.toISOString().split('T')[0],
-        startHour: '00',
-        endHour: '2400',
-        name: searchParams.name ?? '',
-        brand: searchParams.brand,
-        isPickUp: config.pickUp,
-        pickUpLat: config.pickUpLocation.location.latitude,
-        pickUpLng: config.pickUpLocation.location.longitude,
-        pickUpRadius: config.pickUpLocation.radius,
-      });
-    },
-    enabled: !!company?.id || configCompleted,
+  const [pagination, setPagination] = useState<PaginationType>({
+    page: 1,
+    pageSize: 20,
+    orderBy: 'created',
+    sortOrder: PaginationSort.DESC,
   });
+
+  useEffect(() => {
+    console.log('pagination changes: ', pagination);
+  }, [pagination]);
+
+  const { data, isLoading, isError, error, refetch } = useQuery<{
+    products: ProductSchemaType[];
+    currentPage: number;
+    total: number;
+    totalPages: number;
+  }>({
+    queryKey: ['client-products', { ...searchParams, pagination }],
+    queryFn: async () => {
+      const companyId = company?.id;
+      const branchId = config.branch?.id;
+
+      const result =
+        !searchParams || !companyId
+          ? {
+              products: [],
+              currentPage: 1,
+              total: 0,
+              totalPages: 0,
+            }
+          : await getProducts(
+              companyId,
+              {
+                branchId: branchId,
+                expectedDeliveryStartDay:
+                  config.deliveryTime &&
+                  config.deliveryTime?.from?.toISOString().split('T')[0],
+                expectedDeliveryEndDay:
+                  config.deliveryTime.to &&
+                  config?.deliveryTime?.to.toISOString().split('T')[0],
+                startHour: '00',
+                endHour: '2400',
+                name: searchParams.name ?? '',
+                brand: searchParams.brand,
+                isPickUp: config.pickUp,
+                pickUpLat: config.pickUpLocation.location.latitude,
+                pickUpLng: config.pickUpLocation.location.longitude,
+                pickUpRadius: config.pickUpLocation.radius,
+              },
+              pagination
+            );
+
+      console.log('RESULT: ', result);
+
+      return {
+        products: result.products,
+        currentPage: result.currentPage || 1,
+        total: result.total || 0,
+        totalPages: result.totalPages,
+      };
+    },
+    enabled: !!company?.id || !!searchParams.branchId || configCompleted,
+  });
+
+  const resetSearch = () => {
+    resetConfig();
+    setPagination({
+      page: 1,
+      pageSize: 10,
+      orderBy: 'created',
+      sortOrder: PaginationSort.DESC,
+    });
+  };
+
+  return {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    resetSearch,
+    setPagination,
+  };
 }
