@@ -9,12 +9,10 @@ import {
   ProductSchemaType,
 } from '@/lib/schemas';
 
-export function useProductSearch(
-  searchParams: Partial<SearchParams>,
-  configCompleted: boolean
-) {
+export function useProductSearch(searchParams: Partial<SearchParams>) {
   const { company } = UseCompanyStore();
-  const { getAllConfig, resetConfig } = UseSearchConfigStore();
+  const { getAllConfig, resetConfig, getConfigDone } = UseSearchConfigStore();
+  const configDone = getConfigDone();
   const config = getAllConfig();
   const [pagination, setPagination] = useState<PaginationType>({
     page: 1,
@@ -77,7 +75,7 @@ export function useProductSearch(
         totalPages: result.totalPages,
       };
     },
-    enabled: !!company?.id || !!searchParams.branchId || configCompleted,
+    enabled: !!company?.id && configDone,
   });
 
   const resetSearch = () => {

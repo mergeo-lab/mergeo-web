@@ -13,6 +13,7 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as LandingImport } from './routes/landing'
 import { Route as FaqImport } from './routes/faq'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as AuthLayoutImport } from './routes/_authLayout'
@@ -58,6 +59,11 @@ const AuthenticatedDashboardLayoutAboutLazyImport = createFileRoute(
 )()
 
 // Create/Update Routes
+
+const LandingRoute = LandingImport.update({
+  path: '/landing',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const FaqRoute = FaqImport.update({
   path: '/faq',
@@ -310,6 +316,13 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqImport
+      parentRoute: typeof rootRoute
+    }
+    '/landing': {
+      id: '/landing'
+      path: '/landing'
+      fullPath: '/landing'
+      preLoaderRoute: typeof LandingImport
       parentRoute: typeof rootRoute
     }
     '/_authLayout/forgotPassword': {
@@ -592,6 +605,7 @@ export const routeTree = rootRoute.addChildren({
       }),
   }),
   FaqRoute,
+  LandingRoute,
 })
 
 /* prettier-ignore-end */
@@ -604,7 +618,8 @@ export const routeTree = rootRoute.addChildren({
       "children": [
         "/_authLayout",
         "/_authenticated",
-        "/faq"
+        "/faq",
+        "/landing"
       ]
     },
     "/_authLayout": {
@@ -624,6 +639,9 @@ export const routeTree = rootRoute.addChildren({
     },
     "/faq": {
       "filePath": "faq.tsx"
+    },
+    "/landing": {
+      "filePath": "landing.tsx"
     },
     "/_authLayout/forgotPassword": {
       "filePath": "_authLayout/forgotPassword.tsx",

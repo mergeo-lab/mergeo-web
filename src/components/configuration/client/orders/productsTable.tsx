@@ -114,7 +114,7 @@ export default function ProductsTable({ configCompleted = false, configCanceled,
         name: searchParams.name,
         brand: searchParams.brand,
         branchId: searchParams.branchId,
-    }, configCompleted);
+    });
 
     useEffect(() => {
         if (configCompleted && configSubmitted) {

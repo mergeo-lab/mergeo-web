@@ -42,6 +42,7 @@ type SearchConfigState = {
   setReplacementCriteria: (criteria: ReplacementCriteria) => void;
   setCompulsa: (value: boolean) => void;
   validateFields: () => void;
+  getConfigDone: () => boolean;
   getAllConfig: () => Pick<
     SearchConfigState,
     | 'deliveryTime'
@@ -157,6 +158,10 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
 
   setConfigDataSubmitted: (value: boolean) =>
     set(() => ({ configDataSubmitted: value })),
+
+  getConfigDone: () => {
+    return get().isValid;
+  },
 
   getAllConfig: () => {
     const {
