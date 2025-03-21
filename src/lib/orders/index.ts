@@ -30,6 +30,7 @@ export type SearchParams = {
   pickUpLat?: number;
   pickUpLng?: number;
   pickUpRadius?: number;
+  onlyFavorites?: boolean;
 };
 
 export async function getProducts(
@@ -54,6 +55,7 @@ export async function getProducts(
     pickUpLat,
     pickUpLng,
     pickUpRadius,
+    onlyFavorites,
   } = searchParams;
 
   const params: Record<string, unknown> = {
@@ -77,8 +79,10 @@ export async function getProducts(
   if (pickUpLat !== undefined) params.pickUpLat = pickUpLat;
   if (pickUpLng !== undefined) params.pickUpLng = pickUpLng;
   if (pickUpRadius !== undefined) params.pickUpRadius = pickUpRadius;
+  if (onlyFavorites !== undefined) params.onlyFavorites = onlyFavorites;
 
-  console.log('BUSCANDO PRODUCTOS');
+  console.log('BUSCANDO PRODUCTOS', onlyFavorites);
+  console.log('BUSCANDO PRODUCTOS', params);
 
   try {
     const { data: response }: AxiosResponse = await axiosPrivate.get(

@@ -42,7 +42,10 @@ export function OrderConfig(
 
     const [open, setOpen] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
-    const { deliveryTime, setDeliveryTime, setBranch, setPickUp, setPickUpDialog, pickUp, setPickUpLocation, pickUpLocation, branch, selectList, removeList, listId, setReplacementCriteria, replacementCriteria, isValid, resetConfig, shouldResetConfig, setShouldResetConfig } = UseSearchConfigStore();
+    const { deliveryTime, setDeliveryTime, setBranch, setPickUp, setPickUpDialog, pickUp, setPickUpLocation, pickUpLocation, branch, selectList, removeList, listId, setReplacementCriteria, replacementCriteria, resetConfig, shouldResetConfig, setShouldResetConfig } = UseSearchConfigStore();
+
+    const [time, setTime] = useState<DateRange>();
+    const [selcetedBranch, setSelectedBranch] = useState<BranchesSchemaType | null>(null);
 
     // when we open we load and reset the data
     // this is to avoid a flicker in the main screen
@@ -53,6 +56,7 @@ export function OrderConfig(
                 setShouldResetConfig(false);
                 resetConfig();
                 setIsLoading(false);
+                setSelectedBranch(null);
             }, 300)
         } else {
             setIsLoading(false);
@@ -61,6 +65,9 @@ export function OrderConfig(
     }, [open])
 
     async function onSubmit() {
+        time && setDeliveryTime(time);
+        selcetedBranch && setBranch(selcetedBranch);
+
         onLoading();
         callback();
         setOpen(false);
@@ -111,7 +118,7 @@ export function OrderConfig(
                                         defaultValue={deliveryTime}
                                         onDateChange={(newDate: DateRange) => {
                                             if (newDate.from && newDate.to) {
-                                                setDeliveryTime({ from: newDate.from, to: newDate.to });
+                                                setTime({ from: newDate.from, to: newDate.to });
                                             }
                                         }}
                                     />
@@ -122,7 +129,7 @@ export function OrderConfig(
                                 <div className="border rounded border-border p-5">
                                     <BranchSlector
                                         defaultValue={branch?.id ?? ""}
-                                        onChange={(branch: BranchesSchemaType) => setBranch(branch)}
+                                        onChange={(branch: BranchesSchemaType) => setSelectedBranch(branch)}
                                     />
                                 </div>
                             </div>
@@ -141,7 +148,7 @@ export function OrderConfig(
                                 </Label>
                                 <div className="border rounded border-border p-2 flex gap-4 relative overflow-hidden">
                                     <div className={cn("absolute top-0 right-0 bg-black/10 w-full h-full transition-all pointer-events-none", {
-                                        "opacity-0 pointer-events-all": branch !== null
+                                        "opacity-0 pointer-events-all": selcetedBranch !== null
                                     })}></div>
                                     <div onClick={() => pickUp == true ? setPickUpDialog(true) : ""}
                                         className={cn("bg-border rounded p-2 w-14 flex justify-center items-center",
@@ -153,16 +160,16 @@ export function OrderConfig(
                                     </div>
                                     <div className="flex flex-col justify-center ">
                                         <div className="flex items-center space-x-2">
-                                            <Switch defaultChecked={pickUp} disabled={branch === null} onClick={() => {
-                                                if (branch === null) return
+                                            <Switch defaultChecked={pickUp} disabled={selcetedBranch === null} onClick={() => {
+                                                if (selcetedBranch === null) return
                                                 // we set the location of the selected branch on the map to select the pikup radius
                                                 if (pickUp) {
                                                     setPickUpLocation({ ...pickUpLocation, radius: 1 })
                                                 } else {
                                                     setPickUpLocation({
                                                         location: {
-                                                            latitude: branch?.address?.location?.coordinates[1],
-                                                            longitude: branch?.address?.location?.coordinates[0]
+                                                            latitude: selcetedBranch?.address?.location?.coordinates[1] ?? 0,
+                                                            longitude: selcetedBranch?.address?.location?.coordinates[0] ?? 0
                                                         },
                                                         radius: pickUpLocation.radius || 1
                                                     })
@@ -217,8 +224,8 @@ export function OrderConfig(
                     <DialogClose className="w-40">
                         <Button onClick={onCancel} variant="secondary" type="button" className="w-full">Cancelar</Button>
                     </DialogClose>
-                    <DialogClose className="w-40" disabled={!isValid}>
-                        <Button disabled={!isValid} onClick={onSubmit} type="button" className="w-full">Guardar</Button>
+                    <DialogClose className="w-40" disabled={!time && !selcetedBranch}>
+                        <Button disabled={!time && !selcetedBranch} onClick={onSubmit} type="button" className="w-full">Guardar</Button>
                     </DialogClose>
                 </DialogFooter>
             </DialogContent>

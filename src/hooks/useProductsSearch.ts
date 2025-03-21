@@ -9,17 +9,20 @@ import {
   ProductSchemaType,
 } from '@/lib/schemas';
 
+export const defaultPagination = {
+  page: 1,
+  pageSize: 20,
+  orderBy: 'created',
+  sortOrder: PaginationSort.DESC,
+};
+
 export function useProductSearch(searchParams: Partial<SearchParams>) {
   const { company } = UseCompanyStore();
   const { getAllConfig, resetConfig, getConfigDone } = UseSearchConfigStore();
   const configDone = getConfigDone();
   const config = getAllConfig();
-  const [pagination, setPagination] = useState<PaginationType>({
-    page: 1,
-    pageSize: 20,
-    orderBy: 'created',
-    sortOrder: PaginationSort.DESC,
-  });
+  const [pagination, setPagination] =
+    useState<PaginationType>(defaultPagination);
 
   useEffect(() => {
     console.log('pagination changes: ', pagination);
@@ -31,7 +34,7 @@ export function useProductSearch(searchParams: Partial<SearchParams>) {
     total: number;
     totalPages: number;
   }>({
-    queryKey: ['client-products', { ...searchParams, pagination }],
+    queryKey: ['client-products', { ...searchParams, pagination }, 'favorites'],
     queryFn: async () => {
       const companyId = company?.id;
       const branchId = config.branch?.id;
@@ -62,6 +65,7 @@ export function useProductSearch(searchParams: Partial<SearchParams>) {
                 pickUpLat: config.pickUpLocation.location.latitude,
                 pickUpLng: config.pickUpLocation.location.longitude,
                 pickUpRadius: config.pickUpLocation.radius,
+                onlyFavorites: searchParams.onlyFavorites,
               },
               pagination
             );
@@ -96,5 +100,6 @@ export function useProductSearch(searchParams: Partial<SearchParams>) {
     refetch,
     resetSearch,
     setPagination,
+    pagination,
   };
 }

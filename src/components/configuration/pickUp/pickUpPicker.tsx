@@ -19,7 +19,7 @@ type Props = {
     newEntry?: {
         title?: string,
         subTitle?: string,
-        icon?: JSX.Element,
+        icon?: React.ReactElement,
     },
     onLoading?: () => void,
     callback?: () => void,

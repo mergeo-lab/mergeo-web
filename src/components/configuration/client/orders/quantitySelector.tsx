@@ -68,7 +68,7 @@ export default memo(function QuantitySelector({ defaultValue, onChange }: Props)
             <div
                 onMouseEnter={() => setShowControls(true)}
                 onMouseLeave={() => setShowControls(false)}
-                className="flex w-fit h-fit rounded border border-border justify-between items-center"
+                className="flex w-[112px] h-fit rounded border border-border justify-between items-center"
             >
                 <Button
                     className={cn('transition-opacity duration-300 ease-out opacity-1 zIndex-20', { 'opacity-0': !showControls })}
@@ -96,6 +96,6 @@ export default memo(function QuantitySelector({ defaultValue, onChange }: Props)
     }
 
     return (
-        <Button onClick={() => handleQuantityChange(true)} size='xs'>Agregar</Button>
+        <Button onClick={() => handleQuantityChange(true)} size='xs' className="w-[112px]">Agregar</Button>
     );
 });

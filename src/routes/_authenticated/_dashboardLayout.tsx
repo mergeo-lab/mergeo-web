@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { JSX, memo, useCallback, useEffect, useState } from 'react';
 import { DashboardHeader, SideBarMenu } from '@/components/dashboard';
 import UseCompanyStore from '@/store/company.store';
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router';

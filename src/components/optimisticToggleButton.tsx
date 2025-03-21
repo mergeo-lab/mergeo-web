@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { useOptimistic } from "react";
+import { useOptimistic, useTransition } from "react";
 
 interface OptimisticToggleButtonProps<T> {
     itemId: T;
@@ -23,12 +23,14 @@ export function OptimisticToggleButton<T>({
     tooltip,
 }: OptimisticToggleButtonProps<T>) {
     const [optimisticState, setOptimisticState] = useOptimistic(defaultState);
+    const [, startTransition] = useTransition(); // using useTransition to handle the state change transition
 
     async function handleClick() {
-        setOptimisticState((prev) => !prev); // Update optimistically
-
+        startTransition(() => {
+            setOptimisticState((prev) => !prev); // Instantly toggle the state
+        });
         try {
-            await onToggle(itemId, !optimisticState);
+            await onToggle(itemId, !optimisticState); // Call mutation with the new state
         } catch {
             setOptimisticState(defaultState); // Rollback on failure
         }

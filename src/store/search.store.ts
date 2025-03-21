@@ -21,7 +21,8 @@ type SearchState = {
   savedProducts: SavedProducts;
   setActiveSearchItem: (item: SearchListProductType | null) => void;
   saveProduct: (product: CartProduct, quantity: number) => void;
-  removeProduct: (productId: string, providerId: string) => void;
+  removeProduct: (productId: string) => void;
+  getSavedProductById: (id: string) => ProductWithQuantity | undefined;
   getAllSavedProducts: () => ProductWithQuantity[];
   reset: () => void;
 };
@@ -61,7 +62,7 @@ const UseSearchStore = create<SearchState>((set, get) => ({
     });
   },
 
-  removeProduct: (productId: string, providerId: string) => {
+  removeProduct: (productId: string) => {
     const { activeSearchItem, savedProducts } = get();
 
     // Use the active search ID or default to "generic"
@@ -70,7 +71,7 @@ const UseSearchStore = create<SearchState>((set, get) => ({
 
     // Filter out the product with the matching id and providerId
     const updatedProductsArray = productsArray.filter(
-      (p) => !(p.id === productId && p.providerId === providerId)
+      (p) => !(p.id === productId)
     );
 
     set({
@@ -79,6 +80,13 @@ const UseSearchStore = create<SearchState>((set, get) => ({
         [activeSearchId]: updatedProductsArray,
       },
     });
+  },
+
+  getSavedProductById: (id: string): ProductWithQuantity | undefined => {
+    const { savedProducts } = get();
+    return Object.values(savedProducts)
+      .flat()
+      .find((p) => p.id === id);
   },
 
   getAllSavedProducts: () => {

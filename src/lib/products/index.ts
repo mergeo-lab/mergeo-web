@@ -9,6 +9,7 @@ import {
   PROVIDER_NEW_PRODUCT_SEARCH,
   PRODUCT_FAVORITE,
   PRODUCT_BLACKLIST,
+  PRODUCT_PRESENTATIONS,
 } from './endpoints';
 import { AxiosResponse, isAxiosError } from 'axios';
 import {
@@ -432,6 +433,31 @@ export async function getBlackList(
       }
     );
     return response.data.products;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+    throw error;
+  }
+}
+
+export async function getMorePresentations(
+  productId: string
+): Promise<ProductSchemaType[]> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${PRODUCT_PRESENTATIONS}/${productId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
   } catch (error) {
     if (isAxiosError(error)) {
       if (error.response?.data.statusCode === 400) {

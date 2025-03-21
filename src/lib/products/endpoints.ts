@@ -10,3 +10,4 @@ export const PRODUCT_METADATA = `${BASE}/metadata`;
 export const PRODUCT_UPLOAD = `${BASE}/upload`;
 export const PRODUCT_FAVORITE = `${BASE}/favorite`;
 export const PRODUCT_BLACKLIST = `${BASE}/blacklist`;
+export const PRODUCT_PRESENTATIONS = `${BASE}/net-contents`;

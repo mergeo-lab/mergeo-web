@@ -37,6 +37,7 @@ const ProductSchema = z.object({
   measurementUnit: z.string(),
   unitConversionFactor: z.string(),
   price: z.string(),
+  pricePerBaseUnit: z.string(),
   description: z.string(),
   brand: z.string(),
   variety: z.string().optional(),
@@ -51,6 +52,8 @@ const ProductSchema = z.object({
   manufacturer_country: z.string().optional(),
   accepted: z.boolean().optional(),
   quantity: z.number().optional(),
+  isPickUp: z.boolean().optional(),
+  isFavorite: z.boolean().optional(),
 });
 
 // Define the PreOrderProduct schema

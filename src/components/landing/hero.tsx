@@ -1,4 +1,5 @@
 import { Link } from 'react-scroll';
+import { Link as RouterLink } from '@tanstack/react-router';
 import HeroImage from '../../assets/hero-guy.png';
 import { Button } from '@/components/ui/button';
 
@@ -18,7 +19,9 @@ export default function Hero() {
                             Proveedores y Compradores cada ves mas cerca.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <Button>Empezar Ahora</Button>
+                            <RouterLink to='/login'>
+                                <Button>Empezar Ahora</Button>
+                            </RouterLink>
                             <Button variant='ghost'>
                                 <Link
                                     to="features"

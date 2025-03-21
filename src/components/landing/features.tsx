@@ -2,12 +2,14 @@ import { cn } from '@/lib/utils';
 import FeatureImage1 from '../../assets/feature-1.png';
 import FeatureImage2 from '../../assets/feature-2.png';
 import FeatureImage3 from '../../assets/feature-3.png';
+import { Link } from '@tanstack/react-router';
+
 
 export default function Features() {
     const features = [
         {
             id: 1,
-            title: "Definición de Áreas de Entrega",
+            title: "Definición de Areas de Entrega",
             description: "Los proveedores pueden establecer sus zonas de entrega de manera personalizada, dibujando en un mapa interactivo las áreas donde ofrecen sus servicios.",
             image: FeatureImage1,
             reverse: true
@@ -41,11 +43,12 @@ export default function Features() {
                 </div>
 
                 <div className="space-y-24">
-                    {features.map((feature) => (
+                    {features.map((feature, index) => (
                         <div
                             key={feature.id}
-                            className={cn('flex gap-2 items-center', {
-                                'flex-row-reverse': feature.reverse
+                            className={cn('flex gap-2 items-center pt-10', {
+                                'flex-row-reverse': feature.reverse,
+                                'mt-32': index === 0
                             })}
                         >
                             <div>
@@ -63,16 +66,18 @@ export default function Features() {
                     ))}
                 </div>
 
-                <div className="mt-24 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-2xl p-8 md:p-12 text-white">
+                <div className="mt-24 bg-gradient-to-b from-indigo-500 to-secondary-background rounded-xl p-8 md:p-12 text-white">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                         <div>
                             <h3 className="text-3xl font-bold mb-6">Comienza a expandir tu negocio</h3>
                             <p className="mb-6 opacity-90">
                                 Únete a los miles de proveedores que ya están ampliando su alcance y aumentando sus ventas con nuestra plataforma.
                             </p>
-                            <button className="bg-white text-indigo-700 font-semibold py-3 px-6 rounded-lg hover:bg-gray-100 transition-all duration-300">
-                                Regístrate como Proveedor
-                            </button>
+                            <Link to="/registration/company" className="btn-primary">
+                                <button className="bg-white text-indigo-700 font-semibold py-3 px-6 rounded-lg hover:bg-gray-100 transition-all duration-300">
+                                    Regístrate como Proveedor
+                                </button>
+                            </Link>
                         </div>
                         <div className="flex justify-center">
                             <div className="grid grid-cols-2 gap-4">

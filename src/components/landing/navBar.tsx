@@ -38,13 +38,17 @@ export default function Navbar() {
     ];
 
     return (
-        <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-3' : 'bg-transparent py-5'}`}>
+        <nav className={`fixed w-full z-50 transition-all duration-500 ${scrolled ? 'bg-secondary-background shadow-md py-5' : 'bg-transparent py-5'}`}>
             <div className="container-custom py-0">
                 <div className="flex justify-between items-center">
                     <div className="flex items-center">
-                        <img className={cn('w-4/5 transition-all duration-300',
-                            { 'w-3/5': scrolled }
-                        )} src={logoVertical} alt='logo' />
+                        <img className='w-12 transition-all duration-300 mr-3' src={logoVertical} alt='logo' />
+                        <div className={cn('flex flex-col text-nowrap text-secondary-background pt-1', {
+                            "text-secondary-foreground": scrolled,
+                        })}>
+                            <h1 className='text-xl font-bold leading-none'>MERGEO</h1>
+                            <h2 className='text-[.9rem] font-thin tracking-wide leading-none'>UNIENDO PUNTAS</h2>
+                        </div>
                     </div>
 
                     {/* Desktop Menu */}
@@ -57,7 +61,9 @@ export default function Navbar() {
                                 smooth={true}
                                 offset={-70}
                                 duration={500}
-                                className="text-gray-700 hover:text-primary font-medium cursor-pointer transition-colors"
+                                className={cn("text-gray-700 hover:text-primary font-medium cursor-pointer transition-colors", {
+                                    'text-white': scrolled
+                                })}
                             >
                                 {link.name}
                             </Link>

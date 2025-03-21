@@ -24,6 +24,8 @@ type SearchConfigState = {
   configDialogOpen: boolean;
   configDataSubmitted: boolean;
   shouldResetConfig: boolean;
+  showOnlyFavorites: boolean;
+  setShowOnlyFavorites: (value: boolean) => void;
   setSearchParams: (params: {
     name?: string;
     brand?: string;
@@ -78,6 +80,7 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
   isValid: false,
   configDataSubmitted: false,
   shouldResetConfig: false,
+  showOnlyFavorites: false,
 
   setSearchParams: (params: {
     name?: string;
@@ -91,6 +94,10 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
         branchId: params.branchId ?? state.searchParams.branchId,
       },
     }));
+  },
+
+  setShowOnlyFavorites: (value: boolean) => {
+    set(() => ({ showOnlyFavorites: value }));
   },
 
   setShouldResetConfig: (value: boolean) => {

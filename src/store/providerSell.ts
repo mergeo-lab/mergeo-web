@@ -76,10 +76,10 @@ const UseProviderSellStore = create<SellProviderState>((set, get) => ({
       });
     }
   },
-  toggleAllProducts: (allProducts: SellProductSchemaType[]) => {
+  toggleAllProducts: (allProducts: SellProductSchemaType[] | undefined) => {
     const { acceptedProducts } = get();
 
-    if (acceptedProducts.length === allProducts.length) {
+    if (allProducts && acceptedProducts.length === allProducts.length) {
       // If all products are selected, unselect all
       set({
         acceptedProducts: [],

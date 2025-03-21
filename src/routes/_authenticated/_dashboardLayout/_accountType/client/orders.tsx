@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { List, PackageSearch, ClipboardList, X, ShoppingBag } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -13,7 +13,8 @@ import UseSearchConfigStore from '@/store/searchConfiguration.store.';
 import ProductsTable from '@/components/configuration/client/orders/productsTable';
 import { CartSheet } from '@/components/configuration/client/orders/cartSheet';
 import UseSearchStore from '@/store/search.store';
-
+import { ProductsPresentations } from '@/components/configuration/client/orders/ProductsPresentations';
+import UseMorePresentations from '@/store/productMorePresentations';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/orders')({
     component: OrdersPage,
@@ -27,6 +28,7 @@ enum TabsEnum {
 }
 
 function OrdersPage() {
+    const { selectedProductId, sheetOpen, toggleSheetOpen } = UseMorePresentations()
     const [tab, setTab] = useState(TabsEnum.LISTA_DE_PRODUCTOS);
     const [menuOpen, setMenuStatus] = useState(true);
     const [cartOpen, setOpenCart] = useState(false);
@@ -40,11 +42,13 @@ function OrdersPage() {
         setConfigDialogOpen,
         configDataSubmitted,
         setConfigDataSubmitted,
-        setShouldResetConfig
+        setShouldResetConfig,
+        deliveryTime,
+        branch
     } = UseSearchConfigStore();
     const { getAllSavedProducts, reset } = UseSearchStore();
     const savedProducts = getAllSavedProducts();
-    const [configSubmitted, setConfigSubmitted] = useState(false);
+    // const [configSubmitted, setConfigSubmitted] = useState(false);
 
     function onTabChange(value: string) {
         const selectedTab = value as TabsEnum;
@@ -64,6 +68,11 @@ function OrdersPage() {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [reset, resetConfig])
+
+    const memoizedProductsTable = useMemo(() => (
+        <ProductsTable configCanceled={!branch || !deliveryTime} />
+    ), [branch, deliveryTime]); // Only re-render if these change
+
 
     return (
         <section className="h-full w-full flex">
@@ -135,11 +144,7 @@ function OrdersPage() {
 
             {/* Products table */}
             <div className='w-full p-10'>
-                <ProductsTable
-                    configCompleted={configDataSubmitted}
-                    configCanceled={configCanceled}
-                    configSubmitted={configSubmitted}
-                />
+                {memoizedProductsTable}
             </div>
 
             <PickUpSelectMap showDialog={pickUpDialog} onClose={() => setPickUpDialog(false)} />
@@ -150,7 +155,7 @@ function OrdersPage() {
                     setTab(TabsEnum.LISTA_DE_PRODUCTOS);
                     setConfigDataSubmitted(true);
                     setConfigDialogOpen(false);
-                    setConfigSubmitted(prev => !prev);
+                    // setConfigSubmitted(prev => !prev);
 
                 }}
                 onLoading={() => { }}
@@ -165,6 +170,14 @@ function OrdersPage() {
                 callback={() => setOpenCart(false)}
                 title="Resumen de su pedido"
                 isOpen={cartOpen}
+            />
+
+            <ProductsPresentations
+                callback={() => toggleSheetOpen(null)}
+                prodcutId={selectedProductId}
+                title="Mas Presentaciones"
+                subTitle='Puedes seleccionar otras presentaciones del mismo producto'
+                isOpen={sheetOpen}
             />
 
         </section>

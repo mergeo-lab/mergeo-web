@@ -2,10 +2,9 @@ import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import CryptoJS from 'crypto-js';
 import { HourSlot } from '@/types';
-import { ZoneSchemaPostGisType } from '@/lib/configuration/schemas/dropZone.schemas';
+import { ZoneSchemaPostGisType } from '@/lib/schemas';
 
 const secretKey = import.meta.env.VITE_SEARCH_PARAMS_KEY;
-import { format } from 'date-fns';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

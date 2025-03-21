@@ -8,14 +8,14 @@ import UseSearchStore, { CartProduct } from "@/store/search.store";
 import UseSearchConfigStore from "@/store/searchConfiguration.store.";
 import UseUserStore from "@/store/user.store";
 import { useMutation } from "@tanstack/react-query";
-import { ClipboardList } from "lucide-react";
+import { ClipboardList, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from '@tanstack/react-router'
 
 type Props = {
     title?: string,
     subTitle?: string,
-    icon?: JSX.Element,
+    icon?: React.ReactNode,
     callback: () => void
     triggerButton?: React.ReactNode
     isOpen?: boolean
@@ -51,7 +51,7 @@ export function CartSheet({
 
     useEffect(() => {
         if (mutation.isSuccess) {
-            router.navigate({ to: '/client/mis-pedidos', search: { id: mutation.data.preOrderId } });
+            router.navigate({ to: '/client/proOrders', search: { id: mutation.data.preOrderId } });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mutation.isSuccess]);
@@ -98,7 +98,7 @@ export function CartSheet({
 
     function handleProductChange(product: CartProduct, quantity: number) {
         if (quantity === 0) {
-            removeProduct(product.id, product.providerId);
+            removeProduct(product.id);
         } else {
             saveProduct(product, quantity);
         }
@@ -146,8 +146,11 @@ export function CartSheet({
                                         <p className="text-sm text-muted-foreground">{product.name}, {product.brand} x {product.net_content}{product.measurementUnit}</p>
                                     </TableCell>
                                     <TableCell>
-                                        <div className="flex justify-center">
+                                        <div className="flex justify-center items-center gap-2">
                                             <QuantitySelector defaultValue={product.quantity} onChange={(quantity) => handleProductChange(product, quantity)} />
+                                            <Button variant="ghost" className="[&>*]:hover:text-destructive" onClick={() => handleProductChange(product, 0)}>
+                                                <Trash2 size={15} className="text-muted-foreground" />
+                                            </Button>
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-center">
