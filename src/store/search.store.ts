@@ -14,13 +14,15 @@ export type CartProductQuantity = Pick<
   'id' | 'providerId' | 'quantity'
 >;
 
-export type CartProduct = ProductSchemaType;
+export type CartProduct = ProductSchemaType & { providerId: string };
 
 type SearchState = {
   activeSearchItem: SearchListProductType | null;
   savedProducts: SavedProducts;
+  morePresentations: string[]; // Add this property to hold the morePresentations array
   setActiveSearchItem: (item: SearchListProductType | null) => void;
   saveProduct: (product: CartProduct, quantity: number) => void;
+  saveMorePresentations: (morePresentations: string[]) => void;
   removeProduct: (productId: string) => void;
   getSavedProductById: (id: string) => ProductWithQuantity | undefined;
   getAllSavedProducts: () => ProductWithQuantity[];
@@ -28,6 +30,7 @@ type SearchState = {
 };
 const UseSearchStore = create<SearchState>((set, get) => ({
   activeSearchItem: null,
+  morePresentations: [],
   savedProducts: {},
 
   setActiveSearchItem: (item: SearchListProductType | null) =>
@@ -61,6 +64,9 @@ const UseSearchStore = create<SearchState>((set, get) => ({
       },
     });
   },
+
+  saveMorePresentations: (morePresentations: string[]) =>
+    set({ morePresentations }),
 
   removeProduct: (productId: string) => {
     const { activeSearchItem, savedProducts } = get();

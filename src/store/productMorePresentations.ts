@@ -1,26 +1,16 @@
 import { create } from 'zustand';
 
 type MorePresentations = {
-  selectedProductId: string | null;
-  sheetOpen: boolean;
-  setSelectedProductId: (id: string) => void;
+  openProductId: string | null;
   toggleSheetOpen: (productId: string | null) => void;
 };
 
 const UseMorePresentations = create<MorePresentations>((set) => ({
-  selectedProductId: '',
-  sheetOpen: false,
-
-  setSelectedProductId: (productId: string) => {
-    set({ selectedProductId: productId });
-  },
-
-  toggleSheetOpen: (productId: string | null) => {
+  openProductId: null as string | null,
+  toggleSheetOpen: (productId: string | null) =>
     set((state) => ({
-      sheetOpen: !state.sheetOpen,
-      selectedProductId: productId,
-    }));
-  },
+      openProductId: state.openProductId === productId ? null : productId,
+    })),
 }));
 
 export default UseMorePresentations;

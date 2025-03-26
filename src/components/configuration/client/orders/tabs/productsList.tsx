@@ -6,7 +6,6 @@ import { ListX, SquareCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import UseSearchStore from "@/store/search.store";
 import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { SearchListProductType } from "@/lib/schemas";
 
 type Props = {
@@ -15,7 +14,7 @@ type Props = {
     selectList: () => void,
 }
 
-export default function ProductsList({ configCanceled, isVisible = false, selectList }: Props) {
+export default function ProductsList({ configCanceled, isVisible = false }: Props) {
     const { listId, setSearchParams } = UseSearcConfigStore();
     const { setActiveSearchItem, activeSearchItem, savedProducts } = UseSearchStore();
 
@@ -59,7 +58,6 @@ export default function ProductsList({ configCanceled, isVisible = false, select
                 <p className="text-secondary/60 font-light text-base leading-5 pb-5 text-center">
                     Puedes seleccionar una liste en la pantalla de configuración
                 </p>
-                <Button onClick={selectList} variant='outline' className="w-full">Configuración</Button>
             </div>
         )
     }

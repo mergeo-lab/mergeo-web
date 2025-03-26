@@ -15,6 +15,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ReplacementCriteriaValues } from "@/lib/constants";
 import ListSelector from "@/components/configuration/client/orders/searchConfig/listSelector";
 import LoadingIndicator from "@/components/loadingIndicator";
+import UseSearchStore from "@/store/search.store";
 
 type Props = {
     title?: string,
@@ -43,6 +44,7 @@ export function OrderConfig(
     const [open, setOpen] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const { deliveryTime, setDeliveryTime, setBranch, setPickUp, setPickUpDialog, pickUp, setPickUpLocation, pickUpLocation, branch, selectList, removeList, listId, setReplacementCriteria, replacementCriteria, resetConfig, shouldResetConfig, setShouldResetConfig } = UseSearchConfigStore();
+    const { reset } = UseSearchStore();
 
     const [time, setTime] = useState<DateRange>();
     const [selcetedBranch, setSelectedBranch] = useState<BranchesSchemaType | null>(null);
@@ -57,6 +59,7 @@ export function OrderConfig(
                 resetConfig();
                 setIsLoading(false);
                 setSelectedBranch(null);
+                reset();
             }, 300)
         } else {
             setIsLoading(false);

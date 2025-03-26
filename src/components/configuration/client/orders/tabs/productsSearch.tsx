@@ -1,17 +1,24 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 import UseSearchStore from "@/store/search.store";
 import UseSearchConfigStore from "@/store/searchConfiguration.store.";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { Heart, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { IoMdCar } from "react-icons/io";
 
 export default function ProductsSearch() {
 
     const [productName, setProductName] = useState("");
-    const { setSearchParams, searchParams, setShowOnlyFavorites, showOnlyFavorites } = UseSearchConfigStore();
+    const { setSearchParams, searchParams, setShowOnlyFavorites, showOnlyFavorites, configDataSubmitted, pickUp, setShowPickUp, showPickUp } = UseSearchConfigStore();
     const { setActiveSearchItem } = UseSearchStore();
+
+    useEffect(() => {
+        console.log("pickUp", pickUp);
+        setShowPickUp(pickUp);
+    }, [pickUp, setShowPickUp, configDataSubmitted]);
 
     function handleSearch() {
         setSearchParams({ name: productName });
@@ -23,8 +30,11 @@ export default function ProductsSearch() {
     }
 
     function handleFavorites() {
-        console.log("handleFavorites");
         setShowOnlyFavorites(!showOnlyFavorites);
+    }
+
+    function handleShowPickUp() {
+        setShowPickUp(!showPickUp);
     }
 
     useEffect(() => {
@@ -52,6 +62,17 @@ export default function ProductsSearch() {
                     <span>Solo mostrar Favoritos</span>
                 </Label>
                 <Switch id="favorites-switch" onClick={handleFavorites} defaultChecked={showOnlyFavorites} />
+            </div>
+            <div className={cn("flex gap-2 items-center justify-center mt-4 border border-border p-2 rounded-md", {
+                'opacity-80': !pickUp,
+            })}>
+                <Label className="text-sm m-2 flex gap-2">
+                    <IoMdCar size={20} className={cn("text-highlight", {
+                        'text-muted': !pickUp,
+                    })} />
+                    <span>Ver prodcutos con pickUp</span>
+                </Label>
+                <Switch onClick={handleShowPickUp} defaultChecked={pickUp} checked={showPickUp} disabled={!pickUp} />
             </div>
         </>
     )

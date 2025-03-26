@@ -18,15 +18,29 @@ export const defaultPagination = {
 
 export function useProductSearch(searchParams: Partial<SearchParams>) {
   const { company } = UseCompanyStore();
-  const { getAllConfig, resetConfig, getConfigDone } = UseSearchConfigStore();
+  const {
+    getAllConfig,
+    resetConfig,
+    getConfigDone,
+    pickUp,
+    configDataSubmitted,
+    showPickUp,
+  } = UseSearchConfigStore();
   const configDone = getConfigDone();
   const config = getAllConfig();
   const [pagination, setPagination] =
     useState<PaginationType>(defaultPagination);
+  const [isPickUp, setIsPickUp] = useState(false);
 
   useEffect(() => {
-    console.log('pagination changes: ', pagination);
-  }, [pagination]);
+    if (configDataSubmitted) {
+      setIsPickUp(pickUp);
+    }
+  }, [pickUp, configDataSubmitted]);
+
+  useEffect(() => {
+    setIsPickUp(showPickUp);
+  }, [showPickUp]);
 
   const { data, isLoading, isError, error, refetch } = useQuery<{
     products: ProductSchemaType[];
@@ -34,7 +48,11 @@ export function useProductSearch(searchParams: Partial<SearchParams>) {
     total: number;
     totalPages: number;
   }>({
-    queryKey: ['client-products', { ...searchParams, pagination }, 'favorites'],
+    queryKey: [
+      'client-products',
+      { ...searchParams, pagination, isPickUp, showPickUp },
+      'favorites',
+    ],
     queryFn: async () => {
       const companyId = company?.id;
       const branchId = config.branch?.id;
@@ -61,7 +79,7 @@ export function useProductSearch(searchParams: Partial<SearchParams>) {
                 endHour: '2400',
                 name: searchParams.name ?? '',
                 brand: searchParams.brand,
-                isPickUp: config.pickUp,
+                isPickUp: isPickUp,
                 pickUpLat: config.pickUpLocation.location.latitude,
                 pickUpLng: config.pickUpLocation.location.longitude,
                 pickUpRadius: config.pickUpLocation.radius,

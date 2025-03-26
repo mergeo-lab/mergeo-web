@@ -1,14 +1,13 @@
+import { ProductsPresentations } from "@/components/configuration/client/orders/ProductsPresentations";
 import QuantitySelector from "@/components/configuration/client/orders/quantitySelector";
 import { OptimisticToggleButton } from "@/components/optimisticToggleButton";
-import { Button } from "@/components/ui/button";
+import PickUpIndicator from "@/components/pickUpIndicator";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { ProductSchemaType } from "@/lib/schemas";
 import { formatToArgentinianPesos } from "@/lib/utils";
 import UseMorePresentations from "@/store/productMorePresentations";
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@radix-ui/react-tooltip";
 import { Heart, ImageIcon, ThumbsDown } from "lucide-react";
 import { memo } from "react";
-import { IoMdCar } from "react-icons/io";
 
 
 type Params = {
@@ -19,6 +18,7 @@ type Params = {
     addProductToBlackList: (productId: string) => Promise<void>,
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavorite, addProductToBlackList }: Params) => {
     // Remove memo from inner components and move them outside
     const { toggleSheetOpen } = UseMorePresentations();
@@ -47,6 +47,7 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
                         activeIcon={<ThumbsDown strokeWidth={3} size={16} />}
                         inactiveIcon={<ThumbsDown size={16} />}
                         tooltip="Agregar a Lista Negra"
+                        disabled={product.isFavorite}
                     />
                 </div>
             </TableCell>
@@ -64,30 +65,25 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
             </TableCell>
 
             <TableCell className={`text-center`}>{product.net_content}{" "}{product.measurementUnit}</TableCell>
-            <TableCell className={`text-center`}>{formatToArgentinianPesos(+product.price)}</TableCell>
+            <TableCell className={`text-center`}>{formatToArgentinianPesos(+product.pricePerBaseUnit)}</TableCell>
             <TableCell className={`text-center`}>{
-                product.net_content ? formatToArgentinianPesos(+product.price * product.net_content) : 1}
+                product.net_content ? formatToArgentinianPesos(+product.price) : 1}
             </TableCell>
             <TableCell className={`text-right`}>{
-                product.isPickUp ? (
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger>
-                                <IoMdCar size={20} className="text-highlight" />
-                            </TooltipTrigger>
-                            <TooltipContent>Este producto solo tiene PickUp</TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                )
-                    : ""
+                product.isPickUp && <PickUpIndicator />
             }</TableCell>
             <TableCell className={`text-right`}>
                 <div className="flex justify-end items-center gap-2 w-full">
-                    <Button size='xs' variant="outlineSecondary" className="w-[6.8rem]" onClick={() => {
-                        toggleSheetOpen(product.id)
-                    }}>
-                        + presentaciones
-                    </Button>
+
+
+                    <ProductsPresentations
+                        callback={() => toggleSheetOpen(null)}
+                        productId={product.id}
+                        title="Mas Presentaciones"
+                        subTitle='Puedes seleccionar otras presentaciones del mismo producto'
+                        morePresentations={product.morePresentations || false}
+                    />
+
                     <div>
                         <QuantitySelector
                             defaultValue={savedProducts.find((item) => item.id === product.id)?.quantity}

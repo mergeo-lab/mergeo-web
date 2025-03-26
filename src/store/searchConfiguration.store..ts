@@ -14,6 +14,7 @@ type SearchConfigState = {
   deliveryTime: DateRange;
   branch: BranchesSchemaType | null;
   pickUp: boolean;
+  showPickUp: boolean;
   pickUpDialog: boolean;
   pickUpLocation: PickUpLocationArea;
   replacementCriteria: ReplacementCriteria;
@@ -39,6 +40,7 @@ type SearchConfigState = {
   setDeliveryTime: (date: DateRange) => void;
   setBranch: (branch: BranchesSchemaType) => void;
   setPickUp: () => void;
+  setShowPickUp: (show: boolean) => void;
   setPickUpDialog: (turnOn?: boolean) => void;
   setPickUpLocation: (location: PickUpLocationArea) => void;
   setReplacementCriteria: (criteria: ReplacementCriteria) => void;
@@ -65,6 +67,7 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
   deliveryTime: { from: new Date(), to: addDays(new Date(), 1) },
   branch: null,
   pickUp: false,
+  showPickUp: false,
   pickUpDialog: false,
   pickUpLocation: {
     radius: 0,
@@ -139,6 +142,10 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
   setPickUp: () => {
     set((state) => ({ pickUp: !state.pickUp }));
     get().validateFields();
+  },
+
+  setShowPickUp: (show: boolean) => {
+    set({ showPickUp: show });
   },
 
   setPickUpLocation: (location: PickUpLocationArea) => {

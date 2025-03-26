@@ -1,3 +1,6 @@
+/* eslint-disable no-undef */
+import animations from '@midudev/tailwind-animations'
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ['class'],
@@ -6,8 +9,8 @@ export default {
   theme: {
     extend: {
       container: {
-        center: true,
         padding: '2rem',
+        center: true,
         screens: {
           '2xl': '1400px',
         },
@@ -125,6 +128,9 @@ export default {
     },
   },
   // eslint-disable-next-line no-undef
-  plugins: [require('tailwindcss-animate'), require('tailwindcss-multi'),
+  plugins: [
+    require('tailwindcss-animate'),
+    require('tailwindcss-multi'),
+    animations
   ],
 };

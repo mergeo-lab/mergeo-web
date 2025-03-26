@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { List, PackageSearch, ClipboardList, X, ShoppingBag } from 'lucide-react';
+import { List, PackageSearch, ClipboardList, X, ShoppingBag, FileCog } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ProductsSearch from '@/components/configuration/client/orders/tabs/productsSearch';
 import ProductsList from '@/components/configuration/client/orders/tabs/productsList';
@@ -13,8 +13,7 @@ import UseSearchConfigStore from '@/store/searchConfiguration.store.';
 import ProductsTable from '@/components/configuration/client/orders/productsTable';
 import { CartSheet } from '@/components/configuration/client/orders/cartSheet';
 import UseSearchStore from '@/store/search.store';
-import { ProductsPresentations } from '@/components/configuration/client/orders/ProductsPresentations';
-import UseMorePresentations from '@/store/productMorePresentations';
+import { motion } from "framer-motion";
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/orders')({
     component: OrdersPage,
@@ -28,7 +27,6 @@ enum TabsEnum {
 }
 
 function OrdersPage() {
-    const { selectedProductId, sheetOpen, toggleSheetOpen } = UseMorePresentations()
     const [tab, setTab] = useState(TabsEnum.LISTA_DE_PRODUCTOS);
     const [menuOpen, setMenuStatus] = useState(true);
     const [cartOpen, setOpenCart] = useState(false);
@@ -44,7 +42,8 @@ function OrdersPage() {
         setConfigDataSubmitted,
         setShouldResetConfig,
         deliveryTime,
-        branch
+        branch,
+        listId
     } = UseSearchConfigStore();
     const { getAllSavedProducts, reset } = UseSearchStore();
     const savedProducts = getAllSavedProducts();
@@ -104,12 +103,33 @@ function OrdersPage() {
                                 <TabsContent className='w-full overflow-x-hidden h-[calc(100%-50px)] m-0 p-4' value={TabsEnum.BUSCAR_PRODUCTOS}>
                                     <ProductsSearch />
                                 </TabsContent>
-                                <div className='w-full h-20 p-5 border-t-2 border-t-border'>
+                                <div className='w-full p-5 border-t-2 border-t-border flex flex-col gap-2'>
+                                    <Button onClick={() => {
+                                        setConfigDataSubmitted(false);
+                                        setShouldResetConfig(false);
+                                        setConfigDialogOpen(true)
+                                    }} variant='outline' className="w-full flex gap-2">
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: menuOpen ? 1 : 0 }}
+                                            transition={{ duration: 1 }}
+                                        >
+                                            Configuración
+                                        </motion.div>
+                                        <FileCog size={20} />
+                                    </Button>
+
                                     <Button
-                                        className='w-full h-full flex gap-4 disabled:bg-muted/80'
+                                        className='w-full flex gap-4 disabled:bg-muted/80'
                                         disabled={!savedProducts.length}
                                         onClick={() => setOpenCart(true)}>
-                                        Ver Pedido
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: menuOpen ? 1 : 0 }}
+                                            transition={{ duration: 1 }}
+                                        >
+                                            Ver Pedido
+                                        </motion.div>
                                         <ShoppingBag size={20} />
                                     </Button>
                                 </div>
@@ -130,9 +150,15 @@ function OrdersPage() {
                                         Buscar
                                     </Button>
                                 </TabsList>
-                                <div className='flex justify-center items-center h-20 border-t-2 border-t-border'>
-
-                                    <Button disabled={!savedProducts.length} className='p-0 px-3 disabled:bg-muted/80' onClick={() => setOpenCart(true)}>
+                                <div className='flex flex-col justify-center items-center border-t-2 border-t-border gap-2 p-5'>
+                                    <Button onClick={() => {
+                                        setConfigDataSubmitted(false);
+                                        setShouldResetConfig(false);
+                                        setConfigDialogOpen(true)
+                                    }} variant='outline' className="p-0 px-3 overflow-hidden">
+                                        <FileCog size={20} />
+                                    </Button>
+                                    <Button disabled={!savedProducts.length} className='p-0 px-3 disabled:bg-muted/80 overflow-hidden' onClick={() => setOpenCart(true)}>
                                         <ShoppingBag size={20} />
                                     </Button>
                                 </div>
@@ -152,11 +178,9 @@ function OrdersPage() {
             <OrderConfig
                 companyId={company?.id}
                 callback={() => {
-                    setTab(TabsEnum.LISTA_DE_PRODUCTOS);
+                    setTab(listId != "" ? TabsEnum.LISTA_DE_PRODUCTOS : TabsEnum.BUSCAR_PRODUCTOS);
                     setConfigDataSubmitted(true);
                     setConfigDialogOpen(false);
-                    // setConfigSubmitted(prev => !prev);
-
                 }}
                 onLoading={() => { }}
                 openDialog={configDialogOpen}
@@ -170,14 +194,6 @@ function OrdersPage() {
                 callback={() => setOpenCart(false)}
                 title="Resumen de su pedido"
                 isOpen={cartOpen}
-            />
-
-            <ProductsPresentations
-                callback={() => toggleSheetOpen(null)}
-                prodcutId={selectedProductId}
-                title="Mas Presentaciones"
-                subTitle='Puedes seleccionar otras presentaciones del mismo producto'
-                isOpen={sheetOpen}
             />
 
         </section>

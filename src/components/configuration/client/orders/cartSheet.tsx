@@ -66,6 +66,10 @@ export function CartSheet({
         if (!user) return;
         const config = getAllConfig();
 
+        console.log(" ------- PRODUCT --------")
+        console.log(getAllSavedProducts())
+        console.log(" ------- PRODUCT --------")
+
         mutation.mutate({
             userId: user?.id,
             searchParams: {

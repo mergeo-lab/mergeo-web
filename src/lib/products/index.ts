@@ -391,6 +391,10 @@ export async function toggleFavorite(
   }
 }
 
+export async function removeFavorite(companyId: string, productId: string) {
+  toggleFavorite(companyId, productId, false);
+}
+
 export async function addToBlackList(
   companyId: string,
   productId: string

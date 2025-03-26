@@ -6,31 +6,39 @@ import { useCallback, useEffect, useState } from "react";
 import { getMorePresentations } from "@/lib/products";
 import { ProductSchemaType } from '../../../../lib/schemas/configuration.schema';
 import { useQuery } from "@tanstack/react-query";
-import { formatToArgentinianPesos } from "@/lib/utils";
+import { cn, formatToArgentinianPesos } from "@/lib/utils";
+import UseMorePresentations from "@/store/productMorePresentations";
+import QuantitySelector from "@/components/configuration/client/orders/quantitySelector";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import UseSearchStore from "@/store/search.store";
 
 type Props = {
     title?: string,
     subTitle?: string,
-    prodcutId: string | null,
+    productId: string | null,
+    morePresentations: boolean,
     icon?: React.ReactNode,
     callback: () => void
-    triggerButton?: React.ReactNode
-    isOpen?: boolean
 }
 
 export function ProductsPresentations({
     title = "Resumen de su Pedido",
     subTitle = "Aca podras ver los productos que fuiste seleccionando!",
-    prodcutId,
+    productId,
+    morePresentations = false,
     icon = <ClipboardList size={25} />,
     callback,
-    isOpen,
-    triggerButton }: Props) {
+}: Props) {
     const [open, setOpen] = useState(false);
-
-    const { data: presentations, isLoading } = useQuery({
-        queryKey: ['more-presentations', prodcutId],
-        queryFn: () => prodcutId ? getMorePresentations(prodcutId) : Promise.reject(new Error('Product ID is undefined')),
+    const { openProductId, toggleSheetOpen } = UseMorePresentations();
+    const isOpen = openProductId === productId;
+    const { saveProduct, removeProduct, getAllSavedProducts, saveMorePresentations, morePresentations: hasMore } = UseSearchStore();
+    const allSavedProducts = getAllSavedProducts();
+    const { data, isLoading } = useQuery({
+        queryKey: ['more-presentations', productId],
+        queryFn: () => productId ? getMorePresentations(productId) : Promise.reject(new Error('Product ID is undefined')),
+        enabled: !!productId,
     });
 
     useEffect(() => {
@@ -45,6 +53,16 @@ export function ProductsPresentations({
         callback();
     }, []);
 
+    function handleProductChange(product: ProductSchemaType, quantity: number) {
+        if (quantity === 0) {
+            removeProduct(product.id);
+            saveMorePresentations(hasMore.filter((id) => id !== productId))
+        } else {
+            saveProduct({ ...product, providerId: product.providerId! }, quantity);
+            saveMorePresentations(productId ? [productId] : [])
+        }
+    }
+
     return (
         <Sheet open={open} onOpenChange={(isOpen) => {
             if (!isOpen) {
@@ -54,7 +72,32 @@ export function ProductsPresentations({
             }
         }}>
             <SheetTrigger>
-                {triggerButton}
+                {
+                    isLoading ?
+                        <Skeleton className="w-[6.8rem] h-6 bg-muted/20 rounded-sm" />
+                        : morePresentations && (
+                            allSavedProducts && allSavedProducts.length > 0 && hasMore.includes(productId ?? '')
+                                ?
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button size='xs' variant="outlineSecondary" className={cn("w-[6.8rem]", {
+                                                "border-highlight text-highlight hover:bg-highlight/20": allSavedProducts.length > 0,
+                                            })} onClick={() => { toggleSheetOpen(productId) }}>
+                                                + presentaciones
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            Seleccionaste otra presentacion de este producto
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                                :
+                                <Button size='xs' variant="outlineSecondary" className={cn("w-[6.8rem]")} onClick={() => { toggleSheetOpen(productId) }}>
+                                    + presentaciones
+                                </Button>
+                        )
+                }
             </SheetTrigger>
             <SheetContent className="w-1/2 mx-w-1/2 sm:max-w-1/2">
                 <SheetHeader>
@@ -74,6 +117,7 @@ export function ProductsPresentations({
                                 <TableHead>Contenido Neto</TableHead>
                                 <TableHead>Precio Unitario</TableHead>
                                 <TableHead>Precio</TableHead>
+                                <TableHead></TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody className="[&>*]:hover:bg-white">
@@ -85,7 +129,7 @@ export function ProductsPresentations({
                                 </TableRow>
                             ))
                             }
-                            {presentations && presentations.map((product: ProductSchemaType) => (
+                            {data && data.map((product: ProductSchemaType) => (
                                 <TableRow key={product.id} className="[&>*]:text-center">
                                     <TableCell className="p-0 m-0 py-2">
                                         <div className="flex justify-start items-center w-full">
@@ -110,10 +154,16 @@ export function ProductsPresentations({
                                             {formatToArgentinianPesos(+product.pricePerBaseUnit, { maximumFractionDigits: 4 })}
                                         </div>
                                     </TableCell>
-                                    <TableCell className="bg-muted/20 text-center">
+                                    <TableCell className="text-center">
                                         <p className="text-sm text-muted-foreground">
                                             {(formatToArgentinianPesos(+product.price))}
                                         </p>
+                                    </TableCell>
+                                    <TableCell className="text-center">
+                                        <QuantitySelector
+                                            defaultValue={allSavedProducts.find((item) => item.id === product.id)?.quantity}
+                                            onChange={(quantity: number) => handleProductChange(product, quantity)}
+                                        />
                                     </TableCell>
                                 </TableRow>
                             ))}

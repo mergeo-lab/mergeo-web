@@ -14,6 +14,7 @@ import { ProductSchemaType } from "@/lib/schemas";
 import { PaginationCustom } from "@/components/pagination";
 import UseProviderInventoryPaginationState from "@/store/providerInventoryPagination.store";
 import ProductRow from "@/components/configuration/client/orders/productRow";
+import { FileCog } from "lucide-react";
 
 type Params = {
     configCanceled: boolean,
@@ -28,7 +29,7 @@ export default function ProductsTable({ configCanceled }: Params) {
     const [filteredProducts, setFilteredProducts] = useState<ProductSchemaType[]>([]);
     const tableRef = useRef<HTMLDivElement>(null);
 
-    const { data, isLoading, error, setPagination } = useProductSearch({
+    const { data, isLoading, error, setPagination, refetch } = useProductSearch({
         name: searchParams.name,
         brand: searchParams.brand,
         branchId: searchParams.branchId,
@@ -47,22 +48,26 @@ export default function ProductsTable({ configCanceled }: Params) {
             }
             return toggleFavorite(company.id, productId, newState);
         },
-        onMutate: async ({ productId, newState }) => {
+        onMutate: async ({ newState }) => {
             await queryClient.cancelQueries({
                 queryKey: ['client-products'],
             });
 
-            // Update the filtered products state immediately
-            setFilteredProducts(prev =>
-                prev.map(product =>
-                    product.id === productId
-                        ? { ...product, isFavorite: newState }
-                        : product
-                )
-            );
-
-            // Get the previous state
             const previousProducts = filteredProducts;
+
+            // If removing favorite and it's the last item on current page
+            if (!newState && showOnlyFavorites && filteredProducts.length === 1) {
+                const newPage = page > 1 ? page - 1 : 1;
+                const newTotalPages = Math.max(1, data?.totalPages ? data.totalPages - 1 : 1);
+
+                setPagination(prev => ({ ...prev, page: newPage, totalPages: newTotalPages }));
+                setPage(newPage);
+                refetch();
+                // Trigger refetch with new pagination
+                queryClient.invalidateQueries({
+                    queryKey: ['client-products'],
+                });
+            }
 
             return { previousProducts };
         },
@@ -141,14 +146,17 @@ export default function ProductsTable({ configCanceled }: Params) {
     if (configCanceled) {
         return (
             <div className="w-full h-full flex flex-col gap-10 pt-10 items-center">
-                <h1 className="text-2xl font-thin text-secondary text-wrap text-center">Para poder ver productos tienes que completar la configuración inicial</h1>
+                <h1 className="text-md font-thin text-secondary text-wrap text-center">Para poder ver productos tienes que completar la configuración inicial</h1>
                 <div className="w-fit h-[350px]">
                     <img className="h-[350px]" src={cancelConfig} alt="config incomplete" />
                 </div>
-                <Button className="w-1/3" variant="outline" onClick={() => {
+                <Button className="w-1/3 flex gap-2" variant="outline" onClick={() => {
                     setConfigDataSubmitted(false);
                     setConfigDialogOpen(true);
-                }}>Configuración</Button>
+                }}>
+                    Configuración
+                    <FileCog size={20} />
+                </Button>
             </div>
         )
     }
@@ -186,7 +194,7 @@ export default function ProductsTable({ configCanceled }: Params) {
         if (quantity === 0) {
             removeProduct(product.id);
         } else {
-            saveProduct(product, quantity);
+            saveProduct({ ...product, providerId: product.providerId! }, quantity);
         }
 
         // Update filtered products without causing a full re-render
@@ -209,7 +217,7 @@ export default function ProductsTable({ configCanceled }: Params) {
     return (
         <div className="relative">
             {/* <div className="h-1 w-full bg-transparent shadow-sm"></div> */}
-            <div ref={tableRef} className="h-[calc(100vh-320px)] overflow-y-auto px-2">
+            <div ref={tableRef} className="h-[calc(100vh-240px)] -mt-8 overflow-y-auto px-2">
                 <Table>
                     <TableHeader className="sticky top-0 bg-white z-10 shadow-sm">
                         <TableRow className="hover:bg-white">
@@ -245,7 +253,7 @@ export default function ProductsTable({ configCanceled }: Params) {
             </div>
             {data && data.totalPages > 1 &&
                 <PaginationCustom
-                    className="mt-10"
+                    className="mt-5"
                     currentPage={page}
                     prev={page > 1}
                     next={page < data.totalPages}

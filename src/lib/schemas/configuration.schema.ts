@@ -54,6 +54,7 @@ const ProductSchema = z.object({
   quantity: z.number().optional(),
   isPickUp: z.boolean().optional(),
   isFavorite: z.boolean().optional(),
+  morePresentations: z.boolean().optional(),
 });
 
 // Define the PreOrderProduct schema

@@ -8,7 +8,7 @@ import UseCompanyStore from '@/store/company.store';
 import UseSearchListsStore from '@/store/searchLists.store';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router'
-import { CircleAlert, ListPlus, PackagePlus, Pencil, Search, Trash2, X } from 'lucide-react'
+import { CircleAlert, PackagePlus, Pencil, Search, Trash2, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { SearchListProductType, SearchListType } from '@/lib/searchLists/searchLists.schemas';
 import OverlayLoadingIndicator from '@/components/overlayLoadingIndicator';
@@ -18,6 +18,7 @@ import emptyBox from '@/assets/emptyBox.svg';
 import { useDebounceCallback } from 'usehooks-ts';
 import { formatDate } from '@/lib/utils';
 import EditNameDialog from '@/components/editNameDialog';
+import { CgPlayListAdd } from "react-icons/cg";
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/lists/')({
     component: () => <SearchLists />
@@ -149,6 +150,13 @@ export function SearchLists() {
 
     if (isError) return <div>Error</div>
 
+    const createListButton = (
+        <Button className='mt-5 w-60 flex items-center gap-2'>
+            <CgPlayListAdd size={22} className='-ml-2' />
+            Crear lista
+        </Button>
+    )
+
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const noElements = useMemo(() => (
         <div className='w-full h-2/3 flex flex-col justify-center items-center'>
@@ -162,12 +170,7 @@ export function SearchLists() {
                     refetch()
                 }}
                 onLoading={() => setIsLoading(true)}
-                triggerButton={
-                    <Button className='mt-5 w-60 flex items-center gap-4'>
-                        Crear lista
-                        <ListPlus />
-                    </Button>
-                }
+                triggerButton={createListButton}
             />
             <div className='flex items-center w-2/5 gap-6 p-4 shadow rounded absolute bottom-44'>
                 <CircleAlert className='text-info' size={70} />
@@ -225,7 +228,7 @@ export function SearchLists() {
                     ? noElements
                     : (
                         <>
-                            <div className='w-96 relative bg-white shadow py-5 px-10 overflow-auto flex flex-col gap-2'>
+                            <div className='w-96 relative bg-white shadow py-5 px-10 overflow-auto flex flex-col gap-1'>
                                 {getAllListsNames().map((list: { name: string; id: string }) =>
                                     <SearchListButton active={selectedList?.id === list.id} key={list.id} id={list.id} name={list.name} onClick={handleSelectedList} />
                                 )}
@@ -235,10 +238,9 @@ export function SearchLists() {
                                         refetch()
                                     }} onLoading={() => setIsLoading(true)}
                                     triggerButton={
-                                        <Button className='mt-5 w-60 flex items-center gap-4 absolute bottom-10'>
-                                            Crear lista
-                                            <ListPlus />
-                                        </Button>
+                                        <div className='mt-5 w-60 flex items-center gap-4 absolute bottom-10'>
+                                            {createListButton}
+                                        </div>
                                     }
                                 />
                             </div>
