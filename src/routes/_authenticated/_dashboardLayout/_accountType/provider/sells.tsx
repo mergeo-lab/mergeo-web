@@ -13,7 +13,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { Eye } from 'lucide-react';
 import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { closestIndexTo } from 'date-fns';
+import noOrders from '@/assets/sin-pedidos.png'
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/sells')({
   component: () => <Sells />

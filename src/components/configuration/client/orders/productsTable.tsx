@@ -227,7 +227,7 @@ export default function ProductsTable({ configCanceled }: Params) {
                             <TableHead className={`text-center`}>Precio por Unidad de Medida</TableHead>
                             <TableHead className={`text-center`}>Precio</TableHead>
                             <TableHead className={`text-center`}></TableHead>
-                            <TableHead className={`text-right pr-12`}>Cantidad</TableHead>
+                            <TableHead className={`text-right pr-12 w-[17rem]`}>Cantidad</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody className="[&>*]:hover:bg-white">

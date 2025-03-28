@@ -215,19 +215,29 @@ export async function getProductById(
   }
 }
 
-export async function modifyProduct(
-  porductId: string,
-  price: string,
-  description: string | undefined
-): Promise<ProductSchemaType> {
+export async function modifyProduct({
+  productId,
+  price,
+  description,
+  isActive,
+}: {
+  productId: string;
+  price?: string;
+  description?: string | undefined;
+  isActive?: boolean | null;
+}): Promise<ProductSchemaType> {
   try {
     const params: Record<string, string | number | boolean> = {};
 
     if (price) params.price = price;
     if (description) params.description = description;
+    if (isActive != null) params.isActive = isActive;
+
+    console.log('isActive :', isActive);
+    console.log('Params :', params);
 
     const { data: response }: AxiosResponse = await axiosPrivate.patch(
-      `${PRODUCT}/${porductId}`,
+      `${PRODUCT}/${productId}`,
       JSON.stringify(params),
       {
         headers: {

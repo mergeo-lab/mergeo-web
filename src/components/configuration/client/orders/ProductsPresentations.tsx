@@ -9,7 +9,6 @@ import { useQuery } from "@tanstack/react-query";
 import { cn, formatToArgentinianPesos } from "@/lib/utils";
 import UseMorePresentations from "@/store/productMorePresentations";
 import QuantitySelector from "@/components/configuration/client/orders/quantitySelector";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import UseSearchStore from "@/store/search.store";
 
@@ -38,11 +37,12 @@ export function ProductsPresentations({
     const { data, isLoading } = useQuery({
         queryKey: ['more-presentations', productId],
         queryFn: () => productId ? getMorePresentations(productId) : Promise.reject(new Error('Product ID is undefined')),
-        enabled: !!productId,
+        enabled: !!productId && isOpen,
     });
 
     useEffect(() => {
         if (isOpen) {
+            console.log("DATA ::::::::>>>>", data)
             setOpen(isOpen);
         }
     }, [isOpen]);
@@ -73,30 +73,28 @@ export function ProductsPresentations({
         }}>
             <SheetTrigger>
                 {
-                    isLoading ?
-                        <Skeleton className="w-[6.8rem] h-6 bg-muted/20 rounded-sm" />
-                        : morePresentations && (
-                            allSavedProducts && allSavedProducts.length > 0 && hasMore.includes(productId ?? '')
-                                ?
-                                <TooltipProvider>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Button size='xs' variant="outlineSecondary" className={cn("w-[6.8rem]", {
-                                                "border-highlight text-highlight hover:bg-highlight/20": allSavedProducts.length > 0,
-                                            })} onClick={() => { toggleSheetOpen(productId) }}>
-                                                + presentaciones
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            Seleccionaste otra presentacion de este producto
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                                :
-                                <Button size='xs' variant="outlineSecondary" className={cn("w-[6.8rem]")} onClick={() => { toggleSheetOpen(productId) }}>
-                                    + presentaciones
-                                </Button>
-                        )
+                    morePresentations && (
+                        allSavedProducts && allSavedProducts.length > 0 && hasMore.includes(productId ?? '')
+                            ?
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button size='xs' variant="outlineSecondary" className={cn("w-[6.8rem]", {
+                                            "border-highlight text-highlight hover:bg-highlight/20": allSavedProducts.length > 0,
+                                        })} onClick={() => { toggleSheetOpen(productId) }}>
+                                            + presentaciones
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        Seleccionaste otra presentacion de este producto
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                            :
+                            <Button size='xs' variant="outlineSecondary" className={cn("w-[6.8rem]")} onClick={() => { toggleSheetOpen(productId) }}>
+                                + presentaciones
+                            </Button>
+                    )
                 }
             </SheetTrigger>
             <SheetContent className="w-1/2 mx-w-1/2 sm:max-w-1/2">

@@ -74,7 +74,7 @@ export default function ProductDetail() {
             productId: string,
             price: string,
             description: string | undefined
-        }) => modifyProduct(productId, price, description),
+        }) => modifyProduct({ productId, price, description }),
         onSuccess: () => {
             refetch();
         },

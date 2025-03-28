@@ -9,7 +9,7 @@ import UseCompanyStore from '@/store/company.store';
 import UseUserStore from '@/store/user.store';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { Eye, TrafficCone } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -94,7 +94,7 @@ export default function OrdenesDeCompra() {
                                         {isLoading
                                             ?
                                             Array.from({ length: 6 }).map((_, index) => (
-                                                <TableRow className="hover:bg-transparent border-none">
+                                                <TableRow className="hover:bg-transparent border-none" key={index}>
                                                     <TableCell colSpan={7} className="h-0 p-2 border-none hover:none ">
                                                         <Skeleton key={index} className="h-14 w-full opacity-10 bg-muted/30 rounded-sm" />
                                                     </TableCell>
@@ -115,7 +115,7 @@ export default function OrdenesDeCompra() {
                                                         {numberToTimeString(order.schedule.startHour)} - {numberToTimeString(order.schedule.endHour)}
                                                     </TableCell>
                                                     <TableCell className="text-center">
-                                                        <Link to={`/buyOrder/${order.id}`}>
+                                                        <Link to="/buyOrder/$orderId" params={{ orderId: order.id }}>
                                                             <Button variant='ghost' className='space-x-2'>
                                                                 <Eye className='cursor-pointer' size={20} />
                                                                 <p>Ver Ordern de Compra</p>

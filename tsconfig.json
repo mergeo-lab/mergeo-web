@@ -21,7 +21,8 @@
       "services/*": ["src/lib/api/*"],
       "context/*": ["./src/context/*"],
       "lib/*": ["src/lib/*"],
-      "constants/*": ["./src/constants/*"]
+      "constants/*": ["./src/constants/*"],
+      "assets/*": ["./src/assets/*"]
     },
     /* Linting */
     "strict": true,

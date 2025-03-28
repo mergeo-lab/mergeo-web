@@ -21,7 +21,7 @@ import { deletPickUpPoint, editPickUpPoints } from "@/lib/configuration/pickUp";
 type Props = {
     title?: string,
     subTitle?: string,
-    icon?: JSX.Element,
+    icon?: React.ReactElement,
     companyId: string,
     isEditing: boolean,
     isOpen: boolean,
@@ -46,7 +46,7 @@ export function EditPickUp(
     const [open, setOpen] = useState(false);
     const [isLoading, setIsloading] = useState(false);
     const mutation = useMutation({ mutationFn: editPickUpPoints })
-    const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ lat: 0, lng: 0 });
+    const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ latitude: 0, longitude: 0 });
     const { daysAndTime } = useDaysPickerStore();
 
     useEffect(() => {
@@ -64,8 +64,8 @@ export function EditPickUp(
                 id: pickUpData.address.id,
                 displayName: { text: pickUpData.address.name },
                 location: {
-                    lat: pickUpData.address.polygon.coordinates[1],
-                    lng: pickUpData.address.polygon.coordinates[0]
+                    latitude: pickUpData.address.location.coordinates[1],
+                    longitude: pickUpData.address.location.coordinates[0],
                 },
             });
         }
@@ -79,8 +79,8 @@ export function EditPickUp(
         address: {
             id: pickUpData?.address.id || "",
             name: pickUpData?.address.name || "",
-            polygon: {
-                coordinates: pickUpData?.address.polygon.coordinates || [0, 0],
+            location: {
+                coordinates: pickUpData?.address.location.coordinates || [0, 0],
                 type: "Point",
             },
         },
@@ -96,14 +96,14 @@ export function EditPickUp(
     function addAddress(address: GoogleLocationSchemaType) {
         form.setValue('address', {
             id: address.id,
-            polygon: {
+            location: {
                 type: "Point",
-                coordinates: [address.location.lat, address.location.lng]
+                coordinates: [address.location.longitude, address.location.latitude]
             },
             name: address.displayName.text
         });
 
-        setMarkerPosition({ lat: address.location.lat, lng: address.location.lng });
+        setMarkerPosition({ latitude: address.location.latitude, longitude: address.location.longitude });
         form.trigger('address');
     }
 
@@ -192,9 +192,7 @@ export function EditPickUp(
                                                     disabled={!isEditing}
                                                     defaultAddressName={pickUpData?.address.name}
                                                     selectedAddress={addAddress}
-                                                    addressRemoved={() => {
-                                                        setMarkerPosition({ lat: 0, lng: 0 });
-                                                    }}
+                                                    addressRemoved={() => setMarkerPosition({ latitude: 0, longitude: 0 })}
                                                 />
                                                 <FormMessage />
                                             </FormItem>
@@ -253,16 +251,16 @@ export function EditPickUp(
                         </FormProvider>
                     </div>
                     <div className="w-1/2 h-full flex justify-center items-center bg-border overflow-hidden rounded-lg">
-                        {markerPosition.lat !== 0 && markerPosition.lng !== 0
+                        {markerPosition.latitude !== 0 && markerPosition.longitude !== 0
                             ? <Map
                                 style={{ width: '100%', height: '100%' }}
-                                center={markerPosition}
+                                center={{ lat: Number(markerPosition.latitude), lng: Number(markerPosition.longitude) }}
                                 defaultZoom={16}
                                 maxZoom={20}
                                 gestureHandling={'greedy'}
                                 disableDefaultUI={true}
                             >
-                                <Marker position={markerPosition} />
+                                <Marker position={{ lat: markerPosition.latitude, lng: markerPosition.longitude }} />
                             </Map>
                             : <div className="flex flex-col justify-center items-center gap-2">
                                 <MapPin size={40} />
@@ -282,7 +280,7 @@ export function EditPickUp(
                         </DialogClose>
                         : (
                             <div className="w-full flex justify-between gap-2">
-                                <DeleteConfirmationDialog
+                                <DeleteConfirmationDialog<{ id: string }>
                                     id={pickUpData && pickUpData?.id}
                                     name={pickUpData && pickUpData?.name}
                                     title="Borrar sucursal"

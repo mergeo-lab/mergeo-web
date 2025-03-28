@@ -22,7 +22,7 @@ type Props<T> = {
     otherMutationProp?: unknown,
 }
 
-function DeleteConfirmationDialogComponent<T>({ id, name, title, question, triggerButton, openDialog, otherMutationProp, onLoading, mutationFn, callback, onClose }: Props<T>) {
+function DeleteConfirmationDialogComponent<T extends object>({ id, name, title, question, triggerButton, openDialog, otherMutationProp, onLoading, mutationFn, callback, onClose }: Props<T>) {
     const mutation = useMutation({ mutationFn: mutationFn });
     const [open, setOpen] = useState(false);
 
@@ -92,4 +92,6 @@ function DeleteConfirmationDialogComponent<T>({ id, name, title, question, trigg
     )
 }
 
-export const DeleteConfirmationDialog = React.memo(DeleteConfirmationDialogComponent);
+export const DeleteConfirmationDialog = React.memo(
+    DeleteConfirmationDialogComponent
+) as <T>(props: Props<T>) => React.ReactElement;

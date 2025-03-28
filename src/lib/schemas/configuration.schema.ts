@@ -52,6 +52,7 @@ const ProductSchema = z.object({
   manufacturer_country: z.string().optional(),
   accepted: z.boolean().optional(),
   quantity: z.number().optional(),
+  isActive: z.boolean().optional(),
   isPickUp: z.boolean().optional(),
   isFavorite: z.boolean().optional(),
   morePresentations: z.boolean().optional(),

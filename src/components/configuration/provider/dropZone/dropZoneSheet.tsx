@@ -26,7 +26,7 @@ type Props = {
     zones: IncomingDropZoneSchemaType[],
     title?: string,
     subTitle?: string,
-    icon?: JSX.Element,
+    icon?: React.ReactNode,
     companyId: string | undefined,
     triggerButton?: React.ReactNode,
     isLoadingProp?: boolean
@@ -369,7 +369,7 @@ export function DropZoneSheet({
                         deleteZone={(id: string) => handelDeleteZone(id)}
                         handleShowMap={(id: string) => handleShowMap(id)}
                     />
-                    <DeleteConfirmationDialog
+                    <DeleteConfirmationDialog<{ id: string }>
                         id={deleteDropZoneData.data && deleteDropZoneData.data.id}
                         name={deleteDropZoneData.data && deleteDropZoneData.data.name}
                         openDialog={deleteDropZoneData && deleteDropZoneData.isOpen}

@@ -55,8 +55,12 @@ export default function ProductsList({ configCanceled, isVisible = false }: Prop
                     <ListX className="text-destructive" size={25} />
                     <p className="text-secondary/60">No seleccionaste una lista</p>
                 </div>
-                <p className="text-secondary/60 font-light text-base leading-5 pb-5 text-center">
-                    Puedes seleccionar una liste en la pantalla de configuración
+                <p className="text-secondary/60 font-light text-base leading-5 pb-5 text-center flex flex-col">
+                    Puedes seleccionar una lista
+                    <div className="flex">
+                        <span>en la pantalla de configuración</span>
+                        <div className="rotate-180">☝🏼</div>
+                    </div>
                 </p>
             </div>
         )

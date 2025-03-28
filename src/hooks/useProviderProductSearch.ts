@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { providerProductsSearch } from '@/lib/products';
 import {
+  PaginationSort,
   PaginationType,
   ProductSchemaType,
   ProviderProductSearchType,
@@ -13,7 +14,7 @@ export const useProviderProductSearch = () => {
     page: 1,
     pageSize: 20,
     orderBy: 'created',
-    sortOrder: 'asc',
+    sortOrder: PaginationSort.ASC,
   });
 
   useEffect(() => {
@@ -58,7 +59,7 @@ export const useProviderProductSearch = () => {
       page: 1,
       pageSize: 10,
       orderBy: 'created',
-      sortOrder: 'desc',
+      sortOrder: PaginationSort.DESC,
     });
   };
 

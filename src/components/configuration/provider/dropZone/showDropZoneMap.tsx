@@ -8,7 +8,7 @@ import DrawingMap from "@/components/map/drawingMap";
 type Props = {
     title?: string,
     subTitle?: string,
-    icon?: JSX.Element,
+    icon?: React.ReactElement,
     showDialog: boolean
     zone: google.maps.LatLngLiteral[]
     onClose: () => void
