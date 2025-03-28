@@ -19,7 +19,7 @@ import { newPickUpPoints } from "@/lib/configuration/pickUp";
 type Props = {
     title?: string,
     subTitle?: string,
-    icon?: JSX.Element,
+    icon?: React.ReactNode,
     companyId: string,
     triggerButton?: React.ReactNode
     callback: () => void

@@ -15,7 +15,7 @@ type Props = {
     newEntry: {
         title: string,
         subTitle: string,
-        icon: JSX.Element
+        icon: React.ReactElement
     },
 }
 
@@ -45,7 +45,7 @@ export function DropZonePicker({ className, companyId, newEntry }: Props) {
                     subTitle={newEntry.subTitle}
                     icon={newEntry.icon}
                     triggerButton={
-                        <Button className="px-5 w-full" type="button" size='sm'>
+                        <Button className="w-full" type="button" size='sm'>
                             {isFetching
                                 ? <LoadingIndicator />
                                 : <span className="flex items-center gap-2">

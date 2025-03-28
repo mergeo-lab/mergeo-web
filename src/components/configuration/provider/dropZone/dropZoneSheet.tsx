@@ -234,7 +234,7 @@ export function DropZoneSheet({
                 setOpen(isOpen);
             }
         }}>
-            <SheetTrigger className="pt-2 w-full">
+            <SheetTrigger className="w-full" asChild>
                 {triggerButton}
             </SheetTrigger>
             <SheetContent className="w-1/3 mx-w-1/3 sm:max-w-1/3">
@@ -299,9 +299,9 @@ export function DropZoneSheet({
                                         triggerButton={
                                             <Button
                                                 variant={selectedZone.length ? "outline" : "secondary"}
-                                                className="w-fit space-x-2 text-md font-black p-6 rounded-md m-0" type="button">
+                                                className="w-full space-x-2 text-md font-black p-6 m-0" type="button">
                                                 <Map size={30} />
-                                                <p className="uppercase">{
+                                                <p className="uppercase text-sm">{
                                                     selectedZone.length
                                                         ? "Editar zona en el mapa"
                                                         : "Dibujar zona en el mapa"

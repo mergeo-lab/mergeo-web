@@ -18,7 +18,7 @@ type Props = {
     newBranch?: {
         title?: string,
         subTitle?: string,
-        icon?: JSX.Element,
+        icon?: React.ReactElement,
     },
     onLoading?: () => void,
     callback?: () => void,

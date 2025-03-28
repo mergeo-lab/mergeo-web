@@ -47,18 +47,18 @@ export default function DaysPicker({ defaultData, isEditing, className, callback
                 {
                     daysAndTime.length ?
                         daysAndTime.map((dt: PickUpSchedulesSchemaType, index: number) => (
-                            <div key={index} className="text-md flex justify-between items-center space-x-4 border p-1 m-1">
+                            <div key={index} className="flex text-sm justify-between items-center border p-1 m-1">
                                 <span className="ml-2">{dt.day}</span>
                                 <span>{numberToTimeString(dt.startHour)} - {numberToTimeString(dt.endHour)}</span>
                                 {isEditing &&
-                                    <Button type="button" variant="ghost" onClick={() => handelRemoveDay(dt.id)}>
+                                    <Button type="button" variant="ghost" size="xs" className="hover:text-destructive" onClick={() => handelRemoveDay(dt.id)}>
                                         <Trash2 className="cursor-pointer" size={15} />
                                     </Button>
                                 }
                             </div>
                         ))
                         : <div className="flex justify-center items-center w-full h-full">
-                            <div className="text-md border p-1 m-1 w-full text-center">No has agregado ningun dia</div>
+                            <div className="border p-1 m-1 w-full text-center">No has agregado ningun dia</div>
                         </div>
                 }
             </div>

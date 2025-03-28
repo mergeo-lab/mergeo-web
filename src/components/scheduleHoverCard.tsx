@@ -21,7 +21,7 @@ export default function ScheduleHoverCard({ schedules }: { schedules: PickUpSche
     const groupedSchedules = groupSchedulesByDay(schedules);
 
     return (
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 flex-wrap z-20">
             {Object.keys(groupedSchedules).map((day) => (
                 <HoverCard key={day}>
                     <HoverCardTrigger>
@@ -29,7 +29,7 @@ export default function ScheduleHoverCard({ schedules }: { schedules: PickUpSche
                             {day.slice(0, 2).toUpperCase()}
                         </div>
                     </HoverCardTrigger>
-                    <HoverCardContent className="w-fit">
+                    <HoverCardContent className="w-fit z-20">
                         <div className="flex flex-col">
                             <Table className="table-fixed w-fit">
                                 <TableHeader>

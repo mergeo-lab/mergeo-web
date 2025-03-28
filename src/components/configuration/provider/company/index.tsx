@@ -17,11 +17,14 @@ import { updateCompany } from "@/lib/configuration/company";
 import { toast } from "@/components/ui/use-toast";
 import { PickUpPicker } from "@/components/configuration/pickUp/pickUpPicker";
 import { DropZonePicker } from "@/components/configuration/provider/dropZone/dropZonePicker";
+import { BsFillBuildingsFill } from "react-icons/bs";
+import { RiRoadMapFill } from "react-icons/ri";
 
 export function Company() {
     const { company, saveCompany } = UseCompanyStore();
     const [isLoading, setIsLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [isEditingPickUp, setIsEditingPickUp] = useState(false);
     const mutation = useMutation({ mutationFn: updateCompany })
     const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ latitude: 0, longitude: 0 });
 
@@ -124,153 +127,176 @@ export function Company() {
                         </div>
                     </div>
                     <FormProvider {...form}>
-                        <form className='space-y-6 w-full pr-10'>
-                            <div className='grid grid-cols-2 gap-10'>
-                                <FormField
-                                    name="name"
-                                    disabled={!isEditing}
-                                    render={({ field }) => (
+                        <form className='w-full pr-10'>
+                            <div className="border border-border rounded-sm mb-4">
+                                <div className="relative">
+                                    <div className="border-b border-border w-full flex gap-2 items-center p-2 px-4 mb-2">
+                                        <BsFillBuildingsFill className="text-info" />
+                                        <p>Datos de la Empresa</p>
+                                    </div>
+                                    {isEditing &&
+                                        <div className="bg-highlight w-8 h-8 rounded absolute top-1 right-1 flex justify-center items-center animate-heartbeat animate-iteration-count-2 animate-duration-1000">
+                                            <Pencil size={20} className="text-white" />
+                                        </div>}
+                                </div>
+                                <div className="space-y-3 p-5 py-2 pb-4">
+                                    <div className='grid grid-cols-2 gap-10'>
+                                        <FormField
+                                            name="name"
+                                            disabled={!isEditing}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel id='name'>Nombre</FormLabel>
+                                                    <FormControl>
+                                                        <Input className={cn("", {
+                                                            'disabledStyle': !isEditing
+                                                        })} {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
                                         <FormItem>
-                                            <FormLabel id='name'>Nombre</FormLabel>
+                                            <FormLabel id='razonSocial'>Razon Social</FormLabel>
                                             <FormControl>
-                                                <Input className={cn("", {
-                                                    'disabledStyle': !isEditing
-                                                })} {...field} />
+                                                <Input disabled={true} value={company?.razonSocial && company?.razonSocial}
+                                                    className={cn("", {
+                                                        'disabledStyle': true
+                                                    })} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
-                                    )}
-                                />
-                                <FormItem>
-                                    <FormLabel id='razonSocial'>Razon Social</FormLabel>
-                                    <FormControl>
-                                        <Input disabled={true} value={company?.razonSocial && company?.razonSocial}
-                                            className={cn("", {
-                                                'disabledStyle': true
-                                            })} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            </div>
-                            <div className='grid grid-cols-2 gap-10'>
-                                <FormItem>
-                                    <FormLabel id='cuit'>CUIT</FormLabel>
-                                    <FormControl>
-                                        <Input disabled={true} value={company?.cuit && company?.cuit} className={cn("", {
-                                            'disabledStyle': true
-                                        })} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                                <FormField
-                                    disabled={!isEditing}
-                                    name="activity"
-                                    render={({ field }) => (
+                                    </div>
+                                    <div className='grid grid-cols-2 gap-10'>
                                         <FormItem>
-                                            <FormLabel id='activity'>Actividad</FormLabel>
+                                            <FormLabel id='cuit'>CUIT</FormLabel>
                                             <FormControl>
-                                                <Input className={cn("", {
-                                                    'disabledStyle': !isEditing
-                                                })} {...field} />
+                                                <Input disabled={true} value={company?.cuit && company?.cuit} className={cn("", {
+                                                    'disabledStyle': true
+                                                })} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
-                                    )}
-                                />
+                                        <FormField
+                                            disabled={!isEditing}
+                                            name="activity"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel id='activity'>Actividad</FormLabel>
+                                                    <FormControl>
+                                                        <Input className={cn("", {
+                                                            'disabledStyle': !isEditing
+                                                        })} {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    <div className='grid grid-cols-1 gap-10'>
+                                        <FormField
+                                            disabled={!isEditing}
+                                            name="branch"
+                                            render={({ field }) => {
+                                                console.log(field?.value)
+                                                return (
+                                                    <FormItem>
+                                                        <FormLabel id='branch'>Dirección</FormLabel>
+                                                        <FormControl>
+                                                            <GoogleAutoComplete
+                                                                isEditing={isEditing}
+                                                                disabled={!isEditing}
+                                                                defaultAddressName={field?.value.address.name}
+                                                                selectedAddress={addAddress}
+                                                                addressRemoved={() => {
+                                                                    field?.value.name && form.setValue('branch', {
+                                                                        address: {
+                                                                            id: "",
+                                                                            location: {
+                                                                                type: "Point",
+                                                                                coordinates: [0, 0]
+                                                                            },
+                                                                            name: ""
+                                                                        }
+                                                                    });
+                                                                    setMarkerPosition({ latitude: 0, longitude: 0 });
+                                                                }}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
                             </div>
 
-                            <div className='grid grid-cols-1 gap-10'>
-                                <FormField
-                                    disabled={!isEditing}
-                                    name="branch"
-                                    render={({ field }) => {
-                                        console.log(field?.value)
-                                        return (
-                                            <FormItem>
-                                                <FormLabel id='branch'>Dirección</FormLabel>
-                                                <FormControl>
-                                                    <GoogleAutoComplete
-                                                        isEditing={isEditing}
-                                                        disabled={!isEditing}
-                                                        defaultAddressName={field?.value.address.name}
-                                                        selectedAddress={addAddress}
-                                                        addressRemoved={() => {
-                                                            field?.value.name && form.setValue('branch', {
-                                                                address: {
-                                                                    id: "",
-                                                                    location: {
-                                                                        type: "Point",
-                                                                        coordinates: [0, 0]
-                                                                    },
-                                                                    name: ""
-                                                                }
-                                                            });
-                                                            setMarkerPosition({ latitude: 0, longitude: 0 });
-                                                        }}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )
-                                    }}
-                                />
+                            <div className="border border-border rounded-sm">
+                                <div className="border-b border-border w-full p-2 px-4 flex items-center gap-2">
+                                    <RiRoadMapFill className="text-info" size={20} />
+                                    <p>Sucursales y Zonas</p>
+                                </div>
+                                <div className="px-5 pt-2 pb-4 space-y-5">
+                                    <div className='grid grid-cols-1 gap-10'>
+                                        <FormField
+                                            name="pickUp"
+                                            render={() => (
+                                                <FormItem>
+                                                    <FormLabel>Puntos de Pick Up</FormLabel>
+                                                    <FormControl>
+                                                        <PickUpPicker
+                                                            companyId={company?.id}
+                                                            isEditing={isEditingPickUp}
+                                                            callback={actionEnded}
+                                                            onLoading={() => setIsLoading(true)}
+                                                            toggleEditting={(edit?: boolean) => setIsEditingPickUp(edit ? edit : !isEditingPickUp)}
+                                                            notFoundMessage="No se encontraron Puntos de Pick Up"
+                                                            newEntry={{
+                                                                title: "Agregar un Punto de Pick Up",
+                                                                subTitle: "Aqui puedes areguegar un punto de Pick Up",
+                                                            }}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="p-0 m-0">
+                                        <FormField
+                                            disabled={!isEditing}
+                                            name="dropZone"
+                                            render={() => (
+                                                <FormItem>
+                                                    <FormLabel className="">Zonas de reparto</FormLabel>
+                                                    <FormControl>
+                                                        <DropZonePicker
+                                                            companyId={company?.id}
+                                                            isEditing={isEditing}
+                                                            notFoundMessage="No se encontraron zonas de entrega"
+                                                            newEntry={{
+                                                                title: "Agregar una zona de entrega",
+                                                                subTitle: "Aqui puedes areguegar una zona de entrega",
+                                                                icon: <MapPin size={20} />
+                                                            }}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                </div>
                             </div>
-                            <div className='grid grid-cols-1 gap-10'>
-                                <FormField
-                                    name="pickUp"
-                                    disabled={!isEditing}
-                                    render={() => (
-                                        <FormItem>
-                                            <FormLabel>Puntos de Pick Up ( click para {isEditing ? ' editar' : 'ver detalles'} )</FormLabel>
-                                            <FormControl>
-                                                <PickUpPicker
-                                                    companyId={company?.id}
-                                                    isEditing={isEditing}
-                                                    callback={actionEnded}
-                                                    onLoading={() => setIsLoading(true)}
-                                                    notFoundMessage="No se encontraron Puntos de Pick Up"
-                                                    newEntry={{
-                                                        title: "Agregar un Punto de Pick Up",
-                                                        subTitle: "Aqui puedes areguegar un punto de Pick Up",
-                                                    }}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                            <div className='grid grid-cols-1 gap-10'>
-                                <FormField
-                                    disabled={!isEditing}
-                                    name="dropZone"
-                                    render={() => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <DropZonePicker
-                                                    companyId={company?.id}
-                                                    isEditing={isEditing}
-                                                    notFoundMessage="No se encontraron zonas de entrega"
-                                                    newEntry={{
-                                                        title: "Agregar una zona de entrega",
-                                                        subTitle: "Aqui puedes areguegar una zona de entrega",
-                                                        icon: <MapPin size={20} />
-                                                    }}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-
-
 
                         </form>
                     </FormProvider>
                 </div>
                 <CardFooter className='w-full'>
-                    <div className='flex flex-col-reverse md:flex-row justify-end items-center min-h-20 gap-2'>
+                    <div className='flex flex-col-reverse md:flex-row justify-end items-center  gap-2'>
                         {isEditing ?
                             <>
                                 <Button variant='secondary' onClick={handleCancelEdit} className='min-w-[200px] flex gap-2' type="submit">

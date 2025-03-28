@@ -17,7 +17,7 @@ import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 type Props = {
     title?: string,
     subTitle?: string,
-    icon?: JSX.Element,
+    icon?: React.ReactElement,
     companyId: string,
     triggerButton?: React.ReactNode
     callback: () => void

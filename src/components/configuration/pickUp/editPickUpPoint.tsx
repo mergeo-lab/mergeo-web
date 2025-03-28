@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { MapPin, Store, Trash2 } from "lucide-react";
+import { MapPin, Pencil, Store, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
@@ -21,7 +21,7 @@ import { deletPickUpPoint, editPickUpPoints } from "@/lib/configuration/pickUp";
 type Props = {
     title?: string,
     subTitle?: string,
-    icon?: JSX.Element,
+    icon?: React.ReactElement,
     companyId: string,
     isEditing: boolean,
     isOpen: boolean,
@@ -29,6 +29,7 @@ type Props = {
     onLoading: () => void
     callback: () => void
     onClose: () => void
+    toggleEditting: () => void
 }
 
 export function EditPickUp(
@@ -42,6 +43,7 @@ export function EditPickUp(
         onLoading,
         callback,
         onClose,
+        toggleEditting,
     }: Props) {
     const [open, setOpen] = useState(false);
     const [isLoading, setIsloading] = useState(false);
@@ -153,13 +155,44 @@ export function EditPickUp(
         }}>
             <DialogContent className="w-full">
                 <DialogHeader className="px-6 py-3 border bottom-1">
-                    <DialogTitle className="flex items-center gap-2">
-                        {icon}
-                        {title}
-                    </DialogTitle>
-                    <DialogDescription>
-                        {subTitle}
-                    </DialogDescription>
+                    <div className="flex gap-4">
+                        <div>
+                            <DialogTitle className="flex items-center gap-2">
+                                {icon}
+                                {title}
+                            </DialogTitle>
+                            <DialogDescription>
+                                {subTitle}
+                            </DialogDescription>
+                        </div>
+                        <div className="flex">
+                            <DeleteConfirmationDialog
+                                id={pickUpData && pickUpData?.id}
+                                name={pickUpData && pickUpData?.name}
+                                title="Borrar sucursal"
+                                question="¿Seguro que quieres borrar esta sucursal"
+                                triggerButton={
+                                    <Button variant="ghost" className="w-fit flex gap-2 rounded-r-none border border-border border-r-0 hover:text-destructive">
+                                        <Trash2 size={15} />
+                                    </Button>
+                                }
+                                onLoading={() => {
+                                    setIsloading(true);
+                                    onLoading();
+                                }}
+                                mutationFn={deletPickUpPoint}
+                                callback={deleteComplete}
+                            />
+                            <Button
+                                onClick={() => toggleEditting()}
+                                variant="ghost"
+                                className={cn("w-fit flex gap-2 rounded-l-none border border-border border-l-none hover:text-highlight", {
+                                    "bg-highlight text-white hover:bg-highlight/80 hover:text-white": isEditing,
+                                })}>
+                                <Pencil size={15} />
+                            </Button>
+                        </div>
+                    </div>
                 </DialogHeader>
                 <div className="px-6 py-2 flex gap-2">
                     {isLoading && <OverlayLoadingIndicator />}
@@ -281,25 +314,7 @@ export function EditPickUp(
                             </Button>
                         </DialogClose>
                         : (
-                            <div className="w-full flex justify-between gap-2">
-                                <DeleteConfirmationDialog
-                                    id={pickUpData && pickUpData?.id}
-                                    name={pickUpData && pickUpData?.name}
-                                    title="Borrar sucursal"
-                                    question="¿Seguro que quieres borrar esta sucursal"
-                                    triggerButton={
-                                        <Button variant="destructive" className="w-40 flex gap-2">
-                                            <Trash2 size={15} />
-                                            Borrar
-                                        </Button>
-                                    }
-                                    onLoading={() => {
-                                        setIsloading(true);
-                                        onLoading();
-                                    }}
-                                    mutationFn={deletPickUpPoint}
-                                    callback={deleteComplete}
-                                />
+                            <div className="w-full flex justify-end gap-2">
                                 <div className="flex gap-2">
                                     <DialogClose className="w-40">
                                         <Button variant="secondary" className="w-full">Cancelar</Button>

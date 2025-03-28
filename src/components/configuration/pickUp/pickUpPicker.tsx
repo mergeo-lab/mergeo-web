@@ -23,6 +23,7 @@ type Props = {
     },
     onLoading?: () => void,
     callback?: () => void,
+    toggleEditting?: (editi?: boolean) => void,
 }
 
 type EditEntry = {
@@ -30,7 +31,7 @@ type EditEntry = {
     isOpen: boolean,
 }
 
-export function PickUpPicker({ className, companyId, isEditing, notFoundMessage, newEntry, onLoading, callback }: Props) {
+export function PickUpPicker({ className, companyId, isEditing, notFoundMessage, newEntry, onLoading, callback, toggleEditting }: Props) {
     const [editEntry, setEditEntry] = useState<EditEntry>({ entryData: null, isOpen: false });
 
     const { data: pickUpResult, isLoading, isError, refetch } = useQuery({
@@ -39,7 +40,6 @@ export function PickUpPicker({ className, companyId, isEditing, notFoundMessage,
     });
 
     const pickUpPoints = pickUpResult?.data;
-    console.log("pickUpPoints", pickUpPoints)
     const handleEditPickUp = async (pickUp: PickUpSchemaType) => {
         setEditEntry({ entryData: pickUp, isOpen: true });
     }
@@ -66,7 +66,7 @@ export function PickUpPicker({ className, companyId, isEditing, notFoundMessage,
 
     return (
         <div className={className}>
-            <ScrollArea className="h-auto max-h-[150px] min-h-10 w-full rounded border border-input bg-background p-2 relative">
+            <ScrollArea className="h-auto max-h-[150px] min-h-10 w-full rounded border border-input bg-background p-2 pr-10 relative">
                 {isLoading
                     ?
                     <LoadingIndicator />
@@ -87,13 +87,10 @@ export function PickUpPicker({ className, companyId, isEditing, notFoundMessage,
                                     </Badge>
                                 ))
                                 : <p className="text-sm font-base mt-1 w-full text-center">
-                                    {isEditing
-                                        ? <span className="flex justify-center gap-1 items-center">Click <span className="font-bold text-lg">+</span> para agregar una sucursal</span>
-                                        : notFoundMessage ? notFoundMessage : 'No tienes sucursales'
-                                    }
+                                    {notFoundMessage ? notFoundMessage : 'No tienes sucursales'}
                                 </p>
                         }
-                        {isEditing && companyId &&
+                        {companyId &&
                             <NewPickUpPoint
                                 title={newEntry?.title}
                                 subTitle={newEntry?.subTitle}
@@ -101,7 +98,7 @@ export function PickUpPicker({ className, companyId, isEditing, notFoundMessage,
                                 companyId={companyId}
                                 triggerButton={
                                     <Button className="w-8 h-8 absolute right-1 -top-1 flex justify-center items-center p-0">
-                                        <Plus size={15} className="text-white" />
+                                        <Plus size={15} className="text-white" strokeWidth={3} />
                                     </Button>
                                 }
                                 callback={pickUpAdded}
@@ -121,8 +118,12 @@ export function PickUpPicker({ className, companyId, isEditing, notFoundMessage,
                     isEditing={isEditing}
                     pickUpData={editEntry.entryData && editEntry.entryData}
                     callback={pickUpEdited}
-                    onClose={() => setEditEntry({ entryData: null, isOpen: false })}
+                    onClose={() => {
+                        setEditEntry({ entryData: null, isOpen: false });
+                        toggleEditting && toggleEditting(false);
+                    }}
                     onLoading={() => onLoading && onLoading()}
+                    toggleEditting={() => toggleEditting && toggleEditting()}
                 />
             }
         </div>
