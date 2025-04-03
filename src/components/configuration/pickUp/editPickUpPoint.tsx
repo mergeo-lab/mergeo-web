@@ -1,7 +1,7 @@
 import { GoogleAutoComplete } from "@/components/googleAutoComplete";
 import { Map, Marker } from '@vis.gl/react-google-maps';
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
@@ -23,13 +23,11 @@ type Props = {
     subTitle?: string,
     icon?: React.ReactElement,
     companyId: string,
-    isEditing: boolean,
     isOpen: boolean,
     pickUpData: PickUpSchemaType | null,
     onLoading: () => void
     callback: () => void
     onClose: () => void
-    toggleEditting: () => void
 }
 
 export function EditPickUp(
@@ -37,19 +35,18 @@ export function EditPickUp(
         title = 'Detalles de la sucursal',
         subTitle = 'Aquí puedes ver los detalles de la sucursal',
         icon = <Store />,
-        isEditing,
         isOpen,
         pickUpData,
         onLoading,
         callback,
         onClose,
-        toggleEditting,
     }: Props) {
     const [open, setOpen] = useState(false);
     const [isLoading, setIsloading] = useState(false);
     const mutation = useMutation({ mutationFn: editPickUpPoints })
     const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ latitude: 0, longitude: 0 });
-    const { daysAndTime } = useDaysPickerStore();
+    const { daysAndTime, removeAll, addMultipleDaysAndTime } = useDaysPickerStore();
+    const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
         setOpen(isOpen);
@@ -120,6 +117,13 @@ export function EditPickUp(
         setOpen(false);
     }
 
+    function cancelEdit() {
+        setIsEditing(false);
+        form.reset(defaultValues);
+        removeAll();
+        addMultipleDaysAndTime(pickUpData?.schedules ?? [])
+    }
+
     async function onSubmit(fields: PickUpSchemaType) {
         onLoading();
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -148,6 +152,7 @@ export function EditPickUp(
                 setOpen(false);
                 handleCancel();
                 onClose();
+                setIsEditing(false);
 
             } else {
                 setOpen(true);
@@ -158,21 +163,25 @@ export function EditPickUp(
                     <div className="flex gap-4">
                         <div>
                             <DialogTitle className="flex items-center gap-2">
-                                {icon}
-                                {title}
+                                <div className="rounded border border-border p-2">
+                                    {icon}
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    {title}
+                                    <div className="text-sm">{subTitle}</div>
+                                </div>
                             </DialogTitle>
-                            <DialogDescription>
-                                {subTitle}
-                            </DialogDescription>
                         </div>
                         <div className="flex">
                             <DeleteConfirmationDialog
                                 id={pickUpData && pickUpData?.id}
-                                name={pickUpData && pickUpData?.name}
                                 title="Borrar sucursal"
-                                question="¿Seguro que quieres borrar esta sucursal"
+                                question={<p>¿Seguro que quieres borrar la sucursal <span className="font-bold">{pickUpData && pickUpData?.name}</span>?</p>}
+                                disabled={isEditing}
                                 triggerButton={
-                                    <Button variant="ghost" className="w-fit flex gap-2 rounded-r-none border border-border border-r-0 hover:text-destructive">
+                                    <Button variant="ghost" className={cn("w-fit flex gap-2 rounded-r-none border border-border border-r-0 hover:text-destructive", {
+                                        "text-muted hover:text-muted hover:bg-white cursor-not-allowed": isEditing,
+                                    })}>
                                         <Trash2 size={15} />
                                     </Button>
                                 }
@@ -184,10 +193,10 @@ export function EditPickUp(
                                 callback={deleteComplete}
                             />
                             <Button
-                                onClick={() => toggleEditting()}
+                                onClick={() => setIsEditing(true)}
                                 variant="ghost"
                                 className={cn("w-fit flex gap-2 rounded-l-none border border-border border-l-none hover:text-highlight", {
-                                    "bg-highlight text-white hover:bg-highlight/80 hover:text-white": isEditing,
+                                    "bg-highlight text-white hover:bg-highlight/80 hover:text-white cursor-default": isEditing,
                                 })}>
                                 <Pencil size={15} />
                             </Button>
@@ -316,9 +325,7 @@ export function EditPickUp(
                         : (
                             <div className="w-full flex justify-end gap-2">
                                 <div className="flex gap-2">
-                                    <DialogClose className="w-40">
-                                        <Button variant="secondary" className="w-full">Cancelar</Button>
-                                    </DialogClose>
+                                    <Button variant="secondary" className="w-full" onClick={() => cancelEdit()}>Cancelar</Button>
                                     <DialogClose className="w-40" disabled={!form.formState.isValid}>
                                         <Button disabled={!form.formState.isValid} onClick={form.handleSubmit(onSubmit)} type="submit" className="w-full">Guardar</Button>
                                     </DialogClose>

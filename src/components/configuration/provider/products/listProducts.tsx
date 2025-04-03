@@ -22,7 +22,7 @@ export default function ListProducts() {
                         gtin={item.gtin}
                         name={item.name}
                         brand={item.brand}
-                        netContent={item.net_content}
+                        netContent={item.netContent}
                         measurmentUnit={item.measurementUnit}
                         price={item.price}
                         onRemove={() => handleRemoveProduct(item.id)}

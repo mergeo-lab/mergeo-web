@@ -139,11 +139,11 @@ export default function Favorites() {
                                                     </div>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="text-center">{product.net_content}</TableCell>
+                                            <TableCell className="text-center">{product.netContent}</TableCell>
                                             <TableCell className="text-center">{product.measurementUnit}</TableCell>
                                             <TableCell className="text-center">{product.price}</TableCell>
                                             <TableCell className="text-center">
-                                                {product.net_content ? +product.price * product.net_content : 1}
+                                                {product.netContent ? +product.price * product.netContent : 1}
                                             </TableCell>
                                             <TableCell>
                                                 <Button

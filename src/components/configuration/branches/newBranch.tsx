@@ -1,7 +1,7 @@
 import { GoogleAutoComplete } from "@/components/googleAutoComplete";
 import { Map, Marker } from '@vis.gl/react-google-maps';
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
@@ -20,6 +20,7 @@ type Props = {
     icon?: React.ReactElement,
     companyId: string,
     triggerButton?: React.ReactNode
+    disabled?: boolean,
     callback: () => void
     onLoading: () => void
 }
@@ -31,6 +32,7 @@ export function NewBranch(
         icon = <Store />,
         companyId,
         triggerButton,
+        disabled,
         callback,
         onLoading,
     }: Props) {
@@ -102,18 +104,20 @@ export function NewBranch(
                 setOpen(true);
             }
         }}>
-            <DialogTrigger className="w-full flex mt-2" asChild>
+            <DialogTrigger className="w-full flex mt-2" asChild disabled={disabled}>
                 {triggerButton}
             </DialogTrigger>
             <DialogContent className="w-full">
                 <DialogHeader className="px-6 py-3 border bottom-1">
                     <DialogTitle className="flex items-center gap-2">
-                        {icon}
-                        {title}
+                        <div className="rounded border border-border p-2">
+                            {icon}
+                        </div>
+                        <div className="flex flex-col gap-1">
+                            {title}
+                            <div className="text-sm">{subTitle}</div>
+                        </div>
                     </DialogTitle>
-                    <DialogDescription>
-                        {subTitle}
-                    </DialogDescription>
                 </DialogHeader>
                 <div className="px-6 py-2 flex gap-2">
                     {mutation.isPending && <OverlayLoadingIndicator />}

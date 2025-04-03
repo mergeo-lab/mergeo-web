@@ -10,19 +10,19 @@ type MutationFn<T> = (args: T) => Promise<void>;
 
 type Props<T> = {
     id: string | null | undefined,
-    name: string | null | undefined,
     title: string,
-    question: string,
+    question: string | React.ReactNode,
     triggerButton?: React.ReactNode,
     openDialog?: boolean,
-    onLoading: () => void
+    disabled?: boolean,
+    onLoading?: () => void
     mutationFn: MutationFn<T>,
     callback: () => void,
     onClose?: () => void,
     otherMutationProp?: unknown,
 }
 
-function DeleteConfirmationDialogComponent<T extends object>({ id, name, title, question, triggerButton, openDialog, otherMutationProp, onLoading, mutationFn, callback, onClose }: Props<T>) {
+function DeleteConfirmationDialogComponent<T extends object>({ id, title, question, triggerButton, openDialog, otherMutationProp, disabled, onLoading, mutationFn, callback, onClose }: Props<T>) {
     const mutation = useMutation({ mutationFn: mutationFn });
     const [open, setOpen] = useState(false);
 
@@ -39,7 +39,7 @@ function DeleteConfirmationDialogComponent<T extends object>({ id, name, title, 
     }, [onClose]);
 
     const remove = useCallback(async () => {
-        onLoading();
+        onLoading && onLoading();
 
         if (otherMutationProp) {
             await mutation.mutateAsync({ id, otherMutationProp } as T);
@@ -63,7 +63,7 @@ function DeleteConfirmationDialogComponent<T extends object>({ id, name, title, 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             {triggerButton &&
-                <DialogTrigger className="h-6">
+                <DialogTrigger className="h-6" disabled={disabled}>
                     {triggerButton}
                 </DialogTrigger>
             }
@@ -77,7 +77,7 @@ function DeleteConfirmationDialogComponent<T extends object>({ id, name, title, 
                     <DialogTitle>{title}</DialogTitle>
                 </DialogHeader>
                 <div className="px-6 py-3">
-                    <p>{question} <span className="font-bold">{name}</span>?</p>
+                    <p className="pb-3">{question}</p>
                     <div className="mt-4 w-full flex justify-end gap-2">
                         <DialogClose asChild>
                             <Button variant="secondary">Cancelar</Button>

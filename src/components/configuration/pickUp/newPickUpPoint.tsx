@@ -22,6 +22,7 @@ type Props = {
     icon?: React.ReactNode,
     companyId: string,
     triggerButton?: React.ReactNode
+    disabled: boolean
     callback: () => void
     onLoading: () => void
 }
@@ -33,6 +34,7 @@ export function NewPickUpPoint(
         icon = <Store />,
         companyId,
         triggerButton,
+        disabled,
         callback,
         onLoading,
     }: Props) {
@@ -111,7 +113,7 @@ export function NewPickUpPoint(
                 setOpen(true);
             }
         }}>
-            <DialogTrigger className="w-full flex mt-2" asChild>
+            <DialogTrigger className="w-full flex mt-2" asChild disabled={disabled}>
                 {triggerButton}
             </DialogTrigger>
             <DialogContent className="w-full">

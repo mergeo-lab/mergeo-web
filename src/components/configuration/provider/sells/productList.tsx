@@ -100,7 +100,7 @@ export default function ProductList({ orderStatus, data, providerId, acceptedPro
                                                 <div> {product?.name}</div>
                                                 <div className='text-muted font-thin'>{product?.brand}</div>
                                             </TableCell>
-                                            <TableCell>{product?.net_content}{product?.measurementUnit}</TableCell>
+                                            <TableCell>{product?.netContent}{product?.measurementUnit}</TableCell>
                                             <TableCell>{item.quantity}</TableCell>
                                             <TableCell>{formatToArgentinianPesos(+product?.price)}</TableCell>
                                             <TableCell className={cn({ 'text-right pr-14': !isProvider })}>{formatToArgentinianPesos(item.quantity * +product?.price)}</TableCell>

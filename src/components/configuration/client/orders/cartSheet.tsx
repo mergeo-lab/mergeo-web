@@ -147,7 +147,7 @@ export function CartSheet({
                             {products.map((product) => (
                                 <TableRow key={product.id} className="[&>*]:text-center">
                                     <TableCell className="!text-left">
-                                        <p className="text-sm text-muted-foreground">{product.name}, {product.brand} x {product.net_content}{product.measurementUnit}</p>
+                                        <p className="text-sm text-muted-foreground">{product.name}, {product.brand} x {product.netContent}{product.measurementUnit}</p>
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex justify-center items-center gap-2">

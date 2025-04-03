@@ -3,7 +3,7 @@ import { createFileRoute, Link, useSearch } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
 import noProductsImage from '@/assets/no-products.png'
 import { useProviderProductSearch } from '@/hooks/useProviderProductSearch'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import UseCompanyStore from '@/store/company.store'
 import ErrorMessage from '@/components/errorMessage'
 import ProviderProductsTable from '@/components/configuration/provider/products/providerProductsTable'
@@ -27,10 +27,11 @@ export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountT
 
 export default function Products() {
     const { company } = UseCompanyStore();
-    const { data, isLoading, isError, handleSearch, setPagination } = useProviderProductSearch();
+    const { data, isLoading, isError, handleSearch, setPagination, refetch } = useProviderProductSearch();
     const { currentPage } = useSearch({ from: '/_authenticated/_dashboardLayout/_accountType/provider/products/' });
-    const { sort, setSort, search, setSearch, setPage } = UseProviderInventoryPaginationState()
+    const { sort, setSort, search, setSearch, setPage, page } = UseProviderInventoryPaginationState()
     const [isSearching, setIsSearching] = useState(false);
+    const tableRef = useRef<HTMLDivElement>(null);
 
     async function onSearchChange(fields: ProductsFormFinderType) {
         if (fields.name || fields.brand) setIsSearching(true)
@@ -46,6 +47,13 @@ export default function Products() {
         setPagination(prev => ({ ...prev, orderBy: selected?.id, sortOrder: selected?.sort as PaginationSort.ASC | PaginationSort.DESC }));
         setSort(selected);
     }
+
+    const scrollToTop = () => {
+        tableRef.current?.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    };
 
     useEffect(() => {
         if (search.brand != "" || search.name != "") {
@@ -113,33 +121,38 @@ export default function Products() {
                 </div>
                 :
                 data && data.products.length > 0
-                    ? <div className='flex flex-col w-full'>
-                        <div className={cn('my-5', {
-                            'h-[53%]': data.totalPages > 1,
-                            'h-[38rem]': data.totalPages <= 1,
-                        })}>
-                            <ProviderProductsTable products={data.products} currentPage={`${data.currentPage}`} />
-                        </div>
-                        {data.totalPages > 1 &&
-                            <PaginationCustom
-                                currentPage={data.currentPage}
-                                prev={data.currentPage > 1}
-                                next={data.currentPage < data.totalPages}
-                                pages={data.totalPages}
-                                onPageBack={() => {
-                                    setPagination(prev => ({ ...prev, page: +data.currentPage - 1 }));
-                                    setPage(+data.currentPage - 1);
-                                }}
-                                onPageForward={() => {
-                                    setPagination(prev => ({ ...prev, page: +data.currentPage + 1 }));
-                                    setPage(+data.currentPage + 1);
-                                }}
-                                onPageChange={(page: number) => {
-                                    setPagination(prev => ({ ...prev, page }));
-                                    setPage(page);
-                                }}
-                            />
-                        }
+                    ? <div className='grid grid-rows-[1fr_auto] h-full w-full gap-4 overflow-auto pt-5'>
+                        <ProviderProductsTable
+                            products={data.products}
+                            currentPage={`${data.currentPage}`}
+                            tableRef={tableRef as React.RefObject<HTMLDivElement>}
+                            deleteCallback={() => refetch()}
+                        />
+                        {data.totalPages > 1 && (
+                            <div className='sticky bottom-0 bg-white py-5 shadow-[0_-4px_6px_-1px_rgb(0_0_0_/0.1)]'>
+                                <PaginationCustom
+                                    currentPage={page}
+                                    prev={page > 1}
+                                    next={page < data.totalPages}
+                                    pages={data.totalPages}
+                                    onPageBack={() => {
+                                        setPagination(prev => ({ ...prev, page: page - 1 }));
+                                        setPage(page - 1);
+                                        scrollToTop();
+                                    }}
+                                    onPageForward={() => {
+                                        setPagination(prev => ({ ...prev, page: page + 1 }));
+                                        setPage(page + 1);
+                                        scrollToTop();
+                                    }}
+                                    onPageChange={(page: number) => {
+                                        setPagination(prev => ({ ...prev, page }));
+                                        setPage(page);
+                                        scrollToTop();
+                                    }}
+                                />
+                            </div>
+                        )}
                     </div>
                     : isSearching ? <NoProductsFound />
                         :

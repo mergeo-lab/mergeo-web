@@ -10,7 +10,7 @@ import { ProductMetadataType, ProductSchemaType } from '@/lib/schemas';
 import { cn, formatDate, formatToArgentinianPesos } from '@/lib/utils';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { createFileRoute, useParams, useSearch } from '@tanstack/react-router'
-import { Edit, MoveRight } from 'lucide-react';
+import { Edit, Image, MoveRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/products/$productId')({
@@ -128,13 +128,21 @@ export default function ProductDetail() {
                 {isLoading
                     ? <Skeleton className="h-[22rem] w-full opacity-10 bg-muted/30 rounded" />
                     : <div className="bg-gray-100 p-8 flex flex-col md:flex-row gap-8 rounded">
-                        <div className="bg-gray-200 border-2 rounded-xl h-72 aspect-square" />
+                        {!data?.product?.image
+                            ? (<div className="bg-gray-200 border-2 rounded-xl h-72 aspect-square p-4 flex justify-center items-center">
+                                <Image size={100} className='text-muted' />
+                            </div>)
+                            : (<div className="bg-white flex justify-center items-center border-2 rounded-xl h-72 aspect-square p-6">
+                                <img src={data?.product?.image} alt="" className='cover' />
+                            </div>
+                            )
+                        }
                         <div className="w-full bg-white p-6 shadow-sm rounded-lg relative">
                             <div className='flex'>
                                 <div className="w-2/5 mb-4 [&>p]:text-black/50 [&>p>strong]:text-black space-y-2">
                                     <p><strong>Marca:</strong> {data?.product?.brand}</p>
                                     <p><strong>GTIN/EAN:</strong> {data?.product?.gtin}</p>
-                                    <p><strong>Contenido Neto:</strong> {data?.product?.net_content} {data?.product?.measurementUnit}</p>
+                                    <p><strong>Contenido Neto:</strong> {data?.product?.netContent} {data?.product?.measurementUnit}</p>
                                     <p><strong>Variedad:</strong> {data?.product?.variety}</p>
                                     <p><strong>Segmento:</strong> {data?.product?.segment}</p>
                                     <p><strong>Familia:</strong> {data?.product?.family}</p>

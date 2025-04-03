@@ -282,9 +282,8 @@ export function ManageRoles() {
                                             </Button>
                                             <DeleteConfirmationDialog
                                                 id={viewRole.id}
-                                                name={viewRole.name}
                                                 title="Borrar Rol"
-                                                question="¿Estas seguro que quieres borrar el rol"
+                                                question={<p>¿Seguro que quieres borrar el rol <span className="font-bold">{viewRole.name}</span>?</p>}
                                                 triggerButton={<Button
                                                     size="sm"
                                                     variant="destructive"

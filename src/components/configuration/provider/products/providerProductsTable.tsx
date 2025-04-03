@@ -1,25 +1,28 @@
 
+import { DeleteConfirmationDialog } from "@/components/deleteConfirmationDialog"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { modifyProduct } from "@/lib/products"
+import { deleteProvidersProduct, modifyProduct } from "@/lib/products"
 import { ProductSchemaType } from "@/lib/schemas"
 import { cn, formatDate, formatToArgentinianPesos } from "@/lib/utils"
+import UseCompanyStore from "@/store/company.store"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
-import { Edit, Trash, Eye } from "lucide-react"
+import { Edit, Trash2, Eye } from "lucide-react"
 
 type Props = {
     products: ProductSchemaType[],
-    currentPage: string
+    currentPage: string,
+    tableRef: React.RefObject<HTMLDivElement> | null,
+    deleteCallback?: () => void,
 }
 
-export default function ProviderProductsTable({ products, currentPage }: Props) {
+export default function ProviderProductsTable({ products, currentPage, tableRef, deleteCallback }: Props) {
     const queryClient = useQueryClient();
+    const { company } = UseCompanyStore();
+    const companyId = company?.id ?? "";
 
-    const handleDelete = (prductId: string) => {
-        alert(`Delete product with ID: ${prductId}`)
-    }
     const toggleProductStatus = useMutation({
         mutationFn: async ({ productId, isActive }: { productId: string; isActive: boolean }) => {
             return modifyProduct({ productId, isActive });
@@ -50,9 +53,12 @@ export default function ProviderProductsTable({ products, currentPage }: Props) 
         toggleProductStatus.mutate({ productId, isActive: checked });
     };
 
+    function deleteComplete() {
+        deleteCallback && deleteCallback();
+    }
 
     return (
-        <div className="max-h-full overflow-y-auto mb-0 mx-5 border border-border rounded">
+        <div className="max-h-full overflow-y-auto mb-0 mx-5 border border-border rounded" ref={tableRef}>
             <Table className="w-full h-fit">
                 <TableHeader className="sticky top-0 bg-white z-10 shadow-sm">
                     <TableRow className="hover:bg-white">
@@ -83,7 +89,7 @@ export default function ProviderProductsTable({ products, currentPage }: Props) 
                             <TableCell>{product.brand}</TableCell>
                             <TableCell>{formatToArgentinianPesos(+product.price)}</TableCell>
                             <TableCell>
-                                {`${product.net_content} ${product.measurementUnit}`}
+                                {`${product.netContent} ${product.measurementUnit}`}
                             </TableCell>
                             <TableCell>
                                 <p>{formatDate(product.updated)}</p>
@@ -100,7 +106,7 @@ export default function ProviderProductsTable({ products, currentPage }: Props) 
                             <TableCell className="flex justify-end space-x-2 [&>a>button]:h-8 [&>button]:h-8 -mt-2 mr-5">
                                 <Link to="/provider/products/$productId" params={{ productId: product.id }} search={{ edit: false, currentPage }}>
                                     <Button
-                                        className="hover:multi-[bg-primary;text-white]"
+                                        className="hover:multi-[bg-info;text-white;border-info;] text-info"
                                         variant="outlineSecondary"
                                         disabled={!product.isActive}
                                     >
@@ -109,7 +115,7 @@ export default function ProviderProductsTable({ products, currentPage }: Props) 
                                 </Link>
                                 <Link to="/provider/products/$productId" params={{ productId: product.id }} search={{ edit: true, currentPage }}>
                                     <Button
-                                        className="hover:multi-[bg-primary;text-white]"
+                                        className="hover:multi-[bg-highlight;text-white;border-highlight;] text-highlight"
                                         variant="outlineSecondary"
                                         disabled={!product.isActive}
 
@@ -117,14 +123,24 @@ export default function ProviderProductsTable({ products, currentPage }: Props) 
                                         <Edit className="h-4 w-4" />
                                     </Button>
                                 </Link>
-                                <Button
-                                    className="hover:multi-[bg-primary;text-white]"
-                                    variant="outlineSecondary"
-                                    onClick={() => handleDelete(product.id)}
-                                    disabled={!product.isActive}
-                                >
-                                    <Trash className="h-4 w-4" />
-                                </Button>
+
+
+                                <DeleteConfirmationDialog<ProductSchemaType>
+                                    id={product.id}
+                                    title={"Borrar producto del inventario"}
+                                    question={<p>Estas seguro de eliminar el producto <span className="font-bold">{product.name}</span>?</p>}
+                                    mutationFn={(product) => deleteProvidersProduct(companyId, product.id)}
+                                    callback={deleteComplete}
+                                    triggerButton={
+                                        <Button
+                                            className="hover:multi-[bg-destructive;text-white;border-destructive;] text-destructive h-8"
+                                            variant="outlineSecondary"
+                                            disabled={!product.isActive}
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    }
+                                />
                             </TableCell>
                         </TableRow>
                     ))}

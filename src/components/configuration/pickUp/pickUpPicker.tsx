@@ -13,7 +13,7 @@ import { useState } from "react"
 
 type Props = {
     companyId: string | undefined,
-    isEditing: boolean
+    disabled: boolean,
     className?: string,
     notFoundMessage?: string,
     newEntry?: {
@@ -23,7 +23,6 @@ type Props = {
     },
     onLoading?: () => void,
     callback?: () => void,
-    toggleEditting?: (editi?: boolean) => void,
 }
 
 type EditEntry = {
@@ -31,7 +30,7 @@ type EditEntry = {
     isOpen: boolean,
 }
 
-export function PickUpPicker({ className, companyId, isEditing, notFoundMessage, newEntry, onLoading, callback, toggleEditting }: Props) {
+export function PickUpPicker({ className, companyId, disabled, notFoundMessage, newEntry, onLoading, callback }: Props) {
     const [editEntry, setEditEntry] = useState<EditEntry>({ entryData: null, isOpen: false });
 
     const { data: pickUpResult, isLoading, isError, refetch } = useQuery({
@@ -96,6 +95,7 @@ export function PickUpPicker({ className, companyId, isEditing, notFoundMessage,
                                 subTitle={newEntry?.subTitle}
                                 icon={newEntry?.icon}
                                 companyId={companyId}
+                                disabled={disabled}
                                 triggerButton={
                                     <Button className="w-8 h-8 absolute right-1 -top-1 flex justify-center items-center p-0">
                                         <Plus size={15} className="text-white" strokeWidth={3} />
@@ -111,19 +111,16 @@ export function PickUpPicker({ className, companyId, isEditing, notFoundMessage,
             </ScrollArea >
             {companyId &&
                 <EditPickUp
-                    title={isEditing ? "Editar punto de PickUp" : 'Ver punto de PickUp'}
-                    subTitle={`Aquí puedes ${!isEditing ? 'ver los detalles' : 'editar los datos'} del punto de PickUp`}
+                    title="Punto de PickUp"
+                    subTitle={`Detalles del punto de PickUp`}
                     companyId={companyId}
                     isOpen={editEntry.isOpen}
-                    isEditing={isEditing}
                     pickUpData={editEntry.entryData && editEntry.entryData}
                     callback={pickUpEdited}
                     onClose={() => {
                         setEditEntry({ entryData: null, isOpen: false });
-                        toggleEditting && toggleEditting(false);
                     }}
                     onLoading={() => onLoading && onLoading()}
-                    toggleEditting={() => toggleEditting && toggleEditting()}
                 />
             }
         </div>

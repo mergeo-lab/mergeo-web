@@ -143,7 +143,7 @@ export function ProductsPresentations({
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex justify-center">
-                                            {product.net_content}{" "}
+                                            {product.netContent}{" "}
                                             {product.measurementUnit}
                                         </div>
                                     </TableCell>

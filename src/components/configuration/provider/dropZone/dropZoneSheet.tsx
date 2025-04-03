@@ -30,6 +30,7 @@ type Props = {
     companyId: string | undefined,
     triggerButton?: React.ReactNode,
     isLoadingProp?: boolean
+    disabled?: boolean,
     fetchZones: () => void
 }
 
@@ -41,6 +42,7 @@ export function DropZoneSheet({
     companyId,
     triggerButton,
     isLoadingProp,
+    disabled,
     fetchZones
 }: Props) {
     const mutation = useMutation({ mutationFn: newDropZone })
@@ -234,7 +236,7 @@ export function DropZoneSheet({
                 setOpen(isOpen);
             }
         }}>
-            <SheetTrigger className="w-full" asChild>
+            <SheetTrigger className="w-full" asChild disabled={disabled}>
                 {triggerButton}
             </SheetTrigger>
             <SheetContent className="w-1/3 mx-w-1/3 sm:max-w-1/3">
@@ -371,10 +373,10 @@ export function DropZoneSheet({
                     />
                     <DeleteConfirmationDialog<{ id: string }>
                         id={deleteDropZoneData.data && deleteDropZoneData.data.id}
-                        name={deleteDropZoneData.data && deleteDropZoneData.data.name}
                         openDialog={deleteDropZoneData && deleteDropZoneData.isOpen}
                         title="Borrar zona de entrega"
-                        question="¿Seguro que quieres borrar esta zona de entrega"
+                        question={<p>¿Seguro que quieres borrar la zona de entrega <span className="font-bold">{deleteDropZoneData.data && deleteDropZoneData.data.name}</span>?</p>}
+
                         onLoading={() => setIsLoading(true)}
                         mutationFn={deletDropZone}
                         callback={deleteComplete}

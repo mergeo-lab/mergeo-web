@@ -21,7 +21,6 @@ export default function UploadManualProducts() {
     const [formSubmited, setFormSubmited] = useState(false);
     const { company } = UseCompanyStore();
     const { data, isLoading, isError, handleSearch, resetSearch } = UseNewProductSearch();
-    console.log("DATA :::::: ", data)
     const filteredProducts = data?.products.filter(product => !allProducts.some(p => p.gtin === product.gtin)) || [];
 
     const form = useForm<ProviderProductSearchType>({
@@ -39,8 +38,18 @@ export default function UploadManualProducts() {
             resetSearch();
             setFormSubmited(false);
         } else {
-            handleSearch({ name, brand, ean, companyId });
-            setFormSubmited(true);
+            try {
+                await handleSearch({ name, brand, ean, companyId });
+                setFormSubmited(true);
+            } catch (error) {
+                // Reset form error state to allow resubmission
+                form.clearErrors();
+                // Enable the form
+                form.reset(fields, {
+                    keepValues: true,
+                    keepDirty: true,
+                });
+            }
         }
     }
 

@@ -32,7 +32,7 @@ const ProductSchema = z.object({
   description: z.any(),
   brand: z.string(),
   variety: z.string(),
-  net_content: z.number(),
+  netContent: z.number(),
   segment: z.string(),
   family: z.string(),
   image: z.string(),

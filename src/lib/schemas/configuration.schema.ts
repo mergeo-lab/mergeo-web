@@ -41,7 +41,7 @@ const ProductSchema = z.object({
   description: z.string(),
   brand: z.string(),
   variety: z.string().optional(),
-  net_content: z.number(),
+  netContent: z.number(),
   segment: z.string().optional(),
   family: z.string().optional(),
   image: z.string().optional(),
@@ -56,6 +56,7 @@ const ProductSchema = z.object({
   isPickUp: z.boolean().optional(),
   isFavorite: z.boolean().optional(),
   morePresentations: z.boolean().optional(),
+  isInInventory: z.boolean().optional(),
 });
 
 // Define the PreOrderProduct schema

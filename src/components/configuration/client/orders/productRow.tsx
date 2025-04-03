@@ -64,10 +64,10 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
                 </div>
             </TableCell>
 
-            <TableCell className={`text-center`}>{product.net_content}{" "}{product.measurementUnit}</TableCell>
+            <TableCell className={`text-center`}>{product.netContent}{" "}{product.measurementUnit}</TableCell>
             <TableCell className={`text-center`}>{formatToArgentinianPesos(+product.pricePerBaseUnit)}</TableCell>
             <TableCell className={`text-center`}>{
-                product.net_content ? formatToArgentinianPesos(+product.price) : 1}
+                product.netContent ? formatToArgentinianPesos(+product.price) : 1}
             </TableCell>
             <TableCell className={`text-right`}>{
                 product.isPickUp && <PickUpIndicator />

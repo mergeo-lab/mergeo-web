@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn, formatToArgentinianPesos } from '@/lib/utils';
-import { MessageCircleWarning } from 'lucide-react';
+import { Image, } from 'lucide-react';
+import { RiFileWarningFill } from "react-icons/ri";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 
 type Props = {
@@ -14,7 +15,9 @@ type Props = {
     measurmentUnit: string;
     price?: string;
     finalPrice?: string;
+    image?: string;
     inInventory?: boolean;
+    actualPrice: string;
     onSave?: (id: string, price: string) => void;
     onRemove?: (id: string) => void;
 };
@@ -27,7 +30,9 @@ export const AddProductItem = ({
     netContent,
     measurmentUnit,
     finalPrice,
+    image,
     inInventory,
+    actualPrice,
     onSave,
     onRemove,
 }: Props) => {
@@ -37,6 +42,7 @@ export const AddProductItem = ({
     useEffect(() => {
         setShow(true);
         setLocalPrice("");
+        console.log("netContent :: ", netContent);
     }, [])
 
     function handleSave(newPrice: string) {
@@ -52,29 +58,30 @@ export const AddProductItem = ({
             <div className="flex justify-between">
                 <div className="flex flex-col">
                     <div className="flex gap-4">
-                        <div className="w-16 h-16 bg-border rounded overflow-hidden"></div>
+                        <div className="w-20 h-20 border border-border p-2 rounded overflow-hidden">
+                            {image && image != null
+                                ? <img src={image} alt={name} className='cover w-16 h-16 rounded' />
+                                : <div className="w-full h-full flex justify-center items-center bg-border">
+                                    <Image className='text-muted' size={35} />
+                                </div>
+                            }
+                        </div>
                         <div>
                             <div className='flex gap-2'>
-                                <p className={cn({ 'text-highlight': inInventory })}>{name}</p>
-                                {
-                                    inInventory && <p className="text-sm text-muted font-black">
-                                        <HoverCard>
-                                            <HoverCardTrigger>
-                                                <MessageCircleWarning className='text-highlight -mt-1 cursor-pointer' />
-                                            </HoverCardTrigger>
-                                            <HoverCardContent className='font-thin'>
-                                                Ya tienes este producto en tu inventario, si guaras el producto con un precio diferente, se actualizara!
-                                            </HoverCardContent>
-                                        </HoverCard>
-                                    </p>
-                                }
+                                <p className={cn({ 'text-highlight text-base': inInventory })}>{name}</p>
                             </div>
                             <p className="text-sm text-muted">{brand}</p>
+                            {inInventory && actualPrice &&
+                                <div className='text-sm text-muted flex gap-3'>
+                                    <p className='text-nowrap'>Precio actual</p>
+                                    {formatToArgentinianPesos(+actualPrice)}
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
                 <div className="space-y-2 flex flex-col items-end">
-                    <div className="bg-secondary-background rounded text-white font-bold h-8 w-fit p-4 flex justify-center items-center">
+                    <div className="bg-secondary-background rounded text-white font-bold h-8 w-fit p-4 flex justify-center items-center text-nowrap">
                         {netContent} {measurmentUnit}
                     </div>
                     {finalPrice &&
@@ -92,14 +99,30 @@ export const AddProductItem = ({
             })}>
 
                 <div className="relative">
-                    <Input
-                        type="number"
-                        value={localPrice}
-                        placeholder="Agregar precio"
-                        onChange={(e) => setLocalPrice(e.target.value)}
-                        className=" pr-8"
-                    />
-                    <span className="absolute top-[50%] -translate-y-[50%] right-4">$</span>
+                    <div className='flex items-center gap-1'>
+                        <Input
+                            type="number"
+                            value={localPrice}
+                            placeholder={actualPrice ? "Cambiar precio" : "Agregar precio"}
+                            onChange={(e) => setLocalPrice(e.target.value)}
+                            className=" pr-8"
+                        />
+                        {
+                            inInventory && <p className="text-sm text-muted font-black">
+                                <HoverCard>
+                                    <HoverCardTrigger>
+                                        <RiFileWarningFill size={30} className='text-highlight cursor-pointer' />
+                                    </HoverCardTrigger>
+                                    <HoverCardContent className='font-thin'>
+                                        Ya tienes este producto en tu inventario, si guaras el producto con un precio diferente, se actualizara!
+                                    </HoverCardContent>
+                                </HoverCard>
+                            </p>
+                        }
+                    </div>
+                    <span className={cn("absolute top-[50%] -translate-y-[50%] right-11", {
+                        'right-4': !inInventory,
+                    })}>$</span>
                 </div>
 
 

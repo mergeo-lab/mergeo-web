@@ -4,8 +4,8 @@ import { persist } from 'zustand/middleware';
 
 type CompanyStore = {
   company: CompanySchemaType | null;
-  // eslint-disable-next-line no-unused-vars
   saveCompany: (company: CompanySchemaType) => void;
+  updateCompany: (updates: Partial<CompanySchemaType>) => void;
 };
 
 const UseCompanyStore = create<CompanyStore>()(
@@ -13,10 +13,15 @@ const UseCompanyStore = create<CompanyStore>()(
     (set) => ({
       company: null,
       saveCompany: (company: CompanySchemaType) => set(() => ({ company })),
+      updateCompany: (updates: Partial<CompanySchemaType>) => 
+        set((state) => ({
+          company: state.company ? { ...state.company, ...updates } : null
+        })),
     }),
     { name: 'companyStore' }
   )
 );
+
 export const removeCompany = () => UseCompanyStore.persist.clearStorage();
 
 export default UseCompanyStore;

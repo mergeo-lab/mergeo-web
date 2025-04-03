@@ -12,6 +12,7 @@ type Props = {
     isEditing: boolean
     className?: string,
     notFoundMessage?: string,
+    disabled?: boolean,
     newEntry: {
         title: string,
         subTitle: string,
@@ -19,7 +20,7 @@ type Props = {
     },
 }
 
-export function DropZonePicker({ className, companyId, newEntry }: Props) {
+export function DropZonePicker({ className, companyId, newEntry, disabled }: Props) {
 
     const { data: dropZonesListData, isFetching, isError, refetch } = useQuery({
         queryKey: ['dropZones', companyId],
@@ -44,10 +45,11 @@ export function DropZonePicker({ className, companyId, newEntry }: Props) {
                     title={newEntry.title}
                     subTitle={newEntry.subTitle}
                     icon={newEntry.icon}
+                    disabled={disabled}
                     triggerButton={
                         <Button className="w-full" type="button" size='sm'>
                             {isFetching
-                                ? <LoadingIndicator />
+                                ? <LoadingIndicator className="text-white" />
                                 : <span className="flex items-center gap-2">
                                     <MapPinned size={20} />
                                     <p>Ver Zonas de Entrega</p>

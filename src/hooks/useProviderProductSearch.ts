@@ -21,7 +21,7 @@ export const useProviderProductSearch = () => {
     console.log('Params updated:', params);
   }, [params]);
 
-  const { data, isLoading, isError, error } = useQuery<{
+  const { data, isLoading, isError, error, refetch } = useQuery<{
     products: ProductSchemaType[];
     currentPage: number;
     total: number;
@@ -68,6 +68,7 @@ export const useProviderProductSearch = () => {
     isLoading,
     isError,
     error,
+    refetch,
     handleSearch,
     resetSearch,
     setPagination,

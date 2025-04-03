@@ -265,7 +265,10 @@ export function SearchLists() {
                                                 mutationFn={updateListName}
                                             />
 
-                                            <Button variant="ghost" disabled={!selectedList} onClick={() => handleRemoveListClick(selectedList?.id)}>
+                                            <Button
+                                                disabled={!selectedList} onClick={() => handleRemoveListClick(selectedList?.id)}
+                                                variant="ghost"
+                                                className="w-fit flex gap-2 rounded-r-none border border-border border-r-0 hover:text-destructive">
                                                 {memorizedTrashIcon}
                                             </Button>
                                         </div>
@@ -328,10 +331,9 @@ export function SearchLists() {
                                 <DeleteConfirmationDialog
                                     id={deleteListProduct.data && deleteListProduct.data.id}
                                     otherMutationProp={selectedList?.id}
-                                    name={deleteListProduct.data && deleteListProduct.data.name}
                                     openDialog={deleteListProduct && deleteListProduct.isOpen}
-                                    title="Eliminar producto!"
-                                    question="¿Seguro que quieres borrar producto"
+                                    title="Borrar producto!"
+                                    question={<p>Estas seguro de borrar el producto <span className="font-bold">{deleteListProduct.data && deleteListProduct.data.name}</span>?</p>}
                                     onLoading={handleIsLoading}
                                     mutationFn={(args: unknown) => deleteProduct(args as { id: string; otherMutationProp: string })}
                                     callback={handleDeleteProductCallback}
@@ -340,10 +342,10 @@ export function SearchLists() {
                                 {/* DELETE LIST CONFITMATION */}
                                 <DeleteConfirmationDialog
                                     id={deleteList.data && deleteList.data.id}
-                                    name={deleteList.data && deleteList.data.name}
                                     openDialog={deleteList && deleteList.isOpen}
-                                    title="Eliminar Lista!"
-                                    question="¿Seguro que quieres borrar la lista"
+                                    title="Borrar Lista!"
+                                    question={<p>Estas seguro de borrar la lista <span className="font-bold">{deleteList.data && deleteList.data.name}</span>?</p>}
+
                                     onLoading={handleIsLoading}
                                     mutationFn={(args: unknown) => deleteSearchList(args as { id: string })}
                                     callback={handleDeleteListCallback}

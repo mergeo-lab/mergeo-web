@@ -23,9 +23,11 @@ export default function AddProductsList({ data, addProduct }: Props) {
                     gtin={item.gtin}
                     name={item.name}
                     brand={item.brand}
-                    netContent={item.net_content}
+                    netContent={item.netContent}
                     measurmentUnit={item.measurementUnit}
-                    inInventory={item.inInventory}
+                    inInventory={item.isInInventory}
+                    image={item.image}
+                    actualPrice={item.price}
                     onSave={(gtin, price) => gtin === item.gtin && handleSaveProduct(item, price)}
                 />
             ))

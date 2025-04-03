@@ -9,38 +9,27 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Map, Marker } from '@vis.gl/react-google-maps';
 import UseCompanyStore from "@/store/company.store";
 import { MapPin, Pencil } from "lucide-react";
-import { BranchPicker } from "@/components/configuration/branches/branchPicker";
-import { useEffect, useState, memo } from "react";
+import { useEffect, useState } from "react";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import { useMutation } from "@tanstack/react-query";
 import { updateCompany } from "@/lib/configuration/company";
 import { toast } from "@/components/ui/use-toast";
 import { GoogleAutoComplete } from "@/components/googleAutoComplete";
-
-const MemoizedFormItem = memo(({ value }: { value: number | undefined }) => (
-    <FormItem>
-        <FormLabel id='cuit'>CUIT</FormLabel>
-        <FormControl>
-            <Input disabled={true} value={value} className={cn("", {
-                'disabledStyle': true
-            })} />
-        </FormControl>
-        <FormMessage />
-    </FormItem>
-));
+import { BsFillBuildingsFill } from "react-icons/bs";
+import { RiRoadMapFill } from "react-icons/ri";
+import { BranchPicker } from "@/components/configuration/branches/branchPicker";
 
 export function Company() {
-    const { company, saveCompany } = UseCompanyStore();
+    const { company, saveCompany, updateCompany: updateStoredCompany } = UseCompanyStore();
     const [isLoading, setIsLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const mutation = useMutation({ mutationFn: updateCompany })
     const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ latitude: 0, longitude: 0 });
 
     const companyMainBranch = company?.branches.find((branch) => branch.isMain);
-
     const defaultCompnay = {
         id: companyMainBranch?.id || "",
-        name: companyMainBranch?.name || "",
+        name: company?.name || "",
         branch: {
             address: {
                 name: companyMainBranch?.address.name || "",
@@ -49,7 +38,6 @@ export function Company() {
         },
         activity: company?.activity || "",
     }
-
 
     const form = useForm<UpdateCompanySchemaType>({
         resolver: zodResolver(UpdateCompanySchema),
@@ -76,6 +64,8 @@ export function Company() {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         if (!company) return;
         const response = await mutation.mutateAsync({ companyId: company.id, fields: fields });
+        updateStoredCompany(response.data)
+        form.reset(response.data);
 
         if (mutation.isError) {
             toast({
@@ -127,96 +117,146 @@ export function Company() {
     return (
         <div className="flex w-full h-full">
             {isLoading && <OverlayLoadingIndicator />}
-            <div className="flex flex-col justify-between w-4/6">
+            <div className="flex flex-col justify-between w-4/6 overflow-y-auto">
                 <div className="flex gap-20 m-10">
                     <FormProvider {...form}>
-                        <form className='space-y-8 w-full pr-10'>
-                            <div className='grid grid-cols-2 gap-10'>
-                                <FormField
-                                    name="name"
-                                    disabled={!isEditing}
-                                    render={({ field }) => (
+                        <form className='w-full pr-10'>
+                            <div className="border border-border rounded-sm mb-4">
+                                <div className="relative">
+                                    <div className="border-b border-border w-full flex gap-2 items-center p-2 px-4 mb-2">
+                                        <BsFillBuildingsFill className="text-info" />
+                                        <p>Datos de la Empresa</p>
+                                    </div>
+                                    {isEditing &&
+                                        <div className="bg-highlight w-8 h-8 rounded absolute top-1 right-1 flex justify-center items-center animate-heartbeat animate-iteration-count-2 animate-duration-1000">
+                                            <Pencil size={20} className="text-white" />
+                                        </div>}
+                                </div>
+                                <div className="space-y-3 p-5 py-2 pb-4">
+                                    <div className='grid grid-cols-2 gap-10'>
+                                        <FormField
+                                            name="name"
+                                            disabled={!isEditing}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel id='name'>Nombre</FormLabel>
+                                                    <FormControl>
+                                                        <Input className={cn("", {
+                                                            'disabledStyle': !isEditing
+                                                        })} {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
                                         <FormItem>
-                                            <FormLabel id='name'>Nombre</FormLabel>
+                                            <FormLabel id='razonSocial'>Razon Social</FormLabel>
                                             <FormControl>
-                                                <Input className={cn("", { 'disabledStyle': !isEditing })} {...field} />
+                                                <Input disabled={true} value={company?.razonSocial && company?.razonSocial}
+                                                    className={cn("", {
+                                                        'disabledStyle': true
+                                                    })} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
-                                    )}
-                                />
-                                <FormItem>
-                                    <FormLabel id='razonSocial'>Razon Social</FormLabel>
-                                    <FormControl>
-                                        <Input disabled={true} value={company?.razonSocial} className="disabledStyle" />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            </div>
-                            <div className='grid grid-cols-2 gap-10'>
-                                <MemoizedFormItem value={company?.cuit} />
-                                <FormField
-                                    name="activity"
-                                    disabled={!isEditing}
-                                    render={({ field }) => (
+                                    </div>
+                                    <div className='grid grid-cols-2 gap-10'>
                                         <FormItem>
-                                            <FormLabel id='activity'>Actividad</FormLabel>
+                                            <FormLabel id='cuit'>CUIT</FormLabel>
                                             <FormControl>
-                                                <Input className={cn("", { 'disabledStyle': !isEditing })} {...field} />
+                                                <Input disabled={true} value={company?.cuit && company?.cuit} className={cn("", {
+                                                    'disabledStyle': true
+                                                })} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
-                                    )}
-                                />
+                                        <FormField
+                                            disabled={!isEditing}
+                                            name="activity"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel id='activity'>Actividad</FormLabel>
+                                                    <FormControl>
+                                                        <Input className={cn("", {
+                                                            'disabledStyle': !isEditing
+                                                        })} {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    <div className='grid grid-cols-1 gap-10'>
+                                        <FormField
+                                            disabled={!isEditing}
+                                            name="branch"
+                                            render={({ field }) => {
+                                                console.log(field?.value)
+                                                return (
+                                                    <FormItem>
+                                                        <FormLabel id='branch'>Dirección</FormLabel>
+                                                        <FormControl>
+                                                            <GoogleAutoComplete
+                                                                isEditing={isEditing}
+                                                                disabled={!isEditing}
+                                                                defaultAddressName={field?.value.address.name}
+                                                                selectedAddress={addAddress}
+                                                                addressRemoved={() => {
+                                                                    field?.value.name && form.setValue('branch', {
+                                                                        address: {
+                                                                            id: "",
+                                                                            location: {
+                                                                                type: "Point",
+                                                                                coordinates: [0, 0]
+                                                                            },
+                                                                            name: ""
+                                                                        }
+                                                                    });
+                                                                    setMarkerPosition({ latitude: 0, longitude: 0 });
+                                                                }}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
                             </div>
 
-                            <div className='grid grid-cols-1 gap-10'>
-                                <FormField
-                                    name="branch.address"
-                                    disabled={!isEditing}
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel id='address'>Dirección</FormLabel>
-                                            <FormControl>
-                                                <GoogleAutoComplete
-                                                    disabled={!isEditing}
-                                                    defaultAddressName={field.value?.name}
-                                                    selectedAddress={addAddress}
-                                                    addressRemoved={() => {
-                                                        field.value?.name && form.setValue('branch.address', {
-                                                            id: "",
-                                                            location: { type: "Point", coordinates: [0, 0] },
-                                                            name: "",
-                                                        });
-                                                        setMarkerPosition({ latitude: 0, longitude: 0 });
-                                                    }}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                            <div className={cn("border border-border rounded-sm", {
+                                'opacity-40': isEditing
+                            })}>
+                                <div className="border-b border-border w-full p-2 px-4 flex items-center gap-2">
+                                    <RiRoadMapFill className="text-info" size={20} />
+                                    <p>Sucursales</p>
+                                </div>
+                                <div className={"px-5 pt-2 pb-4 space-y-5"}>
+                                    <div className='grid grid-cols-1 gap-10'>
+                                        <FormField
+                                            disabled={isEditing}
+                                            name="pickUp"
+                                            render={() => (
+                                                <FormItem>
+                                                    <FormControl>
+                                                        <BranchPicker
+                                                            companyId={company?.id}
+                                                            isEditing={isEditing}
+                                                            callback={actionEnded}
+                                                            onLoading={() => setIsLoading(true)}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                </div>
                             </div>
 
-                            <div className='grid grid-cols-1 gap-10'>
-                                <FormField
-                                    name="branch"
-                                    render={() => (
-                                        <FormItem>
-                                            <FormLabel>Sucursales</FormLabel>
-                                            <FormControl>
-                                                <BranchPicker
-                                                    companyId={company?.id}
-                                                    isEditing={isEditing}
-                                                    callback={actionEnded}
-                                                    onLoading={() => setIsLoading(true)}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
                         </form>
                     </FormProvider>
                 </div>

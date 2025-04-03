@@ -24,7 +24,6 @@ export function Company() {
     const { company, saveCompany } = UseCompanyStore();
     const [isLoading, setIsLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [isEditingPickUp, setIsEditingPickUp] = useState(false);
     const mutation = useMutation({ mutationFn: updateCompany })
     const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ latitude: 0, longitude: 0 });
 
@@ -32,7 +31,7 @@ export function Company() {
 
     const defaultCompnay = {
         id: companyMainBranch?.id || "",
-        name: companyMainBranch?.name || "",
+        name: company?.name || "",
         branch: {
             address: {
                 name: companyMainBranch?.name || "",
@@ -119,13 +118,13 @@ export function Company() {
     return (
         <div className="flex w-full h-full">
             {isLoading && <OverlayLoadingIndicator />}
-            <div className="flex flex-col justify-between w-4/6">
+            <div className="flex flex-col justify-between w-4/6 h-full overflow-y-auto">
                 <div className="flex gap-20 m-10">
-                    <div>
+                    {/* <div>
                         <div className="w-80 h-80 bg-muted rounded overflow-hidden">
                             <img src='/empresa-default.jpeg' alt="logo" className="w-full h-full object-cover" />
                         </div>
-                    </div>
+                    </div> */}
                     <FormProvider {...form}>
                         <form className='w-full pr-10'>
                             <div className="border border-border rounded-sm mb-4">
@@ -234,25 +233,27 @@ export function Company() {
 
                             </div>
 
-                            <div className="border border-border rounded-sm">
+                            <div className={cn("border border-border rounded-sm", {
+                                'opacity-40': isEditing
+                            })}>
                                 <div className="border-b border-border w-full p-2 px-4 flex items-center gap-2">
                                     <RiRoadMapFill className="text-info" size={20} />
                                     <p>Sucursales y Zonas</p>
                                 </div>
-                                <div className="px-5 pt-2 pb-4 space-y-5">
+                                <div className={"px-5 pt-2 pb-4 space-y-5"}>
                                     <div className='grid grid-cols-1 gap-10'>
                                         <FormField
+                                            disabled={isEditing}
                                             name="pickUp"
                                             render={() => (
                                                 <FormItem>
                                                     <FormLabel>Puntos de Pick Up</FormLabel>
                                                     <FormControl>
                                                         <PickUpPicker
+                                                            disabled={isEditing}
                                                             companyId={company?.id}
-                                                            isEditing={isEditingPickUp}
                                                             callback={actionEnded}
                                                             onLoading={() => setIsLoading(true)}
-                                                            toggleEditting={(edit?: boolean) => setIsEditingPickUp(edit ? edit : !isEditingPickUp)}
                                                             notFoundMessage="No se encontraron Puntos de Pick Up"
                                                             newEntry={{
                                                                 title: "Agregar un Punto de Pick Up",
@@ -267,13 +268,14 @@ export function Company() {
                                     </div>
                                     <div className="p-0 m-0">
                                         <FormField
-                                            disabled={!isEditing}
+                                            disabled={isEditing}
                                             name="dropZone"
                                             render={() => (
                                                 <FormItem>
                                                     <FormLabel className="">Zonas de reparto</FormLabel>
                                                     <FormControl>
                                                         <DropZonePicker
+                                                            disabled={isEditing}
                                                             companyId={company?.id}
                                                             isEditing={isEditing}
                                                             notFoundMessage="No se encontraron zonas de entrega"
@@ -339,6 +341,6 @@ export function Company() {
                     </div>
                 }
             </div>
-        </div>
+        </div >
     )
 }

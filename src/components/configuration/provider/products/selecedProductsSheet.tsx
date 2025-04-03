@@ -1,7 +1,7 @@
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useMutation } from "@tanstack/react-query";
 import { CloudUpload, Trash2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import { cn } from "@/lib/utils";
 import { AddProduct } from "@/store/addProductItem.store";
@@ -13,7 +13,7 @@ import { saveMultipleProducts } from "@/lib/products";
 type Props = {
     title?: string,
     subTitle?: string,
-    icon?: JSX.Element,
+    icon?: React.ReactNode,
     companyId: string | undefined,
     products: AddProduct[],
     triggerButton?: React.ReactNode,
@@ -87,25 +87,29 @@ export function SelectedProductsSheet({
                     {isLoading && <OverlayLoadingIndicator />}
                     {
                         products && products.map(product => (
-                            <div key={product.gtin} className="relative rounded-md border-4 border-blue-50 w-full h-[112px] overflow-hidden bg-blue-50 group">
-                                <div className={cn("absolute left-1 top-0 w-[98%] transition-all ease-in-out group-hover:-left-20 ")}>
+                            <div key={product.gtin} className="relative rounded-sm w-full h-[130px] overflow-hidden bg-blue-50 group">
+                                <div className={cn("absolute left-1 top-1 w-[98%] transition-all ease-in-out group-hover:-left-20 ")}>
                                     <AddProductItem
                                         gtin={product.gtin}
                                         name={product.name}
                                         brand={product.brand}
-                                        netContent={product.net_content}
+                                        netContent={product.netContent}
                                         measurmentUnit={product.measurementUnit}
-                                        price={product.price}
+                                        actualPrice={product.price}
                                         finalPrice={product.price}
-                                        inInventory={product.inInventory}
+                                        inInventory={product.isInInventory}
                                         className={"border w-full"}
+                                        image={product.image}
                                     />
                                 </div>
-                                <div className="w-full h-full flex justify-end items-center">
-                                    <div className="w-20 h-20 flex justify-center items-center cursor-pointer"
-                                        onClick={() => removeProduct && removeProduct(product.gtin)}>
+                                <div className="w-full h-full flex justify-end items-center pr-5">
+                                    <Button
+                                        variant="ghost"
+                                        className="hover:bg-white [&>*]:hover:text-destructive h-14"
+                                        onClick={() => removeProduct && removeProduct(product.gtin)}
+                                    >
                                         <Trash2 />
-                                    </div>
+                                    </Button>
                                 </div>
                             </div>
                         ))

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { getBranches } from "@/lib/configuration/branch"
 import { BranchesSchemaType } from "@/lib/schemas"
+import { cn } from "@/lib/utils"
 import { useQuery } from "@tanstack/react-query"
 import { Plus } from "lucide-react"
 import { useState, useCallback, useMemo } from "react"
@@ -95,8 +96,10 @@ export function BranchPicker({ className, companyId, isEditing, notFoundMessage,
                                     <Badge
                                         key={branch.id}
                                         variant="outline"
-                                        onClick={() => branch.id && handleEditBranch(branch)}
-                                        className="hover:bg-slate-200 cursor-pointer"
+                                        onClick={() => branch.id && !isEditing && handleEditBranch(branch)}
+                                        className={cn("hover:bg-slate-200 cursor-pointer", {
+                                            "cursor-default": isEditing
+                                        })}
                                     >
                                         <span className="flex gap-2 items-center text-sm">
                                             {branch.name}
@@ -104,13 +107,12 @@ export function BranchPicker({ className, companyId, isEditing, notFoundMessage,
                                     </Badge>
                                 ))
                                 : <p className="text-sm font-base mt-1 w-full text-center">
-                                    {isEditing
-                                        ? <span className="flex justify-center gap-1 items-center">Click <span className="font-bold text-lg">+</span> para agregar una sucursal</span>
-                                        : notFoundMessage ? notFoundMessage : 'No tienes sucursales'
+                                    {
+                                        notFoundMessage ? notFoundMessage : 'No tienes sucursales'
                                     }
                                 </p>
                         }
-                        {isEditing && companyId &&
+                        {companyId &&
                             <NewBranch
                                 title={newBranch?.title}
                                 subTitle={newBranch?.subTitle}
@@ -119,6 +121,7 @@ export function BranchPicker({ className, companyId, isEditing, notFoundMessage,
                                 triggerButton={memoTriggerButton}
                                 callback={branchAdded}
                                 onLoading={handleOnLoading}
+                                disabled={isEditing}
                             />
                         }
                     </div>
@@ -127,11 +130,10 @@ export function BranchPicker({ className, companyId, isEditing, notFoundMessage,
             </ScrollArea >
             {companyId &&
                 <EditBranch
-                    title={isEditing ? "Editar sucursal" : 'Ver sucursal'}
-                    subTitle={`Aquí puedes ${!isEditing ? 'ver los detalles' : 'editar los datos'} de la sucursal`}
+                    title={'Sucursal'}
+                    subTitle={`Detalles de la sucursal`}
                     companyId={companyId}
                     isOpen={editBranch.isOpen}
-                    isEditing={isEditing}
                     branchData={editBranch.branchData && editBranch.branchData}
                     callback={branchEdited}
                     onClose={handleOnClose}

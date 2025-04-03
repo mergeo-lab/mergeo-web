@@ -1,7 +1,7 @@
 import { GoogleAutoComplete } from "@/components/googleAutoComplete";
 import { Map, Marker } from '@vis.gl/react-google-maps';
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
@@ -9,8 +9,8 @@ import { GoogleLocationSchemaType, LatLngLiteralType, BranchesSchemaType, Branch
 import { deletBranch, editBranch } from "@/lib/configuration/branch";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { MapPin, Store, Trash2 } from "lucide-react";
-import { useEffect, useState, useCallback } from "react";
+import { MapPin, Pencil, Store, Trash2 } from "lucide-react";
+import { useEffect, useState, useCallback, JSX } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import { DeleteConfirmationDialog } from "@/components/deleteConfirmationDialog";
@@ -21,7 +21,6 @@ type Props = {
     subTitle?: string,
     icon?: JSX.Element,
     companyId: string,
-    isEditing: boolean,
     isOpen: boolean,
     branchData: BranchesSchemaType | null,
     onLoading: () => void
@@ -34,7 +33,6 @@ export function EditBranch(
         title = 'Detalles de la sucursal',
         subTitle = 'Aquí puedes ver los detalles de la sucursal',
         icon = <Store />,
-        isEditing,
         isOpen,
         branchData,
         onLoading,
@@ -44,7 +42,8 @@ export function EditBranch(
     const [open, setOpen] = useState(false);
     const [isLoading, setIsloading] = useState(false);
     const mutation = useMutation({ mutationFn: editBranch })
-    const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ lat: 0, lng: 0 });
+    const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ latitude: 0, longitude: 0 });
+    const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
         setOpen(isOpen);
@@ -99,7 +98,7 @@ export function EditBranch(
             name: address.displayName.text
         });
 
-        setMarkerPosition({ lat: address.location.latitude, lng: address.location.longitude });
+        setMarkerPosition({ latitude: address.location.latitude, longitude: address.location.longitude });
         form.trigger('address');
     }
 
@@ -131,6 +130,11 @@ export function EditBranch(
         form.reset();
     }
 
+    function cancelEdit() {
+        setIsEditing(false);
+        form.reset(defaultValues);
+    }
+
     const handleOpenChange = useCallback((isOpen: boolean) => {
         if (!isOpen) {
             setOpen(false);
@@ -146,12 +150,43 @@ export function EditBranch(
             <DialogContent className="w-full">
                 <DialogHeader className="px-6 py-3 border bottom-1">
                     <DialogTitle className="flex items-center gap-2">
-                        {icon}
-                        {title}
+                        <div className="rounded border border-border p-2">
+                            {icon}
+                        </div>
+                        <div className="flex flex-col gap-1">
+                            {title}
+                            <div className="text-sm">{subTitle}</div>
+                        </div>
+                        <div className="flex ml-2">
+                            <DeleteConfirmationDialog
+                                id={branchData && branchData?.id}
+                                title="Borrar sucursal"
+                                question={<p>¿Seguro que quieres borrar la sucursal <span className="font-bold">{branchData && branchData?.name}</span>?</p>}
+                                disabled={isEditing}
+                                triggerButton={
+                                    <Button variant="ghost" className={cn("w-fit flex gap-2 rounded-r-none border border-border border-r-0 hover:text-destructive", {
+                                        "text-muted hover:text-muted hover:bg-white cursor-not-allowed": isEditing,
+                                    })}>
+                                        <Trash2 size={15} />
+                                    </Button>
+                                }
+                                onLoading={() => {
+                                    setIsloading(true);
+                                    onLoading();
+                                }}
+                                mutationFn={deletBranch}
+                                callback={deleteComplete}
+                            />
+                            <Button
+                                onClick={() => setIsEditing(true)}
+                                variant="ghost"
+                                className={cn("w-fit flex gap-2 rounded-l-none border border-border border-l-none hover:text-highlight", {
+                                    "bg-highlight text-white hover:bg-highlight/80 hover:text-white cursor-default": isEditing,
+                                })}>
+                                <Pencil size={15} />
+                            </Button>
+                        </div>
                     </DialogTitle>
-                    <DialogDescription>
-                        {subTitle}
-                    </DialogDescription>
                 </DialogHeader>
                 <div className="px-6 py-2 flex gap-2">
                     {isLoading && <OverlayLoadingIndicator />}
@@ -185,7 +220,7 @@ export function EditBranch(
                                                     defaultAddressName={branchData?.address.name}
                                                     selectedAddress={addAddress}
                                                     addressRemoved={() => {
-                                                        setMarkerPosition({ lat: 0, lng: 0 });
+                                                        setMarkerPosition({ latitude: 0, longitude: 0 });
                                                     }}
                                                 />
                                                 <FormMessage />
@@ -228,16 +263,16 @@ export function EditBranch(
                         </FormProvider>
                     </div>
                     <div className="w-1/2 h-full flex justify-center items-center bg-border overflow-hidden rounded-lg">
-                        {markerPosition.lat !== 0 && markerPosition.lng !== 0
+                        {markerPosition.latitude !== 0 && markerPosition.longitude !== 0
                             ? <Map
                                 style={{ width: '100%', height: '100%' }}
-                                center={markerPosition}
+                                center={{ lat: markerPosition.latitude, lng: markerPosition.longitude }}
                                 defaultZoom={16}
                                 maxZoom={20}
                                 gestureHandling={'greedy'}
                                 disableDefaultUI={true}
                             >
-                                <Marker position={markerPosition} />
+                                <Marker position={{ lat: markerPosition.latitude, lng: markerPosition.longitude }} />
                             </Map>
                             : <div className="flex flex-col justify-center items-center gap-2">
                                 <MapPin size={40} />
@@ -256,29 +291,10 @@ export function EditBranch(
                             </Button>
                         </DialogClose>
                         : (
-                            <div className="w-full flex justify-between gap-2">
-                                <DeleteConfirmationDialog
-                                    id={branchData && branchData?.id}
-                                    name={branchData && branchData?.name}
-                                    title="Borrar sucursal"
-                                    question="¿Seguro que quieres borrar esta sucursal"
-                                    triggerButton={
-                                        <Button variant="destructive" className="w-40 flex gap-2">
-                                            <Trash2 size={15} />
-                                            Borrar
-                                        </Button>
-                                    }
-                                    onLoading={() => {
-                                        setIsloading(true);
-                                        onLoading();
-                                    }}
-                                    mutationFn={deletBranch}
-                                    callback={deleteComplete}
-                                />
+                            <div className="w-full flex justify-end gap-2">
                                 <div className="flex gap-2">
-                                    <DialogClose className="w-40">
-                                        <Button variant="secondary" className="w-full">Cancelar</Button>
-                                    </DialogClose>
+                                    <Button variant="secondary" className="w-full" onClick={() => cancelEdit()}>Cancelar</Button>
+
                                     <DialogClose className="w-40" disabled={!form.formState.isValid}>
                                         <Button disabled={!form.formState.isValid} onClick={form.handleSubmit(onSubmit)} type="submit" className="w-full">Guardar</Button>
                                     </DialogClose>

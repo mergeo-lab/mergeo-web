@@ -282,9 +282,8 @@ export function EditPickUp(
                             <div className="w-full flex justify-between gap-2">
                                 <DeleteConfirmationDialog<{ id: string }>
                                     id={pickUpData && pickUpData?.id}
-                                    name={pickUpData && pickUpData?.name}
                                     title="Borrar sucursal"
-                                    question="¿Seguro que quieres borrar esta sucursal"
+                                    question={<p>¿Seguro que quieres borrar la sucursal <span className="font-bold">{pickUpData && pickUpData?.name}</span>?</p>}
                                     triggerButton={
                                         <Button variant="destructive" className="w-40 flex gap-2">
                                             <Trash2 size={15} />
