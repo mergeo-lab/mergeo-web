@@ -4,6 +4,7 @@ const SellProductSchema = z.object({
   id: z.string(),
   quantity: z.number(),
   providerId: z.string(),
+  dropZoneId: z.string(),
 });
 
 const SellSchema = z.object({

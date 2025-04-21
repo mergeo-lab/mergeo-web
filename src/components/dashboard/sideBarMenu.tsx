@@ -1,5 +1,5 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Building, ChevronDown, Settings, UsersRound, WalletCards, Scale, Archive, Package } from "lucide-react";
+import { Building, ChevronDown, Settings, UsersRound, WalletCards, Archive, Package, LayoutDashboard } from "lucide-react";
 import { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import UseUserStore from "@/store/user.store";
@@ -130,6 +130,16 @@ export function SideBarMenu({ companyName }: Props) {
                         <>
                             <li>
                                 <SpecialLink
+                                    to="/provider/dashboard"
+                                    activePaths={['/provider/dashboard']}
+                                    onClick={onLinkClicked}
+                                >
+                                    <LayoutDashboard />
+                                    Panel de Control
+                                </SpecialLink>
+                            </li>
+                            <li>
+                                <SpecialLink
                                     to="/provider/products"
                                     activePaths={['/provider/products/newProducts', '/provider/products/']}
                                     onClick={onLinkClicked}
@@ -160,12 +170,12 @@ export function SideBarMenu({ companyName }: Props) {
                             Ordenes de Compra
                         </SpecialLink>
                     </li>
-                    <li>
+                    {/* <li>
                         <Link to="/login">
                             <Scale />
                             Compulsas
                         </Link>
-                    </li>
+                    </li> */}
                 </ul>
             </div >
         </div >

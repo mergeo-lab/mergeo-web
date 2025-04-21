@@ -17,7 +17,8 @@ export function UploadEvents({ companyId, onFinish }: Props) {
     const [show, setShow] = useState(false);
 
     useEffect(() => {
-        setShow(true);
+        if (productUploadStream) setShow(true);
+        else setShow(false);
 
     }, []);
 

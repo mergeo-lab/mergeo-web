@@ -1,8 +1,8 @@
-import React, { JSX, memo, useCallback, useEffect, useState } from 'react';
+import { JSX, memo, useCallback, useEffect, useState } from 'react';
 import { DashboardHeader, SideBarMenu } from '@/components/dashboard';
 import UseCompanyStore from '@/store/company.store';
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router';
-import { Bell, CircleHelp, Settings, ScrollText, Package, Archive, WalletCards, FileSearch, ShoppingCart, Heart, ThumbsDown } from 'lucide-react';
+import { Bell, CircleHelp, Settings, ScrollText, Package, Archive, WalletCards, FileSearch, ShoppingCart, Heart, ThumbsDown, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import UseProviderInventoryPaginationState from '@/store/providerInventoryPagination.store';
 import { cn } from '@/lib/utils';
@@ -68,6 +68,7 @@ const getRoutTitles = (currentPage: number) => {
             icon: <ThumbsDown {...iconProps} />
         },
 
+        '/provider/dashboard': { text: 'Panel de Control', icon: <LayoutDashboard {...iconProps} /> },
         '/provider/proOrders': { text: 'Pedidos', icon: <Archive {...iconProps} /> },
         '/provider/proOrders/$orderId': {
             text: <SubLink to={'/provider/proOrders'} texts={['Pedidos', 'Detalle del pedido']} />,

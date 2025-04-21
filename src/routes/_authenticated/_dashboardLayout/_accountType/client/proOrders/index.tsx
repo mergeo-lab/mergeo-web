@@ -36,6 +36,8 @@ export default function Sells() {
             return getAllPreOrders(companyId);
         },
         enabled: !!company?.id, // Ensure the query runs only if company ID exists
+        refetchOnWindowFocus: true, // Refetch when tab becomes active
+        refetchOnMount: true, // Refetch when component mounts
     });
 
     useEffect(() => {
@@ -77,7 +79,7 @@ export default function Sells() {
                                 <Table>
                                     <TableHeader className="bg-white sticky top-0 shadow-sm">
                                         <TableRow className="hover:bg-white">
-                                            <TableHead>Nº de Orden</TableHead>
+                                            <TableHead>Nº de Pedido</TableHead>
                                             <TableHead >Fecha</TableHead>
                                             <TableHead >Intento</TableHead>
                                             <TableHead className='text-center'>Estado</TableHead>

@@ -51,12 +51,13 @@ import { Route as AuthenticatedDashboardLayoutAccountTypeClientListsBlackListImp
 
 // Create Virtual Routes
 
-const AuthenticatedDashboardLayoutIndexLazyImport = createFileRoute(
-  '/_authenticated/_dashboardLayout/',
-)()
 const AuthenticatedDashboardLayoutAboutLazyImport = createFileRoute(
   '/_authenticated/_dashboardLayout/about',
 )()
+const AuthenticatedDashboardLayoutAccountTypeProviderDashboardLazyImport =
+  createFileRoute(
+    '/_authenticated/_dashboardLayout/_accountType/provider/dashboard',
+  )()
 
 // Create/Update Routes
 
@@ -105,16 +106,6 @@ const AuthLayoutForgotPasswordRoute = AuthLayoutForgotPasswordImport.update({
   path: '/forgotPassword',
   getParentRoute: () => AuthLayoutRoute,
 } as any)
-
-const AuthenticatedDashboardLayoutIndexLazyRoute =
-  AuthenticatedDashboardLayoutIndexLazyImport.update({
-    path: '/',
-    getParentRoute: () => AuthenticatedDashboardLayoutRoute,
-  } as any).lazy(() =>
-    import('./routes/_authenticated/_dashboardLayout/index.lazy').then(
-      (d) => d.Route,
-    ),
-  )
 
 const AuthLayoutRegistrationIndexRoute =
   AuthLayoutRegistrationIndexImport.update({
@@ -192,6 +183,16 @@ const AuthenticatedDashboardLayoutAccountTypeClientIndexRoute =
     path: '/client/',
     getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
   } as any)
+
+const AuthenticatedDashboardLayoutAccountTypeProviderDashboardLazyRoute =
+  AuthenticatedDashboardLayoutAccountTypeProviderDashboardLazyImport.update({
+    path: '/provider/dashboard',
+    getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
+  } as any).lazy(() =>
+    import(
+      './routes/_authenticated/_dashboardLayout/_accountType/provider/dashboard.lazy'
+    ).then((d) => d.Route),
+  )
 
 const AuthenticatedDashboardLayoutAccountTypeProviderSellsRoute =
   AuthenticatedDashboardLayoutAccountTypeProviderSellsImport.update({
@@ -423,13 +424,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLayoutRegistrationIndexImport
       parentRoute: typeof AuthLayoutRegistrationImport
     }
-    '/_authenticated/_dashboardLayout/': {
-      id: '/_authenticated/_dashboardLayout/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedDashboardLayoutIndexLazyImport
-      parentRoute: typeof AuthenticatedDashboardLayoutImport
-    }
     '/_authenticated/_dashboardLayout/buyOrder/$orderId': {
       id: '/_authenticated/_dashboardLayout/buyOrder/$orderId'
       path: '/buyOrder/$orderId'
@@ -463,6 +457,13 @@ declare module '@tanstack/react-router' {
       path: '/provider/sells'
       fullPath: '/provider/sells'
       preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderSellsImport
+      parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
+    }
+    '/_authenticated/_dashboardLayout/_accountType/provider/dashboard': {
+      id: '/_authenticated/_dashboardLayout/_accountType/provider/dashboard'
+      path: '/provider/dashboard'
+      fullPath: '/provider/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderDashboardLazyImport
       parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
     }
     '/_authenticated/_dashboardLayout/_accountType/client/': {
@@ -581,6 +582,7 @@ export const routeTree = rootRoute.addChildren({
             AuthenticatedDashboardLayoutAccountTypeClientOrdersRoute,
             AuthenticatedDashboardLayoutAccountTypeProviderSellDetailRoute,
             AuthenticatedDashboardLayoutAccountTypeProviderSellsRoute,
+            AuthenticatedDashboardLayoutAccountTypeProviderDashboardLazyRoute,
             AuthenticatedDashboardLayoutAccountTypeClientIndexRoute,
             AuthenticatedDashboardLayoutAccountTypeClientListsBlackListRoute,
             AuthenticatedDashboardLayoutAccountTypeClientListsFavoritesRoute,
@@ -599,7 +601,6 @@ export const routeTree = rootRoute.addChildren({
         AuthenticatedDashboardLayoutInvoicesRoute,
         AuthenticatedDashboardLayoutNotificationsRoute,
         AuthenticatedDashboardLayoutAboutLazyRoute,
-        AuthenticatedDashboardLayoutIndexLazyRoute,
         AuthenticatedDashboardLayoutBuyOrderOrderIdRoute,
         AuthenticatedDashboardLayoutBuyOrderIndexRoute,
       }),
@@ -674,7 +675,6 @@ export const routeTree = rootRoute.addChildren({
         "/_authenticated/_dashboardLayout/invoices",
         "/_authenticated/_dashboardLayout/notifications",
         "/_authenticated/_dashboardLayout/about",
-        "/_authenticated/_dashboardLayout/",
         "/_authenticated/_dashboardLayout/buyOrder/$orderId",
         "/_authenticated/_dashboardLayout/buyOrder/"
       ]
@@ -698,6 +698,7 @@ export const routeTree = rootRoute.addChildren({
         "/_authenticated/_dashboardLayout/_accountType/client/orders",
         "/_authenticated/_dashboardLayout/_accountType/provider/sellDetail",
         "/_authenticated/_dashboardLayout/_accountType/provider/sells",
+        "/_authenticated/_dashboardLayout/_accountType/provider/dashboard",
         "/_authenticated/_dashboardLayout/_accountType/client/",
         "/_authenticated/_dashboardLayout/_accountType/client/lists/blackList",
         "/_authenticated/_dashboardLayout/_accountType/client/lists/favorites",
@@ -733,10 +734,6 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "_authLayout/registration/index.tsx",
       "parent": "/_authLayout/registration"
     },
-    "/_authenticated/_dashboardLayout/": {
-      "filePath": "_authenticated/_dashboardLayout/index.lazy.tsx",
-      "parent": "/_authenticated/_dashboardLayout"
-    },
     "/_authenticated/_dashboardLayout/buyOrder/$orderId": {
       "filePath": "_authenticated/_dashboardLayout/buyOrder/$orderId.tsx",
       "parent": "/_authenticated/_dashboardLayout"
@@ -755,6 +752,10 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_authenticated/_dashboardLayout/_accountType/provider/sells": {
       "filePath": "_authenticated/_dashboardLayout/_accountType/provider/sells.tsx",
+      "parent": "/_authenticated/_dashboardLayout/_accountType"
+    },
+    "/_authenticated/_dashboardLayout/_accountType/provider/dashboard": {
+      "filePath": "_authenticated/_dashboardLayout/_accountType/provider/dashboard.lazy.tsx",
       "parent": "/_authenticated/_dashboardLayout/_accountType"
     },
     "/_authenticated/_dashboardLayout/_accountType/client/": {

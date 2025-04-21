@@ -11,6 +11,7 @@ type Props = {
     orderStatus: PRE_ORDER_STATUS | undefined,
     data: PreOrderProductSchemaType[] | undefined,
     providerId: string | undefined,
+    dropZoneId: string | undefined,
     acceptedProducts: SellProductSchemaType[],
     isLoading: boolean,
     isProvider: boolean,
@@ -18,7 +19,7 @@ type Props = {
     onSelect: (product: SellProductSchemaType) => void
 }
 
-export default function ProductList({ orderStatus, data, providerId, acceptedProducts, isProvider = true, isLoading, onSelect, toggleAllProducts }: Props) {
+export default function ProductList({ orderStatus, data, providerId, dropZoneId, acceptedProducts, isProvider = true, isLoading, onSelect, toggleAllProducts }: Props) {
 
     const total = data && data.reduce((acc, item) => {
         // Check if the item is in the acceptedProducts array
@@ -51,7 +52,7 @@ export default function ProductList({ orderStatus, data, providerId, acceptedPro
                 <TableHeader className='sticky top-0 shadow-sm'>
                     <TableRow className="bg-white hover:bg-white [&>th]:text-secondary/90 [&>th]:font-thin">
                         <TableHead>Producto</TableHead>
-                        <TableHead >Unidad de Medida</TableHead>
+                        <TableHead>Unidad de Medida</TableHead>
                         <TableHead>Cantidad</TableHead>
                         <TableHead>Precio Unitario</TableHead>
                         <TableHead className={cn({ 'text-right pr-14': !isProvider })}>Precio Total</TableHead>
@@ -122,6 +123,7 @@ export default function ProductList({ orderStatus, data, providerId, acceptedPro
                                                                         id: item.id,
                                                                         quantity: item.quantity,
                                                                         providerId: providerId || '',
+                                                                        dropZoneId: dropZoneId || '',
                                                                     })
                                                                 }} />
                                                             : (

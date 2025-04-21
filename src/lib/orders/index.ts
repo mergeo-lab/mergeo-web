@@ -176,6 +176,7 @@ export async function getProducts(
       id: product.id,
       quantity: product.quantity ?? 1, // Use 0 as default if quantity is not defined
       providerId: product.providerId,
+      dropZoneId: product.dropZoneId,
     })
   );
 

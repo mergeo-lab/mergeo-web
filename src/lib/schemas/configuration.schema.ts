@@ -57,6 +57,7 @@ const ProductSchema = z.object({
   isFavorite: z.boolean().optional(),
   morePresentations: z.boolean().optional(),
   isInInventory: z.boolean().optional(),
+  dropZoneId: z.string().optional(),
 });
 
 // Define the PreOrderProduct schema
@@ -107,6 +108,7 @@ export const PreOrderSchema = z.object({
   provider: CompanySchema, // Assuming this is already defined elsewhere
   criteria: CriteriaSchema,
   client: CompanySchema.optional(),
+  dropZoneId: z.string(),
 });
 
 const User = z.object({

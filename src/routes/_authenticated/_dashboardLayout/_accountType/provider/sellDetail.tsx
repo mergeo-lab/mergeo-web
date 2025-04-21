@@ -91,6 +91,7 @@ export function SellsDetail() {
                 id: item.id,
                 quantity: item.quantity,
                 providerId: companyId,
+                dropZoneId: order.dropZoneId || '',
             };
         });
     }, [order, companyId]);
@@ -140,10 +141,12 @@ export function SellsDetail() {
                         isLoading={isLoading}
                         orderStatus={order?.status as PRE_ORDER_STATUS}
                         providerId={order?.buyerId}
+                        dropZoneId={order?.dropZoneId}
                         data={order?.preOrderProducts}
                         acceptedProducts={acceptedProducts}
                         onSelect={(item) => toggleProductAcceptance(item)}
                         toggleAllProducts={() => toggleAllProducts(sellProduct())}
+                        isProvider={true}
                     />
 
                 </div>

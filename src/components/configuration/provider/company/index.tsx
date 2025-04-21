@@ -298,7 +298,7 @@ export function Company() {
                     </FormProvider>
                 </div>
                 <CardFooter className='w-full'>
-                    <div className='flex flex-col-reverse md:flex-row justify-end items-center  gap-2'>
+                    <div className='flex flex-col-reverse md:flex-row justify-end items-center gap-2'>
                         {isEditing ?
                             <>
                                 <Button variant='secondary' onClick={handleCancelEdit} className='min-w-[200px] flex gap-2' type="submit">

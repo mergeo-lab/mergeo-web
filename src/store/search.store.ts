@@ -5,16 +5,19 @@ type SavedProducts = {
   [key: string]: ProductWithQuantity[];
 };
 
-export type ProductWithQuantity = CartProduct & {
-  quantity: number;
-};
-
 export type CartProductQuantity = Pick<
   ProductWithQuantity,
   'id' | 'providerId' | 'quantity'
 >;
 
-export type CartProduct = ProductSchemaType & { providerId: string };
+export type CartProduct = ProductSchemaType & {
+  providerId: string;
+  dropZoneId: string;
+};
+
+export type ProductWithQuantity = CartProduct & {
+  quantity: number;
+};
 
 type SearchState = {
   activeSearchItem: SearchListProductType | null;
