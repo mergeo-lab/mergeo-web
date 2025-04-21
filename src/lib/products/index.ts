@@ -487,6 +487,35 @@ export async function getBlackList(
   }
 }
 
+export async function removeFromBlackList(
+  companyId: string,
+  productId: string
+): Promise<ProductSchemaType[]> {
+  try {
+    const path = `${PRODUCT_BLACKLIST}/${companyId}/remove`;
+
+    const { data: response }: AxiosResponse = await axiosPrivate.post(
+      path,
+      JSON.stringify([productId]),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+    throw error;
+  }
+}
+
 export async function getMorePresentations(
   productId: string
 ): Promise<ProductSchemaType[]> {

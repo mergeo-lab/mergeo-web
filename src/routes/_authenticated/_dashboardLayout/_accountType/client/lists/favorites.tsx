@@ -1,14 +1,13 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { AnimatePresence } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Table, TableBody, TableCell, TableHead, TableHeader } from "@/components/ui/table";
+import { Table, TableBody, TableHead, TableHeader } from "@/components/ui/table";
 import { getFavorites, removeFavorite } from "@/lib/products";
 import { ProductSchemaType } from "@/lib/schemas";
 import UseCompanyStore from "@/store/company.store";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ImageIcon, Trash2 } from "lucide-react";
 import { useState } from "react";
+import AnimatedRow from "@/components/animatedRow";
 
 export const Route = createFileRoute(
     "/_authenticated/_dashboardLayout/_accountType/client/lists/favorites"
@@ -100,62 +99,14 @@ export default function Favorites() {
                         {isLoading ? (
                             loadingIndicator()
                         ) : (
-                            <AnimatePresence mode="sync">
-                                {data &&
-                                    data.map((product) => (
-                                        <motion.tr
-                                            key={product.id}
-                                            layout="position" // Use position-based layout animations
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{
-                                                opacity: 1,
-                                                y: 0,
-                                                height: "100px",
-                                                transition: {
-                                                    y: { type: "spring", stiffness: 300, damping: 10 },
-                                                    opacity: { duration: 0.2 }
-                                                }
-                                            }}
-                                            exit={{
-                                                opacity: 0,
-                                                height: 0,
-                                                scale: 0.8,
-                                                transition: {
-                                                    height: { duration: 0.3, ease: "easeInOut" },
-                                                    scale: { duration: 0.2 },
-                                                    opacity: { duration: 0.2 }
-                                                }
-                                            }}
-                                            className="transition-all"
-                                        >
-                                            <TableCell className="p-0 m-0 py-2">
-                                                <div className="flex justify-start items-center w-full">
-                                                    <div className="bg-border rounded p-4">
-                                                        <ImageIcon size={50} className="text-white" />
-                                                    </div>
-                                                    <div className="flex flex-col ml-2">
-                                                        <div className="font-semibold">{product.name}</div>
-                                                        <div className="text-muted font-thin text-sm">{product.brand}</div>
-                                                    </div>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="text-center">{product.netContent}</TableCell>
-                                            <TableCell className="text-center">{product.measurementUnit}</TableCell>
-                                            <TableCell className="text-center">{product.price}</TableCell>
-                                            <TableCell className="text-center">
-                                                {product.netContent ? +product.price * product.netContent : 1}
-                                            </TableCell>
-                                            <TableCell>
-                                                <Button
-                                                    variant="ghost"
-                                                    className="hover:text-destructive"
-                                                    onClick={() => handleRemoveFromFavorite(product.id)}
-                                                >
-                                                    <Trash2 size={18} />
-                                                </Button>
-                                            </TableCell>
-                                        </motion.tr>
-                                    ))}
+                            <AnimatePresence mode="popLayout">
+                                {data?.map((product) => (
+                                    <AnimatedRow
+                                        key={product.id}
+                                        product={product}
+                                        handleRemove={() => handleRemoveFromFavorite(product.id)}
+                                    />
+                                ))}
                             </AnimatePresence>
                         )}
                     </TableBody>

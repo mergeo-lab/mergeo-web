@@ -1,11 +1,13 @@
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { getBlackList } from '@/lib/products';
+import { getBlackList, removeFromBlackList } from '@/lib/products';
 import UseCompanyStore from '@/store/company.store';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from '@tanstack/react-router'
-import { ImageIcon, Trash2 } from 'lucide-react';
+import { AnimatePresence } from "framer-motion";
+import AnimatedRow from "@/components/animatedRow";
+import { ProductSchemaType } from '@/lib/schemas';
+import { useState } from 'react';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/lists/blackList')({
   component: () => <BlackList />
@@ -15,6 +17,9 @@ export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountT
 export default function BlackList() {
   const { company } = UseCompanyStore();
   const companyId = company?.id;
+  const queryClient = useQueryClient();
+
+  const [, setRemovingItems] = useState<Set<string>>(new Set());
 
   const { data, isLoading } = useQuery({
     queryKey: ['blacklist', companyId],
@@ -33,6 +38,45 @@ export default function BlackList() {
         </TableCell>
       </TableRow>
     )
+  }
+
+  const { mutate: removelackList } = useMutation({
+    mutationFn: async ({ companyId, productId }: { companyId: string; productId: string }) => {
+      if (!company?.id) throw new Error("Company ID is required");
+      return removeFromBlackList(companyId, productId);
+    },
+    onMutate: async ({ companyId, productId }) => {
+      await queryClient.cancelQueries({ queryKey: ["blacklist", companyId] });
+
+      const previousFavorites = queryClient.getQueryData(["blacklist", companyId]);
+
+      setRemovingItems((prev) => new Set(prev).add(productId));
+
+      queryClient.setQueryData(["blacklist", companyId], (old: ProductSchemaType[]) =>
+        old?.filter((product) => product.id !== productId)
+      );
+
+      return { previousFavorites };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previousFavorites) {
+        queryClient.setQueryData(["blacklist", company?.id], context.previousFavorites);
+      }
+      setRemovingItems(new Set());
+    },
+    onSettled: (_, __, { productId }) => {
+      setRemovingItems((prev) => {
+        const next = new Set(prev);
+        next.delete(productId);
+        return next;
+      });
+    },
+  });
+
+
+  function handleRemove(productId: string) {
+    if (!company?.id) return;
+    removelackList({ companyId: company.id, productId: productId });
   }
 
   return (
@@ -55,34 +99,15 @@ export default function BlackList() {
               isLoading
                 ? loadingIndicator()
                 : (
-                  data && data.map((product) => (
-                    <TableRow key={product.id}>
-                      <TableCell className="p-0 m-0 py-2">
-                        <div className="flex justify-start items-center w-full">
-
-                          <div className="bg-border rounded p-4">
-                            <ImageIcon size={50} className="text-white" />
-                          </div>
-                          <div className="flex flex-col ml-2">
-                            <div className="font-semibold">{product.name}</div>
-                            <div className="text-muted font-thin text-sm">{product.brand}</div>
-                          </div>
-                        </div>
-                      </TableCell>
-
-                      <TableCell className={`text-center`}>{product.netContent}</TableCell>
-                      <TableCell className={`text-center`}>{product.measurementUnit}</TableCell>
-                      <TableCell className={`text-center`}>{product.price}</TableCell>
-                      <TableCell className={`text-center`}>{
-                        product.netContent ? (+product.price * product.netContent) : 1}
-                      </TableCell>
-                      <TableCell>
-                        <Button variant="ghost" className='hover:text-destructive'>
-                          <Trash2 size={18} />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
+                  <AnimatePresence mode="popLayout">
+                    {data?.map((product) => (
+                      <AnimatedRow
+                        key={product.id}
+                        product={product}
+                        handleRemove={() => handleRemove(product.id)}
+                      />
+                    ))}
+                  </AnimatePresence>
                 )
             }
           </TableBody>

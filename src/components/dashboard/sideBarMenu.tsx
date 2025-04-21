@@ -101,7 +101,7 @@ export function SideBarMenu({ companyName }: Props) {
             <div className={cn("mt-8", { 'mt-0': user?.accountType === ACCOUNT.provider })}>
                 {user?.accountType === ACCOUNT.client &&
                     <div className="px-5">
-                        <NewOrderButton />
+                        <NewOrderButton onLinkClicked={onLinkClicked} />
                     </div>
                 }
 

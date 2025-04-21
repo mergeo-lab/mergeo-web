@@ -4,14 +4,16 @@ import { useNavigate } from '@tanstack/react-router';
 import UseSearchConfigStore from "@/store/searchConfiguration.store.";
 
 type Props = {
-    showArrow?: boolean
+    showArrow?: boolean,
+    onLinkClicked: () => void,
 }
 
-export default function NewOrderButton({ showArrow = true }: Props) {
+export default function NewOrderButton({ showArrow = true, onLinkClicked }: Props) {
     const { setConfigDialogOpen, setShouldResetConfig } = UseSearchConfigStore();
     const navigate = useNavigate()
 
     function handleNewOrder() {
+        onLinkClicked();
         setShouldResetConfig(true);
         setConfigDialogOpen(true);
         navigate({ to: "/client/orders" });
