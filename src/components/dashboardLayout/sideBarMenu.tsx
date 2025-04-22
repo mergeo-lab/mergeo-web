@@ -4,8 +4,8 @@ import { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import UseUserStore from "@/store/user.store";
 import { ACCOUNT, tabs } from "@/lib/constants";
-import NewOrderButton from "@/components/dashboard/newOrderButton";
-import SpecialLink from "@/components/dashboard/specialLink";
+import NewOrderButton from "@/components/dashboardLayout/newOrderButton";
+import SpecialLink from "@/components/dashboardLayout/specialLink";
 import { Link, useLocation, useSearch } from "@tanstack/react-router";
 import CollapsibleList from "@/components/listasCollapsible";
 

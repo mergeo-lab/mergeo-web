@@ -1,5 +1,5 @@
 import { JSX, memo, useCallback, useEffect, useState } from 'react';
-import { DashboardHeader, SideBarMenu } from '@/components/dashboard';
+import { DashboardHeader, SideBarMenu } from '@/components/dashboardLayout';
 import UseCompanyStore from '@/store/company.store';
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router';
 import { Bell, CircleHelp, Settings, ScrollText, Package, Archive, WalletCards, FileSearch, ShoppingCart, Heart, ThumbsDown, LayoutDashboard } from 'lucide-react';

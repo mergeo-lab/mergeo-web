@@ -1,4 +1,4 @@
-import SpecialLink from '@/components/dashboard/specialLink';
+import SpecialLink from '@/components/dashboardLayout/specialLink';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import { Link, useLocation } from '@tanstack/react-router';

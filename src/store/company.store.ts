@@ -6,17 +6,19 @@ type CompanyStore = {
   company: CompanySchemaType | null;
   saveCompany: (company: CompanySchemaType) => void;
   updateCompany: (updates: Partial<CompanySchemaType>) => void;
+  getCompanyId: () => string;
 };
 
 const UseCompanyStore = create<CompanyStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       company: null,
       saveCompany: (company: CompanySchemaType) => set(() => ({ company })),
-      updateCompany: (updates: Partial<CompanySchemaType>) => 
+      updateCompany: (updates: Partial<CompanySchemaType>) =>
         set((state) => ({
-          company: state.company ? { ...state.company, ...updates } : null
+          company: state.company ? { ...state.company, ...updates } : null,
         })),
+      getCompanyId: () => get().company?.id ?? '',
     }),
     { name: 'companyStore' }
   )
