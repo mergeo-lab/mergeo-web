@@ -60,7 +60,7 @@ export function SellsDetail() {
 
     async function handleReceptedResponse() {
         if (!order || mutation.isPending) return;
-        console.log("ORDER REJECTED :: ", order);
+
         mutation.mutateAsync({
             orderId: order.id,
             acceptedProducts: [],

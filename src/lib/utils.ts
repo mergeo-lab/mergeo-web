@@ -3,6 +3,8 @@ import { twMerge } from 'tailwind-merge';
 import CryptoJS from 'crypto-js';
 import { HourSlot } from '@/types';
 import { ZoneSchemaPostGisType } from '@/lib/schemas';
+import { formatDistanceToNowStrict, parseISO } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 const secretKey = import.meta.env.VITE_SEARCH_PARAMS_KEY;
 
@@ -152,4 +154,9 @@ export function pagination(current: number, total: number) {
   if (includeRightDots) filteredCenter.push(-1);
 
   return [1, ...filteredCenter, total];
+}
+
+export function getTimeRemaining(isoDate: string): string {
+  const targetDate = parseISO(isoDate);
+  return formatDistanceToNowStrict(targetDate, { addSuffix: true, locale: es }); // e.g., "in 3 days", "in 5 hours"
 }

@@ -5,6 +5,9 @@ import { MdGppGood } from "react-icons/md";
 import { MdDoNotDisturbOn } from "react-icons/md";
 import { cn } from "@/lib/utils";
 import { TbProgressBolt } from "react-icons/tb";
+import { useQuery } from "@tanstack/react-query";
+import { getUsersPerformance } from "@/lib/dashboard";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const performance = {
     "excelent": {
@@ -29,29 +32,44 @@ const performance = {
     }
 }
 
-type UserDashboard = {
-    user: {
-        name: string,
-        avatar: string,
-        interactions: number,
-        ordersClosed: number,
-        performance: string
+export default function TopPerformerCard({ companyId }: { companyId: string }) {
+    const { data, isLoading } = useQuery({
+        queryKey: ['users-performance', companyId],
+        queryFn: () => getUsersPerformance(companyId),
+    });
+
+    if (isLoading) {
+        const amount = 2;
+        return (
+            <div className="flex flex-col w-full h-fit">
+                {Array.from({ length: amount }).map((_, index) => {
+                    const isFirst = index === 0;
+                    const isLast = index === amount - 1;
+                    return (
+                        <Skeleton key={index} className={cn("w-full h-[7.8125rem]",
+                            {
+                                "rounded-t-xl rounded-b-none border-b-0": isFirst,
+                                "rounded-b-xl rounded-t-none border-t-1": isLast,
+                                "rounded-none": !isFirst && !isLast
+                            }
+                        )} />
+                    )
+                }
+                )}
+            </div>
+        )
     }
-}
 
-type Props = { data: UserDashboard[] }
-
-export default function TopPerformerCard({ data }: Props) {
     return (
         <div className="flex flex-col">
             {data && data.map((salesData, index) => {
-                const successRate = Math.round((salesData.user.ordersClosed / salesData.user.interactions) * 100);
+                const successRate = salesData.percentage;
                 const isFirst = index === 0;
                 const isLast = index === data.length - 1;
 
                 return (
                     <Card
-                        key={salesData.user.name}
+                        key={salesData.userId}
                         className={cn("w-full", {
                             "rounded-t-xl rounded-b-none border-b-0": isFirst,
                             "rounded-b-xl rounded-t-none border-t-1": isLast,
@@ -63,10 +81,10 @@ export default function TopPerformerCard({ data }: Props) {
                             <div className="flex items-center justify-between w-2/3">
                                 <div className="flex items-center space-x-4 w-full">
                                     <div className="flex items-center justify-center h-14 w-14 rounded-full bg-blue-100 text-blue-600 text-md font-medium">
-                                        {salesData.user.avatar}
+                                        {salesData.firstName.charAt(0) + salesData.lastName.charAt(0)}
                                     </div>
                                     <div>
-                                        <div className="text-xl font-bold text-nowrap">{salesData.user.name}</div>
+                                        <div className="text-xl font-bold text-nowrap">{`${salesData.firstName} ${salesData.lastName}`}</div>
                                     </div>
                                 </div>
 
@@ -76,7 +94,7 @@ export default function TopPerformerCard({ data }: Props) {
                                         <p className="text-sm text-gray-500">Ordenes cerradas</p>
                                         <div className="flex items-center">
                                             <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                                            <p className="text-2xl font-bold">{salesData.user.ordersClosed}</p>
+                                            <p className="text-2xl font-bold">{salesData.closedOrders}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -119,7 +137,7 @@ export default function TopPerformerCard({ data }: Props) {
                                             <span className={performance["improve"].style}>{performance["improve"].icon}</span>
                                         </div>
                                     )}
-                                    {successRate > 0 && successRate < 30 && (
+                                    {successRate == 0 && successRate < 30 && (
                                         <div className="flex flex-col justify-center items-center">
                                             <span>{performance["bad"].label}</span>
                                             <span className={performance["bad"].style}>{performance["bad"].icon}</span>

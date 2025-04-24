@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getBestZone } from "@/lib/dashboard";
 import { formatToArgentinianPesos } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -13,15 +14,7 @@ export default function BestZone({ companyId }: { companyId: string }) {
 
     if (isLoading) {
         return (
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Zona con mas Ventas</CardTitle>
-                    <MapPin className="h-4 w-4 text-primary" />
-                </CardHeader>
-                <CardContent>
-                    <div className="w-full h-full max-h-[133px]"></div>
-                </CardContent>
-            </Card>
+            <Skeleton className="w-full h-full max-h-[15.1487rem]" />
         )
     }
 
