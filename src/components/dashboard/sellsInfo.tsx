@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton";
-import { getSellInfo } from "@/lib/dashboard";
+import { getSellInfo } from "@/lib/dashboard/provider";
 import { formatDate, formatToArgentinianPesos } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router"

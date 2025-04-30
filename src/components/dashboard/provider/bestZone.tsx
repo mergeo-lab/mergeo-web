@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getBestZone } from "@/lib/dashboard";
+import { getBestZone } from "@/lib/dashboard/provider";
 import { formatToArgentinianPesos } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { MapPin } from "lucide-react";

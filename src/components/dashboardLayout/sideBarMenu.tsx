@@ -110,6 +110,16 @@ export function SideBarMenu({ companyName }: Props) {
                         <>
                             <li>
                                 <SpecialLink
+                                    to="/client/dashboard"
+                                    activePaths={['/client/dashboard']}
+                                    onClick={onLinkClicked}
+                                >
+                                    <LayoutDashboard />
+                                    Panel de Control
+                                </SpecialLink>
+                            </li>
+                            <li>
+                                <SpecialLink
                                     to="/client/proOrders"
                                     onClick={onLinkClicked}
                                     activePaths={['/client/proOrders']}
@@ -119,6 +129,7 @@ export function SideBarMenu({ companyName }: Props) {
                                 </SpecialLink>
 
                             </li>
+
                             <li>
 
                                 <CollapsibleList onLinkClicked={onLinkClicked} />

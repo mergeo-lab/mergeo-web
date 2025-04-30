@@ -14,6 +14,7 @@ import PasswordInput from '@/components/passwordInput';
 import { z } from 'zod';
 import UseCompanyStore from '@/store/company.store';
 import { useEffect, memo, useCallback, useMemo } from 'react';
+import { ACCOUNT } from '@/lib/constants';
 
 
 // Memoize Card and its subcomponents
@@ -36,7 +37,7 @@ type Schema = z.infer<typeof LoginSchema>
 const MemoizedFormField = memo(FormField);
 
 function Login() {
-  const { logIn, isAuthenticated } = useAuth();
+  const { logIn, isAuthenticated, user } = useAuth();
   const companyState = UseCompanyStore();
   const router = useRouter();
   const { toast } = useToast();
@@ -74,10 +75,12 @@ function Login() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      const redirectTo = "/";
+      const accountType = user?.accountType;
+
+      const redirectTo = (accountType === ACCOUNT.provider ? "/provider" : "/client") + "/dashboard";
       router.history.push(redirectTo, { replace: true });
     }
-  }, [isAuthenticated, router.history]);
+  }, [isAuthenticated, router.history, user?.accountType]);
 
   return (
     <Form {...form}>

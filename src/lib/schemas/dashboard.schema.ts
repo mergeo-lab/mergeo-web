@@ -43,7 +43,7 @@ const BestMonthSchema = z.object({
   total: z.number(),
 });
 
-const SalesChartSchema = z.object({
+const ChartSchema = z.object({
   chartData: z.array(ChartDataSchema),
   totalPeriod: z.number(),
   averageMonthly: z.number(),
@@ -79,16 +79,76 @@ const OrderSchema = z.object({
   responseDeadline: z.string(),
   totalPrice: z.number(),
   productsCount: z.number(),
-  dropZoneName: z.string(),
+  dropZoneName: z.string().optional(),
+  status: z.string().optional(),
 });
 
-const PendingOrdersSchema = z.array(OrderSchema);
+const DashboardOrdersSchema = z.array(OrderSchema);
+
+// CLIENT
+const BranchSchema = z.object({
+  branchId: z.string(),
+  branchName: z.string(),
+  orderCount: z.number(),
+  percent: z.number(),
+});
+
+const TopBranchSchema = z.object({
+  branchId: z.string(),
+  branchName: z.string(),
+  orderCount: z.number(),
+  percentage: z.number(),
+  preOrderCount: z.number(),
+  approvalPercent: z.number(),
+});
+
+const DashboardBranchSchema = z.object({
+  branches: z.array(BranchSchema),
+  topBranch: TopBranchSchema,
+});
+
+const ListCountSchema = z.object({
+  title: z.string(),
+  count: z.number(),
+  type: z.string(),
+});
+const DashboardListCountSchema = z.array(ListCountSchema);
+
+const ProductSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  brand: z.string(),
+  measurementUnit: z.string(),
+  netContent: z.string(),
+});
+
+const MostBuyedProductSchema = z.object({
+  product: ProductSchema,
+  totalBuyed: z.number(),
+  spent: z.number(),
+});
+
+const TotalBuyedProductsSchema = z.object({
+  week: z.number(),
+  month: z.number(),
+  year: z.number(),
+});
+
+export const ClientProductsStatsSchema = z.object({
+  totalBuyedProducts: TotalBuyedProductsSchema,
+  mostBuyedProducts: z.array(MostBuyedProductSchema),
+});
 
 // Infer TypeScript type from the schema
 export type SellInfoResponseType = z.infer<typeof SellInfoResponseSchema>;
 export type BestZoneResponseType = z.infer<typeof BestZoneResponseSchema>;
-export type SalesChartType = z.infer<typeof SalesChartSchema>;
+export type ChartDataType = z.infer<typeof ChartSchema>;
 export type UserPerformanceType = z.infer<typeof UserPerformanceSchema>;
 export type TopSelledProductType = z.infer<typeof TopSelledProductSchema>;
 export type ProductsStatsType = z.infer<typeof ProductsStatsSchema>;
-export type PendingOrdersType = z.infer<typeof PendingOrdersSchema>;
+export type DashboardOrdersType = z.infer<typeof DashboardOrdersSchema>;
+
+//CLIENT
+export type DashboardBranchType = z.infer<typeof DashboardBranchSchema>;
+export type DashboardListCountType = z.infer<typeof DashboardListCountSchema>;
+export type ClientProductsStatsType = z.infer<typeof ClientProductsStatsSchema>;

@@ -48,6 +48,7 @@ const getRoutTitles = (currentPage: number) => {
             text: <SubLink to={'/buyOrder'} texts={['Ordenes de Compra', 'Detalle de la orden de compra']} />,
             icon: <WalletCards {...iconProps} />
         },
+        '/client/dashboard': { text: 'Panel de Control', icon: <LayoutDashboard {...iconProps} /> },
         '/client/orders': { text: 'Hacer Pedido', icon: <ShoppingCart {...iconProps} /> },
         '/client/proOrders': { text: 'Pedidos', icon: <Archive {...iconProps} /> },
         '/client/proOrders/$orderId': {

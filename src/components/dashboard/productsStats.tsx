@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getProductsStats } from "@/lib/dashboard";
+import { getProductsStats } from "@/lib/dashboard/provider";
 import { formatToArgentinianPesos } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Box, Zap } from "lucide-react";

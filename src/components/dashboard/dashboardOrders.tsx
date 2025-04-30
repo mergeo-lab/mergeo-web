@@ -2,22 +2,31 @@ import RemainingTime from "@/components/remainingTime";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getPendingOrders } from "@/lib/dashboard";
 import { cn, formatToArgentinianPesos } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Clock } from "lucide-react";
 import { MdPendingActions } from "react-icons/md";
+import { StatusBadge } from '@/components/statusBadge';
+import { ACCOUNT } from "@/lib/constants";
+import { getPendingOrders, getLatestOrders } from "@/lib/dashboard";
 
-export default function PendingOrders({ companyId }: { companyId: string }) {
+type Props = {
+    companyId: string;
+    accountType: ACCOUNT,
+    queryKey: string;
+    itemsCount?: number;
+}
+
+export default function DashboardOrders({ companyId, accountType, queryKey, itemsCount }: Props) {
 
     const { data, isLoading } = useQuery({
-        queryKey: ['pending-orders', companyId],
-        queryFn: () => getPendingOrders(companyId),
+        queryKey: [queryKey, companyId, accountType],
+        queryFn: () => accountType === ACCOUNT.provider ? getPendingOrders(companyId) : getLatestOrders(companyId),
     });
 
     if (isLoading) {
-        const amount = 2;
+        const amount = itemsCount || 2;
         return (
             Array.from({ length: amount }).map((_, index) => (
                 <Skeleton key={index} className={cn('h-[4.82438rem]', {
@@ -54,18 +63,22 @@ export default function PendingOrders({ companyId }: { companyId: string }) {
                                 </span>
                                 {order.productsCount}
                             </div>
-                            <div>
-                                <span className="mr-1 text-gray-500 font-thin">
-                                    Zona:
-                                </span>
-                                {order.dropZoneName}
-                            </div>
-                            <div className="flex items-center space-x-4">
-                                <div className="text-right">
+                            {
+                                accountType === ACCOUNT.provider && order.dropZoneName ?
+                                    <div>
+                                        <span className="mr-1 text-gray-500 font-thin">
+                                            Zona:
+                                        </span>
+                                        {order.dropZoneName}
+                                    </div>
+                                    :
+                                    <StatusBadge className='py-1 font-black text-sm' status={order?.status || ""} />
+                            }
+                            <div className="flex items-center justify-end space-x-4 min-w-60">
+                                <div className="flex flex-col justify-end items-end">
                                     <div className="font-medium">{formatToArgentinianPesos(order.totalPrice)}</div>
                                     <div className="flex items-center text-sm text-gray-500">
                                         <Clock className="mr-1 h-3 w-3" />
-                                        expira en&nbsp;
                                         <RemainingTime time={order.responseDeadline} />
                                     </div>
                                 </div>

@@ -17,7 +17,7 @@ export default function RemainingTime({ time }: { time: string }) {
                 locale: es,
             });
 
-            setRemaining(distance);
+            setRemaining("expira en " + distance);
         };
 
         updateTime(); // Initial call
@@ -27,6 +27,5 @@ export default function RemainingTime({ time }: { time: string }) {
         return () => clearInterval(interval);
     }, [targetDate]);
 
-    console.log(remaining);
     return remaining;
 }

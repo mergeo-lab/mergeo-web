@@ -6,7 +6,7 @@ import { MdDoNotDisturbOn } from "react-icons/md";
 import { cn } from "@/lib/utils";
 import { TbProgressBolt } from "react-icons/tb";
 import { useQuery } from "@tanstack/react-query";
-import { getUsersPerformance } from "@/lib/dashboard";
+import { getUsersPerformance } from "@/lib/dashboard/provider";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const performance = {
