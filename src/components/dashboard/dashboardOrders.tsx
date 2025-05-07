@@ -41,9 +41,9 @@ export default function DashboardOrders({ companyId, accountType, queryKey, item
         return (
             <Card>
                 <CardContent className="p-0">
-                    <div className="p-4 flex items-center gap-2">
-                        <MdPendingActions size={30} className="text-highlight" />
-                        <div className="font-medium">No tienes ordenes pendientes</div>
+                    <div className="p-4 flex flex-col items-center justify-center gap-2">
+                        <MdPendingActions size={30} />
+                        <div className="font-base text-destructive">No tienes ordenes pendientes</div>
                     </div>
                 </CardContent>
             </Card>

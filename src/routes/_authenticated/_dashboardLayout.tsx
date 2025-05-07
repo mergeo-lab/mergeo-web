@@ -131,7 +131,7 @@ function DashboardLayout() {
             <MemoizedSideBarMenu companyName={company?.name || ''} />
             <div className='w-full md:px-12 flex flex-col justify-center'>
                 <DashboardHeader title={currentTitle} />
-                <div className='w-[calc(100vw-300px)] h-screen mt-0 my-10 border rounded shadow overflow-hidden lg:max-h-[calc(100vh-150px)] bg-white'>
+                <div className='w-[calc(100vw-300px)] h-screen mt-0 my-10 border rounded shadow overflow-hidden lg:max-h-[calc(100vh-110px)] bg-white'>
                     <Outlet />
                 </div>
             </div>

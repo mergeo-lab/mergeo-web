@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton";
 import { getSellInfo } from "@/lib/dashboard/provider";
-import { formatDate, formatToArgentinianPesos } from "@/lib/utils";
+import { cn, formatDate, formatToArgentinianPesos } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router"
 import { Calendar, Star } from "lucide-react"
@@ -28,48 +28,71 @@ export default function SellsInfo({ companyId }: { companyId: string }) {
         ))
     }
 
+    const hasMonthSellInfo = (salesData?.bestMonthSell?.totalPrice && salesData?.bestMonthSell?.totalPrice > 0);
+
     return (
         <>
-            <Card>
+            <Card className="h-[9rem] max-h-[9rem]">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className='text-sm font-medium flex gap-2'>
                         <span>
                             Ultima Venta
                         </span>
                         <span className="text-sm font-thin">
-                            {formatDate(salesData?.lastSell.created || "")}
+                            {salesData?.lastSell?.created
+                                ? formatDate(salesData?.lastSell?.created || "")
+                                : "-"}
                         </span>
                     </CardTitle>
                     <Calendar className="h-4 w-4 text-info" />
                 </CardHeader>
                 <CardContent className='relative'>
-                    <div className="text-2xl font-bold">{formatToArgentinianPesos(salesData?.lastSell?.totalPrice || 0)}</div>
-                    <Button variant='link' className='absolute bottom-2 right-2'>
-                        <Link to={'/buyOrder/$orderId'} params={{ orderId: salesData?.lastSell.id || "" }}>
-                            Ver Orden de Compra
-                        </Link>
-                    </Button>
+                    <div className={cn("text-2xl font-bold", {
+                        'text-base font-normal text-black/50': !hasMonthSellInfo,
+                    })}>{
+                            salesData?.lastSell?.totalPrice
+                                ? formatToArgentinianPesos(salesData?.lastSell?.totalPrice || 0)
+                                : "No tienes ventas"
+                        }</div>
+                    {salesData?.lastSell?.id &&
+                        <Button variant='link' className='absolute bottom-2 right-2'>
+                            <Link to={'/buyOrder/$orderId'} params={{ orderId: salesData?.lastSell?.id || "" }}>
+                                Ver Orden de Compra
+                            </Link>
+                        </Button>
+                    }
                 </CardContent>
             </Card>
-            <Card>
+            <Card className="h-[9rem] max-h-[9rem]">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className="text-sm font-medium flex gap-2">
                         <span>
                             Mejor venta del mes
                         </span>
                         <span className='font-thin'>
-                            {formatDate(salesData?.bestMonthSell.created || "")}
+                            {hasMonthSellInfo
+                                ? formatDate(salesData?.bestMonthSell?.created || "")
+                                : "-"
+                            }
                         </span>
                     </CardTitle>
                     <Star className="h-4 w-4 text-yellow-500" />
                 </CardHeader>
                 <CardContent className='relative'>
-                    <div className="text-2xl font-bold">{formatToArgentinianPesos(salesData?.bestMonthSell.totalPrice || 0)}</div>
-                    <Button variant='link' className='absolute bottom-2 right-2'>
-                        <Link to={'/buyOrder/$orderId'} params={{ orderId: salesData?.bestMonthSell.id || "" }}>
-                            Ver Orden de Compra
-                        </Link>
-                    </Button>
+                    <div className={cn("text-2xl font-bold", {
+                        'text-base font-normal text-black/50': !hasMonthSellInfo,
+                    })}>{
+                            hasMonthSellInfo
+                                ? formatToArgentinianPesos(salesData?.bestMonthSell?.totalPrice || 0)
+                                : "No tienes ventas en este mes"
+                        }</div>
+                    {hasMonthSellInfo &&
+                        <Button variant='link' className='absolute bottom-2 right-2'>
+                            <Link to={'/buyOrder/$orderId'} params={{ orderId: salesData?.bestMonthSell?.id || "" }}>
+                                Ver Orden de Compra
+                            </Link>
+                        </Button>
+                    }
                 </CardContent>
             </Card>
         </>

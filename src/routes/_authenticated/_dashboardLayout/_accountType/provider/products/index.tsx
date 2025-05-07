@@ -72,11 +72,13 @@ export default function Products() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage]);
 
-    {
-        isError &&
+
+    if (isError) {
+        return (
             <div className='w-full h-full flex justify-center items-center'>
                 <ErrorMessage />
             </div>
+        )
     }
 
     return (
@@ -84,10 +86,10 @@ export default function Products() {
             <div className="bg-accent h-20 px-10 shadow z-20 flex justify-between items-center">
 
                 <div className='w-full flex gap-5'>
-                    <ProductFormFinder onChange={onSearchChange} disabled={isLoading} defaults={search} />
+                    <ProductFormFinder onChange={onSearchChange} disabled={isLoading || !data?.products || data && data.products.length === 0} defaults={search} />
                     <div className='flex items-center gap-2 [&>p]:text-nowrap'>
                         <p>Ordenar por</p>
-                        <Select onValueChange={sortBySelection} value={sort.id}>
+                        <Select onValueChange={sortBySelection} value={sort.id} disabled={!data?.products || data && data.products.length === 0}>
                             <SelectTrigger className='px-5 w-fit'>
                                 <SelectValue placeholder="" />
                             </SelectTrigger>
@@ -113,14 +115,12 @@ export default function Products() {
             </div>
 
             {isLoading
-                ?
-                <div className="space-y-2 p-5">
+                ? <div className="space-y-2 p-5">
                     {Array.from({ length: 10 }).map((_, index) => (
                         <Skeleton key={index} className="h-12 w-full opacity-10 bg-muted/30 rounded-sm" />
                     ))}
                 </div>
-                :
-                data && data.products.length > 0
+                : data && data.products.length > 0
                     ? <div className='grid grid-rows-[1fr_auto] h-full w-full gap-4 overflow-auto pt-5'>
                         <ProviderProductsTable
                             products={data.products}
@@ -156,8 +156,9 @@ export default function Products() {
                     </div>
                     : isSearching ? <NoProductsFound />
                         :
-                        <div className={cn("p-4 h-full overflow-y-auto z-10 hidden", {
-                            "visible": !isLoading
+                        <div className={cn("p-4 h-full overflow-y-auto z-10", {
+                            "visible": !isLoading,
+                            "hidden": isLoading,
                         })}>
                             <div className='w-full h-full flex flex-col gap-2 justify-center items-center'>
                                 <img src={noProductsImage} alt="no products" />

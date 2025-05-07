@@ -22,13 +22,15 @@ export function RolePicker({ className }: Props) {
                                     key={role.id}
                                     variant="outline"
                                 >
-                                    <span className="flex gap-2 items-center">
+                                    <span className="flex gap-2 items-center text-sm">
                                         {role.name}
-                                        <CircleX
-                                            size={18}
-                                            className="z-10 cursor-pointer"
-                                            onClick={() => roleStore.removeRole(role.id)}
-                                        />
+                                        {role.name !== "Admin" &&
+                                            <CircleX
+                                                size={18}
+                                                className="z-10 cursor-pointer"
+                                                onClick={() => roleStore.removeRole(role.id)}
+                                            />
+                                        }
                                     </span>
                                 </Badge>
                             ))

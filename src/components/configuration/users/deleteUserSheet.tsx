@@ -9,7 +9,7 @@ import { splitFullName } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import { Trash2, TriangleAlert } from "lucide-react"
-import { useEffect, useState } from "react"
+import { JSX, useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
 type Props = {

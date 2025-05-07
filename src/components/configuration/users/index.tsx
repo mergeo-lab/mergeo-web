@@ -1,6 +1,6 @@
 import { CardFooter } from "@/components/card"
 import LoadingIndicator from "@/components/loadingIndicator"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
@@ -9,15 +9,13 @@ import { getUsers } from "@/lib/configuration/users"
 import { colorClasses } from "@/lib/constants"
 import { cn, formatDate } from "@/lib/utils"
 import UseCompanyStore from "@/store/company.store"
-import { AvatarImage } from "@radix-ui/react-avatar"
 import { useQuery } from "@tanstack/react-query"
-import { Ban, Pencil, Trash2, UserRoundPlus } from "lucide-react"
+import { Pencil, Trash2, UserRoundPlus } from "lucide-react"
 import { RoleDetail } from "@/components/configuration/users/roles/roleDetail"
 import { AddUserSheet } from "@/components/configuration/users/addUserSheet"
 import { DeleteUserSheet } from "@/components/configuration/users/deleteUserSheet"
 import { EditUserSheet } from "@/components/configuration/users/editUserSheet"
 import { RoleSchemaType, UserSchemaType } from "@/lib/schemas"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 
 export function Users() {
     const { company } = UseCompanyStore();
@@ -45,10 +43,19 @@ export function Users() {
     });
 
     const userNameInitials = (username: string) => {
-        return username.split(' ').map((n) => n.charAt(0).toUpperCase()).join('')
-    }
+        const words = username
+            .split(' ')
+            .filter(word => /^[a-zA-Z]/.test(word)); // Only words starting with letters
+
+        const firstInitial = words[0]?.charAt(0).toUpperCase() ?? '';
+        const secondInitial = words[1]?.charAt(0).toUpperCase() ?? '';
+
+        return firstInitial + secondInitial;
+    };
 
     if (isError) return <div>Hubo un error</div>;
+
+    console.log("USERS :: ", usersData)
 
     return (
         <div className="flex w-full h-full">
@@ -79,10 +86,9 @@ export function Users() {
                                     <TableRow key={user.id} className="hover:bg-accent">
                                         <TableCell>
                                             <Avatar>
-                                                <AvatarImage src="https://github.com/shadcn.png" />
-                                                <AvatarFallback>
+                                                <div className="flex items-center justify-center w-full h-full rounded-full bg-info text-white font-bold">
                                                     {userNameInitials(user.name)}
-                                                </AvatarFallback>
+                                                </div>
                                             </Avatar>
                                         </TableCell>
                                         <TableCell className="font-base">
@@ -103,7 +109,7 @@ export function Users() {
                                                     user.roles.map((role: RoleSchemaType, index: number) => (
                                                         <HoverCard key={role.id}>
                                                             <HoverCardTrigger>
-                                                                <Badge className={`cursor-pointer ${colorClasses[index]} hover:opacity-70 hover:${colorClasses[index]}`}>{role.name}</Badge>
+                                                                <Badge className={`text-sm cursor-pointer ${colorClasses[index]} hover:opacity-70 hover:${colorClasses[index]}`}>{role.name}</Badge>
                                                             </HoverCardTrigger>
                                                             <HoverCardContent className="w-96">
                                                                 <div className="flex flex-col">
@@ -137,26 +143,19 @@ export function Users() {
                                         </TableCell>
                                         <TableCell className="text-right">
                                             {user.roles.find((role: RoleSchemaType) => role.name !== "admin") ?
-                                                <Dialog>
-                                                    <DialogTrigger asChild>
-                                                        <Button variant='ghost' size='sm'>
-                                                            <Trash2 size={18} />
-                                                        </Button>
-                                                    </DialogTrigger>
-                                                    <DialogContent className="w-fit p-10 flex justify-center items-center">
-                                                        <Ban size={50} className="text-destructive" />
-                                                        <p className="text-md">No puedes borrar un usuario <br />con el rol de Admianistrador!</p>
-                                                    </DialogContent>
-                                                </Dialog>
+                                                <Button variant='ghost' size='sm' disabled>
+                                                    <Trash2 size={18} />
+                                                </Button>
                                                 :
                                                 <DeleteUserSheet
                                                     userId={user.id}
                                                     userData={user}
                                                     title="Eliminar usuario"
                                                     subTitle="¿Deseas borrar este usuario?"
-                                                    triggerButton={<Button variant='ghost' size='sm'>
-                                                        <Trash2 size={18} />
-                                                    </Button>}
+                                                    triggerButton={
+                                                        <Button variant='ghost' size='sm'>
+                                                            <Trash2 size={18} />
+                                                        </Button>}
                                                     callback={refetch}
                                                 />
                                             }

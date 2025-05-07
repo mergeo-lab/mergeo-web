@@ -366,6 +366,8 @@ export async function uploadProductsFile({
     if (isAxiosError(error)) {
       if (error.response?.data.statusCode === 400) {
         error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else if (error.response?.data.statusCode === 415) {
+        error.message = 'El archivo no es valido, vuelve a intentarlo!';
       } else {
         error.message = error.response?.data.message;
       }
@@ -377,7 +379,7 @@ export async function uploadProductsFile({
 
 export async function getFavorites(
   companyId: string
-): Promise<ProductSchemaType[]> {
+): Promise<ProductSchemaType[] | []> {
   try {
     const { data: response }: AxiosResponse = await axiosPrivate.get(
       `${PRODUCT_FAVORITE}/${companyId}`,
@@ -387,8 +389,12 @@ export async function getFavorites(
         },
       }
     );
-    console.log('FAVORITOS :', response.data);
-    return response.data.products;
+    console.log('Response /search:', response);
+    let responseData = [];
+    if (response.data.lenght > 0) {
+      responseData = response.data.products;
+    }
+    return responseData;
   } catch (error) {
     if (isAxiosError(error)) {
       if (error.response?.data.statusCode === 400) {
@@ -464,7 +470,7 @@ export async function addToBlackList(
 
 export async function getBlackList(
   companyId: string
-): Promise<ProductSchemaType[]> {
+): Promise<ProductSchemaType[] | []> {
   try {
     const { data: response }: AxiosResponse = await axiosPrivate.get(
       `${PRODUCT_BLACKLIST}/${companyId}`,
@@ -474,7 +480,11 @@ export async function getBlackList(
         },
       }
     );
-    return response.data.products;
+    let responseData = [];
+    if (response.data.lenght > 0) {
+      responseData = response.data.products;
+    }
+    return responseData;
   } catch (error) {
     if (isAxiosError(error)) {
       if (error.response?.data.statusCode === 400) {

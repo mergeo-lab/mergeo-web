@@ -8,6 +8,7 @@ import { TbProgressBolt } from "react-icons/tb";
 import { useQuery } from "@tanstack/react-query";
 import { getUsersPerformance } from "@/lib/dashboard/provider";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LiaUserClockSolid } from "react-icons/lia";
 
 const performance = {
     "excelent": {
@@ -57,6 +58,19 @@ export default function TopPerformerCard({ companyId }: { companyId: string }) {
                 }
                 )}
             </div>
+        )
+    }
+
+    const hasData = data && data?.some(salesData => salesData.closedOrders > 0);
+
+    if (!data || data.length === 0 || hasData === false) {
+        return (
+            <Card>
+                <CardContent className="p-10 flex flex-col justify-center items-center gap-4">
+                    <LiaUserClockSolid size={30} />
+                    <p className="text-destructive">Aun no tienens estadisticas sobre los usuarios</p>
+                </CardContent>
+            </Card>
         )
     }
 

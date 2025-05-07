@@ -6,7 +6,7 @@ import Hero from '@/components/landing/hero'
 import Navbar from '@/components/landing/navBar'
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/landing')({
+export const Route = createFileRoute('/')({
     component: () => <Landing />
 })
 

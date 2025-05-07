@@ -51,7 +51,7 @@ export default function ProductsStats({ companyId }: { companyId: string }) {
                     }
                 </CardContent>
             </Card>
-            {data?.topSelledProducts
+            {data?.topSelledProducts && data?.topSelledProducts.length > 0
                 ? data?.topSelledProducts.map((product) => (
                     <Card key={product.id}>
                         <CardHeader>
@@ -70,9 +70,9 @@ export default function ProductsStats({ companyId }: { companyId: string }) {
                 : <Card className="col-span-3">
                     <CardContent className="h-full">
                         <div className="h-full flex justify-center items-center">
-                            <div className="text-base text-black/60 font-medium flex flex-col items-center gap-2 mt-4">
-                                <TbPigMoney size={30} className="text-pink-400" />
-                                Aun no tienes ventas
+                            <div className="flex flex-col items-center gap-2 mt-4">
+                                <TbPigMoney size={30} />
+                                <p className="text-destructive font-base">Aun no tienes ventas</p>
                             </div>
                         </div>
                     </CardContent>

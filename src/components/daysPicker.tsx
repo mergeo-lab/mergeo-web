@@ -1,7 +1,7 @@
 
 import ChooseTime from "@/components/chooseTime";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { CalendarClock, Trash2 } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { PickUpSchedulesSchemaType } from '../lib/schemas'
 import useDaysPickerStore from "@/store/daysPicker.store";
@@ -40,7 +40,10 @@ export default function DaysPicker({ defaultData, isEditing, className, callback
         <div className="relative">
             {isEditing &&
                 <ChooseTime triggerButton={
-                    <Button className="absolute -top-[35px] right-0" variant="outline" size={"xs"}>Agregar Dia y Horario</Button>
+                    <Button className="absolute -top-[40px] right-0 flex gap-2 items-center h-8" variant="outline">
+                        <CalendarClock size={20} />
+                        Agregar Dia y Horario
+                    </Button>
                 } />
             }
             <div className={cn("flex flex-col gap-2 border p-4 relative max-h-32 h-32 overflow-auto", className)}>

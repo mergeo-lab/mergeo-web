@@ -1,26 +1,32 @@
-import { UploadEvents } from "@/components/configuration/provider/products/uploadEvents";
+import { UploadQueueHandler } from "@/components/configuration/provider/products/uploadQueueHandler";
 import Dropzone, { DropZoneRef } from "@/components/dropzone";
 import { cn } from "@/lib/utils";
 import UseCompanyStore from "@/store/company.store";
-import { useRef, useState } from "react";
+import { useUploadQueue } from "@/store/uploadQueue.store";
+import { useEffect, useRef } from "react";
 
 export default function UploadFile() {
-    const [fileSuccess, setFileSucsess] = useState(false);
     const { company } = UseCompanyStore();
     const companyId = company?.id;
     const dropzoneRef = useRef<DropZoneRef>(null);
+    const { addToQueue, resetQueue } = useUploadQueue();
 
-
-    function fileUploadedCallback() {
-        console.log("Success file upload")
-        setFileSucsess(true);
+    function fileUploadedCallback(uploadedFile: string) {
+        addToQueue(uploadedFile); // queue the file as "pending"
     }
 
     function productsQueueFinishCallback() {
-        console.log("PRODUCTS PROCESS DONE!!!!!")
         dropzoneRef.current?.reset();
-        setFileSucsess(false);
+        resetQueue();
     }
+
+    useEffect(() => {
+        const dropzone = dropzoneRef.current;
+        return () => {
+            dropzone?.reset();
+            resetQueue();
+        }
+    }, [resetQueue])
 
     return (
         <div className='p-10'>
@@ -58,9 +64,8 @@ export default function UploadFile() {
                 />
             </div>
             <div>
-                <UploadEvents
-                    companyId={companyId}
-                    start={fileSuccess}
+                <UploadQueueHandler
+                    providerId={companyId!}
                     onFinish={productsQueueFinishCallback}
                 />
 

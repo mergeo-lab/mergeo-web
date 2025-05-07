@@ -1,57 +1,68 @@
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { useCallback, useState } from 'react';
+import { useCallback, useImperativeHandle, useState, forwardRef } from 'react';
 import { FileRejection, useDropzone } from 'react-dropzone';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useMutation } from '@tanstack/react-query';
 import { uploadProductsFile } from '@/lib/products';
-import { forwardRef, useImperativeHandle } from 'react';
+import OverlayLoadingIndicator from '@/components/overlayLoadingIndicator';
+import { useUploadQueue } from '@/store/uploadQueue.store';
 
 type Props = {
     errorMessages: {
-        file: string,
-        noFile: string
-    }
-    label: string,
+        file: string;
+        noFile: string;
+    };
+    label: string;
     acceptedFileTypes: Record<string, string[]>;
-    dzHeight?: number,
+    dzHeight?: number;
     companyId?: string;
-    onSuccess: () => void;
-}
+    onSuccess: (selectedFile: string) => void;
+};
 
 export interface DropZoneRef {
     reset: () => void;
 }
 
-const DropZone = forwardRef<DropZoneRef, Props>(({ errorMessages, label, acceptedFileTypes, dzHeight, companyId, onSuccess }, ref) => {
+const DropZone = forwardRef<DropZoneRef, Props>(({
+    errorMessages,
+    label,
+    acceptedFileTypes,
+    dzHeight = 200,
+    companyId,
+    onSuccess,
+}, ref) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [uploadProgress, setUploadProgress] = useState<number>(0);
 
+    const {
+        mutateAsync,
+        isPending,
+        error,
+        reset: resetMutation,
+    } = useMutation({ mutationFn: uploadProductsFile });
+
+    const { addToQueue } = useUploadQueue();
+
+    // Expose reset for parent component
     useImperativeHandle(ref, () => ({
         reset: () => {
             setSelectedFile(null);
             setErrorMessage(null);
-            setUploadProgress(0);
+            resetMutation();
         }
     }));
 
-    const mutation = useMutation({ mutationFn: uploadProductsFile });
-
     const onDrop = useCallback((acceptedFiles: File[], fileRejections: FileRejection[]) => {
         setErrorMessage(null);
-        setSelectedFile(null);
 
         if (fileRejections.length > 0) {
             setErrorMessage(errorMessages.file);
             return;
         }
-
-        if (acceptedFiles.length > 0) {
-            setSelectedFile(acceptedFiles[0]);
-        }
-    }, []);
+        const file = acceptedFiles[0];
+        setSelectedFile(file);
+    }, [errorMessages.file]);
 
     const handleUpload = async () => {
         if (!selectedFile) {
@@ -59,55 +70,60 @@ const DropZone = forwardRef<DropZoneRef, Props>(({ errorMessages, label, accepte
             return;
         }
 
-        setErrorMessage(null);
-        setUploadProgress(0);
-
-        // Simula la subida
-        const interval = setInterval(() => {
-            setUploadProgress((prev) => {
-                if (prev >= 100) {
-                    clearInterval(interval);
-                    onSuccess();
-                    return 100;
-                }
-                return prev + 10;
-            });
-        }, 200);
-
-        // Aquí implementa la lógica real de subida (ej. con Axios o Fetch)
         if (!companyId) return;
+
+        setErrorMessage(null);
         const formData = new FormData();
         formData.append('file', selectedFile);
-        console.log('Subiendo archivo:', selectedFile);
-        await mutation.mutateAsync({ companyId, body: formData });
+
+        try {
+            await mutateAsync({ companyId, body: formData });
+            addToQueue(selectedFile.name); // Added to queue after upload starts
+            setSelectedFile(null);
+            onSuccess(selectedFile.name); // Notify parent
+        } catch (err: unknown) {
+            // Error handled by `mutation.error`
+            console.error('Error uploading file:', err);
+        }
     };
 
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
         onDrop,
         accept: acceptedFileTypes,
-        maxFiles: 1,
+        multiple: false,
+        noClick: true, // prevent auto opening on click
+        noKeyboard: true,
     });
 
     return (
-        <div className="w-full">
-            {/* Dropzone */}
+        <div className="w-full relative">
+            {isPending && (
+                <OverlayLoadingIndicator
+                    label="Subiendo archivo"
+                    className="flex flex-col justify-center"
+                />
+            )}
+
+            {/* Dropzone area */}
             <div
-                className={cn("border-dashed border-2 border-gray-300 rounded-md p-8 text-center cursor-pointer flex justify-center items-center", `h-[${dzHeight}px]`)}
+                className={cn(
+                    'border-dashed border-2 border-gray-300 rounded-md p-8 text-center cursor-pointer flex justify-center items-center',
+                    `h-[${dzHeight}px]`
+                )}
                 {...getRootProps()}
+                onClick={open}
             >
                 <input {...getInputProps()} />
-                {isDragActive ? (
-                    <p className="text-gray-500">Suelta el archivo aquí...</p>
-                ) : (
-                    <p className="text-gray-500">{label}</p>
-                )}
+                <p className="text-gray-500">
+                    {isDragActive ? 'Suelta el archivo aquí...' : label}
+                </p>
             </div>
 
             {/* Error */}
             {errorMessage && <p className="text-red-500 text-sm mt-2">{errorMessage}</p>}
+            {error && <p className="text-red-500 text-sm mt-2">{error?.message}</p>}
 
-
-            {/* Archivo Seleccionado */}
+            {/* File info and actions */}
             <div className="flex justify-between items-center mt-4">
                 <div>
                     {selectedFile && (
@@ -118,7 +134,10 @@ const DropZone = forwardRef<DropZoneRef, Props>(({ errorMessages, label, accepte
                             <Button
                                 variant="ghost"
                                 className="p-1 h-6 leading-none"
-                                onClick={() => setSelectedFile(null)}
+                                onClick={() => {
+                                    setSelectedFile(null);
+                                    setErrorMessage(null);
+                                }}
                             >
                                 <X size={15} strokeWidth={3} className="text-destructive" />
                             </Button>
@@ -126,25 +145,17 @@ const DropZone = forwardRef<DropZoneRef, Props>(({ errorMessages, label, accepte
                     )}
                 </div>
 
-                {/* Botón Subir */}
                 <Button
-                    disabled={!selectedFile}
+                    disabled={!selectedFile || isPending}
                     onClick={handleUpload}
                     className="bg-info hover:bg-info/70"
                 >
                     Subir archivo
                 </Button>
             </div>
-
-            {/* Barra de Progreso */}
-            <div className={cn("absolute top-0 left-0 right-0 transition-all duration-300 overflow-hidden", {
-                "h-0": uploadProgress === 0 || uploadProgress === 100,
-                "h-2": uploadProgress > 0 && uploadProgress < 100
-            })}>
-                <Progress value={uploadProgress} className='w-full rounded-none h-2' />
-            </div>
         </div>
     );
 });
 
+DropZone.displayName = 'DropZone';
 export default DropZone;

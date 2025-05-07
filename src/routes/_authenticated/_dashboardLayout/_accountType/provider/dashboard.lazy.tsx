@@ -32,7 +32,7 @@ export default function Index() {
                     <SellsInfo companyId={companyId} />
                     <BestZone companyId={companyId} />
                 </div>
-                <Chart companyId={companyId} />
+                <Chart companyId={companyId} accountType={ACCOUNT.provider} queryKey='provider-chart' />
             </div>
             <div className='mt-6'>
                 <div className='flex items-center'>

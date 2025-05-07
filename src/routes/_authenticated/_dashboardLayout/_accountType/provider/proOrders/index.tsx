@@ -1,7 +1,7 @@
 import { StatusBadge } from '@/components/statusBadge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { UseSse } from '@/hooks/useSse';
+import { subscribeSSE, useSSE } from '@/hooks/server-events/useSse';
 import { SERVER_SENT_EVENTS } from '@/lib/constants';
 import { getSellPreOrders } from '@/lib/orders';
 import { ORDERS_EVENTS_PROVIDER } from '@/lib/orders/endpoints';
@@ -23,7 +23,7 @@ export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountT
 export default function Sells() {
     const { company } = UseCompanyStore();
     const companyId = company?.id;
-    const { data: buyOrderStream } = UseSse(`${ORDERS_EVENTS_PROVIDER}${companyId}`);
+    useSSE(`${ORDERS_EVENTS_PROVIDER}${companyId}`);
 
     const { data, isLoading, isError, refetch } = useQuery({
         queryKey: ['providerPreOrders', company?.id],
@@ -39,10 +39,16 @@ export default function Sells() {
     });
 
     useEffect(() => {
-        if (buyOrderStream?.message === SERVER_SENT_EVENTS.preOrderCreated) {
+        if (!companyId) return;
+
+        const unsubscribe = subscribeSSE(SERVER_SENT_EVENTS.preOrderCreated, () => {
             refetch();
-        }
-    }, [buyOrderStream, refetch]);
+        });
+
+        return () => {
+            unsubscribe(); // cleanup
+        };
+    }, [companyId, refetch]);
 
     if (isError) {
         return (

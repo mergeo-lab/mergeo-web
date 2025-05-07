@@ -184,6 +184,7 @@ export function ManageRoles() {
                                                                         <TableRow key={role.id} className="hover:bg-white w-full">
                                                                             <TableCell className="m-0">
                                                                                 <Badge
+                                                                                    className="text-sm"
                                                                                     variant='outline'
                                                                                     key={role.id}
                                                                                 >
@@ -195,10 +196,14 @@ export function ManageRoles() {
 
                                                                             <TableCell className="m-0 p-0 w-full">
                                                                                 <div className="flex justify-evenly">
-                                                                                    <Button variant="link" className="text-xs p-2 h-6" onClick={() => saveSelectedRoles(role)}>
+                                                                                    <Button
+                                                                                        disabled={role.name === "Admin"}
+                                                                                        variant="link"
+                                                                                        className="text-sm p-2 h-6"
+                                                                                        onClick={() => saveSelectedRoles(role)}>
                                                                                         Usar
                                                                                     </Button>
-                                                                                    <Button variant="link" className="text-xs p-2 h-6" onClick={() => changeRole(role)}>
+                                                                                    <Button variant="link" className="text-sm p-2 h-6" onClick={() => changeRole(role)}>
                                                                                         Ver
                                                                                     </Button>
                                                                                 </div>
@@ -272,25 +277,26 @@ export function ManageRoles() {
                                     {viewRole.id !== emptyRole.id &&
                                         <div className="flex gap-2 items-baseline">
                                             <Button
-                                                size="sm"
-                                                disabled={!isEditting}
+                                                disabled={!isEditting || viewRole.name === "Admin"}
                                                 variant="highlight"
-                                                className="text-xs h-6"
+                                                className="text-sm h-6"
                                                 onClick={() => saveRoleChanges(roleEdited)}
                                             >
                                                 Guardar cambios
                                             </Button>
                                             <DeleteConfirmationDialog
+                                                disabled={viewRole.name === "Admin"}
                                                 id={viewRole.id}
                                                 title="Borrar Rol"
                                                 question={<p>¿Seguro que quieres borrar el rol <span className="font-bold">{viewRole.name}</span>?</p>}
-                                                triggerButton={<Button
-                                                    size="sm"
-                                                    variant="destructive"
-                                                    className="text-xs h-6"
-                                                >
-                                                    Borrar
-                                                </Button>}
+                                                triggerButton={
+                                                    <Button
+                                                        disabled={viewRole.name === "Admin"}
+                                                        variant="destructive"
+                                                        className="text-sm h-6"
+                                                    >
+                                                        Borrar
+                                                    </Button>}
                                                 mutationFn={roleDelete}
                                                 callback={roleListChanged} onLoading={function (): void {
                                                     throw new Error("Function not implemented.");
@@ -312,11 +318,13 @@ export function ManageRoles() {
                                         >
                                             <span className="flex gap-2 items-center text-sm">
                                                 {role.name}
-                                                <XCircle
-                                                    size={18}
-                                                    className="z-10 cursor-pointer"
-                                                    onClick={() => roleStore.removeRole(role.id)}
-                                                />
+                                                {role.name !== "Admin" &&
+                                                    <XCircle
+                                                        size={18}
+                                                        className="z-10 cursor-pointer"
+                                                        onClick={() => roleStore.removeRole(role.id)}
+                                                    />
+                                                }
                                             </span>
                                         </Badge>
                                     ))

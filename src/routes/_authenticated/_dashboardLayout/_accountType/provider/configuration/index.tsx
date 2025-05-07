@@ -27,7 +27,6 @@ function Configuration() {
     }
   };
 
-
   return (
     <Tabs value={tab} className="w-full h-full rounded relative" onValueChange={onTabChange}>
       <TabsList className='rounded-t rounded-b-none w-full justify-start h-[50px] bg-accent pl-3'>

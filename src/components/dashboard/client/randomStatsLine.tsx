@@ -20,7 +20,7 @@ const RandomStatsline = () => {
         <svg
             viewBox="0 0 100 30"
             preserveAspectRatio="none"
-            className="absolute inset-0 w-full h-full opacity-10 pointer-events-none text-destructive"
+            className="absolute inset-0 w-full h-full pointer-events-none text-green-500/25"
         >
             <polyline
                 fill="none"

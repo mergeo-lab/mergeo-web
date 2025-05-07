@@ -66,9 +66,8 @@ export function NewRoleForm({ role, roleAdded, isEditting, viewRoleId, emptyRole
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger disabled={!isEditting}>
                 <Button
-                    size="sm"
                     disabled={!isEditting}
-                    className="text-xs h-6">
+                    className="text-sm h-6">
                     {viewRoleId == emptyRoleId
                         ? 'Guradar'
                         : 'Guardar como nuevo rol'

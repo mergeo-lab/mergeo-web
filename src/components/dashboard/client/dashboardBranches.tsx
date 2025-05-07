@@ -4,7 +4,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Skeleton } from "@/components/ui/skeleton";
 import { getDashboardBranches } from "@/lib/dashboard";
 import { useQuery } from "@tanstack/react-query";
-import { Trophy } from "lucide-react";
+import { ImTrophy } from "react-icons/im";
 
 export default function DashboardBranches({ companyId }: { companyId: string }) {
 
@@ -55,29 +55,38 @@ export default function DashboardBranches({ companyId }: { companyId: string }) 
                     </Carousel>
                 </CardContent>
             </Card>
-            <Card className="w-1/2">
-                <CardHeader className="flex flex-row items-center justify-between -mt-2 pb-2">
-                    <CardTitle className='text-sm font-medium flex gap-2'>
-                        <div className="bg-highlight rounded-xl p-2">
-                            <Trophy className="text-white" />
-                        </div>
-                        Sucursal con mejor tasa de aprobación
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className='relative'>
-                    <p className="text-2xl max-w-full overflow-hidden truncate">
-                        {data?.topBranch.branchName}
-                    </p>
-                    <p className="text-sm">
-                        Ordenes Aceptadas:
-                        {" "}{data?.topBranch.orderCount}/{data?.topBranch.preOrderCount}
-                    </p>
-                    <PercentBar
-                        percent={data?.topBranch.approvalPercent ? (data.topBranch.approvalPercent > 100 ? 100 : data.topBranch.approvalPercent) : 0}
-                        label="Ordenes Aceptadas"
-                    />
-                </CardContent>
-            </Card>
+            {data && data?.topBranch?.percentage > 0
+
+                ? <Card className="w-1/2">
+                    <CardHeader className="flex flex-row items-center justify-between -mt-2 pb-2">
+                        <CardTitle className='text-sm font-medium flex gap-2'>
+                            <div className="bg-highlight rounded-xl p-2">
+                                <ImTrophy className="text-white" />
+                            </div>
+                            Sucursal con mejor tasa de aprobación
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className='relative'>
+                        <p className="text-2xl max-w-full overflow-hidden truncate">
+                            {data?.topBranch.branchName}
+                        </p>
+                        <p className="text-sm">
+                            Ordenes Aceptadas:
+                            {" "}{data?.topBranch.orderCount}/{data?.topBranch.preOrderCount}
+                        </p>
+                        <PercentBar
+                            percent={data?.topBranch.approvalPercent ? (data.topBranch.approvalPercent > 100 ? 100 : data.topBranch.approvalPercent) : 0}
+                            label="Ordenes Aceptadas"
+                        />
+                    </CardContent>
+                </Card>
+                : <Card className="w-1/2">
+                    <CardContent className='h-full flex flex-col justify-center items-center pt-5'>
+                        <ImTrophy size={100} className="text-black/10" />
+                        <p className="text-sm text-center font-normal">Aun no se puede calcular la sucursal con mejor tasa de aprobación</p>
+                    </CardContent>
+                </Card>
+            }
         </div>
     )
 }

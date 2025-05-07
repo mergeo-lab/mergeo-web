@@ -1,8 +1,8 @@
-import { GroupedPermissionsSchemaType, PermissionSchemaType, RoleSchemaType } from "@/lib/configuration/schemas/schema";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Check } from "@/components/check";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCallback, useEffect, useState } from "react";
+import { GroupedPermissionsSchemaType, PermissionSchemaType, RoleSchemaType } from "@/lib/schemas";
 
 type Props = {
     role: RoleSchemaType,

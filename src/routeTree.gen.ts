@@ -13,10 +13,10 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as LandingImport } from './routes/landing'
 import { Route as FaqImport } from './routes/faq'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as AuthLayoutImport } from './routes/_authLayout'
+import { Route as IndexImport } from './routes/index'
 import { Route as AuthenticatedDashboardLayoutImport } from './routes/_authenticated/_dashboardLayout'
 import { Route as AuthLayoutRegistrationImport } from './routes/_authLayout/registration'
 import { Route as AuthLayoutPasswordResetImport } from './routes/_authLayout/passwordReset'
@@ -65,11 +65,6 @@ const AuthenticatedDashboardLayoutAccountTypeClientDashboardLazyImport =
 
 // Create/Update Routes
 
-const LandingRoute = LandingImport.update({
-  path: '/landing',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const FaqRoute = FaqImport.update({
   path: '/faq',
   getParentRoute: () => rootRoute,
@@ -82,6 +77,11 @@ const AuthenticatedRoute = AuthenticatedImport.update({
 
 const AuthLayoutRoute = AuthLayoutImport.update({
   id: '/_authLayout',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const IndexRoute = IndexImport.update({
+  path: '/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -312,6 +312,13 @@ const AuthenticatedDashboardLayoutAccountTypeClientListsBlackListRoute =
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
     '/_authLayout': {
       id: '/_authLayout'
       path: ''
@@ -331,13 +338,6 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqImport
-      parentRoute: typeof rootRoute
-    }
-    '/landing': {
-      id: '/landing'
-      path: '/landing'
-      fullPath: '/landing'
-      preLoaderRoute: typeof LandingImport
       parentRoute: typeof rootRoute
     }
     '/_authLayout/forgotPassword': {
@@ -584,6 +584,7 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren({
+  IndexRoute,
   AuthLayoutRoute: AuthLayoutRoute.addChildren({
     AuthLayoutForgotPasswordRoute,
     AuthLayoutLoginRoute,
@@ -628,7 +629,6 @@ export const routeTree = rootRoute.addChildren({
       }),
   }),
   FaqRoute,
-  LandingRoute,
 })
 
 /* prettier-ignore-end */
@@ -639,11 +639,14 @@ export const routeTree = rootRoute.addChildren({
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
+        "/",
         "/_authLayout",
         "/_authenticated",
-        "/faq",
-        "/landing"
+        "/faq"
       ]
+    },
+    "/": {
+      "filePath": "index.tsx"
     },
     "/_authLayout": {
       "filePath": "_authLayout.tsx",
@@ -662,9 +665,6 @@ export const routeTree = rootRoute.addChildren({
     },
     "/faq": {
       "filePath": "faq.tsx"
-    },
-    "/landing": {
-      "filePath": "landing.tsx"
     },
     "/_authLayout/forgotPassword": {
       "filePath": "_authLayout/forgotPassword.tsx",

@@ -1,5 +1,5 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Building, ChevronDown, Settings, UsersRound, WalletCards, Archive, Package, LayoutDashboard } from "lucide-react";
+import { Building, ChevronDown, UsersRound, WalletCards, Archive, Package, LayoutDashboard } from "lucide-react";
 import { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import UseUserStore from "@/store/user.store";
@@ -53,18 +53,13 @@ export function SideBarMenu({ companyName }: Props) {
                                 {companyName && companyName[0].toUpperCase()}
                             </div>
                             <div className="font-bold text-base text-bg-secondary-background flex items-center gap-1">
-                                <span>
+                                <span className="truncate max-w-28">
                                     {companyName && companyName}
                                 </span>
                                 <ChevronDown size={15} strokeWidth={5} className={cn({ 'rotate-180': collapsibleIsOpen })} />
                             </div>
                         </CollapsibleTrigger>
                     </Link>
-                    <div className="absolute right-0 hover:multi-[transition-all;rotate-180]">
-                        <Link to="/client/configuration" search={{ tab: tabs.company as unknown as tabs }} onMouseEnter={(e) => e.preventDefault()}>
-                            <Settings />
-                        </Link>
-                    </div>
                 </div>
                 <CollapsibleContent className="CollapsibleContent">
                     <ul className="py-4 pt-6 pl-10 [&>li>*]:multi-[flex;gap-2;] space-y-5 text-secondary-background ">

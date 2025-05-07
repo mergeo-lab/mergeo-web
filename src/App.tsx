@@ -89,7 +89,7 @@ const InnerApp = React.memo(() => {
 })
 
 export default function App() {
-  const apiKeyMemo = useMemo(() => googleMapsApiKey, [googleMapsApiKey]);
+  const apiKeyMemo = useMemo(() => googleMapsApiKey, []);
 
   return (
     <QueryClientProvider client={queryClient}>

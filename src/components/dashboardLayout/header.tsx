@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query"
 import { logout } from "@/lib/auth"
 import { toast } from "@/components/ui/use-toast"
 import { useAuth } from "@/hooks"
-import { useEffect, useCallback, memo } from "react"
+import { useEffect, useCallback, memo, JSX } from "react"
 
 type Props = {
     title?: {
@@ -57,7 +57,7 @@ export function DashboardHeader({ title }: Props) {
     ));
 
     return (
-        <div className='h-24 w-full flex items-center justify-between px-5'>
+        <div className='h-16 w-full flex items-center justify-between px-5'>
             <div className="flex items-center">
                 <div className="mr-2">
                     {title && title.icon && title.icon}

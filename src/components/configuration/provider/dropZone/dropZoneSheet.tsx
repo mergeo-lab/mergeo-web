@@ -255,7 +255,9 @@ export function DropZoneSheet({
                     </SheetHeader>
                     <Button onClick={() => {
                         isAdding ? cancelEdit() : openAddZone()
-                    }} variant="outline" className="mt-5 w-full">
+                    }} variant="outline" className={cn("mt-5 w-full", {
+                        "border-destructive text-destructive hover:bg-destructive/10": isAdding,
+                    })}>
                         {isAdding ? "Cancelar" : "Añadir Zona"}
                     </Button>
                     <div className={cn("rounded border mt-5 overflow-hidden transition-[height] duration-500", {

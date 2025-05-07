@@ -8,6 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import AnimatedRow from "@/components/animatedRow";
 import { ProductSchemaType } from '@/lib/schemas';
 import { useState } from 'react';
+import { MdOutlinePlaylistRemove } from "react-icons/md";
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/lists/blackList')({
   component: () => <BlackList />
@@ -78,6 +79,13 @@ export default function BlackList() {
     if (!company?.id) return;
     removelackList({ companyId: company.id, productId: productId });
   }
+
+  if (data?.length === 0) return (
+    <div className="flex flex-col gap-4 items-center justify-center h-full">
+      <MdOutlinePlaylistRemove size={100} className="text-destructive" />
+      <p className="text-base font-bold">No hay productos en la lista Negra</p>
+    </div>)
+
 
   return (
     <div className="relative w-full p-10">

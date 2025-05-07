@@ -8,6 +8,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import AnimatedRow from "@/components/animatedRow";
+import { FaHeartCircleExclamation } from "react-icons/fa6";
 
 export const Route = createFileRoute(
     "/_authenticated/_dashboardLayout/_accountType/client/lists/favorites"
@@ -80,6 +81,12 @@ export default function Favorites() {
             </tr>
         );
     }
+
+    if (data?.length === 0) return (
+        <div className="flex flex-col gap-4 items-center justify-center h-full">
+            <FaHeartCircleExclamation size={100} className="text-destructive" />
+            <p className="text-base font-bold">No hay productos en la lista de favoritos</p>
+        </div>)
 
     return (
         <div className="relative w-full p-10">

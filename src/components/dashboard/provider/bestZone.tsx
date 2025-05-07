@@ -29,7 +29,10 @@ export default function BestZone({ companyId }: { companyId: string }) {
                 <div className="flex justify-between mt-2">
                     <div>
                         <p className="text-sm text-gray-500">Productos Vendidos</p>
-                        <p className="font-medium">{data?.totalProductsSold}</p>
+                        {data?.totalProductsSold
+                            ? <p className="font-medium">{data?.totalProductsSold}</p>
+                            : <p className="text-base font-normal text-black/50 ">No tienes ventas</p>
+                        }
                     </div>
                     <div>
                         <p className="text-sm text-gray-500">Ganancias</p>
@@ -44,7 +47,7 @@ export default function BestZone({ companyId }: { companyId: string }) {
                     <div className="w-full bg-gray-200 rounded-full h-2">
                         <div
                             className="bg-primary h-2 rounded-full"
-                            style={{ width: `${data?.percentageOfSales}%` }}
+                            style={{ width: `${data?.percentageOfSales || 0}%` }}
                         ></div>
                     </div>
                 </div>
