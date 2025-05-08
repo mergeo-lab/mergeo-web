@@ -81,9 +81,6 @@ export default function ProductDetail() {
     })
 
     useEffect(() => {
-
-        console.log("edit ::: ", edit);
-
         setIsEditing(edit);
     }, [edit]);
 
@@ -93,13 +90,6 @@ export default function ProductDetail() {
 
     return (
         <div className='relative h-full overflow-y-hidden'>
-            {/* {isLoading ?
-                <div className='w-full h-full flex flex-col px-10 pt-5 gap-2'>
-                    <Skeleton className="h-12 w-1/3 opacity-10 bg-muted/30 rounded-sm" />
-                    <Skeleton className="h-[22rem] w-full opacity-10 bg-muted/30 rounded-sm" />
-                    <Skeleton className="h-[22rem] w-full opacity-10 bg-muted/30 rounded-sm" />
-                </div>
-                : */}
             <div className='flex flex-col px-10'>
                 <div className='flex items-center px-6 pt-6 pb-3 gap-2'>
                     {isLoading
@@ -133,7 +123,7 @@ export default function ProductDetail() {
                                 <Image size={100} className='text-muted' />
                             </div>)
                             : (<div className="bg-white flex justify-center items-center border-2 rounded-xl h-72 aspect-square p-6">
-                                <img src={data?.product?.image} alt="" className='cover' />
+                                <img src={data?.product?.image} alt="" className='bg-contain h-72 p-2' />
                             </div>
                             )
                         }

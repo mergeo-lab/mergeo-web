@@ -20,7 +20,7 @@ const BuyOrderForm = forwardRef(function BuyOrderForm(
     { client, provider, orderNumber, date, products, fileDownloadComplete, filePrintComplete }: Props,
     ref
 ) {
-    const componentRef = useRef<HTMLDivElement>(undefined);
+    const componentRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLElement>;
     const reactToPrintFn = useReactToPrint({
         contentRef: componentRef,
         documentTitle: `orden-de-compra-${orderNumber}`,
@@ -39,7 +39,7 @@ const BuyOrderForm = forwardRef(function BuyOrderForm(
             return
         }
 
-        toJpeg(componentRef.current!, { cacheBust: true, })
+        toJpeg(componentRef.current, { cacheBust: true, })
             .then((dataUrl) => {
                 const link = document.createElement('a')
                 link.download = `orden-de-compra-${orderNumber}.jpg`
@@ -59,7 +59,7 @@ const BuyOrderForm = forwardRef(function BuyOrderForm(
     }));
 
     return (
-        <div className='min-w-[1600px]' ref={componentRef}>
+        <div className='min-w-[1600px]' ref={componentRef as React.RefObject<HTMLDivElement>}>
             <div className='px-20 py-10 relative bg-white'>
                 <div className=" [&>div]:px-28 border-2">
                     <div className="text-center mb-8 bg-border/30 py-6">

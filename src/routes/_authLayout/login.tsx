@@ -15,6 +15,7 @@ import { z } from 'zod';
 import UseCompanyStore from '@/store/company.store';
 import { useEffect, memo, useCallback, useMemo } from 'react';
 import { ACCOUNT } from '@/lib/constants';
+import UseLoginStore from '@/store/login.store';
 
 
 // Memoize Card and its subcomponents
@@ -42,6 +43,7 @@ function Login() {
   const router = useRouter();
   const { toast } = useToast();
   const mutation = useMutation({ mutationFn: login });
+  const { setStartAnimation, setEndAnimation, endAnimation } = UseLoginStore();
 
   // Memoize the form object
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -75,12 +77,23 @@ function Login() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      const accountType = user?.accountType;
+      if (endAnimation) {
+        const accountType = user?.accountType;
+        const redirectTo = (accountType === ACCOUNT.provider ? "/provider" : "/client") + "/dashboard";
+        setEndAnimation(false);
+        setStartAnimation(false);
 
-      const redirectTo = (accountType === ACCOUNT.provider ? "/provider" : "/client") + "/dashboard";
-      router.history.push(redirectTo, { replace: true });
+        router.history.push(redirectTo, { replace: true });
+      } else {
+        setStartAnimation(true);
+      }
     }
-  }, [isAuthenticated, router.history, user?.accountType]);
+
+    return () => {
+      setEndAnimation(false);
+      setStartAnimation(false);
+    };
+  }, [isAuthenticated, router.history, user?.accountType, endAnimation, setStartAnimation, setEndAnimation]);
 
   return (
     <Form {...form}>

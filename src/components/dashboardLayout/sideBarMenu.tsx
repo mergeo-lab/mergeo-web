@@ -1,5 +1,5 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Building, ChevronDown, UsersRound, WalletCards, Archive, Package, LayoutDashboard } from "lucide-react";
+import { Building, ChevronDown, UsersRound, WalletCards, Archive, Package, LayoutDashboard, List, Box, Heart, ThumbsDown, PlusCircle } from "lucide-react";
 import { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import UseUserStore from "@/store/user.store";
@@ -126,9 +126,36 @@ export function SideBarMenu({ companyName }: Props) {
                             </li>
 
                             <li>
-
-                                <CollapsibleList onLinkClicked={onLinkClicked} />
-
+                                <CollapsibleList
+                                    name="lists"
+                                    mainButton={{
+                                        label: "Listas",
+                                        icon: <List size={16} />,
+                                        link: "/client/lists",
+                                        activePaths: ['/client/lists'],
+                                        onClick: onLinkClicked
+                                    }}
+                                    links={[
+                                        {
+                                            label: "Productos",
+                                            icon: <Box size={16} />,
+                                            to: "/client/lists",
+                                            activepathName: 'lists',
+                                        },
+                                        {
+                                            label: "Favoritos",
+                                            icon: <Heart size={16} />,
+                                            to: "/client/lists/favorites",
+                                            activepathName: 'favorites'
+                                        },
+                                        {
+                                            label: "Lista Negra",
+                                            icon: <ThumbsDown size={16} />,
+                                            to: "/client/lists/blackList",
+                                            activepathName: 'blackList'
+                                        },
+                                    ]}
+                                />
                             </li>
                         </>
                     )}
@@ -145,14 +172,30 @@ export function SideBarMenu({ companyName }: Props) {
                                 </SpecialLink>
                             </li>
                             <li>
-                                <SpecialLink
-                                    to="/provider/products"
-                                    activePaths={['/provider/products/newProducts', '/provider/products/']}
-                                    onClick={onLinkClicked}
-                                >
-                                    <Package />
-                                    Productos
-                                </SpecialLink>
+                                <CollapsibleList
+                                    name="products"
+                                    mainButton={{
+                                        label: "Productos",
+                                        icon: <Package />,
+                                        link: "/provider/products",
+                                        activePaths: ['/provider/products', '/provider/products/newProducts', '/provider/products/$productId'],
+                                        onClick: onLinkClicked
+                                    }}
+                                    links={[
+                                        {
+                                            label: "Listado",
+                                            icon: <List size={16} />,
+                                            to: "/provider/products",
+                                            activepathName: 'products',
+                                        },
+                                        {
+                                            label: "Agregar",
+                                            icon: <PlusCircle size={16} />,
+                                            to: "/provider/products/newProducts",
+                                            activepathName: 'newProducts'
+                                        }
+                                    ]}
+                                />
                             </li>
                             <li>
                                 <SpecialLink
