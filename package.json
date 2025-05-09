@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@bugsnag/browser-performance": "^2.5.0",
+    "@bugsnag/browser-performance": "^2.6.0",
     "@bugsnag/js": "^7.23.0",
     "@bugsnag/plugin-react": "^7.22.7",
     "@headlessui/react": "^2.0.4",
