@@ -34,7 +34,7 @@ export default function ListSelector({ selectedListId, onChange, removeSelection
         return (<div>
             <div className="space-y-4 mt-1">
                 {Array.from({ length: 3 }).map((_, index) => (
-                    <Skeleton key={index} className="p-4 w-full opacity-30" />
+                    <Skeleton key={index} className="p-4 w-full" />
                 ))}
             </div>
         </div>

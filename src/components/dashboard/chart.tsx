@@ -6,6 +6,7 @@ import { cn, formatToArgentinianPesos } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { TfiBarChart } from "react-icons/tfi";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Props = {
     companyId: string;
@@ -34,13 +35,18 @@ export default function Chart({ companyId, accountType, queryKey }: Props) {
         { month: 6, monthLabel: 'Jun', total: 0 },
     ];
 
-    const chartData = isLoading || !data
+    const chartData = !data
         ? dummyChartData
         : data.chartData.map((d) => ({
             ...d,
             monthLabel: monthLabels[d.month - 1] ?? `M${d.month}`,
         }));
 
+    if (isLoading) {
+        return (
+            <Skeleton className="w-full h-[34.8369rem]"></Skeleton>
+        )
+    }
 
     return (
         <Card className="w-full relative overflow-hidden">
@@ -52,7 +58,7 @@ export default function Chart({ companyId, accountType, queryKey }: Props) {
             <CardContent>
                 <>
                     {
-                        data && data.chartData.length > 0 && (
+                        data && data.chartData.length == 0 && (
                             <div className="absolute backdrop-blur-[2px] inset-0 w-full h-full bg-white/10 z-20 flex justify-center items-center">
                                 <div className="w-fit p-10 bg-white shadow-lg shadow-slate-600/15 rounded-sm flex flex-col gap-2 items-center">
                                     <TfiBarChart size={30} />

@@ -117,7 +117,7 @@ export default function Products() {
             {isLoading
                 ? <div className="space-y-2 p-5">
                     {Array.from({ length: 10 }).map((_, index) => (
-                        <Skeleton key={index} className="h-12 w-full opacity-10 bg-muted/30 rounded-sm" />
+                        <Skeleton key={index} className="h-12 w-full rounded-sm" />
                     ))}
                 </div>
                 : data && data.products.length > 0

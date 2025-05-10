@@ -391,7 +391,7 @@ export async function getFavorites(
     );
     console.log('Response /search:', response);
     let responseData = [];
-    if (response.data.lenght > 0) {
+    if (response.data) {
       responseData = response.data.products;
     }
     return responseData;
@@ -481,7 +481,7 @@ export async function getBlackList(
       }
     );
     let responseData = [];
-    if (response.data.lenght > 0) {
+    if (response.data) {
       responseData = response.data.products;
     }
     return responseData;

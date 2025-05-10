@@ -22,12 +22,13 @@ export default function DashboardListsCount({ companyId }: { companyId: string }
     if (isLoading) {
         const amount = 3;
         return (
-            Array.from({ length: amount }).map((_, index) => (
-                <Skeleton key={index} className={cn('h-[4.82438rem]', {
-                    'rounded-b-none': index === 0,
-                    'rounded-t-none': index === amount - 1,
-                })} />
-            ))
+            <div className='flex flex-col gap-4 justify-between items-center '>
+                {
+                    Array.from({ length: amount }).map((_, index) => (
+                        <Skeleton key={index} className={cn('h-[5.77rem] w-full')} />
+                    ))
+                }
+            </div>
         )
     }
 

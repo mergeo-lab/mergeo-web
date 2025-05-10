@@ -51,7 +51,7 @@ export default function ProductsSearch() {
                     ? <Button onClick={handleSearch} className="w-20">
                         <Search className="w-5 h-5" />
                     </Button>
-                    : <Button onClick={cancelSearch} className="w-20">
+                    : <Button onClick={cancelSearch} className="w-20 bg-destructive hover:bg-destructive/80">
                         <X className="w-6 h-6" />
                     </Button>
                 }

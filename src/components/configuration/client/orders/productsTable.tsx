@@ -100,7 +100,7 @@ export default function ProductsTable({ configCanceled }: Params) {
             return addToBlackList(company.id, productId);
         },
         onMutate: async ({ productId }) => {
-            // Cancel any ongoing refetches to prevent overwriting the optimistic update
+            // Cancel any ongoing refetches to prevent overwriting the optistic update
             await queryClient.cancelQueries({ queryKey: ["blacklist"] });
 
             // Snapshot the previous state
@@ -164,11 +164,11 @@ export default function ProductsTable({ configCanceled }: Params) {
     if (!isLoading && filteredProducts.length === 0) {
         return (
             <div className={
-                "w-full h-full flex flex-col gap-10 pt-10 items-center [&>p]:multi-[font-thin;text-secondary/80;text-center;leading-3;p-0;m-0]"}>
+                "w-full h-full flex flex-col gap-4 justify-center pb-10 items-center [&>p]:multi-[font-thin;text-secondary/80;text-center;leading-3;p-0;m-0]"}>
                 <img className="h-[350px]" src={productNotFound} alt="config incomplete" />
                 <h1 className="text-3xl font-thin text-secondary text-wrap text-center">No encontramos el producto!</h1>
                 <p>Para encontrar el producto que estas buscando utiliza el buscador de la derecha.</p>
-                <p>También puedes usar una de tus listas ya cargadas y hacer tus búsquedas super rápidas </p>
+                <p>También puedes usar una de tus listas ya cargadas y hacer tus búsquedas <span className="text-info font-normal">super rápidas</span> </p>
             </div>
         )
     }
@@ -179,7 +179,7 @@ export default function ProductsTable({ configCanceled }: Params) {
                 <TableCell colSpan={100} className="p-0">
                     <div className="w-full flex flex-col space-y-2 mt-2">
                         {Array.from({ length: 7 }).map((_, index) => (
-                            <Skeleton key={index} className="w-full h-20 rounded-sm bg-muted/50" />
+                            <Skeleton key={index} className="w-full h-20 rounded-sm" />
                         ))}
                     </div>
                 </TableCell>
@@ -194,7 +194,7 @@ export default function ProductsTable({ configCanceled }: Params) {
         if (quantity === 0) {
             removeProduct(product.id);
         } else {
-            saveProduct({ ...product, providerId: product.providerId! }, quantity);
+            saveProduct({ ...product, providerId: product.providerId!, dropZoneId: product.dropZoneId || '' }, quantity);
         }
 
         // Update filtered products without causing a full re-render
@@ -217,14 +217,14 @@ export default function ProductsTable({ configCanceled }: Params) {
     return (
         <div className="relative">
             {/* <div className="h-1 w-full bg-transparent shadow-sm"></div> */}
-            <div ref={tableRef} className="h-[calc(100vh-240px)] -mt-8 overflow-y-auto px-2">
+            <div ref={tableRef} className="h-[calc(100vh-200px)] -mt-8 overflow-y-auto px-2">
                 <Table>
                     <TableHeader className="sticky top-0 bg-white z-10 shadow-sm">
                         <TableRow className="hover:bg-white">
                             <TableHead className=""></TableHead>
                             <TableHead className="w-96">Producto</TableHead>
                             <TableHead className={`text-center`}>Unidad</TableHead>
-                            <TableHead className={`text-center`}>Precio por Unidad de Medida</TableHead>
+                            <TableHead className={`text-center`}>Precio Unitario</TableHead>
                             <TableHead className={`text-center`}>Precio</TableHead>
                             <TableHead className={`text-center`}></TableHead>
                             <TableHead className={`text-right pr-12 w-[17rem]`}>Cantidad</TableHead>

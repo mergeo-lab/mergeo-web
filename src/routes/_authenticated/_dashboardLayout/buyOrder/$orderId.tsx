@@ -64,7 +64,7 @@ export default function OdcDetail() {
               </span>
             </div>
           </div>
-          <div className='font-thin text-secondary/80 mr-4 mt-2'>{isLoading ? <Skeleton className='w-48 h-8 bg-muted/50' /> : order?.created && formatDate(order?.created)}</div>
+          <div className='font-thin text-secondary/80 mr-4 mt-2'>{isLoading ? <Skeleton className='w-48 h-8' /> : order?.created && formatDate(order?.created)}</div>
         </div>
       </div>
       <div className='h-[calc(100vh-310px)] w-full overflow-auto'>

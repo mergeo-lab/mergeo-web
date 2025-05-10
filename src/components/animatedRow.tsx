@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { TableCell } from "@/components/ui/table";
 import { ProductSchemaType } from "@/lib/schemas";
+import { cn } from "@/lib/utils";
 import { motion, usePresence } from "framer-motion";
 import { ImageIcon, Trash2 } from "lucide-react";
 
@@ -36,8 +37,14 @@ export default function AnimatedRow({ product, handleRemove }: { product: Produc
         <motion.tr {...animations} className="origin-top" style={{ position: isPresent ? "static" : "absolute", top: 0, left: 0, right: 0 } as const}>
             <TableCell className="p-0 m-0 py-2">
                 <div className="flex justify-start items-center w-full">
-                    <div className="bg-border rounded p-4">
-                        <ImageIcon size={50} className="text-white" />
+                    <div className={cn("rounded w-20 h-20 flex justify-center items-center", {
+                        "bg-border": !product.image
+                    })}>
+                        {product.image
+                            ? <div className="w-full h-full bg-contain bg-no-repeat bg-center" style={{ backgroundImage: (`URL(${product.image})`) }}>
+                            </div>
+                            : <ImageIcon size={50} className="text-white" />
+                        }
                     </div>
                     <div className="flex flex-col ml-2">
                         <div className="font-semibold">{product.name}</div>

@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { subscribeSSE, useSSE } from '@/hooks/server-events/useSse';
 import { SERVER_SENT_EVENTS } from '@/lib/constants';
 import { getAllPreOrders } from '@/lib/orders';
-import { ORDERS_EVENTS_PROVIDER } from '@/lib/orders/endpoints';
+import { ORDERS_EVENTS } from '@/lib/orders/endpoints';
 import { PreOrderSchemaType } from '@/lib/schemas';
 import { formatDate } from '@/lib/utils';
 import UseCompanyStore from '@/store/company.store';
@@ -13,7 +13,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { Eye, Minus } from 'lucide-react';
 import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import sinPedidos from '../../../../../../assets/sin-pedidos.png'
+import sinPedidos from '@/assets/sin-pedidos.png'
 import { ConfigTabs } from '@/lib/constants';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/proOrders/')({
@@ -23,7 +23,7 @@ export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountT
 export default function PreOrders() {
     const { company } = UseCompanyStore();
     const companyId = company?.id;
-    useSSE(`${ORDERS_EVENTS_PROVIDER}${companyId}`);
+    useSSE(`${ORDERS_EVENTS}${companyId}`);
 
     const { data, isLoading, isError, refetch } = useQuery({
         queryKey: ['preorders', company?.id],
@@ -46,9 +46,13 @@ export default function PreOrders() {
         const unsubscribe = subscribeSSE(SERVER_SENT_EVENTS.preOrderCreated, () => {
             refetch();
         });
+        const unsubscribeOrder = subscribeSSE(SERVER_SENT_EVENTS.orderCreated, () => {
+            refetch();
+        });
 
         return () => {
             unsubscribe(); // cleanup
+            unsubscribeOrder(); // cleanup
         };
     }, [companyId, refetch]);
 
@@ -100,7 +104,7 @@ export default function PreOrders() {
                                                 Array.from({ length: 6 }).map((_, index) => (
                                                     <TableRow className="hover:bg-transparent border-none">
                                                         <TableCell colSpan={6} className="h-0 p-2 border-none hover:none ">
-                                                            <Skeleton key={index} className="h-14 w-full opacity-10 bg-muted/30 rounded-sm" />
+                                                            <Skeleton key={index} className="h-14 w-full rounded-sm" />
                                                         </TableCell>
                                                     </TableRow>
                                                 ))

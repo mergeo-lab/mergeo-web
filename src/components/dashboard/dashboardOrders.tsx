@@ -77,14 +77,21 @@ export default function DashboardOrders({ companyId, accountType, queryKey, item
                             <div className="flex items-center justify-end space-x-4 min-w-60">
                                 <div className="flex flex-col justify-end items-end">
                                     <div className="font-medium">{formatToArgentinianPesos(order.totalPrice)}</div>
-                                    <div className="flex items-center text-sm text-gray-500">
-                                        <Clock className="mr-1 h-3 w-3" />
-                                        <RemainingTime time={order.responseDeadline} />
-                                    </div>
+                                    {order?.status === 'pending' &&
+                                        <div className="flex items-center text-sm text-gray-500">
+                                            <Clock className="mr-1 h-3 w-3" />
+                                            <RemainingTime time={order.responseDeadline} />
+                                        </div>
+                                    }
                                 </div>
                                 <Button variant='outline'>
                                     <Link to={'/provider/proOrders/$preOrderId'} params={{ preOrderId: order.id || "" }}>
-                                        Ver Orden
+                                        Ver Pedido
+                                    </Link>
+                                </Button>
+                                <Button variant='outline'>
+                                    <Link to={`/buyOrder/$orderId`} params={{ orderId: order?.buyOrderId || "" }}>
+                                        Ver Orden de compra
                                     </Link>
                                 </Button>
                             </div>

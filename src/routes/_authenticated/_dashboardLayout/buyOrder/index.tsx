@@ -99,7 +99,7 @@ export default function OrdenesDeCompra() {
                                     ? Array.from({ length: 6 }).map((_, index) => (
                                         <TableRow className='hover:bg-transparent border-none' key={index}>
                                             <TableCell colSpan={7} className='h-0 p-2 border-none hover:none'>
-                                                <Skeleton key={index} className='h-14 w-full opacity-10 bg-muted/30 rounded-sm' />
+                                                <Skeleton key={index} className='h-14 w-full rounded-sm' />
                                             </TableCell>
                                         </TableRow>
                                     ))

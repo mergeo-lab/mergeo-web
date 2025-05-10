@@ -183,7 +183,7 @@ export function SideBarMenu({ companyName }: Props) {
                                     }}
                                     links={[
                                         {
-                                            label: "Listado",
+                                            label: "Inventario",
                                             icon: <List size={16} />,
                                             to: "/provider/products",
                                             activepathName: 'products',

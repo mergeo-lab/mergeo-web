@@ -33,7 +33,7 @@ export default function BlackList() {
         <TableCell colSpan={100} className="p-0">
           <div className="w-full flex flex-col space-y-2 mt-2">
             {Array.from({ length: 7 }).map((_, index) => (
-              <Skeleton key={index} className="w-full h-20 rounded-sm bg-muted/50" />
+              <Skeleton key={index} className="w-full h-20 rounded-sm" />
             ))}
           </div>
         </TableCell>

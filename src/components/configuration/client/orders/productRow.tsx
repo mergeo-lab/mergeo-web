@@ -4,7 +4,7 @@ import { OptimisticToggleButton } from "@/components/optimisticToggleButton";
 import PickUpIndicator from "@/components/pickUpIndicator";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { ProductSchemaType } from "@/lib/schemas";
-import { formatToArgentinianPesos } from "@/lib/utils";
+import { cn, formatToArgentinianPesos } from "@/lib/utils";
 import UseMorePresentations from "@/store/productMorePresentations";
 import { Heart, ImageIcon, ThumbsDown } from "lucide-react";
 import { memo } from "react";
@@ -54,12 +54,20 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
             <TableCell className="p-0 m-0 py-2">
                 <div className="flex justify-start items-center w-full">
 
-                    <div className="bg-border rounded p-4">
-                        <ImageIcon size={50} className="text-white" />
+                    <div className={cn("rounded w-20 h-20 flex justify-center items-center border border-border", {
+                        "bg-border": !product.image
+                    })}>
+                        {product.image
+                            ? <div className="w-full h-full bg-contain bg-no-repeat bg-center" style={{ backgroundImage: (`URL(${product.image})`) }}>
+                                {/* <img className="w-full h-auto" src={product.image} alt={product.name} /> */}
+                            </div>
+                            : <ImageIcon size={50} className="text-white" />
+                        }
                     </div>
-                    <div className="flex flex-col ml-2">
-                        <div className="font-semibold">{product.name}</div>
-                        <div className="text-muted font-thin text-sm">{product.brand}</div>
+                    <div className="flex flex-col ml-2 max-w-[17rem]">
+                        <p title={product.name.toUpperCase()} className="font-semibold truncate">{product.name.toUpperCase()}</p>
+                        <p title={product.variety?.toUpperCase()} className="font-base truncate">{product.variety?.toUpperCase()}</p>
+                        <p className="text-info font-thin text-sm">{product.brand}</p>
                     </div>
                 </div>
             </TableCell>

@@ -32,7 +32,6 @@ import { Route as AuthLayoutRegistrationUserImport } from './routes/_authLayout/
 import { Route as AuthLayoutRegistrationCompanyImport } from './routes/_authLayout/registration/company'
 import { Route as AuthenticatedDashboardLayoutBuyOrderIndexImport } from './routes/_authenticated/_dashboardLayout/buyOrder/index'
 import { Route as AuthenticatedDashboardLayoutBuyOrderOrderIdImport } from './routes/_authenticated/_dashboardLayout/buyOrder/$orderId'
-import { Route as AuthenticatedDashboardLayoutAccountTypeClientIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/index'
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderSellsImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/sells'
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderSellDetailImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/sellDetail'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientOrdersImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/orders'
@@ -180,12 +179,6 @@ const AuthenticatedDashboardLayoutBuyOrderOrderIdRoute =
   AuthenticatedDashboardLayoutBuyOrderOrderIdImport.update({
     path: '/buyOrder/$orderId',
     getParentRoute: () => AuthenticatedDashboardLayoutRoute,
-  } as any)
-
-const AuthenticatedDashboardLayoutAccountTypeClientIndexRoute =
-  AuthenticatedDashboardLayoutAccountTypeClientIndexImport.update({
-    path: '/client/',
-    getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
   } as any)
 
 const AuthenticatedDashboardLayoutAccountTypeProviderDashboardLazyRoute =
@@ -487,13 +480,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderDashboardLazyImport
       parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
     }
-    '/_authenticated/_dashboardLayout/_accountType/client/': {
-      id: '/_authenticated/_dashboardLayout/_accountType/client/'
-      path: '/client'
-      fullPath: '/client'
-      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientIndexImport
-      parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
-    }
     '/_authenticated/_dashboardLayout/_accountType/client/lists/blackList': {
       id: '/_authenticated/_dashboardLayout/_accountType/client/lists/blackList'
       path: '/client/lists/blackList'
@@ -606,7 +592,6 @@ export const routeTree = rootRoute.addChildren({
             AuthenticatedDashboardLayoutAccountTypeProviderSellsRoute,
             AuthenticatedDashboardLayoutAccountTypeClientDashboardLazyRoute,
             AuthenticatedDashboardLayoutAccountTypeProviderDashboardLazyRoute,
-            AuthenticatedDashboardLayoutAccountTypeClientIndexRoute,
             AuthenticatedDashboardLayoutAccountTypeClientListsBlackListRoute,
             AuthenticatedDashboardLayoutAccountTypeClientListsFavoritesRoute,
             AuthenticatedDashboardLayoutAccountTypeClientProOrdersPreOrderIdRoute,
@@ -722,7 +707,6 @@ export const routeTree = rootRoute.addChildren({
         "/_authenticated/_dashboardLayout/_accountType/provider/sells",
         "/_authenticated/_dashboardLayout/_accountType/client/dashboard",
         "/_authenticated/_dashboardLayout/_accountType/provider/dashboard",
-        "/_authenticated/_dashboardLayout/_accountType/client/",
         "/_authenticated/_dashboardLayout/_accountType/client/lists/blackList",
         "/_authenticated/_dashboardLayout/_accountType/client/lists/favorites",
         "/_authenticated/_dashboardLayout/_accountType/client/proOrders/$preOrderId",
@@ -783,10 +767,6 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_authenticated/_dashboardLayout/_accountType/provider/dashboard": {
       "filePath": "_authenticated/_dashboardLayout/_accountType/provider/dashboard.lazy.tsx",
-      "parent": "/_authenticated/_dashboardLayout/_accountType"
-    },
-    "/_authenticated/_dashboardLayout/_accountType/client/": {
-      "filePath": "_authenticated/_dashboardLayout/_accountType/client/index.tsx",
       "parent": "/_authenticated/_dashboardLayout/_accountType"
     },
     "/_authenticated/_dashboardLayout/_accountType/client/lists/blackList": {

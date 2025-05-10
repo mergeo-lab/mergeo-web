@@ -61,8 +61,8 @@ export default function CollapsibleList({ name, mainButton, links }: Props) {
                                 <Link
                                     onMouseEnter={(e) => e.preventDefault()}
                                     to={link.to}
-                                    className={cn('flex items-center text-secondary', {
-                                        "font-black text-primary": selectedLink === link.activepathName
+                                    className={cn('flex items-center text-secondary text-sm hover:text-primary', {
+                                        "font-black text-primary cursor-default": selectedLink === link.activepathName
                                     })}
                                 >
                                     {link.icon}

@@ -13,7 +13,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { Eye, Minus } from 'lucide-react';
 import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import sinPedidos from '../../../../../../assets/sin-pedidos.png'
+import sinPedidos from '@/assets/sin-pedidos.png'
 import { ConfigTabs } from '@/lib/constants';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/proOrders/')({
@@ -97,7 +97,7 @@ export default function Sells() {
                                                 Array.from({ length: 6 }).map((_, index) => (
                                                     <TableRow className="hover:bg-transparent border-none">
                                                         <TableCell colSpan={6} className="h-0 p-2 border-none hover:none ">
-                                                            <Skeleton key={index} className="h-14 w-full opacity-10 bg-muted/30 rounded-sm" />
+                                                            <Skeleton key={index} className="h-14 w-full rounded-sm" />
                                                         </TableCell>
                                                     </TableRow>
                                                 ))

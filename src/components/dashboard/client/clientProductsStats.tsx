@@ -15,9 +15,11 @@ export default function ClientProductsStats({ companyId }: { companyId: string }
 
     if (isLoading) {
         return (
-            <div className='flex gap-4 max-w-xl w-full h-56'>
-                <Skeleton className="h-full w-1/2" />
-                <Skeleton className="h-full w-1/2" />
+            <div className="grid grid-cols-5 grid-rows-1 gap-4">
+                <Skeleton className="w-full h-[10.125rem] col-span-2" />
+                <Skeleton className="w-full h-[10.125rem]" />
+                <Skeleton className="w-full h-[10.125rem]" />
+                <Skeleton className=" w-full h-[10.125rem]" />
             </div>
         )
     }

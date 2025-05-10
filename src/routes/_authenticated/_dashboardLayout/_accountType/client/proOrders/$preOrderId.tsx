@@ -69,7 +69,7 @@ export function SellsDetail() {
 
     return (
         <>
-            <div className='p-4 shadow'>
+            <div className='p-4 shadow overflow-auto'>
                 <div className='flex justify-between'>
                     <div className='flex items-center gap-2 pb-1'>
                         <BackLink />
@@ -86,7 +86,7 @@ export function SellsDetail() {
             <div className='flex flex-col items-stretch'>
                 <div className={cn('bg-border/30 py-5 relative', {
                     'h-[calc(100vh-225px)]': order?.status !== PRE_ORDER_STATUS.pending,
-                    'h-fit': order?.status === PRE_ORDER_STATUS.pending
+                    'h-fit overflow-auto': order?.status === PRE_ORDER_STATUS.pending
                 })}>
                     {mutation.isPending &&
                         <div className='absolute inset-0 bg-white/60 w-full h-full z-20 flex justify-center items-center pointer-events-none'>

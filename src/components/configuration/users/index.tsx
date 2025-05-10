@@ -142,7 +142,7 @@ export function Users() {
                                                 } />
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            {user.roles.find((role: RoleSchemaType) => role.name !== "admin") ?
+                                            {user.roles.find((role: RoleSchemaType) => role.name.toUpperCase() === "ADMIN") ?
                                                 <Button variant='ghost' size='sm' disabled>
                                                     <Trash2 size={18} />
                                                 </Button>

@@ -81,6 +81,7 @@ const OrderSchema = z.object({
   productsCount: z.number(),
   dropZoneName: z.string().optional(),
   status: z.string().optional(),
+  buyOrderId: z.string().optional(),
 });
 
 const DashboardOrdersSchema = z.array(OrderSchema);

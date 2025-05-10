@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { SERVER_SENT_EVENTS } from '@/lib/constants';
 import { subscribeSSE, useSSE } from '@/hooks/server-events/useSse';
 import { ProductUploadUpdate } from '@/hooks/server-events/see';
+import { PRODUCT_UPLOAD_EVENTS } from '@/lib/orders/endpoints';
 
 type UploadStatus = {
   [uploadId: string]: {
@@ -19,7 +20,7 @@ type UploadStatus = {
 export function useProductUploads(providerId: string) {
   const [uploads, setUploads] = useState<UploadStatus>({});
 
-  useSSE(`/server-sent-events/provider/productUpload/${providerId}`);
+  useSSE(`${PRODUCT_UPLOAD_EVENTS}${providerId}`);
 
   useEffect(() => {
     const unsubProgress = subscribeSSE<ProductUploadUpdate>(

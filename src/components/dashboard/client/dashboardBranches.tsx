@@ -16,8 +16,8 @@ export default function DashboardBranches({ companyId }: { companyId: string }) 
     if (isLoading) {
         return (
             <div className='flex gap-4 max-w-xl w-full h-56'>
-                <Skeleton className="h-full w-1/2" />
-                <Skeleton className="h-full w-1/2" />
+                <Skeleton className="w-[18rem] h-[14rem]" />
+                <Skeleton className="w-[17rem] h-[14rem]" />
             </div>
         )
     }

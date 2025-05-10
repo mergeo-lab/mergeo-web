@@ -23,6 +23,7 @@ export default function Index() {
                     companyId={companyId}
                     accountType={ACCOUNT.client}
                     queryKey='dashboard-latest-orders'
+                    itemsCount={3}
                 />
             </div>
             <h2 className=" text-info/70 text-md font-thin my-4 text-gray-800 ml-3">Compras</h2>

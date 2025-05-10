@@ -2,7 +2,6 @@
 import { useEffect } from 'react';
 import { BASE_URL } from '@/lib/api/axios';
 import { SERVER_SENT_EVENTS } from '@/lib/constants';
-import { API_BASE } from '@/lib/api/config';
 
 type Callback<T> = (data: T) => void;
 
@@ -11,7 +10,7 @@ const listeners = new Map<SERVER_SENT_EVENTS, Set<Callback<unknown>>>();
 
 export function useSSE(connectionPath: string) {
   useEffect(() => {
-    const source = new EventSource(`${BASE_URL}${API_BASE}${connectionPath}`);
+    const source = new EventSource(`${BASE_URL}${connectionPath}`);
 
     source.onmessage = (event) => {
       if (!event.data) return;

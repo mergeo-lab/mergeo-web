@@ -42,10 +42,9 @@ export function ProductsPresentations({
 
     useEffect(() => {
         if (isOpen) {
-            console.log("DATA ::::::::>>>>", data)
             setOpen(isOpen);
         }
-    }, [isOpen]);
+    }, [data, isOpen]);
 
     const closeModal = useCallback(() => {
         // Close the modal
@@ -58,7 +57,7 @@ export function ProductsPresentations({
             removeProduct(product.id);
             saveMorePresentations(hasMore.filter((id) => id !== productId))
         } else {
-            saveProduct({ ...product, providerId: product.providerId! }, quantity);
+            saveProduct({ ...product, providerId: product.providerId!, dropZoneId: product.dropZoneId || '' }, quantity);
             saveMorePresentations(productId ? [productId] : [])
         }
     }
@@ -132,12 +131,19 @@ export function ProductsPresentations({
                                     <TableCell className="p-0 m-0 py-2">
                                         <div className="flex justify-start items-center w-full">
 
-                                            <div className="bg-border rounded p-4">
-                                                <ImageIcon size={50} className="text-white" />
+                                            <div className={cn("rounded w-20 h-20 flex justify-center items-center", {
+                                                "bg-border": !product.image
+                                            })}>
+                                                {product.image
+                                                    ? <div className="w-full h-full bg-contain bg-no-repeat bg-center" style={{ backgroundImage: (`URL(${product.image})`) }}>
+                                                    </div>
+                                                    : <ImageIcon size={50} className="text-white" />
+                                                }
                                             </div>
-                                            <div className="flex flex-col ml-2 items-start">
-                                                <div className="font-semibold">{product.name}</div>
-                                                <div className="text-muted font-thin text-sm">{product.brand}</div>
+                                            <div className="flex flex-col items-start ml-2 max-w-[17rem]">
+                                                <p title={product.name.toUpperCase()} className="font-semibold truncate">{product.name.toUpperCase()}</p>
+                                                <p title={product.variety?.toUpperCase()} className="font-base truncate">{product.variety?.toUpperCase()}</p>
+                                                <p className="text-info font-thin text-sm">{product.brand}</p>
                                             </div>
                                         </div>
                                     </TableCell>

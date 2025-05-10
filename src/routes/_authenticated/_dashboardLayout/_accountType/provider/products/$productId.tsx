@@ -93,7 +93,7 @@ export default function ProductDetail() {
             <div className='flex flex-col px-10'>
                 <div className='flex items-center px-6 pt-6 pb-3 gap-2'>
                     {isLoading
-                        ? <Skeleton className="h-10 w-1/3 opacity-10 bg-muted/30 rounded-sm -ml-6" />
+                        ? <Skeleton className="h-10 w-1/3 rounded-sm -ml-6" />
                         :
                         <>
                             <BackLink className='-ml-6' location={{ path: '/provider/products', search: { currentPage } }} />
@@ -116,7 +116,7 @@ export default function ProductDetail() {
                 </div>
 
                 {isLoading
-                    ? <Skeleton className="h-[22rem] w-full opacity-10 bg-muted/30 rounded" />
+                    ? <Skeleton className="h-[22rem] w-full rounded" />
                     : <div className="bg-gray-100 p-8 flex flex-col md:flex-row gap-8 rounded">
                         {!data?.product?.image
                             ? (<div className="bg-gray-200 border-2 rounded-xl h-72 aspect-square p-4 flex justify-center items-center">

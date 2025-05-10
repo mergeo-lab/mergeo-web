@@ -16,46 +16,35 @@ export default function AuthLayout() {
         setEndAnimation(true);
     };
 
-    const handleContainerAnimationComplete = () => {
-        // Start logo animation after container is shrunk
-        logoControls.start({
-            y: 0,
-            scale: 1,
-            transition: { duration: 0.5 },
-        }).then(() => {
-            return logoControls.start({
-                y: -396,
-                transition: { duration: 0.5 },
-            }).then(() => {
-                handleAnimationComplete();
-            });
-        })
-
-    };
-
     useEffect(() => {
         // Trigger initial container animation
         if (startAnimation == true) {
-            containerControls.start({
-                width: '12%',
-                padding: "0px 44px 0px 38px",
-                transition: { duration: 0.6 },
-            });
+            logoControls.start({
+                scale: 0.5,
+                opacity: 0,
+                transition: { duration: 0.3 },
+            }).then(() => {
+                containerControls.start({
+                    width: '12%',
+                    transition: { duration: .5 },
+                }).then(() => {
+                    handleAnimationComplete();
+                });
+            })
         }
     }, [containerControls, startAnimation]);
 
     return (
         <div className='h-screen w-full flex'>
             <motion.div
-                initial={{ width: '45%', padding: "0 250px 0 250px" }}
+                initial={{ width: '65%' }}
                 animate={containerControls}
-                onAnimationComplete={handleContainerAnimationComplete}
-                className="bg-secondary-background flex justify-center relative"
+                className="bg-secondary-background flex justify-center items-center relative"
             >
                 <motion.div
-                    initial={{ y: 0, scale: 1 }}
+                    initial={{ scale: 1, opacity: 1 }}
                     animate={logoControls}
-                    className='w-full h-full flex justify-center items-center'
+                    className='h-fit w-1/3'
                 >
                     <img
                         src="/mergeo-logo.svg"

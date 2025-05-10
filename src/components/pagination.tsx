@@ -36,13 +36,13 @@ export function PaginationCustom({ className, currentPage, prev, next, pages, on
     if (isLoading) {
         return (
             <div className={cn("flex justify-center items-center gap-2", className)}>
-                <Skeleton className="h-10 w-[5.88rem] bg-muted/50"></Skeleton>
+                <Skeleton className="h-10 w-[5.88rem]"></Skeleton>
                 {
                     Array.from({ length: pages <= 6 ? pages : 6 }).map((_, index) => (
-                        <Skeleton key={index} className="h-10 w-[2.57rem] bg-muted/50"></Skeleton>
+                        <Skeleton key={index} className="h-10 w-[2.57rem]"></Skeleton>
                     ))
                 }
-                <Skeleton className="h-10 w-[5.88rem] bg-muted/50"></Skeleton>
+                <Skeleton className="h-10 w-[5.88rem]"></Skeleton>
             </div>
         )
     }

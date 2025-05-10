@@ -72,7 +72,6 @@ function OrdersPage() {
         <ProductsTable configCanceled={!branch || !deliveryTime} />
     ), [branch, deliveryTime]); // Only re-render if these change
 
-
     return (
         <section className="h-full w-full flex">
             <div className={cn('w-[22rem] border-2 border-r-border transition-all ease-out', {
@@ -106,7 +105,8 @@ function OrdersPage() {
                                 <div className='w-full p-5 border-t-2 border-t-border flex flex-col gap-2'>
                                     <Button onClick={() => {
                                         setConfigDataSubmitted(false);
-                                        setShouldResetConfig(false);
+                                        // setShouldResetConfig(false);
+                                        resetConfig();
                                         setConfigDialogOpen(true)
                                     }} variant='outline' className="w-full flex gap-2">
                                         <motion.div
