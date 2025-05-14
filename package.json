@@ -62,7 +62,7 @@
     "postcss": "^8.4.38",
     "react": "19.0.0",
     "react-aria": "^3.34.3",
-    "react-day-picker": "^8.10.1",
+    "react-day-picker": "^9.7.0",
     "react-dom": "19.0.0",
     "react-dropzone": "^14.3.5",
     "react-google-autocomplete": "^2.7.3",
