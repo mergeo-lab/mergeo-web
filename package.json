@@ -102,5 +102,9 @@
     "eslint-plugin-react-refresh": "^0.4.6",
     "typescript": "^5.4.5",
     "vite": "^6.2.0"
+  },
+  "overrides": {
+    "react": "^19.0.0",
+    "@headlessui/react": "^0.0.0-insiders.8a24040"
   }
 }
