@@ -57,7 +57,7 @@
     "input-otp": "^1.2.4",
     "libphonenumber-js": "^1.11.5",
     "lodash": "^4.17.21",
-    "lucide-react": "^0.383.0",
+    "lucide-react": "^0.510.0",
     "motion": "^12.5.0",
     "postcss": "^8.4.38",
     "react": "19.0.0",
