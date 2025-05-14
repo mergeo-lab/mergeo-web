@@ -61,7 +61,6 @@ export function Company() {
             email: companyMainBranch?.email || "",
             phoneNumber: companyMainBranch?.phoneNumber || "",
         }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         if (!company) return;
         const response = await mutation.mutateAsync({ companyId: company.id, fields: fields });
         updateStoredCompany(response.data)

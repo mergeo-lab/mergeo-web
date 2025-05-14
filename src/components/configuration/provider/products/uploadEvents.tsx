@@ -101,8 +101,8 @@ export function UploadEvents({ providerId, fileName, onFinish }: Props) {
                                                 </NavigationMenuTrigger>
                                                 <NavigationMenuContent className="p-0! w-full min-w-80 max-h-50">
                                                     <div className="h-50 overflow-auto flex justify-center flex-wrap p-4 gap-2">
-                                                        {currentUpload.failedGtins?.map(item =>
-                                                            <div className="text-sm border border-muted px-3 rounded-sm flex items-center justify-center">{item}</div>
+                                                        {currentUpload.failedGtins?.map((item, index) =>
+                                                            <div key={item + index} className="text-sm border border-muted px-3 rounded-sm flex items-center justify-center">{item}</div>
                                                         )}
                                                     </div>
                                                     <Button

@@ -5,7 +5,6 @@ type RegistrationState = {
   companyId: string | null;
   accountType: string | null;
   userEmail: string | null;
-  // eslint-disable-next-line no-unused-vars
   saveCompanyId: (companyId: string) => void;
   saveAccountType: (accoutType: string) => void;
   saveUserEmail: (userEmail: string) => void;

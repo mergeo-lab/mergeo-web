@@ -120,7 +120,6 @@ export function EditPickUp(
 
     async function onSubmit(fields: PickUpSchemaType) {
         onLoading();
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         await mutation.mutateAsync({ branchId: fields.id!, body: fields });
 
         if (mutation.isError) {

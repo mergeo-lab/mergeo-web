@@ -63,7 +63,7 @@ const DrawingMap = ({ zone, hideControls = false }: Props) => {
                 console.error('Error setting up polygon:', error);
             }
         }
-    }, [map, setZone, zone]);
+    }, [hideControls, map, setZone, zone]);
 
     return (
         <>

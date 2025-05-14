@@ -1,10 +1,9 @@
-import QuantitySelector from "@/components/configuration/client/orders/quantitySelector";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { ClipboardList } from "lucide-react";
-import { useEffect, useState } from "react";
-import { PreOrderProductSchema } from "@/lib/schemas";
+import { JSX, useEffect, useState } from "react";
+import { PreOrderProductSchemaType } from "@/lib/schemas";
 import { Badge } from "@/components/ui/badge";
 import { PRE_ORDER_STATUS } from "@/lib/constants";
 
@@ -14,7 +13,7 @@ type Props = {
     icon?: JSX.Element,
     triggerButton?: React.ReactNode
     isOpen?: boolean,
-    products: PreOrderProductSchema[]
+    products: PreOrderProductSchemaType[]
     orderStatus: PRE_ORDER_STATUS
 }
 

@@ -13,7 +13,7 @@
     "@bugsnag/browser-performance": "^2.5.0",
     "@bugsnag/js": "^7.23.0",
     "@bugsnag/plugin-react": "^7.22.7",
-    "@headlessui/react": "^2.0.4",
+    "@headlessui/react": "^0.0.0-insiders.8a24040",
     "@heroicons/react": "^2.1.3",
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^3.6.0",

@@ -34,9 +34,13 @@ export function ShowDropZoneMap(
     }, [showDialog])
 
 
-    useEffect(() => {
-        if (!open) onClose();
-    }, [open])
+    const handleDialogClose = () => {
+        if (!open) {
+            onClose();
+        }
+    };
+
+    useEffect(handleDialogClose, [open, onClose]);
 
     return (
         <Dialog open={open} onOpenChange={(isOpen) => {

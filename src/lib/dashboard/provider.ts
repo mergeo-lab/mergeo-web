@@ -159,6 +159,7 @@ export async function getPendingOrders(
         },
       }
     );
+    console.log('PENDING ORDERS ===> ', response);
     return response;
   } catch (error) {
     if (isAxiosError(error)) {

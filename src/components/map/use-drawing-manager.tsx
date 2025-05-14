@@ -35,7 +35,7 @@ export function useDrawingManager(
             google.maps.event.removeListener(listener);
             newDrawingManager.setMap(null);
         };
-    }, [drawing, map]);
+    }, [drawing, map, onOverlayComplete]);
 
     const startDrawing = (mode: google.maps.drawing.OverlayType | null) => {
         drawingManager?.setDrawingMode(mode);

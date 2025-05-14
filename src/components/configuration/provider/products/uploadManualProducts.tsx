@@ -80,7 +80,7 @@ export default function UploadManualProducts() {
         return () => {
             removeAllProducts();
         }
-    }, [])
+    }, [removeAllProducts])
 
     return (
         <div className="grid grid-rows-[auto,1fr] h-[calc(100vh-250px)]">

@@ -39,7 +39,6 @@ export function SelectedProductsSheet({
 
     const closeModal = useCallback(() => {
         setOpen(false);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const saveProducts = async () => {

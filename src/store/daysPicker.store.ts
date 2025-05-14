@@ -42,7 +42,6 @@ const useDaysPickerStore = create<DaysPickerState>((set) => ({
   daysAndTime: [],
   toggleDay: (day: string) =>
     set((state) => {
-      // eslint-disable-next-line no-debugger
       if (state.selectedDays.includes(day)) {
         return {
           selectedDays: state.selectedDays.filter((d) => d !== day),

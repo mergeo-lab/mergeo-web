@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Input } from '@/components/ui/input';
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';

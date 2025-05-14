@@ -1,7 +1,7 @@
 import UseLoginStore from '@/store/login.store';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { motion, useAnimation } from 'framer-motion';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 export const Route = createFileRoute('/_authLayout')({
     component: () => <AuthLayout />
@@ -12,9 +12,9 @@ export default function AuthLayout() {
     const containerControls = useAnimation();
     const logoControls = useAnimation();
 
-    const handleAnimationComplete = () => {
+    const handleAnimationComplete = useCallback(() => {
         setEndAnimation(true);
-    };
+    }, [setEndAnimation]);
 
     useEffect(() => {
         // Trigger initial container animation
@@ -32,7 +32,7 @@ export default function AuthLayout() {
                 });
             })
         }
-    }, [containerControls, startAnimation]);
+    }, [containerControls, handleAnimationComplete, logoControls, startAnimation]);
 
     return (
         <div className='h-screen w-full flex'>

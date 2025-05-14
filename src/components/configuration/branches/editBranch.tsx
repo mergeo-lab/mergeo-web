@@ -110,7 +110,6 @@ export function EditBranch(
 
     async function onSubmit(fields: BranchesSchemaType) {
         onLoading();
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const response = await mutation.mutateAsync({ branchId: fields.id!, body: fields });
 
         if (response.error) {
@@ -126,9 +125,9 @@ export function EditBranch(
         }
     }
 
-    function handleCancel() {
+    const handleCancel = useCallback(() => {
         form.reset();
-    }
+    }, [form]);
 
     function cancelEdit() {
         setIsEditing(false);
@@ -143,7 +142,7 @@ export function EditBranch(
         } else {
             setOpen(true);
         }
-    }, [onClose]);
+    }, [handleCancel, onClose]);
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>

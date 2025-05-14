@@ -50,7 +50,7 @@ export function ProductsPresentations({
         // Close the modal
         setOpen(false);
         callback();
-    }, []);
+    }, [callback]);
 
     function handleProductChange(product: ProductSchemaType, quantity: number) {
         if (quantity === 0) {

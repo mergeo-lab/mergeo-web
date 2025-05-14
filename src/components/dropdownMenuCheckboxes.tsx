@@ -41,7 +41,7 @@ export function DropdownMenuCheckboxes({ values, triggerLabel, disabled, callbac
       setSelectedValues(values);
       callback(values); // Call callback with all values
     }
-  }, [values]);
+  }, [callback, values]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

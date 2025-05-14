@@ -4,7 +4,6 @@ import { persist } from 'zustand/middleware';
 
 type UserState = {
   user: UserType | null;
-  // eslint-disable-next-line no-unused-vars
   saveUser: (user: UserType) => void;
 };
 

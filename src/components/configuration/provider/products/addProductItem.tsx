@@ -42,8 +42,7 @@ export const AddProductItem = ({
     useEffect(() => {
         setShow(true);
         setLocalPrice("");
-        console.log("netContent :: ", netContent);
-    }, [])
+    }, [netContent])
 
     function handleSave(newPrice: string) {
         if (newPrice != "" && +newPrice > 0) {

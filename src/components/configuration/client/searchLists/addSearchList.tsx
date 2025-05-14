@@ -8,7 +8,7 @@ import UseCompanyStore from "@/store/company.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { FileUp, ScrollText, X } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { JSX, useCallback, useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import AddSearchProduct from "@/components/configuration/client/searchLists/addSearchProduct";
 import SearchProductsTable from "@/components/configuration/client/searchLists/searchProductsTable";
@@ -81,12 +81,16 @@ export function AddSearchList({
         setCanSubmit(isFormValid);
     }, [formValues, list]);
 
+    const handleCancel = useCallback(() => {
+        form.reset();
+    }, [form]);
+
     const closeModal = useCallback(() => {
         // Close the modal
         handleCancel();
         removeAllProducts();
         setOpen(false);
-    }, []);
+    }, [handleCancel, removeAllProducts]);
 
     const handleOpenChange = useCallback((isOpen: boolean) => {
         if (!isOpen) {
@@ -120,6 +124,7 @@ export function AddSearchList({
     async function submitList() {
         const fields = form.getValues();
 
+
         // check if the list already exists and we are going to add products to it
         if (list?.id) {
             addProductsToExistingList(list?.id, fields);
@@ -133,6 +138,7 @@ export function AddSearchList({
             name: fields.name,
             createdBy: userName
         }
+
         if (fields.products) payload.products = fields.products;
 
         if (!company) return;
@@ -178,25 +184,12 @@ export function AddSearchList({
         }
     }
 
-    function handleCancel() {
-        form.reset();
-    }
-
     function resetFileInput() {
         form.resetField("file"); // Reset form value
         if (fileInputRef.current) {
             fileInputRef.current.value = ""; // Reset the actual input field value
         }
     }
-
-    // Wrap the callback and onLoading functions in useCallback
-    const memoizedCallback = useCallback(() => {
-        callback();
-    }, [callback]);
-
-    const memoizedOnLoading = useCallback(() => {
-        onLoading();
-    }, [onLoading]);
 
     return (
         <Sheet open={open} onOpenChange={handleOpenChange}>

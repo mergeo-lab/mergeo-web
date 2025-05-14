@@ -53,6 +53,11 @@ export function EditUserSheet({
         },
     })
 
+    const handleCancel = useCallback(() => {
+        roleStore.removeAllRoles();
+        form.reset();
+    }, [roleStore, form]);
+
     useEffect(() => {
         if (open && data) {
             roleStore.addRoles(data.roles);
@@ -72,14 +77,13 @@ export function EditUserSheet({
         } else {
             setCanSubmit(false);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [form.formState.isDirty, roleStore.roles, data]);
 
     const closeModal = useCallback(() => {
         // Close the modal
         handleCancel()
         setOpen(false);
-    }, []);
+    }, [handleCancel]);
 
     const checkFieldsValues = useCallback(() => {
         if (!data) return;
@@ -163,11 +167,6 @@ export function EditUserSheet({
                 setOpen(false);
             }
         }
-    }
-
-    function handleCancel() {
-        roleStore.removeAllRoles();
-        form.reset();
     }
 
     return (

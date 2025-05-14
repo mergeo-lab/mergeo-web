@@ -60,7 +60,7 @@ export function CartSheet({
         // Close the modal
         setOpen(false);
         callback();
-    }, []);
+    }, [callback]);
 
     const onSubmit = async () => {
         if (!user) return;

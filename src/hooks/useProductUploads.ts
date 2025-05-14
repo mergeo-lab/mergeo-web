@@ -40,7 +40,6 @@ export function useProductUploads(providerId: string) {
         console.log('UPDATES BEFORE FINISHING :: ', uploads);
 
         if (data.upload_percent === 100) {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           setUploads((prev) => {
             const newUploads = { ...prev };
             delete newUploads[data.fileName];
@@ -89,7 +88,7 @@ export function useProductUploads(providerId: string) {
       unsubSuccess();
       unsubFail();
     };
-  }, []);
+  }, [uploads]);
 
   return { uploads };
 }

@@ -33,7 +33,7 @@ export default function AddSearchProduct({ disabled, setIsFormValid, isFormValid
         if (formValues.name && formValues.category) {
             setIsFormValid(true);
         } else setIsFormValid(false);
-    }, [formValues]);
+    }, [formValues, setIsFormValid]);
 
     function handleAddProduct() {
         const fields = form.getValues();

@@ -12,7 +12,7 @@ import UseUserStore from "@/store/user.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { UserRoundPlus } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { JSX, useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
 type FormSchemaType = Omit<NewUserSchemaType, 'id' | 'companyId'>
@@ -48,13 +48,18 @@ export function AddUserSheet({
         },
     })
 
+    const handleCancel = useCallback(() => {
+        roleStore.removeAllRoles();
+        form.reset();
+    }, [roleStore, form]);
+
+
     useEffect(() => {
         if (form.formState.isDirty) {
             setCanSubmit(true);
         } else {
             setCanSubmit(false);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [form.formState.isDirty]);
 
 
@@ -62,7 +67,7 @@ export function AddUserSheet({
         // Close the modal
         handleCancel()
         setOpen(false);
-    }, []);
+    }, [handleCancel]);
 
     const onSubmit = async (fields: FormSchemaType) => {
         if (!canSubmit) return;
@@ -90,11 +95,6 @@ export function AddUserSheet({
                 setOpen(false);
             }
         }
-    }
-
-    function handleCancel() {
-        roleStore.removeAllRoles();
-        form.reset();
     }
 
     return (
