@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import CryptoJS from 'crypto-js';
+import * as CryptoJS from 'crypto-js';
 import { HourSlot } from '@/types';
 import { ZoneSchemaPostGisType } from '@/lib/schemas';
 import { formatDistanceToNowStrict, parseISO } from 'date-fns';

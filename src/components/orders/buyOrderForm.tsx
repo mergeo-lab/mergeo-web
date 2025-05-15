@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { formatToArgentinianPesos } from '@/lib/utils';
 import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
 import { toJpeg } from 'html-to-image';
-import { useReactToPrint } from "react-to-print";
+const { useReactToPrint } = await import('react-to-print');
 
 type Props = {
     client: ClientType | undefined;

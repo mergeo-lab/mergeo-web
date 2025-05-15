@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from "react";
+import { memo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "@/components/ui/table";
 import { SearchListProductType } from "@/lib/searchLists/searchLists.schemas";

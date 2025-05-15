@@ -40,17 +40,20 @@ export interface ButtonProps
   asChild?: boolean;
 }
 
-const Button = ({ className, variant, size, asChild = false, onClick, ...props }: ButtonProps, ref?: React.Ref<HTMLButtonElement>) => {
-  const Comp = asChild ? Slot : "button";
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, asChild = false, onClick, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button";
 
-  // Memoize className for performance optimization
-  const memoizedClassName = React.useMemo(
-    () => cn(buttonVariants({ variant, size, className })),
-    [variant, size, className]
-  );
+    const memoizedClassName = React.useMemo(
+      () => cn(buttonVariants({ variant, size, className })),
+      [variant, size, className]
+    );
 
-  return <Comp className={memoizedClassName} ref={ref} onClick={onClick} {...props} />;
-};
+    return <Comp className={memoizedClassName} ref={ref} onClick={onClick} {...props} />;
+  }
+);
+
+Button.displayName = "Button";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export { Button, buttonVariants };

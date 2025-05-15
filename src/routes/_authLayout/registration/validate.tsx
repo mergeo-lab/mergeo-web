@@ -9,23 +9,28 @@ import { removeRegistrationStore } from '@/store/registration.store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, useLoaderData, useRouter } from '@tanstack/react-router'
-import CryptoJS, { AES } from 'crypto-js';
+import * as CryptoJS from 'crypto-js';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const activationCodeKey = import.meta.env.VITE_ACTIVATION_CODE_KEY;
 
+type ValidationData = {
+  activationCode: string,
+  email: string,
+}
+
 export const Route = createFileRoute('/_authLayout/registration/validate')({
   loader: async ({ location }) => {
     const params = new URLSearchParams(location.search);
     const verifyData = params.get('data');
     if (verifyData) {
-      const decryptedData = AES.decrypt(verifyData, activationCodeKey).toString(CryptoJS.enc.Utf8);
+      const decryptedData = CryptoJS.AES.decrypt(verifyData, activationCodeKey).toString(CryptoJS.enc.Utf8);
       const data = JSON.parse(decryptedData);
-      return JSON.parse(data);
+      return JSON.parse(data) as ValidationData;
     }
-    return {};
+    return { activationCode: "", email: "" } as ValidationData;
   },
   component: () => <RegistrationValidate />
 })
@@ -40,7 +45,9 @@ const FormSchema = z.object({
 function RegistrationValidate() {
   const router = useRouter();
   const [isValidated, setIsValidated] = useState(false);
-  const { activationCode: verifyCode, email: user } = useLoaderData({ from: '/_authLayout/registration/validate' })
+  const data = useLoaderData({ from: '/_authLayout/registration/validate' }) as ValidationData;
+  const verifyCode = data?.activationCode ?? '';
+  const user = data?.email ?? '';
   const mutation = useMutation({ mutationFn: otp })
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -82,7 +89,7 @@ function RegistrationValidate() {
 
   if (verifyCode) {
 
-    const verifyCodes = verifyCode && verifyCode.split('');
+    const verifyCodes = verifyCode && verifyCode.split('') || [];
 
     return (
       <Form {...form}>

@@ -1,6 +1,6 @@
 import List from "@/components/list";
 import { Input } from "@/components/ui/input";
-import { useRef, useState, useCallback, useEffect } from "react";
+import { useRef, useState, useCallback, useEffect, SetStateAction } from "react";
 import { useDebounceCallback, useOnClickOutside } from 'usehooks-ts'
 import useGoogle from "react-google-autocomplete/lib/usePlacesAutocompleteService";
 import LoadingIndicator from '@/components/loadingIndicator';
@@ -20,7 +20,7 @@ type Props = {
 }
 
 export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRemoved, defaultAddressName, disabled, isEditing }: Props) {
-    const ref = useRef(null);
+    const ref = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const [selected, setSelected] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -50,7 +50,7 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRem
         debounce
     );
 
-    useOnClickOutside(ref, () => {
+    useOnClickOutside(ref as React.RefObject<HTMLElement>, () => {
         if (disabled) return;
         if (defaultAddressName) {
             setSelected(true);
@@ -64,42 +64,53 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRem
     });
 
     const getAddressComponent = async (placeId: string, serachPlaceText: string) => {
-        setIsLoading(true);
-        const response = await getLocationInfo(placeId);
+        try {
+            const response = await getLocationInfo(placeId);
+            console.log("RESPONSE ===>", response);
 
-        if (response.error) {
+            if (response) {
+                setIsLoading(false);
+                let data: GoogleLocationSchemaType = {
+                    id: response.id,
+                    location: response.location,
+                    displayName: {
+                        text: ''
+                    }
+                };
+                data = {
+                    ...data,
+                    displayName: {
+                        text: serachPlaceText,
+                    }
+                };
+                selectedAddress(data);
+            }
+        } catch (err) {
             setIsLoading(false);
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: response.error,
-            })
-        } else if (response.data) {
-            let data: GoogleLocationSchemaType = response.data;
-            data = {
-                ...data,
-                displayName: {
-                    text: serachPlaceText,
-                }
-            };
-            selectedAddress(data);
-            setIsLoading(false);
-        }
-    };
-
+            if (err instanceof Error) {
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: err.message,
+                })
+            }
+        };
+    }
     const clearSearch = () => {
         if (disabled) return;
         getPlacePredictions({ input: "" });
         setValue("");
         setSelected(false);
+        setIsLoading(false);
         addressRemoved && addressRemoved();
         inputRef.current?.focus();
     };
 
-    const handleChange = useCallback((evt) => {
+    const handleChange = useCallback((evt: { target: { value: SetStateAction<string>; }; }) => {
         debounced(evt.target.value);
         setValue(evt.target.value);
         if (evt.target.value === "") setSelected(false);
+        setIsLoading(false);
     }, [debounced]);
 
     return (
@@ -136,6 +147,7 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRem
                             setValue(item.description);
                             getPlacePredictions({ input: "" });
                             setSelected(true);
+                            setIsLoading(false);
                             getAddressComponent(item.place_id, item.description);
                         }}>
                             <MapPin size={20} />

@@ -17,7 +17,7 @@ type Props = {
     finalPrice?: string;
     image?: string;
     inInventory?: boolean;
-    actualPrice: string;
+    actualPrice?: string;
     onSave?: (id: string, price: string) => void;
     onRemove?: (id: string) => void;
 };

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useEffect, useState } from "react";
+import { JSX, useEffect, useState } from "react";
 import { Compass } from "lucide-react";
 import UseSearchConfigStore from "@/store/searchConfiguration.store.";
 import MapRadiusSelection from "@/components/configuration/client/orders/searchConfig/mapRadiusSelection";
@@ -13,7 +13,7 @@ type Props = {
     onClose: () => void
 }
 
-export function PickUpSelectMap(
+export default function PickUpSelectMap(
     {
         title = 'Selecciona la zona de Pick Up',
         subTitle = 'Esta es la zona de Pick Up donde estas dispuesto a buscar tu pedido',

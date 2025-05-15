@@ -19,13 +19,13 @@ export function DeleteRole({ roleId, roleName, roleDeleted }: Props) {
     async function deleteRole() {
         const response = await mutation.mutateAsync({ id: roleId });
 
-        if (response.error) {
+        if (mutation.error) {
             toast({
                 variant: "destructive",
                 title: "Error",
-                description: response.error,
+                description: mutation.error.message,
             })
-        } else if (response.data) {
+        } else if (mutation.isSuccess && response) {
             roleDeleted();
             setOpen(false);
         }

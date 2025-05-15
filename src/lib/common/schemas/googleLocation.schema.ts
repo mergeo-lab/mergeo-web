@@ -37,7 +37,7 @@ export const ZoneLocationSchema = z.object({
   name: z.string(),
 });
 
-export const LocationSchemaResponse = z.object({ data: LocationSchema });
+export const LocationSchemaResponse = LocationSchema;
 export type LocationSchemaResponseType = z.infer<typeof LocationSchemaResponse>;
 export type LocationSchemaType = z.infer<typeof LocationSchema>;
 

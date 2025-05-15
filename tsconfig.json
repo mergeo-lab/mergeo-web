@@ -4,10 +4,8 @@
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "skipLibCheck": true,
-
-    /* Bundler mode */
     "moduleResolution": "bundler",
+    "skipLibCheck": true,
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -15,20 +13,24 @@
     "jsx": "react-jsx",
 
     "baseUrl": ".",
-    "types": ["node"],
+    "types": ["vite/client"],
+
     "paths": {
-      "@/*": ["./src/*", "./dist/*", ""],
+      "@/*": ["./src/*"],
       "services/*": ["src/lib/api/*"],
       "context/*": ["./src/context/*"],
       "lib/*": ["src/lib/*"],
       "constants/*": ["./src/constants/*"],
       "assets/*": ["./src/assets/*"]
     },
-    /* Linting */
+
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

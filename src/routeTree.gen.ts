@@ -18,17 +18,10 @@ import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as AuthLayoutImport } from './routes/_authLayout'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthenticatedDashboardLayoutImport } from './routes/_authenticated/_dashboardLayout'
-import { Route as AuthLayoutRegistrationImport } from './routes/_authLayout/registration'
 import { Route as AuthLayoutPasswordResetImport } from './routes/_authLayout/passwordReset'
-import { Route as AuthLayoutLoginImport } from './routes/_authLayout/login'
-import { Route as AuthLayoutForgotPasswordImport } from './routes/_authLayout/forgotPassword'
 import { Route as AuthLayoutRegistrationIndexImport } from './routes/_authLayout/registration/index'
-import { Route as AuthenticatedDashboardLayoutNotificationsImport } from './routes/_authenticated/_dashboardLayout/notifications'
-import { Route as AuthenticatedDashboardLayoutInvoicesImport } from './routes/_authenticated/_dashboardLayout/invoices'
 import { Route as AuthenticatedDashboardLayoutAccountTypeImport } from './routes/_authenticated/_dashboardLayout/_accountType'
 import { Route as AuthLayoutRegistrationValidateImport } from './routes/_authLayout/registration/validate'
-import { Route as AuthLayoutRegistrationUserImport } from './routes/_authLayout/registration/user'
-import { Route as AuthLayoutRegistrationCompanyImport } from './routes/_authLayout/registration/company'
 import { Route as AuthenticatedDashboardLayoutBuyOrderIndexImport } from './routes/_authenticated/_dashboardLayout/buyOrder/index'
 import { Route as AuthenticatedDashboardLayoutBuyOrderOrderIdImport } from './routes/_authenticated/_dashboardLayout/buyOrder/$orderId'
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderSellsImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/sells'
@@ -49,8 +42,27 @@ import { Route as AuthenticatedDashboardLayoutAccountTypeClientListsBlackListImp
 
 // Create Virtual Routes
 
+const AuthLayoutRegistrationLazyImport = createFileRoute(
+  '/_authLayout/registration',
+)()
+const AuthLayoutLoginLazyImport = createFileRoute('/_authLayout/login')()
+const AuthLayoutForgotPasswordLazyImport = createFileRoute(
+  '/_authLayout/forgotPassword',
+)()
+const AuthenticatedDashboardLayoutNotificationsLazyImport = createFileRoute(
+  '/_authenticated/_dashboardLayout/notifications',
+)()
+const AuthenticatedDashboardLayoutInvoicesLazyImport = createFileRoute(
+  '/_authenticated/_dashboardLayout/invoices',
+)()
 const AuthenticatedDashboardLayoutAboutLazyImport = createFileRoute(
   '/_authenticated/_dashboardLayout/about',
+)()
+const AuthLayoutRegistrationUserLazyImport = createFileRoute(
+  '/_authLayout/registration/user',
+)()
+const AuthLayoutRegistrationCompanyLazyImport = createFileRoute(
+  '/_authLayout/registration/company',
 )()
 const AuthenticatedDashboardLayoutAccountTypeProviderDashboardLazyImport =
   createFileRoute(
@@ -85,17 +97,38 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AuthLayoutRegistrationLazyRoute = AuthLayoutRegistrationLazyImport.update(
+  {
+    id: '/registration',
+    path: '/registration',
+    getParentRoute: () => AuthLayoutRoute,
+  } as any,
+).lazy(() =>
+  import('./routes/_authLayout/registration.lazy').then((d) => d.Route),
+)
+
+const AuthLayoutLoginLazyRoute = AuthLayoutLoginLazyImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AuthLayoutRoute,
+} as any).lazy(() =>
+  import('./routes/_authLayout/login.lazy').then((d) => d.Route),
+)
+
+const AuthLayoutForgotPasswordLazyRoute =
+  AuthLayoutForgotPasswordLazyImport.update({
+    id: '/forgotPassword',
+    path: '/forgotPassword',
+    getParentRoute: () => AuthLayoutRoute,
+  } as any).lazy(() =>
+    import('./routes/_authLayout/forgotPassword.lazy').then((d) => d.Route),
+  )
+
 const AuthenticatedDashboardLayoutRoute =
   AuthenticatedDashboardLayoutImport.update({
     id: '/_dashboardLayout',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-
-const AuthLayoutRegistrationRoute = AuthLayoutRegistrationImport.update({
-  id: '/registration',
-  path: '/registration',
-  getParentRoute: () => AuthLayoutRoute,
-} as any)
 
 const AuthLayoutPasswordResetRoute = AuthLayoutPasswordResetImport.update({
   id: '/passwordReset',
@@ -103,24 +136,34 @@ const AuthLayoutPasswordResetRoute = AuthLayoutPasswordResetImport.update({
   getParentRoute: () => AuthLayoutRoute,
 } as any)
 
-const AuthLayoutLoginRoute = AuthLayoutLoginImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => AuthLayoutRoute,
-} as any)
-
-const AuthLayoutForgotPasswordRoute = AuthLayoutForgotPasswordImport.update({
-  id: '/forgotPassword',
-  path: '/forgotPassword',
-  getParentRoute: () => AuthLayoutRoute,
-} as any)
-
 const AuthLayoutRegistrationIndexRoute =
   AuthLayoutRegistrationIndexImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => AuthLayoutRegistrationRoute,
+    getParentRoute: () => AuthLayoutRegistrationLazyRoute,
   } as any)
+
+const AuthenticatedDashboardLayoutNotificationsLazyRoute =
+  AuthenticatedDashboardLayoutNotificationsLazyImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedDashboardLayoutRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/_dashboardLayout/notifications.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
+const AuthenticatedDashboardLayoutInvoicesLazyRoute =
+  AuthenticatedDashboardLayoutInvoicesLazyImport.update({
+    id: '/invoices',
+    path: '/invoices',
+    getParentRoute: () => AuthenticatedDashboardLayoutRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/_dashboardLayout/invoices.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 
 const AuthenticatedDashboardLayoutAboutLazyRoute =
   AuthenticatedDashboardLayoutAboutLazyImport.update({
@@ -133,19 +176,25 @@ const AuthenticatedDashboardLayoutAboutLazyRoute =
     ),
   )
 
-const AuthenticatedDashboardLayoutNotificationsRoute =
-  AuthenticatedDashboardLayoutNotificationsImport.update({
-    id: '/notifications',
-    path: '/notifications',
-    getParentRoute: () => AuthenticatedDashboardLayoutRoute,
-  } as any)
+const AuthLayoutRegistrationUserLazyRoute =
+  AuthLayoutRegistrationUserLazyImport.update({
+    id: '/user',
+    path: '/user',
+    getParentRoute: () => AuthLayoutRegistrationLazyRoute,
+  } as any).lazy(() =>
+    import('./routes/_authLayout/registration/user.lazy').then((d) => d.Route),
+  )
 
-const AuthenticatedDashboardLayoutInvoicesRoute =
-  AuthenticatedDashboardLayoutInvoicesImport.update({
-    id: '/invoices',
-    path: '/invoices',
-    getParentRoute: () => AuthenticatedDashboardLayoutRoute,
-  } as any)
+const AuthLayoutRegistrationCompanyLazyRoute =
+  AuthLayoutRegistrationCompanyLazyImport.update({
+    id: '/company',
+    path: '/company',
+    getParentRoute: () => AuthLayoutRegistrationLazyRoute,
+  } as any).lazy(() =>
+    import('./routes/_authLayout/registration/company.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 
 const AuthenticatedDashboardLayoutAccountTypeRoute =
   AuthenticatedDashboardLayoutAccountTypeImport.update({
@@ -157,22 +206,7 @@ const AuthLayoutRegistrationValidateRoute =
   AuthLayoutRegistrationValidateImport.update({
     id: '/validate',
     path: '/validate',
-    getParentRoute: () => AuthLayoutRegistrationRoute,
-  } as any)
-
-const AuthLayoutRegistrationUserRoute = AuthLayoutRegistrationUserImport.update(
-  {
-    id: '/user',
-    path: '/user',
-    getParentRoute: () => AuthLayoutRegistrationRoute,
-  } as any,
-)
-
-const AuthLayoutRegistrationCompanyRoute =
-  AuthLayoutRegistrationCompanyImport.update({
-    id: '/company',
-    path: '/company',
-    getParentRoute: () => AuthLayoutRegistrationRoute,
+    getParentRoute: () => AuthLayoutRegistrationLazyRoute,
   } as any)
 
 const AuthenticatedDashboardLayoutBuyOrderIndexRoute =
@@ -358,32 +392,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FaqImport
       parentRoute: typeof rootRoute
     }
-    '/_authLayout/forgotPassword': {
-      id: '/_authLayout/forgotPassword'
-      path: '/forgotPassword'
-      fullPath: '/forgotPassword'
-      preLoaderRoute: typeof AuthLayoutForgotPasswordImport
-      parentRoute: typeof AuthLayoutImport
-    }
-    '/_authLayout/login': {
-      id: '/_authLayout/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof AuthLayoutLoginImport
-      parentRoute: typeof AuthLayoutImport
-    }
     '/_authLayout/passwordReset': {
       id: '/_authLayout/passwordReset'
       path: '/passwordReset'
       fullPath: '/passwordReset'
       preLoaderRoute: typeof AuthLayoutPasswordResetImport
-      parentRoute: typeof AuthLayoutImport
-    }
-    '/_authLayout/registration': {
-      id: '/_authLayout/registration'
-      path: '/registration'
-      fullPath: '/registration'
-      preLoaderRoute: typeof AuthLayoutRegistrationImport
       parentRoute: typeof AuthLayoutImport
     }
     '/_authenticated/_dashboardLayout': {
@@ -393,26 +406,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardLayoutImport
       parentRoute: typeof AuthenticatedImport
     }
-    '/_authLayout/registration/company': {
-      id: '/_authLayout/registration/company'
-      path: '/company'
-      fullPath: '/registration/company'
-      preLoaderRoute: typeof AuthLayoutRegistrationCompanyImport
-      parentRoute: typeof AuthLayoutRegistrationImport
+    '/_authLayout/forgotPassword': {
+      id: '/_authLayout/forgotPassword'
+      path: '/forgotPassword'
+      fullPath: '/forgotPassword'
+      preLoaderRoute: typeof AuthLayoutForgotPasswordLazyImport
+      parentRoute: typeof AuthLayoutImport
     }
-    '/_authLayout/registration/user': {
-      id: '/_authLayout/registration/user'
-      path: '/user'
-      fullPath: '/registration/user'
-      preLoaderRoute: typeof AuthLayoutRegistrationUserImport
-      parentRoute: typeof AuthLayoutRegistrationImport
+    '/_authLayout/login': {
+      id: '/_authLayout/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof AuthLayoutLoginLazyImport
+      parentRoute: typeof AuthLayoutImport
+    }
+    '/_authLayout/registration': {
+      id: '/_authLayout/registration'
+      path: '/registration'
+      fullPath: '/registration'
+      preLoaderRoute: typeof AuthLayoutRegistrationLazyImport
+      parentRoute: typeof AuthLayoutImport
     }
     '/_authLayout/registration/validate': {
       id: '/_authLayout/registration/validate'
       path: '/validate'
       fullPath: '/registration/validate'
       preLoaderRoute: typeof AuthLayoutRegistrationValidateImport
-      parentRoute: typeof AuthLayoutRegistrationImport
+      parentRoute: typeof AuthLayoutRegistrationLazyImport
     }
     '/_authenticated/_dashboardLayout/_accountType': {
       id: '/_authenticated/_dashboardLayout/_accountType'
@@ -421,19 +441,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
       parentRoute: typeof AuthenticatedDashboardLayoutImport
     }
-    '/_authenticated/_dashboardLayout/invoices': {
-      id: '/_authenticated/_dashboardLayout/invoices'
-      path: '/invoices'
-      fullPath: '/invoices'
-      preLoaderRoute: typeof AuthenticatedDashboardLayoutInvoicesImport
-      parentRoute: typeof AuthenticatedDashboardLayoutImport
+    '/_authLayout/registration/company': {
+      id: '/_authLayout/registration/company'
+      path: '/company'
+      fullPath: '/registration/company'
+      preLoaderRoute: typeof AuthLayoutRegistrationCompanyLazyImport
+      parentRoute: typeof AuthLayoutRegistrationLazyImport
     }
-    '/_authenticated/_dashboardLayout/notifications': {
-      id: '/_authenticated/_dashboardLayout/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof AuthenticatedDashboardLayoutNotificationsImport
-      parentRoute: typeof AuthenticatedDashboardLayoutImport
+    '/_authLayout/registration/user': {
+      id: '/_authLayout/registration/user'
+      path: '/user'
+      fullPath: '/registration/user'
+      preLoaderRoute: typeof AuthLayoutRegistrationUserLazyImport
+      parentRoute: typeof AuthLayoutRegistrationLazyImport
     }
     '/_authenticated/_dashboardLayout/about': {
       id: '/_authenticated/_dashboardLayout/about'
@@ -442,12 +462,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardLayoutAboutLazyImport
       parentRoute: typeof AuthenticatedDashboardLayoutImport
     }
+    '/_authenticated/_dashboardLayout/invoices': {
+      id: '/_authenticated/_dashboardLayout/invoices'
+      path: '/invoices'
+      fullPath: '/invoices'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutInvoicesLazyImport
+      parentRoute: typeof AuthenticatedDashboardLayoutImport
+    }
+    '/_authenticated/_dashboardLayout/notifications': {
+      id: '/_authenticated/_dashboardLayout/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutNotificationsLazyImport
+      parentRoute: typeof AuthenticatedDashboardLayoutImport
+    }
     '/_authLayout/registration/': {
       id: '/_authLayout/registration/'
       path: '/'
       fullPath: '/registration/'
       preLoaderRoute: typeof AuthLayoutRegistrationIndexImport
-      parentRoute: typeof AuthLayoutRegistrationImport
+      parentRoute: typeof AuthLayoutRegistrationLazyImport
     }
     '/_authenticated/_dashboardLayout/buyOrder/$orderId': {
       id: '/_authenticated/_dashboardLayout/buyOrder/$orderId'
@@ -587,38 +621,39 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
-interface AuthLayoutRegistrationRouteChildren {
-  AuthLayoutRegistrationCompanyRoute: typeof AuthLayoutRegistrationCompanyRoute
-  AuthLayoutRegistrationUserRoute: typeof AuthLayoutRegistrationUserRoute
+interface AuthLayoutRegistrationLazyRouteChildren {
   AuthLayoutRegistrationValidateRoute: typeof AuthLayoutRegistrationValidateRoute
+  AuthLayoutRegistrationCompanyLazyRoute: typeof AuthLayoutRegistrationCompanyLazyRoute
+  AuthLayoutRegistrationUserLazyRoute: typeof AuthLayoutRegistrationUserLazyRoute
   AuthLayoutRegistrationIndexRoute: typeof AuthLayoutRegistrationIndexRoute
 }
 
-const AuthLayoutRegistrationRouteChildren: AuthLayoutRegistrationRouteChildren =
+const AuthLayoutRegistrationLazyRouteChildren: AuthLayoutRegistrationLazyRouteChildren =
   {
-    AuthLayoutRegistrationCompanyRoute: AuthLayoutRegistrationCompanyRoute,
-    AuthLayoutRegistrationUserRoute: AuthLayoutRegistrationUserRoute,
     AuthLayoutRegistrationValidateRoute: AuthLayoutRegistrationValidateRoute,
+    AuthLayoutRegistrationCompanyLazyRoute:
+      AuthLayoutRegistrationCompanyLazyRoute,
+    AuthLayoutRegistrationUserLazyRoute: AuthLayoutRegistrationUserLazyRoute,
     AuthLayoutRegistrationIndexRoute: AuthLayoutRegistrationIndexRoute,
   }
 
-const AuthLayoutRegistrationRouteWithChildren =
-  AuthLayoutRegistrationRoute._addFileChildren(
-    AuthLayoutRegistrationRouteChildren,
+const AuthLayoutRegistrationLazyRouteWithChildren =
+  AuthLayoutRegistrationLazyRoute._addFileChildren(
+    AuthLayoutRegistrationLazyRouteChildren,
   )
 
 interface AuthLayoutRouteChildren {
-  AuthLayoutForgotPasswordRoute: typeof AuthLayoutForgotPasswordRoute
-  AuthLayoutLoginRoute: typeof AuthLayoutLoginRoute
   AuthLayoutPasswordResetRoute: typeof AuthLayoutPasswordResetRoute
-  AuthLayoutRegistrationRoute: typeof AuthLayoutRegistrationRouteWithChildren
+  AuthLayoutForgotPasswordLazyRoute: typeof AuthLayoutForgotPasswordLazyRoute
+  AuthLayoutLoginLazyRoute: typeof AuthLayoutLoginLazyRoute
+  AuthLayoutRegistrationLazyRoute: typeof AuthLayoutRegistrationLazyRouteWithChildren
 }
 
 const AuthLayoutRouteChildren: AuthLayoutRouteChildren = {
-  AuthLayoutForgotPasswordRoute: AuthLayoutForgotPasswordRoute,
-  AuthLayoutLoginRoute: AuthLayoutLoginRoute,
   AuthLayoutPasswordResetRoute: AuthLayoutPasswordResetRoute,
-  AuthLayoutRegistrationRoute: AuthLayoutRegistrationRouteWithChildren,
+  AuthLayoutForgotPasswordLazyRoute: AuthLayoutForgotPasswordLazyRoute,
+  AuthLayoutLoginLazyRoute: AuthLayoutLoginLazyRoute,
+  AuthLayoutRegistrationLazyRoute: AuthLayoutRegistrationLazyRouteWithChildren,
 }
 
 const AuthLayoutRouteWithChildren = AuthLayoutRoute._addFileChildren(
@@ -690,9 +725,9 @@ const AuthenticatedDashboardLayoutAccountTypeRouteWithChildren =
 
 interface AuthenticatedDashboardLayoutRouteChildren {
   AuthenticatedDashboardLayoutAccountTypeRoute: typeof AuthenticatedDashboardLayoutAccountTypeRouteWithChildren
-  AuthenticatedDashboardLayoutInvoicesRoute: typeof AuthenticatedDashboardLayoutInvoicesRoute
-  AuthenticatedDashboardLayoutNotificationsRoute: typeof AuthenticatedDashboardLayoutNotificationsRoute
   AuthenticatedDashboardLayoutAboutLazyRoute: typeof AuthenticatedDashboardLayoutAboutLazyRoute
+  AuthenticatedDashboardLayoutInvoicesLazyRoute: typeof AuthenticatedDashboardLayoutInvoicesLazyRoute
+  AuthenticatedDashboardLayoutNotificationsLazyRoute: typeof AuthenticatedDashboardLayoutNotificationsLazyRoute
   AuthenticatedDashboardLayoutBuyOrderOrderIdRoute: typeof AuthenticatedDashboardLayoutBuyOrderOrderIdRoute
   AuthenticatedDashboardLayoutBuyOrderIndexRoute: typeof AuthenticatedDashboardLayoutBuyOrderIndexRoute
 }
@@ -701,12 +736,12 @@ const AuthenticatedDashboardLayoutRouteChildren: AuthenticatedDashboardLayoutRou
   {
     AuthenticatedDashboardLayoutAccountTypeRoute:
       AuthenticatedDashboardLayoutAccountTypeRouteWithChildren,
-    AuthenticatedDashboardLayoutInvoicesRoute:
-      AuthenticatedDashboardLayoutInvoicesRoute,
-    AuthenticatedDashboardLayoutNotificationsRoute:
-      AuthenticatedDashboardLayoutNotificationsRoute,
     AuthenticatedDashboardLayoutAboutLazyRoute:
       AuthenticatedDashboardLayoutAboutLazyRoute,
+    AuthenticatedDashboardLayoutInvoicesLazyRoute:
+      AuthenticatedDashboardLayoutInvoicesLazyRoute,
+    AuthenticatedDashboardLayoutNotificationsLazyRoute:
+      AuthenticatedDashboardLayoutNotificationsLazyRoute,
     AuthenticatedDashboardLayoutBuyOrderOrderIdRoute:
       AuthenticatedDashboardLayoutBuyOrderOrderIdRoute,
     AuthenticatedDashboardLayoutBuyOrderIndexRoute:
@@ -735,16 +770,16 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AuthenticatedDashboardLayoutAccountTypeRouteWithChildren
   '/faq': typeof FaqRoute
-  '/forgotPassword': typeof AuthLayoutForgotPasswordRoute
-  '/login': typeof AuthLayoutLoginRoute
   '/passwordReset': typeof AuthLayoutPasswordResetRoute
-  '/registration': typeof AuthLayoutRegistrationRouteWithChildren
-  '/registration/company': typeof AuthLayoutRegistrationCompanyRoute
-  '/registration/user': typeof AuthLayoutRegistrationUserRoute
+  '/forgotPassword': typeof AuthLayoutForgotPasswordLazyRoute
+  '/login': typeof AuthLayoutLoginLazyRoute
+  '/registration': typeof AuthLayoutRegistrationLazyRouteWithChildren
   '/registration/validate': typeof AuthLayoutRegistrationValidateRoute
-  '/invoices': typeof AuthenticatedDashboardLayoutInvoicesRoute
-  '/notifications': typeof AuthenticatedDashboardLayoutNotificationsRoute
+  '/registration/company': typeof AuthLayoutRegistrationCompanyLazyRoute
+  '/registration/user': typeof AuthLayoutRegistrationUserLazyRoute
   '/about': typeof AuthenticatedDashboardLayoutAboutLazyRoute
+  '/invoices': typeof AuthenticatedDashboardLayoutInvoicesLazyRoute
+  '/notifications': typeof AuthenticatedDashboardLayoutNotificationsLazyRoute
   '/registration/': typeof AuthLayoutRegistrationIndexRoute
   '/buyOrder/$orderId': typeof AuthenticatedDashboardLayoutBuyOrderOrderIdRoute
   '/buyOrder': typeof AuthenticatedDashboardLayoutBuyOrderIndexRoute
@@ -771,15 +806,15 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof AuthenticatedDashboardLayoutAccountTypeRouteWithChildren
   '/faq': typeof FaqRoute
-  '/forgotPassword': typeof AuthLayoutForgotPasswordRoute
-  '/login': typeof AuthLayoutLoginRoute
   '/passwordReset': typeof AuthLayoutPasswordResetRoute
-  '/registration/company': typeof AuthLayoutRegistrationCompanyRoute
-  '/registration/user': typeof AuthLayoutRegistrationUserRoute
+  '/forgotPassword': typeof AuthLayoutForgotPasswordLazyRoute
+  '/login': typeof AuthLayoutLoginLazyRoute
   '/registration/validate': typeof AuthLayoutRegistrationValidateRoute
-  '/invoices': typeof AuthenticatedDashboardLayoutInvoicesRoute
-  '/notifications': typeof AuthenticatedDashboardLayoutNotificationsRoute
+  '/registration/company': typeof AuthLayoutRegistrationCompanyLazyRoute
+  '/registration/user': typeof AuthLayoutRegistrationUserLazyRoute
   '/about': typeof AuthenticatedDashboardLayoutAboutLazyRoute
+  '/invoices': typeof AuthenticatedDashboardLayoutInvoicesLazyRoute
+  '/notifications': typeof AuthenticatedDashboardLayoutNotificationsLazyRoute
   '/registration': typeof AuthLayoutRegistrationIndexRoute
   '/buyOrder/$orderId': typeof AuthenticatedDashboardLayoutBuyOrderOrderIdRoute
   '/buyOrder': typeof AuthenticatedDashboardLayoutBuyOrderIndexRoute
@@ -808,18 +843,18 @@ export interface FileRoutesById {
   '/_authLayout': typeof AuthLayoutRouteWithChildren
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/faq': typeof FaqRoute
-  '/_authLayout/forgotPassword': typeof AuthLayoutForgotPasswordRoute
-  '/_authLayout/login': typeof AuthLayoutLoginRoute
   '/_authLayout/passwordReset': typeof AuthLayoutPasswordResetRoute
-  '/_authLayout/registration': typeof AuthLayoutRegistrationRouteWithChildren
   '/_authenticated/_dashboardLayout': typeof AuthenticatedDashboardLayoutRouteWithChildren
-  '/_authLayout/registration/company': typeof AuthLayoutRegistrationCompanyRoute
-  '/_authLayout/registration/user': typeof AuthLayoutRegistrationUserRoute
+  '/_authLayout/forgotPassword': typeof AuthLayoutForgotPasswordLazyRoute
+  '/_authLayout/login': typeof AuthLayoutLoginLazyRoute
+  '/_authLayout/registration': typeof AuthLayoutRegistrationLazyRouteWithChildren
   '/_authLayout/registration/validate': typeof AuthLayoutRegistrationValidateRoute
   '/_authenticated/_dashboardLayout/_accountType': typeof AuthenticatedDashboardLayoutAccountTypeRouteWithChildren
-  '/_authenticated/_dashboardLayout/invoices': typeof AuthenticatedDashboardLayoutInvoicesRoute
-  '/_authenticated/_dashboardLayout/notifications': typeof AuthenticatedDashboardLayoutNotificationsRoute
+  '/_authLayout/registration/company': typeof AuthLayoutRegistrationCompanyLazyRoute
+  '/_authLayout/registration/user': typeof AuthLayoutRegistrationUserLazyRoute
   '/_authenticated/_dashboardLayout/about': typeof AuthenticatedDashboardLayoutAboutLazyRoute
+  '/_authenticated/_dashboardLayout/invoices': typeof AuthenticatedDashboardLayoutInvoicesLazyRoute
+  '/_authenticated/_dashboardLayout/notifications': typeof AuthenticatedDashboardLayoutNotificationsLazyRoute
   '/_authLayout/registration/': typeof AuthLayoutRegistrationIndexRoute
   '/_authenticated/_dashboardLayout/buyOrder/$orderId': typeof AuthenticatedDashboardLayoutBuyOrderOrderIdRoute
   '/_authenticated/_dashboardLayout/buyOrder/': typeof AuthenticatedDashboardLayoutBuyOrderIndexRoute
@@ -848,16 +883,16 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/faq'
+    | '/passwordReset'
     | '/forgotPassword'
     | '/login'
-    | '/passwordReset'
     | '/registration'
+    | '/registration/validate'
     | '/registration/company'
     | '/registration/user'
-    | '/registration/validate'
+    | '/about'
     | '/invoices'
     | '/notifications'
-    | '/about'
     | '/registration/'
     | '/buyOrder/$orderId'
     | '/buyOrder'
@@ -883,15 +918,15 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/faq'
+    | '/passwordReset'
     | '/forgotPassword'
     | '/login'
-    | '/passwordReset'
+    | '/registration/validate'
     | '/registration/company'
     | '/registration/user'
-    | '/registration/validate'
+    | '/about'
     | '/invoices'
     | '/notifications'
-    | '/about'
     | '/registration'
     | '/buyOrder/$orderId'
     | '/buyOrder'
@@ -918,18 +953,18 @@ export interface FileRouteTypes {
     | '/_authLayout'
     | '/_authenticated'
     | '/faq'
+    | '/_authLayout/passwordReset'
+    | '/_authenticated/_dashboardLayout'
     | '/_authLayout/forgotPassword'
     | '/_authLayout/login'
-    | '/_authLayout/passwordReset'
     | '/_authLayout/registration'
-    | '/_authenticated/_dashboardLayout'
-    | '/_authLayout/registration/company'
-    | '/_authLayout/registration/user'
     | '/_authLayout/registration/validate'
     | '/_authenticated/_dashboardLayout/_accountType'
+    | '/_authLayout/registration/company'
+    | '/_authLayout/registration/user'
+    | '/_authenticated/_dashboardLayout/about'
     | '/_authenticated/_dashboardLayout/invoices'
     | '/_authenticated/_dashboardLayout/notifications'
-    | '/_authenticated/_dashboardLayout/about'
     | '/_authLayout/registration/'
     | '/_authenticated/_dashboardLayout/buyOrder/$orderId'
     | '/_authenticated/_dashboardLayout/buyOrder/'
@@ -989,9 +1024,9 @@ export const routeTree = rootRoute
     "/_authLayout": {
       "filePath": "_authLayout.tsx",
       "children": [
+        "/_authLayout/passwordReset",
         "/_authLayout/forgotPassword",
         "/_authLayout/login",
-        "/_authLayout/passwordReset",
         "/_authLayout/registration"
       ]
     },
@@ -1004,47 +1039,39 @@ export const routeTree = rootRoute
     "/faq": {
       "filePath": "faq.tsx"
     },
-    "/_authLayout/forgotPassword": {
-      "filePath": "_authLayout/forgotPassword.tsx",
-      "parent": "/_authLayout"
-    },
-    "/_authLayout/login": {
-      "filePath": "_authLayout/login.tsx",
-      "parent": "/_authLayout"
-    },
     "/_authLayout/passwordReset": {
       "filePath": "_authLayout/passwordReset.tsx",
       "parent": "/_authLayout"
-    },
-    "/_authLayout/registration": {
-      "filePath": "_authLayout/registration.tsx",
-      "parent": "/_authLayout",
-      "children": [
-        "/_authLayout/registration/company",
-        "/_authLayout/registration/user",
-        "/_authLayout/registration/validate",
-        "/_authLayout/registration/"
-      ]
     },
     "/_authenticated/_dashboardLayout": {
       "filePath": "_authenticated/_dashboardLayout.tsx",
       "parent": "/_authenticated",
       "children": [
         "/_authenticated/_dashboardLayout/_accountType",
+        "/_authenticated/_dashboardLayout/about",
         "/_authenticated/_dashboardLayout/invoices",
         "/_authenticated/_dashboardLayout/notifications",
-        "/_authenticated/_dashboardLayout/about",
         "/_authenticated/_dashboardLayout/buyOrder/$orderId",
         "/_authenticated/_dashboardLayout/buyOrder/"
       ]
     },
-    "/_authLayout/registration/company": {
-      "filePath": "_authLayout/registration/company.tsx",
-      "parent": "/_authLayout/registration"
+    "/_authLayout/forgotPassword": {
+      "filePath": "_authLayout/forgotPassword.lazy.tsx",
+      "parent": "/_authLayout"
     },
-    "/_authLayout/registration/user": {
-      "filePath": "_authLayout/registration/user.tsx",
-      "parent": "/_authLayout/registration"
+    "/_authLayout/login": {
+      "filePath": "_authLayout/login.lazy.tsx",
+      "parent": "/_authLayout"
+    },
+    "/_authLayout/registration": {
+      "filePath": "_authLayout/registration.lazy.tsx",
+      "parent": "/_authLayout",
+      "children": [
+        "/_authLayout/registration/validate",
+        "/_authLayout/registration/company",
+        "/_authLayout/registration/user",
+        "/_authLayout/registration/"
+      ]
     },
     "/_authLayout/registration/validate": {
       "filePath": "_authLayout/registration/validate.tsx",
@@ -1073,16 +1100,24 @@ export const routeTree = rootRoute
         "/_authenticated/_dashboardLayout/_accountType/provider/products/"
       ]
     },
-    "/_authenticated/_dashboardLayout/invoices": {
-      "filePath": "_authenticated/_dashboardLayout/invoices.tsx",
-      "parent": "/_authenticated/_dashboardLayout"
+    "/_authLayout/registration/company": {
+      "filePath": "_authLayout/registration/company.lazy.tsx",
+      "parent": "/_authLayout/registration"
     },
-    "/_authenticated/_dashboardLayout/notifications": {
-      "filePath": "_authenticated/_dashboardLayout/notifications.tsx",
-      "parent": "/_authenticated/_dashboardLayout"
+    "/_authLayout/registration/user": {
+      "filePath": "_authLayout/registration/user.lazy.tsx",
+      "parent": "/_authLayout/registration"
     },
     "/_authenticated/_dashboardLayout/about": {
       "filePath": "_authenticated/_dashboardLayout/about.lazy.tsx",
+      "parent": "/_authenticated/_dashboardLayout"
+    },
+    "/_authenticated/_dashboardLayout/invoices": {
+      "filePath": "_authenticated/_dashboardLayout/invoices.lazy.tsx",
+      "parent": "/_authenticated/_dashboardLayout"
+    },
+    "/_authenticated/_dashboardLayout/notifications": {
+      "filePath": "_authenticated/_dashboardLayout/notifications.lazy.tsx",
       "parent": "/_authenticated/_dashboardLayout"
     },
     "/_authLayout/registration/": {

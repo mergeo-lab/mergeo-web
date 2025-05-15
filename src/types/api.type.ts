@@ -1,4 +1,6 @@
 export type Response<T> = {
   data?: T;
-  error?: string;
+  error?: ErrorMessage;
 };
+
+export type ErrorMessage = string | string[];

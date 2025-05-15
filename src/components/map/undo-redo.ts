@@ -165,10 +165,12 @@ export function useDrawingManagerEvents(
             break;
 
           case google.maps.drawing.OverlayType.POLYGON:
-          case google.maps.drawing.OverlayType.POLYLINE:
+          case google.maps.drawing.OverlayType.POLYLINE: {
             ['mouseup'].forEach((eventName) =>
               addUpdateListener(eventName, drawResult)
             );
+            break;
+          }
 
           // eslint-disable-next-line no-fallthrough
           case google.maps.drawing.OverlayType.RECTANGLE:

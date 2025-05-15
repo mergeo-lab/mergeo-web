@@ -10,6 +10,7 @@ import { FileDown, Printer } from 'lucide-react';
 import LoadingIndicator from '@/components/loadingIndicator';
 import { Skeleton } from '@/components/ui/skeleton';
 
+
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/buyOrder/$orderId')({
   component: () => <OdcDetail />
 })

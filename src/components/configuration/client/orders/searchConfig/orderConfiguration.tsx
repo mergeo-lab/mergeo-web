@@ -29,7 +29,7 @@ type Props = {
     onCancel: () => void
 }
 
-export function OrderConfig(
+export default function OrderConfig(
     {
         title = 'Seleccione los parametros de su busqueda!',
         subTitle = '',

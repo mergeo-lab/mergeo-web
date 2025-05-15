@@ -1,3 +1,4 @@
+import LoadingIndicator from "@/components/loadingIndicator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -6,7 +7,7 @@ import UseSearchStore from "@/store/search.store";
 import UseSearchConfigStore from "@/store/searchConfiguration.store.";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { Heart, Search, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { IoMdCar } from "react-icons/io";
 
 export default function ProductsSearch() {
@@ -43,7 +44,7 @@ export default function ProductsSearch() {
     }, [setActiveSearchItem, setSearchParams]);
 
     return (
-        <>
+        <Suspense fallback={<LoadingIndicator />}>
             <Label className="text-sm m-2">Buscar Producto</Label>
             <div className="w-full flex gap-2">
                 <Input value={productName} placeholder="Buscar" className="w-full" onChange={(e) => setProductName(e.target.value)} />
@@ -74,6 +75,6 @@ export default function ProductsSearch() {
                 </Label>
                 <Switch onClick={handleShowPickUp} defaultChecked={pickUp} checked={showPickUp} disabled={!pickUp} />
             </div>
-        </>
+        </Suspense>
     )
 }

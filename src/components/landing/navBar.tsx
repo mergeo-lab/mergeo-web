@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-scroll';
 import { Link as RouterLink } from '@tanstack/react-router';
 import { FiMenu, FiX } from 'react-icons/fi';

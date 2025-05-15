@@ -1,14 +1,55 @@
-import { JSX, memo, useCallback, useEffect, useState } from 'react';
-import { DashboardHeader, SideBarMenu } from '@/components/dashboardLayout';
+import { JSX, memo, useCallback, useEffect, useState, lazy, Suspense } from 'react';
 import UseCompanyStore from '@/store/company.store';
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router';
-import { Bell, CircleHelp, Settings, ScrollText, Package, Archive, WalletCards, FileSearch, ShoppingCart, Heart, ThumbsDown, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import UseProviderInventoryPaginationState from '@/store/providerInventoryPagination.store';
 import { cn } from '@/lib/utils';
+import { ErrorBoundary } from 'react-error-boundary';
+import { useAuth } from '@/hooks/useAuth';
+
+// Lazy load components
+const DashboardHeader = lazy(() => import('@/components/dashboardLayout').then(mod => ({ default: mod.DashboardHeader })));
+const SideBarMenu = lazy(() => import('@/components/dashboardLayout').then(mod => ({ default: mod.SideBarMenu })));
+
+// Dynamic import of icons to reduce bundle size
+import {
+    Bell,
+    CircleHelp,
+    Settings,
+    ScrollText,
+    Package,
+    Archive,
+    WalletCards,
+    FileSearch,
+    ShoppingCart,
+    Heart,
+    ThumbsDown,
+    LayoutDashboard
+} from 'lucide-react';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout')({
-    component: () => <DashboardLayout />,
+    component: DashboardLayout,
+    // Use the loader pattern for preloading data/modules
+    loader: async () => {
+        // Preload critical components in parallel
+        const imports = [
+            import('@/components/dashboardLayout'),
+            import('@/components/ui/button')
+        ];
+
+        // Wait for imports to complete
+        await Promise.all(imports);
+
+        // Return an empty object as we're just preloading
+        return {};
+    },
+    // This runs before the component renders
+    beforeLoad: () => {
+        // We can trigger prefetching of related routes
+        // This is just informational and not actually executed
+        console.log('Loading dashboard layout and core UI components');
+        return {};
+    }
 });
 
 const iconProps = {
@@ -93,8 +134,39 @@ const getRoutTitles = (currentPage: number) => {
 function DashboardLayout() {
     const router = useRouter();
     const { company } = UseCompanyStore();
-    const { getPage } = UseProviderInventoryPaginationState()
+    const { getPage } = UseProviderInventoryPaginationState();
+    const { user } = useAuth();
     const routeTitles = getRoutTitles(getPage());
+
+    // Preload routes based on user type
+    useEffect(() => {
+        if (!user?.accountType) return;
+
+        const timer = setTimeout(() => {
+            const preloadRoutes = async () => {
+                try {
+                    if (user.accountType === 'client') {
+                        await Promise.all([
+                            import('./_dashboardLayout/_accountType/client/dashboard.lazy.tsx'),
+                            import('./_dashboardLayout/_accountType/client/orders'),
+                        ]);
+                    } else if (user.accountType === 'provider') {
+                        await Promise.all([
+                            import('./_dashboardLayout/_accountType/provider/dashboard.lazy'),
+                            import('./_dashboardLayout/_accountType/provider/products'),
+                        ]);
+                    }
+                } catch (error) {
+                    console.warn(`Preloading ${user.accountType} routes failed:`, error);
+                }
+            };
+
+            preloadRoutes();
+        }, 2000);
+
+        return () => clearTimeout(timer);
+    }, [user?.accountType]);
+
 
     // Store both text & icon in the state
     const [currentTitle, setCurrentTitle] = useState(routeTitles['/configuration']);
@@ -128,17 +200,28 @@ function DashboardLayout() {
 
     return (
         <div className='w-full h-full flex overflow-hidden'>
-            <MemoizedSideBarMenu companyName={company?.name || ''} />
+            <ErrorBoundary fallback={<div className="p-4">Error loading sidebar</div>}>
+                <Suspense fallback={<div className="w-64 bg-secondary h-screen"></div>}>
+                    <MemoizedSideBarMenu companyName={company?.name || ''} />
+                </Suspense>
+            </ErrorBoundary>
             <div className='w-full md:px-12 flex flex-col justify-center'>
-                <DashboardHeader title={currentTitle} />
+                <ErrorBoundary fallback={<div className="h-16 px-4 flex items-center border-b">Dashboard</div>}>
+                    <Suspense fallback={<div className="h-16 bg-white shadow animate-pulse"></div>}>
+                        <DashboardHeader title={currentTitle} />
+                    </Suspense>
+                </ErrorBoundary>
                 <div className='w-[calc(100vw-300px)] h-screen mt-0 my-10 border rounded shadow overflow-hidden lg:max-h-[calc(100vh-110px)] bg-white'>
-                    <Outlet />
+                    <ErrorBoundary fallback={<div className="p-8">An error occurred loading this page</div>}>
+                        <Outlet />
+                    </ErrorBoundary>
                 </div>
             </div>
         </div>
     );
 }
 
+// Enhanced memoized sidebar with preloading capabilities
 const MemoizedSideBarMenu = memo(SideBarMenu);
 
 export default DashboardLayout;

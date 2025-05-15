@@ -12,7 +12,7 @@ import UseCompanyStore from "@/store/company.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Search, SearchX, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, Resolver, useForm } from "react-hook-form";
 
 
 export default function UploadManualProducts() {
@@ -24,7 +24,7 @@ export default function UploadManualProducts() {
     const filteredProducts = data?.products.filter(product => !allProducts.some(p => p.gtin === product.gtin)) || [];
 
     const form = useForm<ProviderProductSearchType>({
-        resolver: zodResolver(ProviderProductSearch),
+        resolver: zodResolver(ProviderProductSearch) as Resolver<ProviderProductSearchType>,
         disabled: isLoading,
     });
     const { name, brand, ean } = form.watch();

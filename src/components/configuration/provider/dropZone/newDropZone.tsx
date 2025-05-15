@@ -1,7 +1,7 @@
 // import { GoogleAutoComplete } from "@/components/googleAutoComplete";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useState } from "react";
+import { JSX, useState } from "react";
 import { LandPlot } from "lucide-react";
 import DrawingMap from "@/components/map/drawingMap";
 import useZoneStore from "@/store/zone.store";

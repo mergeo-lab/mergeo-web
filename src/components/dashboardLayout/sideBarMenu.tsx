@@ -65,7 +65,7 @@ export function SideBarMenu({ companyName }: Props) {
                     <ul className="py-4 pt-6 pl-10 [&>li>*]:multi-[flex;gap-2;] space-y-5 text-secondary-background ">
                         <li>
                             <Link
-                                onMouseEnter={(e) => e.preventDefault()}
+                                onMouseEnter={(e: React.MouseEvent) => e.preventDefault()}
                                 to="/client/configuration"
                                 search={{ tab: tabs.company }}
                                 className={cn("font-light", {
@@ -78,7 +78,7 @@ export function SideBarMenu({ companyName }: Props) {
                         </li>
                         <li>
                             <Link
-                                onMouseEnter={(e) => e.preventDefault()}
+                                onMouseEnter={(e: React.MouseEvent) => e.preventDefault()}
                                 to="/client/configuration"
                                 search={{ tab: tabs.users }}
                                 className={cn("font-light", {

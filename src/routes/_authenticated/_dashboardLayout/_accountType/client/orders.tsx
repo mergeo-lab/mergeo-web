@@ -1,19 +1,21 @@
+import React from 'react';
 import { createFileRoute } from '@tanstack/react-router'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { List, PackageSearch, ClipboardList, X, ShoppingBag, FileCog } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import ProductsSearch from '@/components/configuration/client/orders/tabs/productsSearch';
-import ProductsList from '@/components/configuration/client/orders/tabs/productsList';
-import { OrderConfig } from '@/components/configuration/client/orders/searchConfig/orderConfiguration';
 import UseCompanyStore from '@/store/company.store';
-import { PickUpSelectMap } from '@/components/configuration/client/orders/searchConfig/pickUpSelectMap';
 import UseSearchConfigStore from '@/store/searchConfiguration.store.';
-import ProductsTable from '@/components/configuration/client/orders/productsTable';
 import { CartSheet } from '@/components/configuration/client/orders/cartSheet';
 import UseSearchStore from '@/store/search.store';
 import { motion } from "framer-motion";
+
+const ProductsSearch = React.lazy(() => import('@/components/configuration/client/orders/tabs/productsSearch'));
+const ProductsList = React.lazy(() => import('@/components/configuration/client/orders/tabs/productsList'));
+const ProductsTable = React.lazy(() => import('@/components/configuration/client/orders/productsTable'));
+const OrderConfig = React.lazy(() => import('@/components/configuration/client/orders/searchConfig/orderConfiguration'));
+const PickUpSelectMap = React.lazy(() => import('@/components/configuration/client/orders/searchConfig/pickUpSelectMap'));
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/orders')({
     component: OrdersPage,

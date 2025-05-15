@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useCallback, useEffect, useState } from "react";
+import { JSX, useCallback, useEffect, useState } from "react";
 import { FileCog } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import LoadingIndicator from "@/components/loadingIndicator";

@@ -1,10 +1,13 @@
-import About from '@/components/landing/about'
-import Contact from '@/components/landing/contact'
-import Features from '@/components/landing/features'
-import Footer from '@/components/landing/footer'
-import Hero from '@/components/landing/hero'
-import Navbar from '@/components/landing/navBar'
+
+import React from 'react'
 import { createFileRoute } from '@tanstack/react-router'
+
+const About = React.lazy(() => import('@/components/landing/about'));
+const Contact = React.lazy(() => import('@/components/landing/contact'));
+const Features = React.lazy(() => import('@/components/landing/features'));
+const Footer = React.lazy(() => import('@/components/landing/footer'));
+const Hero = React.lazy(() => import('@/components/landing/hero'));
+const Navbar = React.lazy(() => import('@/components/landing/navBar'));
 
 export const Route = createFileRoute('/')({
     component: () => <Landing />

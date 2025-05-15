@@ -22,6 +22,7 @@ import noOrders from '@/assets/no-odc.png';
 import { subscribeSSE, useSSE } from '@/hooks/server-events/useSse';
 import { useBuyOrders } from '@/hooks/useBuyOrders';
 
+
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/buyOrder/')({
     component: () => <OrdenesDeCompra />,
 });

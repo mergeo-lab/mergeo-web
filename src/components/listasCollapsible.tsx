@@ -59,7 +59,7 @@ export default function CollapsibleList({ name, mainButton, links }: Props) {
                         links.map((link, index) => (
                             <li key={index}>
                                 <Link
-                                    onMouseEnter={(e) => e.preventDefault()}
+                                    onMouseEnter={(e: React.MouseEvent) => e.preventDefault()}
                                     to={link.to}
                                     className={cn('flex items-center text-secondary text-sm hover:text-primary', {
                                         "font-black text-primary cursor-default": selectedLink === link.activepathName

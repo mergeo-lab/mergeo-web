@@ -8,6 +8,7 @@ import {
 import { authEndpoints } from './endpoints';
 import {
   GoogleLocationSchemaResponseType,
+  GoogleLocationSchemaType,
   OtpSchemaType,
   RegisterCompanySchemaType,
   RegisterUserSchemaType,
@@ -232,25 +233,22 @@ export async function helpers(
 
 export async function getLocationInfo(
   id: string
-): Promise<Response<GoogleLocationSchemaResponseType>> {
+): Promise<GoogleLocationSchemaType> {
   const url = `https://places.googleapis.com/v1/places/${id}?fields=id,displayName,location&key=${import.meta.env.VITE_GOOGLE_MAPS_KEY}`;
   try {
-    const response: Response<GoogleLocationSchemaResponseType> =
-      await axios.get(`${url}`, {
-        headers: { 'Content-Type': 'application/json' },
-      });
-    return response;
+    const { data } = await axios.get<GoogleLocationSchemaType>(url, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return data;
   } catch (error) {
-    let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
-
     if (isAxiosError(error)) {
-      if (error.response?.data.statusCode === 400) {
-        errorMessage = 'El email o la contraseña son incorrectos';
-      } else {
-        errorMessage = error.response?.data.message;
+      if (error.response?.status === 400) {
+        throw new Error('El email o la contraseña son incorrectos');
       }
+      throw new Error(
+        error.response?.data?.message || 'Algo salió mal, vuelve a intentarlo!'
+      );
     }
-
-    return { error: errorMessage };
+    throw new Error('Algo salió mal, vuelve a intentarlo!');
   }
 }

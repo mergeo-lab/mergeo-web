@@ -1,8 +1,8 @@
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ApiResponse, ErrorMessage } from '@/types';
+import { Response, ErrorMessage } from '@/types';
 
-export function isApiResponse<T>(response: any): response is ApiResponse<T> {
+export function isApiResponse<T>(response: any): response is Response<T> {
   return (
     response && response.hasOwnProperty('data') && typeof response !== 'string'
   );
