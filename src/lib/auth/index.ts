@@ -7,7 +7,6 @@ import {
 } from '@/types';
 import { authEndpoints } from './endpoints';
 import {
-  GoogleLocationSchemaResponseType,
   GoogleLocationSchemaType,
   OtpSchemaType,
   RegisterCompanySchemaType,
