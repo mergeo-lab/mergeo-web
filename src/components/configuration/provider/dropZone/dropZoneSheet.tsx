@@ -74,14 +74,15 @@ export function DropZoneSheet({
     })
 
     useEffect(() => {
-        if (selectedZone) {
-            form.setValue('zone', {
-                type: "Polygon",
-                coordinates: selectedZone
-            });
+        const formZone = form.getValues('zone')?.coordinates;
+        if (
+            selectedZone.length &&
+            JSON.stringify(formZone) !== JSON.stringify(selectedZone)
+        ) {
+            form.setValue('zone', { type: "Polygon", coordinates: selectedZone });
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedZone]);
+
 
     useEffect(() => {
         const subscription = form.watch((value) => {
@@ -221,6 +222,11 @@ export function DropZoneSheet({
         setShowMap({ name: dzone.name, zone: dzone?.zone.coordinates, show: true });
     }
 
+    const addZoneHandler = (zone: google.maps.LatLngLiteral[]) => {
+        setSelectedZone(zone);
+        setZone(zone);
+    };
+
     function openAddZone() {
         if (!isAdding) {
             handleCancel()
@@ -313,7 +319,7 @@ export function DropZoneSheet({
                                                 </p>
                                             </Button>
                                         }
-                                        addZone={(zone) => setSelectedZone(zone)}
+                                        addZone={addZoneHandler}
                                     />
                                 </FormControl>
                                 <FormMessage />

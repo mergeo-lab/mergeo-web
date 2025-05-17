@@ -1,14 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { newProductsSearch } from '@/lib/products';
 import { NewProductSearchType, ProductSchemaType } from '@/lib/schemas';
 
 export const UseNewProductSearch = () => {
   const [params, setParams] = useState<NewProductSearchType | null>(null);
-
-  useEffect(() => {
-    console.log('Params updated:', params);
-  }, [params]);
 
   const { data, isLoading, isError, error } = useQuery<{
     products: ProductSchemaType[];

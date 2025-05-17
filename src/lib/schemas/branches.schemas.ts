@@ -7,7 +7,6 @@ export const zPhoneNumber = z.string().transform((value, ctx) => {
     defaultCountry: 'AR',
   });
 
-  console.log('es valido:', phoneNumber?.isValid());
   if (!phoneNumber?.isValid()) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,

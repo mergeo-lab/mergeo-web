@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { providerProductsSearch } from '@/lib/products';
 import {
@@ -16,10 +16,6 @@ export const useProviderProductSearch = () => {
     orderBy: 'created',
     sortOrder: PaginationSort.ASC,
   });
-
-  useEffect(() => {
-    console.log('Params updated:', params);
-  }, [params]);
 
   const { data, isLoading, isError, error, refetch } = useQuery<{
     products: ProductSchemaType[];

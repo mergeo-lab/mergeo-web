@@ -15,6 +15,7 @@ import SearchProductsTable from "@/components/configuration/client/searchLists/s
 import UseSearchProductStore from "@/store/searchProduct.store";
 import { addProductsToList, newSearchList, uploadSearchListFile } from "@/lib/searchLists/searchLists";
 import UseUserStore from "@/store/user.store";
+import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 
 type FormSchemaType = Omit<SearchListType, 'id'>
 
@@ -197,6 +198,7 @@ export function AddSearchList({
                 {triggerButton}
             </SheetTrigger>
             <SheetContent className="w-1/3 mx-w-1/3 sm:max-w-1/3">
+                {mutation.isPending && <OverlayLoadingIndicator />}
                 <FormProvider {...form}>
                     <SheetHeader>
                         <SheetTitle className="flex gap-2 items-center">
@@ -277,7 +279,11 @@ export function AddSearchList({
                             />
                         </div>
 
-                        <SearchProductsTable products={products} removeProduct={removeProduct} />
+                        <SearchProductsTable
+                            products={products}
+                            removeProduct={removeProduct}
+                            maxHeight="h-[300px]"
+                        />
 
                     </div>
 

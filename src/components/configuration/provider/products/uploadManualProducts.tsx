@@ -26,6 +26,11 @@ export default function UploadManualProducts() {
     const form = useForm<ProviderProductSearchType>({
         resolver: zodResolver(ProviderProductSearch) as Resolver<ProviderProductSearchType>,
         disabled: isLoading,
+        defaultValues: {
+            name: '',
+            brand: '',
+            ean: '',
+        }
     });
     const { name, brand, ean } = form.watch();
     const isDisabled = !name && !brand && !ean; // Disable if both fields are empty
@@ -91,12 +96,12 @@ export default function UploadManualProducts() {
                         companyId={company?.id}
                         products={allProducts}
                         triggerButton={
-                            <Button variant="outlineSecondary" className="space-x-2">
+                            <div className="h-10 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 space-x-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground">
                                 {allProducts.length > 0 &&
                                     <div className="w-3 h-3 rounded bg-info animate-pulse duration-700"></div>
                                 }
                                 <p>Ver productos seleccionados</p>
-                            </Button>
+                            </div>
                         }
                         removeProduct={removeProduct}
                         onSaveCallback={savedProductsCallback}

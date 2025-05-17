@@ -5,7 +5,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Dynamic imports for configuration components
-const Company = lazy(() => import('@/components/configuration/provider').then(mod => ({ default: mod.Company })));
+const Company = lazy(() => import('@/components/configuration/provider/company').then(mod => ({ default: mod.Company })));
 const Users = lazy(() => import('@/components/configuration/users').then(mod => ({ default: mod.Users })));
 
 type TabSearch = { tab: string };
@@ -20,7 +20,7 @@ export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountT
   // Add preloading hint for provider configuration components
   loader: async () => {
     await Promise.all([
-      import('@/components/configuration/provider'),
+      import('@/components/configuration/provider/company'),
       import('@/components/configuration/users'),
     ]);
     return null;

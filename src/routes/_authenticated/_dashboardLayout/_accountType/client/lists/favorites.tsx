@@ -58,8 +58,6 @@ export default function Favorites() {
                 next.delete(productId);
                 return next;
             });
-            // setTimeout(() => {
-            // }, 0);
         },
     });
 
@@ -82,11 +80,14 @@ export default function Favorites() {
         );
     }
 
-    if (data?.length === 0) return (
+    console.log("DATA ---> ", data);
+
+    if (data && data?.length === 0) return (
         <div className="flex flex-col gap-4 items-center justify-center h-full">
             <FaHeartCircleExclamation size={100} className="text-destructive" />
             <p className="text-base font-bold">No hay productos en la lista de favoritos</p>
-        </div>)
+        </div>
+    )
 
     return (
         <div className="relative w-full p-10">

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Hand, Pentagon } from 'lucide-react';
 import { useDrawingManager } from '@/components/map/use-drawing-manager';
@@ -9,31 +9,57 @@ type CustomDrawingControlsProps = {
 
 const CustomDrawingControls = ({ onPolygonComplete }: CustomDrawingControlsProps) => {
     const [polygonDrawn, setPolygonDrawn] = useState(false);
+    const polygonRef = useRef<google.maps.Polygon | null>(null);
+    const previousCoordinatesRef = useRef<google.maps.LatLngLiteral[] | null>(null);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const { startDrawing } = useDrawingManager(null, (event) => {
-        if (event.type === 'polygon') {
-            const polygon = event.overlay as google.maps.Polygon;
-            const path = polygon.getPath();
+    const handleOverlayComplete = useCallback(
+        (event: google.maps.drawing.OverlayCompleteEvent) => {
+            if (event.type === 'polygon') {
+                const polygon = event.overlay as google.maps.Polygon;
 
-            const updatePolygonCoordinates = () => {
-                const coordinates: google.maps.LatLngLiteral[] = [];
-                for (let i = 0; i < path.getLength(); i++) {
-                    const latLng = path.getAt(i);
-                    coordinates.push({ lat: latLng.lat(), lng: latLng.lng() });
+                if (polygonRef.current !== polygon) {
+                    polygonRef.current = polygon;
+                    const path = polygon.getPath();
+
+                    const updatePolygonCoordinates = () => {
+                        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+                        timeoutRef.current = setTimeout(() => {
+                            const coordinates: google.maps.LatLngLiteral[] = [];
+                            for (let i = 0; i < path.getLength(); i++) {
+                                const latLng = path.getAt(i);
+                                coordinates.push({ lat: latLng.lat(), lng: latLng.lng() });
+                            }
+
+                            const prev = previousCoordinatesRef.current;
+                            const equal =
+                                prev &&
+                                prev.length === coordinates.length &&
+                                prev.every((c, i) => c.lat === coordinates[i].lat && c.lng === coordinates[i].lng);
+
+                            if (!equal) {
+                                previousCoordinatesRef.current = coordinates;
+                                onPolygonComplete(coordinates);
+                            }
+                        }, 200); // debounce 200ms
+                    };
+
+                    updatePolygonCoordinates();
+
+                    polygon.setEditable(true);
+
+                    google.maps.event.addListener(path, 'set_at', updatePolygonCoordinates);
+                    google.maps.event.addListener(path, 'insert_at', updatePolygonCoordinates);
                 }
-                onPolygonComplete(coordinates);
-            };
 
-            // Extract initial coordinates
-            updatePolygonCoordinates();
-            setPolygonDrawn(true);
-            polygon.setEditable(true);
+                setPolygonDrawn(true);
+            }
+        },
+        [onPolygonComplete, polygonRef, previousCoordinatesRef, setPolygonDrawn, timeoutRef]
+    );
 
-            // Listen for changes to the polygon
-            google.maps.event.addListener(path, 'set_at', updatePolygonCoordinates);
-            google.maps.event.addListener(path, 'insert_at', updatePolygonCoordinates);
-        }
-    });
+    const { startDrawing } = useDrawingManager(null, handleOverlayComplete);
 
     return (
         <div className="absolute top-24 left-2 flex flex-col gap-2">

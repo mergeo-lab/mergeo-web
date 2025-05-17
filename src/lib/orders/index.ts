@@ -81,9 +81,6 @@ export async function getProducts(
   if (pickUpRadius !== undefined) params.pickUpRadius = pickUpRadius;
   if (onlyFavorites !== undefined) params.onlyFavorites = onlyFavorites;
 
-  console.log('BUSCANDO PRODUCTOS', onlyFavorites);
-  console.log('BUSCANDO PRODUCTOS', params);
-
   try {
     const { data: response }: AxiosResponse = await axiosPrivate.get(
       `${SEARCH_PRODUCTS}/${companyId}`,

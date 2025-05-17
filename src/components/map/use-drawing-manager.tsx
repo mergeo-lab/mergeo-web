@@ -35,7 +35,7 @@ export function useDrawingManager(
             google.maps.event.removeListener(listener);
             newDrawingManager.setMap(null);
         };
-    }, [drawing, map, onOverlayComplete]);
+    }, [drawing, map, onOverlayComplete]); // onOverlayComplete is now stable due to useCallback in the parent
 
     const startDrawing = (mode: google.maps.drawing.OverlayType | null) => {
         drawingManager?.setDrawingMode(mode);

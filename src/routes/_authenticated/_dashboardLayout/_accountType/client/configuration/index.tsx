@@ -25,7 +25,6 @@ const tabsTriggerClassName = 'rounded w-52 data-[state=active]:multi-[bg-primary
 function Configuration() {
   const search = useSearch({ from: "/_authenticated/_dashboardLayout" }) as { tab?: tabs };
 
-  console.log("Tab from useSearch:", search.tab);
   const router = useRouter();
   const navigate = useNavigate();
 

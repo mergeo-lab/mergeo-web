@@ -136,9 +136,9 @@ export function Users() {
                                                 icon={<Pencil size={20} />}
                                                 callback={refetch}
                                                 triggerButton={
-                                                    <Button variant='ghost' size='sm'>
+                                                    <div className="h-9 px-3 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground">
                                                         <Pencil size={18} />
-                                                    </Button>
+                                                    </div>
                                                 } />
                                         </TableCell>
                                         <TableCell className="text-right">
@@ -153,9 +153,9 @@ export function Users() {
                                                     title="Eliminar usuario"
                                                     subTitle="¿Deseas borrar este usuario?"
                                                     triggerButton={
-                                                        <Button variant='ghost' size='sm'>
+                                                        <div className="h-9 px-3 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground">
                                                             <Trash2 size={18} />
-                                                        </Button>}
+                                                        </div>}
                                                     callback={refetch}
                                                 />
                                             }
@@ -171,12 +171,12 @@ export function Users() {
                         <AddUserSheet
                             callback={refetch}
                             triggerButton={
-                                <Button variant='outline' className='min-w-[200px] flex gap-2'>
+                                <div className='h-10 px-4 py-2 items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 min-w-[200px] flex gap-2 border border-primary text-primary bg-background hover:bg-primary/10 disabled:border-muted disabled:text-muted'>
                                     <span>
                                         Agregar un usuario
                                     </span>
                                     <UserRoundPlus size={18} />
-                                </Button>
+                                </div>
                             } />
                     </div>
                 </CardFooter>

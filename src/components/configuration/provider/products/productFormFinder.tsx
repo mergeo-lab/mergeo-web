@@ -37,7 +37,6 @@ export default function ProductFormFinder({ disabled, defaults, onChange }: Prop
     }
 
     useEffect(() => {
-        console.log("RESET FORM WITH DEFAULTS")
         form.reset(defaults);
     }, [defaults, form]);
 

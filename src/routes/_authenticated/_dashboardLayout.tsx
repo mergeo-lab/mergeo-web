@@ -47,7 +47,6 @@ export const Route = createFileRoute('/_authenticated/_dashboardLayout')({
     beforeLoad: () => {
         // We can trigger prefetching of related routes
         // This is just informational and not actually executed
-        console.log('Loading dashboard layout and core UI components');
         return {};
     }
 });
@@ -75,7 +74,7 @@ function SubLink({ to, texts, search }: { to?: string | undefined, texts: string
 }
 
 const getRoutTitles = (currentPage: number) => {
-    console.log("CURRENT PAGE :: ", currentPage)
+
     const titles: Record<string, { text: string | JSX.Element; icon: JSX.Element }> = {
         '/': { text: 'Dashboard', icon: <ScrollText {...iconProps} /> },
         '/searchLists': { text: 'Mis Listas', icon: <ScrollText {...iconProps} /> },

@@ -220,7 +220,7 @@ export async function deleteProvidersProduct(
   porductId: string
 ) {
   try {
-    const { data: response }: AxiosResponse = await axiosPrivate.post(
+    const { data: response }: AxiosResponse = await axiosPrivate.delete(
       `${PRODUCT}/${companyId}/${porductId}`,
       {
         headers: {
@@ -391,7 +391,7 @@ export async function getFavorites(
     );
     console.log('Response /search:', response);
     let responseData = [];
-    if (response.data) {
+    if (response.data && response.data.lengh > 0) {
       responseData = response.data.products;
     }
     return responseData;
@@ -481,7 +481,7 @@ export async function getBlackList(
       }
     );
     let responseData = [];
-    if (response.data) {
+    if (response.data && response.data.lengh > 0) {
       responseData = response.data.products;
     }
     return responseData;

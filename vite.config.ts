@@ -31,7 +31,7 @@ export default defineConfig({
       ext: '.br',
     }),
     // Generate bundle visualization in stats.html
-    visualizer({
+    (visualizer as any)({
       filename: 'stats.html',
       gzipSize: true,
       brotliSize: true,

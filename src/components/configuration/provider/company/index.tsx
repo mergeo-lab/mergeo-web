@@ -197,7 +197,6 @@ export function Company() {
                                             disabled={!isEditing}
                                             name="branch"
                                             render={({ field }) => {
-                                                console.log(field?.value)
                                                 return (
                                                     <FormItem>
                                                         <FormLabel id='branch'>Dirección</FormLabel>
@@ -273,17 +272,19 @@ export function Company() {
                                                 <FormItem>
                                                     <FormLabel className="">Zonas de reparto</FormLabel>
                                                     <FormControl>
-                                                        <DropZonePicker
-                                                            disabled={isEditing}
-                                                            companyId={company?.id}
-                                                            isEditing={isEditing}
-                                                            notFoundMessage="No se encontraron zonas de entrega"
-                                                            newEntry={{
-                                                                title: "Agregar una zona de entrega",
-                                                                subTitle: "Aqui puedes areguegar una zona de entrega",
-                                                                icon: <MapPin size={20} />
-                                                            }}
-                                                        />
+                                                        {company?.id &&
+                                                            <DropZonePicker
+                                                                disabled={isEditing}
+                                                                companyId={company?.id}
+                                                                isEditing={isEditing}
+                                                                notFoundMessage="No se encontraron zonas de entrega"
+                                                                newEntry={{
+                                                                    title: "Agregar una zona de entrega",
+                                                                    subTitle: "Aqui puedes areguegar una zona de entrega",
+                                                                    icon: <MapPin size={20} />
+                                                                }}
+                                                            />
+                                                        }
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "@/components/ui/table";
 import { SearchListProductType } from "@/lib/searchLists/searchLists.schemas";
 import { Trash2 as TrashIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Props = {
     products: SearchListProductType[] | null,
@@ -36,7 +37,7 @@ export default function SearchProductsTable({ products, removeProduct, maxHeight
                     </TableHeader>
                 </Table>
             </div>
-            <div className={`overflow-y-auto max-h-[${maxHeight}]`}>
+            <div className={cn(`overflow-y-auto`, `${maxHeight}`)}>
                 <Table className="min-w-full table-fixed">
                     <TableBody>
                         {products.map((product) => (
@@ -59,6 +60,6 @@ export default function SearchProductsTable({ products, removeProduct, maxHeight
                     </TableBody>
                 </Table>
             </div>
-        </div>
+        </div >
     );
 }

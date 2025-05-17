@@ -1,7 +1,6 @@
 // import { GoogleAutoComplete } from "@/components/googleAutoComplete";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useEffect, useState } from "react";
 import { LandPlot } from "lucide-react";
 import DrawingMap from "@/components/map/drawingMap";
 
@@ -23,31 +22,11 @@ export function ShowDropZoneMap(
         zone,
         onClose
     }: Props) {
-    const [open, setOpen] = useState(showDialog);
-
-    useEffect(() => {
-        if (!showDialog) {
-            setOpen(false);
-        } else {
-            setOpen(true);
-        }
-    }, [showDialog])
-
-
-    const handleDialogClose = () => {
-        if (!open) {
-            onClose();
-        }
-    };
-
-    useEffect(handleDialogClose, [open, onClose]);
 
     return (
-        <Dialog open={open} onOpenChange={(isOpen) => {
+        <Dialog open={showDialog} onOpenChange={(isOpen) => {
             if (!isOpen) {
-                setOpen(false);
-            } else {
-                setOpen(true);
+                onClose();
             }
         }}>
             <DialogContent className="w-full">

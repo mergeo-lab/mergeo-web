@@ -191,7 +191,6 @@ export function Company() {
                                             disabled={!isEditing}
                                             name="branch"
                                             render={({ field }) => {
-                                                console.log(field?.value)
                                                 return (
                                                     <FormItem>
                                                         <FormLabel id='branch'>Dirección</FormLabel>

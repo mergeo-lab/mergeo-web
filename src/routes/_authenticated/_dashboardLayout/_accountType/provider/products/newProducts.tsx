@@ -29,8 +29,8 @@ export default function UploadProducts() {
                     <div className="bg-accent h-20 px-10 shadow z-20 flex justify-between items-center">
                         <TabsList className='rounded-none w-full justify-start h-[50px] bg-accent'>
                             {
-                                Object.values(TabsConfig).map((tab) =>
-                                    <TabsTrigger className={tabsTriggerClassName} value={tab.value}>
+                                Object.values(TabsConfig).map((tab, index) =>
+                                    <TabsTrigger key={index} className={tabsTriggerClassName} value={tab.value}>
                                         <div className="space-x-3 flex items-center">
                                             <div>{tab.icon}</div>
                                             <div>{tab.title}</div>

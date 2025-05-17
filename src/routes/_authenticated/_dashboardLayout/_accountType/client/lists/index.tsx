@@ -184,7 +184,7 @@ export function SearchLists() {
         )
     } else {
         return (
-            <>
+            <div className='flex h-full'>
                 <div className='w-96 relative bg-white shadow py-5 px-10 overflow-auto flex flex-col gap-1'>
                     {getAllListsNames().map((list: { name: string; id: string }) =>
                         <SearchListButton active={selectedList?.id === list.id} key={list.id} id={list.id} name={list.name} onClick={handleSelectedList} />
@@ -208,7 +208,7 @@ export function SearchLists() {
                                 <h2 className='text-2xl font-bold text-ellipsis text-nowrap max-w-96 overflow-hidden'>
                                     {selectedList?.name}
                                 </h2>
-                                <p className='text-sm text-secondary/60'>Lista creada por: {selectedList?.createdBy}</p>
+                                <p className='text-sm text-secondary/60'>Lista creada por: <span className='text-highlight'>{selectedList?.createdBy}</span></p>
                             </div>
                             <div className='border border-l h-10 w-1 bg-secondary/20'></div>
                             <div className='flex ga-2'>
@@ -282,7 +282,7 @@ export function SearchLists() {
                         {isLoading && <OverlayLoadingIndicator />}
                         {selectedList?.products && selectedList?.products.length > 0 ?
                             <SearchProductsTable
-                                maxHeight="450px"
+                                maxHeight="h-[600px]"
                                 products={filteredProducts} // Use memoized filtered products
                                 removeProduct={handleRemoveProduct}
                             />
@@ -320,7 +320,7 @@ export function SearchLists() {
                         onClose={() => setDeleteList({ data: null, isOpen: false })}
                     />
                 </div>
-            </>
+            </div>
         )
     }
 }
