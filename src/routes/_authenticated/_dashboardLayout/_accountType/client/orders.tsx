@@ -1,7 +1,6 @@
-import React from 'react';
 import { createFileRoute } from '@tanstack/react-router'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { List, PackageSearch, ClipboardList, X, ShoppingBag, FileCog } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -10,12 +9,11 @@ import UseSearchConfigStore from '@/store/searchConfiguration.store.';
 import { CartSheet } from '@/components/configuration/client/orders/cartSheet';
 import UseSearchStore from '@/store/search.store';
 import { motion } from "framer-motion";
-
-const ProductsSearch = React.lazy(() => import('@/components/configuration/client/orders/tabs/productsSearch'));
-const ProductsList = React.lazy(() => import('@/components/configuration/client/orders/tabs/productsList'));
-const ProductsTable = React.lazy(() => import('@/components/configuration/client/orders/productsTable'));
-const OrderConfig = React.lazy(() => import('@/components/configuration/client/orders/searchConfig/orderConfiguration'));
-const PickUpSelectMap = React.lazy(() => import('@/components/configuration/client/orders/searchConfig/pickUpSelectMap'));
+import OrderConfig from '@/components/configuration/client/orders/searchConfig/orderConfiguration';
+import ProductsTable from '@/components/configuration/client/orders/productsTable';
+import ProductsList from '@/components/configuration/client/orders/tabs/productsList';
+import ProductsSearch from '@/components/configuration/client/orders/tabs/productsSearch';
+import PickUpSelectMap from '@/components/configuration/client/orders/searchConfig/pickUpSelectMap';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/orders')({
     component: OrdersPage,
@@ -70,10 +68,6 @@ function OrdersPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [reset, resetConfig])
 
-    const memoizedProductsTable = useMemo(() => (
-        <ProductsTable configCanceled={!branch || !deliveryTime} />
-    ), [branch, deliveryTime]); // Only re-render if these change
-
     return (
         <section className="h-full w-full flex">
             <div className={cn('w-[22rem] border-2 border-r-border transition-all ease-out', {
@@ -107,8 +101,6 @@ function OrdersPage() {
                                 <div className='w-full p-5 border-t-2 border-t-border flex flex-col gap-2'>
                                     <Button onClick={() => {
                                         setConfigDataSubmitted(false);
-                                        // setShouldResetConfig(false);
-                                        resetConfig();
                                         setConfigDialogOpen(true)
                                     }} variant='outline' className="w-full flex gap-2">
                                         <motion.div
@@ -172,19 +164,18 @@ function OrdersPage() {
 
             {/* Products table */}
             <div className='w-full p-10'>
-                {memoizedProductsTable}
+                <ProductsTable configCanceled={!branch || !deliveryTime} />
             </div>
 
             <PickUpSelectMap showDialog={pickUpDialog} onClose={() => setPickUpDialog(false)} />
 
             <OrderConfig
                 companyId={company?.id}
-                callback={() => {
-                    setTab(listId != "" ? TabsEnum.LISTA_DE_PRODUCTOS : TabsEnum.BUSCAR_PRODUCTOS);
+                callback={(listId: string) => {
+                    setTab(listId ? TabsEnum.LISTA_DE_PRODUCTOS : TabsEnum.BUSCAR_PRODUCTOS);
                     setConfigDataSubmitted(true);
                     setConfigDialogOpen(false);
                 }}
-                onLoading={() => { }}
                 openDialog={configDialogOpen}
                 onCancel={() => {
                     setcCnfigCanceled(true);

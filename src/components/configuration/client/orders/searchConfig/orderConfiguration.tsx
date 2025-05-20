@@ -4,7 +4,7 @@ import { JSX, useEffect, useState } from "react";
 import { DeliveryTimeSelector } from "@/components/configuration/client/orders/searchConfig/deliveryTimeSelector";
 import { DateRange } from "react-day-picker";
 import { BranchSlector } from "@/components/configuration/client/orders/searchConfig/branchsSelector";
-import UseSearchConfigStore from "@/store/searchConfiguration.store.";
+import UseSearchConfigStore, { PickUpLocationArea } from "@/store/searchConfiguration.store.";
 import { FileCog } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import mapIcon from '@/assets/map.svg';
@@ -12,7 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { BranchesSchemaType } from "@/lib/schemas";
 import { cn } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ReplacementCriteriaValues } from "@/lib/constants";
+import { ReplacementCriteria, ReplacementCriteriaValues } from "@/lib/constants";
 import ListSelector from "@/components/configuration/client/orders/searchConfig/listSelector";
 import LoadingIndicator from "@/components/loadingIndicator";
 import UseSearchStore from "@/store/search.store";
@@ -24,9 +24,9 @@ type Props = {
     companyId: string | undefined,
     triggerButton?: React.ReactNode
     openDialog?: boolean
-    callback: () => void
-    onLoading: () => void
+    callback: (listId: string) => void
     onCancel: () => void
+    onLoading?: () => void
 }
 
 export default function OrderConfig(
@@ -43,21 +43,30 @@ export default function OrderConfig(
 
     const [open, setOpen] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
-    const { deliveryTime, setDeliveryTime, setBranch, setPickUp, setPickUpDialog, pickUp, setPickUpLocation, pickUpLocation, branch, selectList, removeList, listId, setReplacementCriteria, replacementCriteria, resetConfig, shouldResetConfig, setShouldResetConfig } = UseSearchConfigStore();
+    const { deliveryTime, setDeliveryTime, setBranch, branch, setTempBranch, setPickUp, pickUp, setPickUpDialog, setPickUpLocation, pickUpLocation, selectList, listId, setReplacementCriteria, replacementCriteria, resetConfig, shouldResetConfig, setShouldResetConfig } = UseSearchConfigStore();
     const { reset } = UseSearchStore();
 
-    const [time, setTime] = useState<DateRange>();
+    const [internalList, setInternalList] = useState("");
+    const [time, setTime] = useState<DateRange | null>();
     const [selcetedBranch, setSelectedBranch] = useState<BranchesSchemaType | null>(null);
+    const [internalRc, setInternalRc] = useState<ReplacementCriteria | null>(null);
+    const [internalPickUp, setInternalPickUp] = useState(false);
 
     // when we open we load and reset the data
     // this is to avoid a flicker in the main screen
     useEffect(() => {
         setIsLoading(true);
         if (open && shouldResetConfig) {
+            // this is resetting the config when the button in the left is clicked
             setTimeout(() => {
                 setShouldResetConfig(false);
                 resetConfig();
                 setIsLoading(false);
+                setInternalList("");
+                setInternalRc(null);
+                setPickUp(false);
+                setInternalPickUp(false);
+                setTime(null);
                 setSelectedBranch(null);
                 reset();
             }, 300)
@@ -67,13 +76,15 @@ export default function OrderConfig(
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open])
 
-    async function onSubmit() {
+    async function onConfigSave() {
         time && setDeliveryTime(time);
         selcetedBranch && setBranch(selcetedBranch);
+        internalList && selectList(internalList);
+        internalRc && setReplacementCriteria(internalRc);
 
-        onLoading();
-        callback();
-        setOpen(false);
+        onLoading && onLoading();
+        callback(internalList ? internalList : "");
+        handleOpenChange(false);
     }
     // we prevent the dialog from closing when clicking outside
     const handleOpenChange = (open: boolean) => {
@@ -89,8 +100,7 @@ export default function OrderConfig(
     }, [openDialog, onCancel]);
 
     return (
-        <Dialog
-            open={open}
+        <Dialog open={open}
             onOpenChange={handleOpenChange}>
             <DialogTrigger className="w-full flex mt-2" asChild>
                 {triggerButton}
@@ -118,7 +128,7 @@ export default function OrderConfig(
                                 <div className="border rounded border-border p-5">
                                     <DeliveryTimeSelector
                                         className="w-full"
-                                        defaultValue={deliveryTime}
+                                        defaultValue={time || deliveryTime}
                                         onDateChange={(newDate: DateRange) => {
                                             if (newDate.from && newDate.to) {
                                                 setTime({ from: newDate.from, to: newDate.to });
@@ -131,8 +141,20 @@ export default function OrderConfig(
                                 <Label id='address'>Lugar de entrega</Label>
                                 <div className="border rounded border-border p-5">
                                     <BranchSlector
-                                        defaultValue={branch?.id ?? ""}
-                                        onChange={(branch: BranchesSchemaType) => setSelectedBranch(branch)}
+                                        defaultValue={selcetedBranch?.id || branch?.id || ""}
+                                        onChange={(branch: BranchesSchemaType) => {
+                                            setPickUp(false);
+                                            setInternalPickUp(false);
+                                            setPickUpLocation({
+                                                location: {
+                                                    latitude: branch?.address?.location?.coordinates[1] ?? 0,
+                                                    longitude: branch?.address?.location?.coordinates[0] ?? 0
+                                                },
+                                                radius: 1
+                                            })
+                                            setSelectedBranch(branch)
+                                            setTempBranch(branch)
+                                        }}
                                     />
                                 </div>
                             </div>
@@ -153,22 +175,23 @@ export default function OrderConfig(
                                     <div className={cn("absolute top-0 right-0 bg-black/10 w-full h-full transition-all pointer-events-none", {
                                         "opacity-0 pointer-events-all": selcetedBranch !== null
                                     })}></div>
-                                    <div onClick={() => pickUp == true ? setPickUpDialog(true) : ""}
+                                    <div onClick={() => internalPickUp || pickUp == true ? setPickUpDialog(true) : ""}
                                         className={cn("bg-border rounded p-2 w-14 flex justify-center items-center",
                                             {
-                                                "shadow-sm shadow-primary bg-primary/10 cursor-pointer": pickUp
+                                                "shadow-sm shadow-primary bg-primary/10 cursor-pointer": internalPickUp || pickUp
                                             }
                                         )}>
                                         <img src={mapIcon} alt="map" />
                                     </div>
                                     <div className="flex flex-col justify-center ">
                                         <div className="flex items-center space-x-2">
-                                            <Switch defaultChecked={pickUp} disabled={selcetedBranch === null} onClick={() => {
-                                                if (selcetedBranch === null) return
-                                                // we set the location of the selected branch on the map to select the pikup radius
-                                                if (pickUp) {
-                                                    setPickUpLocation({ ...pickUpLocation, radius: 1 })
-                                                } else {
+                                            <Switch
+                                                checked={internalPickUp || pickUp}
+                                                defaultChecked={internalPickUp == true || pickUp == true}
+                                                disabled={selcetedBranch === null}
+                                                onClick={() => {
+                                                    if (selcetedBranch === null) return
+                                                    // we set the location of the selected branch on the map to select the pikup radius
                                                     setPickUpLocation({
                                                         location: {
                                                             latitude: selcetedBranch?.address?.location?.coordinates[1] ?? 0,
@@ -176,10 +199,10 @@ export default function OrderConfig(
                                                         },
                                                         radius: pickUpLocation.radius || 1
                                                     })
+                                                    setPickUp(true);
+                                                    setInternalPickUp(true)
                                                     setPickUpDialog()
-                                                }
-                                                setPickUp();
-                                            }} />
+                                                }} />
                                             <Label htmlFor="airplane-mode">Estoy dispuesto a hacer pick up</Label>
                                         </div>
                                         <p className="text-sm ml-10 text-muted font-light">Hay proveedores que no tienen entrega en tu local, selecciona si estas dispuesto a ir a buscar el pedido</p>
@@ -194,11 +217,11 @@ export default function OrderConfig(
                                 <Label id='name'>Criterio de reemplazo</Label>
                                 <div className="border rounded border-border h-48">
                                     <RadioGroup
-                                        value={replacementCriteria}
+                                        value={internalRc || replacementCriteria}
                                         className="flex flex-col gap-3 p-5"
                                     >
                                         {Object.entries(ReplacementCriteriaValues).map(([key, item]) => (
-                                            <div key={item.value} className="flex items-center space-x-2" onClick={() => setReplacementCriteria(item.value)}>
+                                            <div key={item.value} className="flex items-center space-x-2" onClick={() => setInternalRc(item.value)}>
                                                 <RadioGroupItem value={item.value} id={key} />
                                                 <Label htmlFor={key}>{item.label}</Label>
                                             </div>
@@ -213,9 +236,9 @@ export default function OrderConfig(
                                 <Label id='address'>Usar una Lista</Label>
                                 <div className="border rounded border-border p-5 h-48 overflow-auto">
                                     <ListSelector
-                                        selectedListId={listId}
-                                        onChange={(listId: string) => selectList(listId)}
-                                        removeSelection={() => removeList()}
+                                        selectedListId={internalList || listId}
+                                        onChange={(listId: string) => setInternalList(listId)}
+                                        removeSelection={() => setInternalList("")}
                                     />
                                 </div>
                             </div>
@@ -228,7 +251,7 @@ export default function OrderConfig(
                         <Button onClick={onCancel} variant="secondary" type="button" className="w-full">Cancelar</Button>
                     </DialogClose>
                     <DialogClose className="w-40" disabled={!time && !selcetedBranch}>
-                        <Button disabled={!time && !selcetedBranch} onClick={onSubmit} type="button" className="w-full">Guardar</Button>
+                        <Button disabled={!time || !selcetedBranch} onClick={onConfigSave} type="button" className="w-full">Guardar</Button>
                     </DialogClose>
                 </DialogFooter>
             </DialogContent>

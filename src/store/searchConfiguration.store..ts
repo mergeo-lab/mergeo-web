@@ -4,7 +4,7 @@ import { addDays } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { create } from 'zustand';
 
-type PickUpLocationArea = {
+export type PickUpLocationArea = {
   radius: number;
   location: LatLngLiteralType;
 };
@@ -13,6 +13,7 @@ type SearchConfigState = {
   searchParams: { name: string; brand: string; branchId: string };
   deliveryTime: DateRange;
   branch: BranchesSchemaType | null;
+  tempBranch: BranchesSchemaType | null;
   pickUp: boolean;
   showPickUp: boolean;
   pickUpDialog: boolean;
@@ -39,7 +40,8 @@ type SearchConfigState = {
   removeList: () => void;
   setDeliveryTime: (date: DateRange) => void;
   setBranch: (branch: BranchesSchemaType) => void;
-  setPickUp: () => void;
+  setTempBranch: (branch: BranchesSchemaType) => void;
+  setPickUp: (isPickUp: boolean) => void;
   setShowPickUp: (show: boolean) => void;
   setPickUpDialog: (turnOn?: boolean) => void;
   setPickUpLocation: (location: PickUpLocationArea) => void;
@@ -66,6 +68,7 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
   configDialogOpen: false,
   deliveryTime: { from: new Date(), to: addDays(new Date(), 1) },
   branch: null,
+  tempBranch: null, // New temporary branch state for pick-up
   pickUp: false,
   showPickUp: false,
   pickUpDialog: false,
@@ -131,6 +134,10 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
     get().validateFields();
   },
 
+  setTempBranch: (branch: BranchesSchemaType) => {
+    set({ tempBranch: branch });
+  },
+
   setPickUpDialog: (turnOn?: boolean) => {
     if (turnOn) {
       set(() => ({ pickUpDialog: true }));
@@ -139,8 +146,8 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
     }
   },
 
-  setPickUp: () => {
-    set((state) => ({ pickUp: !state.pickUp }));
+  setPickUp: (isPickUp: boolean) => {
+    set(() => ({ pickUp: isPickUp }));
     get().validateFields();
   },
 

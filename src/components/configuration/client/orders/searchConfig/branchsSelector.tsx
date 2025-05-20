@@ -33,12 +33,6 @@ export function BranchSlector({ defaultValue, onChange }: { defaultValue: string
         }
     }, [data, onChange]);
 
-    useEffect(() => {
-        if (defaultValue) {
-            onItemSelected(defaultValue || '');
-        }
-    }, [defaultValue])
-
     if (isLoading || !data) return (
         <Select>
             <SelectTrigger disabled>
@@ -50,7 +44,7 @@ export function BranchSlector({ defaultValue, onChange }: { defaultValue: string
     if (data) {
         return (
             <>
-                <Select onValueChange={onItemSelected} value={selectedOption}>
+                <Select onValueChange={onItemSelected} value={selectedOption} defaultValue={defaultValue}>
                     <SelectTrigger>
                         <SelectValue placeholder="Seleccione una sucursal" />
                     </SelectTrigger>

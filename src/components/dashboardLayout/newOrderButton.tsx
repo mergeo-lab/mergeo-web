@@ -21,7 +21,7 @@ export default function NewOrderButton({ showArrow = true, onLinkClicked }: Prop
     return (
         <div className="w-full" onClick={handleNewOrder}>
             <Button className="w-full text-base">
-                Hacer Pedido
+                Nuevo Pedido
                 {showArrow &&
                     <ChevronRight size={20} strokeWidth={3} className="ml-2" />
                 }

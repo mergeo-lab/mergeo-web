@@ -239,7 +239,7 @@ export function SearchLists() {
                             {selectedList && formatDate(selectedList?.updated)}
                         </div>
                     </div>
-                    <div className='h-20 flex items-center justify-between px-8 border-b'>
+                    <div className='h-20 flex items-center justify-between px-8 py-3 border-b'>
                         <div className='flex gap-4 items-center'>
                             <div className='relative'>
                                 <Search className='absolute top-2 left-3' />

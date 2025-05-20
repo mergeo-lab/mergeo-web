@@ -22,7 +22,7 @@ export default function PickUpSelectMap(
         onClose
     }: Props) {
     const [open, setOpen] = useState(showDialog);
-    const { pickUpLocation, branch } = UseSearchConfigStore();
+    const { tempBranch: branch } = UseSearchConfigStore();
 
     useEffect(() => {
         if (!showDialog) {
@@ -61,7 +61,7 @@ export default function PickUpSelectMap(
                 </DialogHeader>
                 <div className="w-full h-[650px] overflow-hidden">
                     <MapRadiusSelection
-                        initialCenter={{ lat: pickUpLocation.location.latitude, lng: pickUpLocation.location.longitude }}
+                        initialCenter={{ lat: branch?.address?.location?.coordinates[1] ?? 0, lng: branch?.address?.location?.coordinates[0] ?? 0 }}
                         branchName={branch?.name || 'Sin nombre'}
                     />
                 </div>
