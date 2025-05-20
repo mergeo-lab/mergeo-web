@@ -8,7 +8,7 @@ type Props = {
 };
 
 export function UploadQueueHandler({ providerId, onFinish }: Props) {
-    const { queue, removeFromQueue } = useUploadQueue(); // your zustand store with queued file names
+    const { queue, addToFinished } = useUploadQueue(); // your zustand store with queued file names
     const { uploads } = useProductUploads(providerId);
 
     const isAllProcessed = Array.from(queue).every((file) =>
@@ -16,7 +16,7 @@ export function UploadQueueHandler({ providerId, onFinish }: Props) {
     );
 
     // Once all are done, we call onFinish
-    if (queue.size > 0 && isAllProcessed) {
+    if (queue.length > 0 && isAllProcessed) {
         onFinish();
         return null;
     }
@@ -28,7 +28,7 @@ export function UploadQueueHandler({ providerId, onFinish }: Props) {
                     key={file + index}
                     fileName={file}
                     providerId={providerId}
-                    onFinish={(filename) => { removeFromQueue(filename) }} // Let parent decide when to fully reset
+                    onFinish={(filename) => { addToFinished(filename) }} // Let parent decide when to fully reset
                 />
             ))}
         </div>

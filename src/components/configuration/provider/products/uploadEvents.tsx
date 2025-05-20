@@ -16,7 +16,7 @@ type Props = {
 };
 
 export function UploadEvents({ providerId, fileName, onFinish }: Props) {
-    const { uploads } = useProductUploads(providerId);
+    const { uploads, uploadPercent } = useProductUploads(providerId);
     const [copy, setCopy] = useState(false);
 
     // Get the current file's upload statu
@@ -38,14 +38,10 @@ export function UploadEvents({ providerId, fileName, onFinish }: Props) {
 
     // Call onFinish only when current file finishes uploading
     useEffect(() => {
-        if (currentUpload?.percent === 100) {
-            const timeout = setTimeout(() => {
-                onFinish(fileName);
-            }, 1500); // optional: short delay to allow user to see success
-
-            return () => clearTimeout(timeout);
+        if (uploadPercent === 100) {
+            onFinish(fileName);
         }
-    }, [currentUpload?.percent, fileName, onFinish]);
+    }, [currentUpload?.percent]);
 
     // If the file is not being uploaded yet or is already finished
     if (!currentUpload) {

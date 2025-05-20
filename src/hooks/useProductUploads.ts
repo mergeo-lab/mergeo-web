@@ -19,6 +19,7 @@ type UploadStatus = {
 
 export function useProductUploads(providerId: string) {
   const [uploads, setUploads] = useState<UploadStatus>({});
+  const [uploadPercent, setUploadPercent] = useState(0);
 
   useSSE(`${PRODUCT_UPLOAD_EVENTS}${providerId}`);
 
@@ -36,8 +37,7 @@ export function useProductUploads(providerId: string) {
             gtins: [...(prev[data.fileName]?.gtins || []), data.gtin],
           },
         }));
-
-        console.log('UPDATES BEFORE FINISHING :: ', uploads);
+        setUploadPercent(data.upload_percent);
 
         if (data.upload_percent === 100) {
           setUploads((prev) => {
@@ -45,8 +45,6 @@ export function useProductUploads(providerId: string) {
             delete newUploads[data.fileName];
             return newUploads;
           });
-
-          console.log('UPDATES AFETER FINISHING :: ', uploads);
         }
       }
     );
@@ -90,5 +88,5 @@ export function useProductUploads(providerId: string) {
     };
   }, [uploads]);
 
-  return { uploads };
+  return { uploads, uploadPercent, setUploadPercent };
 }

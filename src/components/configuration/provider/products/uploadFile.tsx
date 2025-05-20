@@ -9,7 +9,7 @@ export default function UploadFile() {
     const { company } = UseCompanyStore();
     const companyId = company?.id;
     const dropzoneRef = useRef<DropZoneRef>(null);
-    const { addToQueue, resetQueue } = useUploadQueue();
+    const { addToQueue, resetQueue, removeFinishedFromQueue } = useUploadQueue();
 
     function fileUploadedCallback(uploadedFile: string) {
         addToQueue(uploadedFile); // queue the file as "pending"
@@ -21,12 +21,11 @@ export default function UploadFile() {
     }
 
     useEffect(() => {
-        const dropzone = dropzoneRef.current;
         return () => {
-            dropzone?.reset();
-            resetQueue();
+            dropzoneRef.current?.reset();
+            removeFinishedFromQueue();
         }
-    }, [resetQueue])
+    }, [])
 
     return (
         <div className='p-10'>
