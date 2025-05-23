@@ -68,6 +68,7 @@ export default function OrderConfig(
                 setInternalPickUp(false);
                 setTime(null);
                 setSelectedBranch(null);
+                setDeliveryTime(undefined)
                 reset();
             }, 300)
         } else {
@@ -127,6 +128,7 @@ export default function OrderConfig(
                                 <Label id='name'>Tiempo de entrega</Label>
                                 <div className="border rounded border-border p-5">
                                     <DeliveryTimeSelector
+                                        placeholder="Seleccione un rango de fechas"
                                         className="w-full"
                                         defaultValue={time || deliveryTime}
                                         onDateChange={(newDate: DateRange) => {

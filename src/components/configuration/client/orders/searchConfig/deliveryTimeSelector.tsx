@@ -13,6 +13,7 @@ import { Calendar } from "@/components/ui/calendar";
 
 interface DatePickerWithRangeProps {
   className?: string;
+  placeholder?: string;
   onDateChange: (date: DateRange) => void;
   defaultValue?: DateRange;
 }
@@ -21,11 +22,12 @@ export function DeliveryTimeSelector({
   className,
   onDateChange,
   defaultValue,
+  placeholder = "Seleccione",
 }: DatePickerWithRangeProps) {
   const today = startOfToday();
 
   const [lastDate, setLastDate] = React.useState<DateRange | undefined>(() => {
-    return defaultValue ?? { from: today, to: addDays(today, 1) };
+    return defaultValue || undefined;
   });
 
   const [date, setDate] = React.useState<DateRange | undefined>(lastDate);
@@ -76,7 +78,7 @@ export function DeliveryTimeSelector({
                 format(lastDate.from, "LLL dd, y")
               )
             ) : (
-              <span>Seleccione un día</span>
+              <span>{placeholder}</span>
             )}
           </Button>
         </PopoverTrigger>

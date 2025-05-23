@@ -6,6 +6,7 @@ import UseProviderInventoryPaginationState from '@/store/providerInventoryPagina
 import { cn } from '@/lib/utils';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useAuth } from '@/hooks/useAuth';
+import { MdOutlineDiscount } from "react-icons/md";
 
 // Lazy load components
 const DashboardHeader = lazy(() => import('@/components/dashboardLayout').then(mod => ({ default: mod.DashboardHeader })));
@@ -84,6 +85,7 @@ const getRoutTitles = (currentPage: number) => {
         '/orders': { text: 'Hacer Pedido', icon: <Package {...iconProps} /> },
         '/mis-pedidos': { text: 'Pedidos', icon: <Archive {...iconProps} /> },
         '/buyOrder': { text: 'Ordenes de Compra', icon: <WalletCards {...iconProps} /> },
+        '/provider/discounts': { text: 'Descuentos', icon: <MdOutlineDiscount {...iconProps} /> },
         '/buyOrder/$orderId': {
             text: <SubLink to={'/buyOrder'} texts={['Ordenes de Compra', 'Detalle de la orden de compra']} />,
             icon: <WalletCards {...iconProps} />
@@ -124,7 +126,7 @@ const getRoutTitles = (currentPage: number) => {
         '/provider/products/$productId': {
             text: <SubLink to={'/provider/products'} texts={['Productos', 'Detalle del Producto']} search={{ currentPage: currentPage }} />,
             icon: <Package {...iconProps} />
-        }
+        },
     };
 
     return titles;

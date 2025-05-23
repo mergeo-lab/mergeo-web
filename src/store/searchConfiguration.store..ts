@@ -38,7 +38,7 @@ type SearchConfigState = {
   setConfigDialogOpen: (open: boolean) => void;
   selectList: (listId: string) => void;
   removeList: () => void;
-  setDeliveryTime: (date: DateRange) => void;
+  setDeliveryTime: (date: DateRange | undefined) => void;
   setBranch: (branch: BranchesSchemaType) => void;
   setTempBranch: (branch: BranchesSchemaType) => void;
   setPickUp: (isPickUp: boolean) => void;
@@ -124,7 +124,7 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
     get().validateFields();
   },
 
-  setDeliveryTime: (range: DateRange) => {
+  setDeliveryTime: (range: DateRange | undefined) => {
     set({ deliveryTime: range });
     get().validateFields();
   },

@@ -1,16 +1,17 @@
-import { useState } from 'react';
+// src/hooks/useNewProductSearch.ts
 import { useQuery } from '@tanstack/react-query';
 import { newProductsSearch } from '@/lib/products';
-import { NewProductSearchType, ProductSchemaType } from '@/lib/schemas';
+import { ProductSchemaType } from '@/lib/schemas';
+import { useProviderProductSearchStore } from '@/store/providerProductSearch.store';
 
 export const UseNewProductSearch = () => {
-  const [params, setParams] = useState<NewProductSearchType | null>(null);
+  const { params } = useProviderProductSearchStore();
 
-  const { data, isLoading, isError, error } = useQuery<{
+  const query = useQuery<{
     products: ProductSchemaType[];
   }>({
-    queryKey: ['products', { ...params }],
-    queryFn: async (): Promise<{ products: ProductSchemaType[] }> => {
+    queryKey: ['products-search', params],
+    queryFn: async () => {
       if (!params) throw new Error('Search parameters are required');
       const result = await newProductsSearch(params);
       return { products: result as unknown as ProductSchemaType[] };
@@ -18,20 +19,5 @@ export const UseNewProductSearch = () => {
     enabled: !!params,
   });
 
-  const handleSearch = (newParams: NewProductSearchType) => {
-    setParams(newParams);
-  };
-
-  const resetSearch = () => {
-    setParams(null);
-  };
-
-  return {
-    data,
-    isLoading,
-    isError,
-    error,
-    handleSearch,
-    resetSearch,
-  };
+  return query;
 };

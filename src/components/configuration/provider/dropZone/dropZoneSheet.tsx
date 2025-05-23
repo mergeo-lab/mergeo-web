@@ -247,7 +247,7 @@ export function DropZoneSheet({
             </SheetTrigger>
             <SheetContent className="w-1/3 mx-w-1/3 sm:max-w-1/3">
                 {
-                    isLoading || isLoadingProp && <OverlayLoadingIndicator />
+                    isLoading || isLoadingProp || mutation.isPending || editMutation.isPending && <OverlayLoadingIndicator />
                 }
                 <FormProvider {...form}>
                     <SheetHeader>

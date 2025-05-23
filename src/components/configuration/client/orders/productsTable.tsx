@@ -48,25 +48,29 @@ export default function ProductsTable({ configCanceled }: Params) {
             }
             return toggleFavorite(company.id, productId, newState);
         },
-        onMutate: async ({ newState }) => {
+        onMutate: async ({ productId, newState }) => {
             await queryClient.cancelQueries({
                 queryKey: ['client-products'],
             });
 
-            const previousProducts = filteredProducts;
+            const previousProducts = [...filteredProducts];
 
-            // If removing favorite and it's the last item on current page
+            // Optimistically update the UI
+            setFilteredProducts((prev) =>
+                prev.map((product) =>
+                    product.id === productId
+                        ? { ...product, isFavorite: newState }
+                        : product
+                )
+            );
+
+            // Handle pagination if the only item is being removed
             if (!newState && showOnlyFavorites && filteredProducts.length === 1) {
                 const newPage = page > 1 ? page - 1 : 1;
                 const newTotalPages = Math.max(1, data?.totalPages ? data.totalPages - 1 : 1);
 
-                setPagination(prev => ({ ...prev, page: newPage, totalPages: newTotalPages }));
+                setPagination((prev) => ({ ...prev, page: newPage, totalPages: newTotalPages }));
                 setPage(newPage);
-                refetch();
-                // Trigger refetch with new pagination
-                queryClient.invalidateQueries({
-                    queryKey: ['client-products'],
-                });
             }
 
             return { previousProducts };
@@ -82,6 +86,7 @@ export default function ProductsTable({ configCanceled }: Params) {
             });
         },
     });
+
 
     const handleToggleFavorite = async (productId: string, newState: boolean): Promise<void> => {
         toggleFavoriteMutation({ productId, newState });
@@ -161,7 +166,7 @@ export default function ProductsTable({ configCanceled }: Params) {
         )
     }
 
-    if (!isLoading && filteredProducts.length === 0) {
+    if (!isLoading && !data?.products.length && filteredProducts.length === 0) {
         return (
             <div className={
                 "w-full h-full flex flex-col gap-4 justify-center pb-10 items-center [&>p]:multi-[font-thin;text-secondary/80;text-center;leading-3;p-0;m-0]"}>

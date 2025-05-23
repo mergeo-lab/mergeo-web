@@ -43,7 +43,6 @@ function OrdersPage() {
         setShouldResetConfig,
         deliveryTime,
         branch,
-        listId
     } = UseSearchConfigStore();
     const { getAllSavedProducts, reset } = UseSearchStore();
     const savedProducts = getAllSavedProducts();

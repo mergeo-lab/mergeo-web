@@ -8,6 +8,7 @@ import NewOrderButton from "@/components/dashboardLayout/newOrderButton";
 import SpecialLink from "@/components/dashboardLayout/specialLink";
 import { Link, useLocation, useSearch } from "@tanstack/react-router";
 import CollapsibleList from "@/components/listasCollapsible";
+import { MdOutlineDiscount } from "react-icons/md";
 
 type Props = {
     companyName: string
@@ -196,6 +197,16 @@ export function SideBarMenu({ companyName }: Props) {
                                         }
                                     ]}
                                 />
+                            </li>
+                            <li>
+                                <SpecialLink
+                                    to="/provider/discounts"
+                                    activePaths={['/provider/discounts']}
+                                    onClick={onLinkClicked}
+                                >
+                                    <MdOutlineDiscount size={28} />
+                                    Descuentos
+                                </SpecialLink>
                             </li>
                             <li>
                                 <SpecialLink

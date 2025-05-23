@@ -8,7 +8,7 @@ import { Link } from "@tanstack/react-router";
 import { Clock } from "lucide-react";
 import { MdPendingActions } from "react-icons/md";
 import { StatusBadge } from '@/components/statusBadge';
-import { ACCOUNT } from "@/lib/constants";
+import { ACCOUNT, PRE_ORDER_STATUS } from "@/lib/constants";
 import { getPendingOrders, getLatestOrders } from "@/lib/dashboard";
 
 type Props = {
@@ -89,11 +89,13 @@ export default function DashboardOrders({ companyId, accountType, queryKey, item
                                         Ver Pedido
                                     </Link>
                                 </Button>
-                                <Button variant='outline'>
-                                    <Link to={`/buyOrder/$orderId`} params={{ orderId: order?.buyOrderId || "" }}>
-                                        Ver Orden de compra
-                                    </Link>
-                                </Button>
+                                {order?.status === PRE_ORDER_STATUS.accepted &&
+                                    <Button variant='outline'>
+                                        <Link to={`/buyOrder/$orderId`} params={{ orderId: order?.buyOrderId || "" }}>
+                                            Ver Orden de compra
+                                        </Link>
+                                    </Button>
+                                }
                             </div>
                         </div>
                     ))}

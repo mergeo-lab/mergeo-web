@@ -42,6 +42,14 @@ export function useProductSearch(searchParams: Partial<SearchParams>) {
     setIsPickUp(showPickUp);
   }, [showPickUp]);
 
+  useEffect(() => {
+    // Reset to first page if search text changes
+    setPagination((prev) => ({
+      ...prev,
+      page: 1,
+    }));
+  }, [searchParams.name, searchParams.brand]);
+
   const { data, isLoading, isError, error, refetch } = useQuery<{
     products: ProductSchemaType[];
     currentPage: number;
@@ -51,7 +59,7 @@ export function useProductSearch(searchParams: Partial<SearchParams>) {
     queryKey: [
       'client-products',
       { ...searchParams, pagination, isPickUp, showPickUp },
-      'favorites',
+      'search-favorites',
     ],
     queryFn: async () => {
       const companyId = company?.id;
@@ -87,8 +95,6 @@ export function useProductSearch(searchParams: Partial<SearchParams>) {
               },
               pagination
             );
-
-      console.log('RESULT: ', result);
 
       return {
         products: result.products,

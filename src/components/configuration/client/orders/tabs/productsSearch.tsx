@@ -1,33 +1,48 @@
 import LoadingIndicator from "@/components/loadingIndicator";
 import { Button } from "@/components/ui/button";
+import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import UseSearchStore from "@/store/search.store";
 import UseSearchConfigStore from "@/store/searchConfiguration.store.";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { Heart, Search, X } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { IoMdCar } from "react-icons/io";
+import { z } from "zod";
+
+const SearchSchema = z.object({
+    search: z.string()
+});
+type SearchSchemaType = z.infer<typeof SearchSchema>
 
 export default function ProductsSearch() {
 
-    const [productName, setProductName] = useState("");
     const { setSearchParams, searchParams, setShowOnlyFavorites, showOnlyFavorites, configDataSubmitted, pickUp, setShowPickUp, showPickUp } = UseSearchConfigStore();
     const { setActiveSearchItem } = UseSearchStore();
+
+    const form = useForm<SearchSchemaType>({
+        resolver: zodResolver(SearchSchema),
+        defaultValues: {
+            search: "",
+        },
+    });
 
     useEffect(() => {
         console.log("pickUp", pickUp);
         setShowPickUp(pickUp);
     }, [pickUp, setShowPickUp, configDataSubmitted]);
 
-    function handleSearch() {
-        setSearchParams({ name: productName });
+    function handleSearch(fields: SearchSchemaType) {
+        setSearchParams({ name: fields.search });
     }
 
     function cancelSearch() {
-        setProductName("");
         setSearchParams({ name: "" });
+        form.reset();
     }
 
     function handleFavorites() {
@@ -43,20 +58,42 @@ export default function ProductsSearch() {
         setSearchParams({ name: "" });
     }, [setActiveSearchItem, setSearchParams]);
 
+    useEffect(() => {
+        console.log("searchParams", searchParams);
+    }, [searchParams])
+
     return (
         <Suspense fallback={<LoadingIndicator />}>
-            <Label className="text-sm m-2">Buscar Producto</Label>
-            <div className="w-full flex gap-2">
-                <Input value={productName} placeholder="Buscar" className="w-full" onChange={(e) => setProductName(e.target.value)} />
-                {searchParams.name !== productName || searchParams.name === ""
-                    ? <Button onClick={handleSearch} className="w-20">
-                        <Search className="w-5 h-5" />
-                    </Button>
-                    : <Button onClick={cancelSearch} className="w-20 bg-destructive hover:bg-destructive/80">
-                        <X className="w-6 h-6" />
-                    </Button>
-                }
-            </div>
+            <FormProvider {...form}>
+                <form className='w-full' onSubmit={form.handleSubmit(handleSearch)}>
+                    <div className="w-full flex items-end gap-2">
+                        <div className="w-full flex flex-col gap-2">
+                            <FormLabel>Buscar</FormLabel>
+                            <FormField
+                                control={form.control}
+                                name="search"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        {/* <FormLabel className="text-sm m-2" id='search'>Buscar Producto</FormLabel> */}
+                                        <FormControl>
+                                            <Input className="w-full" placeholder="Nombre del producto" {...field} />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        {/* <Input value={productName} placeholder="Buscar" className="w-full" onChange={(e) => setProductName(e.target.value)} /> */}
+                        {searchParams.name === ""
+                            ? <Button type="submit" className="w-20">
+                                <Search className="w-5 h-5" />
+                            </Button>
+                            : <Button onClick={cancelSearch} className="w-20 bg-destructive hover:bg-destructive/80">
+                                <X className="w-6 h-6" />
+                            </Button>
+                        }
+                    </div>
+                </form>
+            </FormProvider>
             <div className="flex gap-2 items-center justify-center mt-4 border border-border p-2 rounded-md">
                 <Label className="text-sm m-2 flex gap-2">
                     <Heart className="w-5 h-5" />

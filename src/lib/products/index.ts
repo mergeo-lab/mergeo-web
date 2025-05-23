@@ -21,6 +21,7 @@ import {
   ProviderProductSearchType,
 } from '@/lib/schemas';
 import { AddProduct } from '@/store/addProductItem.store';
+import { length } from '../../../node_modules/effect/src/MutableList';
 
 export type SearchParams = {
   branchId?: string;
@@ -173,7 +174,6 @@ export async function newProductsSearch(
         },
       }
     );
-    console.log('PRODUCTOS NUEVOS :', response.data);
     return response.data;
   } catch (error) {
     if (isAxiosError(error)) {
@@ -391,7 +391,7 @@ export async function getFavorites(
     );
     console.log('Response /search:', response);
     let responseData = [];
-    if (response.data && response.data.lengh > 0) {
+    if (response.data && response.data.products.length > 0) {
       responseData = response.data.products;
     }
     return responseData;
@@ -480,8 +480,9 @@ export async function getBlackList(
         },
       }
     );
+    console.log('Response /search:', response);
     let responseData = [];
-    if (response.data && response.data.lengh > 0) {
+    if (response.data && response.data.products.length > 0) {
       responseData = response.data.products;
     }
     return responseData;

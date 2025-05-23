@@ -33,7 +33,7 @@ export default function ClientProductsStats({ companyId }: { companyId: string }
                     <div className="h-full flex justify-center">
                         {Object.values(data?.totalBuyedProducts || {}).map((item, index) => {
                             return (
-                                <div className="flex flex-col items-center justify-center h-full">
+                                <div key={index} className="flex flex-col items-center justify-center h-full">
                                     <span className="text-3xl font-bold">
                                         {item}
                                     </span>
