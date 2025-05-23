@@ -2,7 +2,7 @@ import NewDiscount from "@/components/configuration/provider/discounts/newDiscou
 import { Button } from "@/components/ui/button";
 import { CreateDiscountSchemaType } from "@/lib/schemas/discounts.schema";
 import { cn } from "@/lib/utils";
-import { Pencil } from "lucide-react";
+import { GoPencil } from "react-icons/go";
 
 type Props = {
     className?: string;
@@ -28,7 +28,7 @@ export default function DiscountListItem({ className, data, selectedItem, onClic
                     data={data}
                     triggerButton={
                         <Button variant="ghost" className="h-8 w-8! flex justify-center items-center hover:bg-white">
-                            <Pencil size={16} />
+                            <GoPencil size={16} />
                         </Button>
                     }
                 />

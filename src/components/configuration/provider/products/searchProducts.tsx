@@ -4,9 +4,9 @@ import { ProviderProductSearch, ProviderProductSearchType } from "@/lib/schemas"
 import { cn } from "@/lib/utils";
 import { useProviderProductSearchStore } from "@/store/providerProductSearch.store";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Search } from "lucide-react";
 import { ReactNode } from "react";
 import { FormProvider, Resolver, useForm } from "react-hook-form";
+import { FiSearch } from "react-icons/fi";
 
 type Props = {
     companyId: string;
@@ -57,7 +57,7 @@ export default function SearchProducts({ companyId, className, children }: Props
             >
                 {children}
                 <Button type="submit" className="flex gap-3 px-10" disabled={isDisabled}>
-                    <Search />
+                    <FiSearch />
                     Buscar
                 </Button>
             </form>

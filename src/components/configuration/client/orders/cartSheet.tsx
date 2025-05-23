@@ -8,9 +8,10 @@ import UseSearchStore, { CartProduct } from "@/store/search.store";
 import UseSearchConfigStore from "@/store/searchConfiguration.store.";
 import UseUserStore from "@/store/user.store";
 import { useMutation } from "@tanstack/react-query";
-import { ClipboardList, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from '@tanstack/react-router'
+import { LuClipboardList } from "react-icons/lu";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 type Props = {
     title?: string,
@@ -24,7 +25,7 @@ type Props = {
 export function CartSheet({
     title = "Resumen de su Pedido",
     subTitle = "Aca podras ver los productos que fuiste seleccionando!",
-    icon = <ClipboardList size={25} />,
+    icon = <LuClipboardList size={25} />,
     callback,
     isOpen,
     triggerButton }: Props) {
@@ -153,7 +154,7 @@ export function CartSheet({
                                         <div className="flex justify-center items-center gap-2">
                                             <QuantitySelector defaultValue={product.quantity} onChange={(quantity) => handleProductChange(product, quantity)} />
                                             <Button variant="ghost" className="[&>*]:hover:text-destructive" onClick={() => handleProductChange(product, 0)}>
-                                                <Trash2 size={15} className="text-muted-foreground" />
+                                                <FaRegTrashAlt size={15} className="text-muted-foreground" />
                                             </Button>
                                         </div>
                                     </TableCell>

@@ -11,7 +11,7 @@ import UseRoleStore from "@/store/roles.store";
 import UseUserStore from "@/store/user.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { UserRoundPlus } from "lucide-react";
+import { LuUserRoundPlus } from "react-icons/lu";
 import { JSX, useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
@@ -28,7 +28,7 @@ type Props = {
 export function AddUserSheet({
     title = "Agregar un usuario",
     subTitle = "Agrega un nuevo usuario para poder compartir la cuenta",
-    icon = <UserRoundPlus size={20} />,
+    icon = <LuUserRoundPlus size={20} />,
     callback,
     triggerButton }: Props) {
     const roleStore = UseRoleStore();

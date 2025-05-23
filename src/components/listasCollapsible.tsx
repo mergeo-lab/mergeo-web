@@ -2,8 +2,8 @@ import SpecialLink from '@/components/dashboardLayout/specialLink';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import { Link, useLocation } from '@tanstack/react-router';
-import { ChevronDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { LuChevronDown } from 'react-icons/lu';
 
 
 type Props = {
@@ -50,7 +50,7 @@ export default function CollapsibleList({ name, mainButton, links }: Props) {
                         {mainButton.icon}
                         {mainButton.label}
                     </SpecialLink>
-                    <ChevronDown size={15} strokeWidth={5} className={cn('absolute right-5', { 'rotate-180': collapsibleIsOpen })} />
+                    <LuChevronDown size={15} strokeWidth={5} className={cn('absolute right-5', { 'rotate-180': collapsibleIsOpen })} />
                 </div>
             </CollapsibleTrigger>
             <CollapsibleContent className="CollapsibleContent">

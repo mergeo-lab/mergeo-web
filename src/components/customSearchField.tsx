@@ -1,7 +1,7 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { RxCross2 } from "react-icons/rx";
 import { useFormContext } from "react-hook-form";
 import { HTMLInputTypeAttribute } from "react";
 import { useProviderProductSearchStore } from "@/store/providerProductSearch.store";
@@ -52,7 +52,7 @@ export default function CustomSearchField({ name, label, inputType = "text", cla
                                     className="absolute right-0 top-[50%] -translate-y-[50%]"
                                     onClick={handleReset}
                                 >
-                                    <X size={20} strokeWidth={3} />
+                                    <RxCross2 size={20} strokeWidth={3} />
                                 </Button>
                             )}
                         </div>

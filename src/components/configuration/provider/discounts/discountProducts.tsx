@@ -8,7 +8,7 @@ type Props = {
 }
 
 export default function DiscountProducts({ selectedDiscountId }: Props) {
-    const { data, isLoading, isError } = useQuery({
+    const { data, isLoading } = useQuery({
         queryKey: ['discount-products', selectedDiscountId],
         queryFn: ({ queryKey }) => {
             const selectedDiscountId = queryKey[1];

@@ -1,7 +1,7 @@
 import { Input } from '@/components/ui/input';
-import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
+import { LuEye, LuEyeOff } from 'react-icons/lu';
 
 type Props = {
     fieldName: string,
@@ -24,9 +24,9 @@ function PasswordInput({ fieldName }: Props) {
                 onClick={togglePasswordVisibility}
             >
                 {isPasswordVisible ? (
-                    <EyeOff size={20} />
+                    <LuEyeOff size={20} />
                 ) : (
-                    <Eye size={20} />
+                    <LuEye size={20} />
                 )}
             </button>
         </div>

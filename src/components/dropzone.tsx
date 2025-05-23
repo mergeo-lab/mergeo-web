@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { useCallback, useImperativeHandle, useState, forwardRef } from 'react';
 import { FileRejection, useDropzone } from 'react-dropzone';
-import { X } from 'lucide-react';
+import { RxCross2 } from "react-icons/rx";
 import { cn } from '@/lib/utils';
 import { useMutation } from '@tanstack/react-query';
 import { uploadProductsFile } from '@/lib/products';
@@ -139,7 +139,7 @@ const DropZone = forwardRef<DropZoneRef, Props>(({
                                     setErrorMessage(null);
                                 }}
                             >
-                                <X size={15} strokeWidth={3} className="text-destructive" />
+                                <RxCross2 size={15} strokeWidth={3} className="text-destructive" />
                             </Button>
                         </div>
                     )}

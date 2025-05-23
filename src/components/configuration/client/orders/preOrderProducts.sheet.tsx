@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
-import { ClipboardList } from "lucide-react";
 import { JSX, useEffect, useState } from "react";
 import { PreOrderProductSchemaType } from "@/lib/schemas";
 import { Badge } from "@/components/ui/badge";
 import { PRE_ORDER_STATUS } from "@/lib/constants";
+import { LuClipboardList } from "react-icons/lu";
 
 type Props = {
     title?: string,
@@ -20,7 +20,7 @@ type Props = {
 export function PreOrderProductsSheet({
     title = "Productos",
     subTitle = "",
-    icon = <ClipboardList size={25} />,
+    icon = <LuClipboardList size={25} />,
     isOpen,
     triggerButton,
     products,

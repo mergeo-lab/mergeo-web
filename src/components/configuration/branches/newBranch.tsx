@@ -9,10 +9,11 @@ import { GoogleLocationSchemaType, LatLngLiteralType, BranchesSchemaType, Branch
 import { newBranch } from "@/lib/configuration/branch";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { MapPin, Store } from "lucide-react";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
+import { AiOutlineShop } from "react-icons/ai";
+import { FiMapPin } from "react-icons/fi";
 
 type Props = {
     title?: string,
@@ -29,7 +30,7 @@ export function NewBranch(
     {
         title = 'Agregar una sucursal',
         subTitle = 'Aquí puedes agregar una nueva sucursal',
-        icon = <Store />,
+        icon = <AiOutlineShop />,
         companyId,
         triggerButton,
         disabled,
@@ -201,7 +202,7 @@ export function NewBranch(
                                 <Marker position={{ lat: markerPosition.latitude, lng: markerPosition.longitude }} />
                             </Map>
                             : <div className="flex flex-col justify-center items-center gap-2">
-                                <MapPin size={40} />
+                                <FiMapPin size={40} />
                                 <p>No has seleccionado una ubicación</p>
                             </div>
                         }

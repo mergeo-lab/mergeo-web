@@ -1,8 +1,8 @@
 // import { GoogleAutoComplete } from "@/components/googleAutoComplete";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { LandPlot } from "lucide-react";
 import DrawingMap from "@/components/map/drawingMap";
+import { LuLandPlot } from "react-icons/lu";
 
 type Props = {
     title?: string,
@@ -17,7 +17,7 @@ export function ShowDropZoneMap(
     {
         title = 'Agregar una sucursal',
         subTitle = 'Aquí puedes agregar una nueva zona de reparto',
-        icon = <LandPlot />,
+        icon = <LuLandPlot />,
         showDialog = false,
         zone,
         onClose

@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useRouter } from '@tanstack/react-router'
 import { BackLinkArrowPosition, BackLinkType } from "@/lib/constants"
 import { cn } from "@/lib/utils"
+import { LuChevronLeft, LuChevronRight } from "react-icons/lu"
 
 type Props = {
     className?: string
@@ -42,7 +42,7 @@ export default function BackLink({
         return (
             <Button onClick={handleClick}
                 variant="ghost" type="button" className={cn("text-secondary px-2 pr-4", className)}>
-                <ChevronLeft />
+                <LuChevronLeft />
                 {label}
             </Button>
         )
@@ -58,9 +58,9 @@ export default function BackLink({
                     "text-black/25 cursor-default hover:multi-[bg-transparent;text-black/25]": disabled
                 }, className)}
             >
-                {arrowPosition === BackLinkArrowPosition.LEFT && <ChevronLeft />}
+                {arrowPosition === BackLinkArrowPosition.LEFT && <LuChevronLeft />}
                 {label}
-                {arrowPosition === BackLinkArrowPosition.RIGHT && <ChevronRight />}
+                {arrowPosition === BackLinkArrowPosition.RIGHT && <LuChevronRight />}
             </Button>
         )
     }

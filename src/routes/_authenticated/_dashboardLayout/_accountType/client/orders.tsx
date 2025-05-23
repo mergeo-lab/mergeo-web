@@ -2,7 +2,6 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { List, PackageSearch, ClipboardList, X, ShoppingBag, FileCog } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import UseCompanyStore from '@/store/company.store';
 import UseSearchConfigStore from '@/store/searchConfiguration.store.';
@@ -14,6 +13,8 @@ import ProductsTable from '@/components/configuration/client/orders/productsTabl
 import ProductsList from '@/components/configuration/client/orders/tabs/productsList';
 import ProductsSearch from '@/components/configuration/client/orders/tabs/productsSearch';
 import PickUpSelectMap from '@/components/configuration/client/orders/searchConfig/pickUpSelectMap';
+import { LuClipboardList, LuFileCog, LuList, LuPackageSearch, LuShoppingBag } from 'react-icons/lu';
+import { RxCross2 } from 'react-icons/rx';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/orders')({
     component: OrdersPage,
@@ -80,7 +81,7 @@ function OrdersPage() {
                                     <TabsTrigger className={tabsTriggerClassName} value={TabsEnum.LISTA_DE_PRODUCTOS}>Lista</TabsTrigger>
                                     <TabsTrigger className={tabsTriggerClassName} value={TabsEnum.BUSCAR_PRODUCTOS}>Buscar</TabsTrigger>
                                     <Button variant="ghost" size="sm" onClick={() => toggleMenu()}>
-                                        <X />
+                                        <RxCross2 />
                                     </Button>
                                 </TabsList>
                                 <TabsContent className='w-full overflow-x-hidden h-[calc(100%-50px)] m-0 ' value={TabsEnum.LISTA_DE_PRODUCTOS}>
@@ -109,7 +110,7 @@ function OrdersPage() {
                                         >
                                             Configuración
                                         </motion.div>
-                                        <FileCog size={20} />
+                                        <LuFileCog size={20} />
                                     </Button>
 
                                     <Button
@@ -123,7 +124,7 @@ function OrdersPage() {
                                         >
                                             Ver Pedido
                                         </motion.div>
-                                        <ShoppingBag size={20} />
+                                        <LuShoppingBag size={20} />
                                     </Button>
                                 </div>
                             </>
@@ -132,14 +133,14 @@ function OrdersPage() {
                             <>
                                 <TabsList className='rounded-t flex flex-col justify-start rounded-b-none w-full h-full bg-accent px-4 gap-4'>
                                     <Button variant="ghost" size="sm" onClick={() => toggleMenu()}>
-                                        <List />
+                                        <LuList />
                                     </Button>
                                     <Button variant="ghost" size="sm" onClick={() => toggleMenu(TabsEnum.LISTA_DE_PRODUCTOS)} className='flex flex-col'>
-                                        <ClipboardList />
+                                        <LuClipboardList />
                                         Lista
                                     </Button>
                                     <Button variant="ghost" size="sm" onClick={() => toggleMenu(TabsEnum.BUSCAR_PRODUCTOS)} className='flex flex-col'>
-                                        <PackageSearch />
+                                        <LuPackageSearch />
                                         Buscar
                                     </Button>
                                 </TabsList>
@@ -149,10 +150,10 @@ function OrdersPage() {
                                         setShouldResetConfig(false);
                                         setConfigDialogOpen(true)
                                     }} variant='outline' className="p-0 px-3 overflow-hidden">
-                                        <FileCog size={20} />
+                                        <LuFileCog size={20} />
                                     </Button>
                                     <Button disabled={!savedProducts.length} className='p-0 px-3 disabled:bg-muted/80 overflow-hidden' onClick={() => setOpenCart(true)}>
-                                        <ShoppingBag size={20} />
+                                        <LuShoppingBag size={20} />
                                     </Button>
                                 </div>
                             </>

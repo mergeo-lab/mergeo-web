@@ -1,4 +1,4 @@
-import { SearchX } from "lucide-react"
+import { LuSearchX } from "react-icons/lu";
 
 export default function NoProductsFound() {
     return (
@@ -7,7 +7,7 @@ export default function NoProductsFound() {
             <div className="w-fit h-fit bg-white shadow rounded p-10 flex gap-5 items-center">
 
                 <div className="bg-destructive w-fit h-fit p-2 rounded">
-                    <SearchX size={36} strokeWidth={1.5} className="text-white" />
+                    <LuSearchX size={36} strokeWidth={1.5} className="text-white" />
                 </div>
                 <div>
                     <p>

@@ -6,9 +6,10 @@ import { TableRow, TableCell } from "@/components/ui/table";
 import { ProductSchemaType } from "@/lib/schemas";
 import { cn, formatToArgentinianPesos } from "@/lib/utils";
 import UseMorePresentations from "@/store/productMorePresentations";
-import { Heart, ImageIcon, ThumbsDown } from "lucide-react";
 import { memo } from "react";
-
+import { FaRegHeart } from "react-icons/fa";
+import { LuImage } from "react-icons/lu";
+import { TiThumbsDown } from "react-icons/ti";
 
 type Params = {
     product: ProductSchemaType,
@@ -31,8 +32,8 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
                         itemId={product.id}
                         defaultState={product.isFavorite || false}
                         onToggle={handleToggleFavorite}
-                        activeIcon={<Heart className="text-red-500" strokeWidth={3} size={16} />}
-                        inactiveIcon={<Heart size={16} />}
+                        activeIcon={<FaRegHeart className="text-red-500" strokeWidth={3} size={16} />}
+                        inactiveIcon={<FaRegHeart size={16} />}
                         tooltip="Agregar a favoritos"
                     />
                     <OptimisticToggleButton
@@ -44,8 +45,8 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
                                 console.error("Error adding to blacklist", error);
                             }
                         }}
-                        activeIcon={<ThumbsDown strokeWidth={3} size={16} />}
-                        inactiveIcon={<ThumbsDown size={16} />}
+                        activeIcon={<TiThumbsDown strokeWidth={3} size={20} />}
+                        inactiveIcon={<TiThumbsDown size={20} />}
                         tooltip="Agregar a Lista Negra"
                         disabled={product.isFavorite}
                     />
@@ -61,7 +62,7 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
                             ? <div className="w-full h-full bg-contain bg-no-repeat bg-center" style={{ backgroundImage: (`URL(${product.image})`) }}>
                                 {/* <img className="w-full h-auto" src={product.image} alt={product.name} /> */}
                             </div>
-                            : <ImageIcon size={50} className="text-white" />
+                            : <LuImage size={50} className="text-white" />
                         }
                     </div>
                     <div className="flex flex-col ml-2 max-w-[17rem]">

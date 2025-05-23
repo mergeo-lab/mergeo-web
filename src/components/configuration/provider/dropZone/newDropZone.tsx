@@ -2,9 +2,9 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { JSX, useMemo } from "react";
-import { LandPlot } from "lucide-react";
 import DrawingMap from "@/components/map/drawingMap";
 import useZoneStore from "@/store/zone.store";
+import { LuLandPlot } from "react-icons/lu";
 
 type Props = {
     title?: string,
@@ -19,7 +19,7 @@ export function NewDropZone(
     {
         title = 'Agregar una sucursal',
         subTitle = 'Aquí puedes agregar una nueva zona de reparto',
-        icon = <LandPlot />,
+        icon = <LuLandPlot />,
         triggerButton,
         addZone
     }: Props) {

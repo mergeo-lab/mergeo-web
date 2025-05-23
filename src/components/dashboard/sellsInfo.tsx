@@ -5,7 +5,8 @@ import { getSellInfo } from "@/lib/dashboard/provider";
 import { cn, formatDate, formatToArgentinianPesos } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router"
-import { Calendar, Star } from "lucide-react"
+import { TbCalendarMonth } from "react-icons/tb";
+import { LuStar } from "react-icons/lu";
 
 export default function SellsInfo({ companyId }: { companyId: string }) {
 
@@ -44,7 +45,7 @@ export default function SellsInfo({ companyId }: { companyId: string }) {
                                 : "-"}
                         </span>
                     </CardTitle>
-                    <Calendar className="h-4 w-4 text-info" />
+                    <TbCalendarMonth className="h-4 w-4 text-info" />
                 </CardHeader>
                 <CardContent className='relative'>
                     <div className={cn("text-2xl font-bold", {
@@ -76,7 +77,7 @@ export default function SellsInfo({ companyId }: { companyId: string }) {
                             }
                         </span>
                     </CardTitle>
-                    <Star className="h-4 w-4 text-yellow-500" />
+                    <LuStar className="h-4 w-4 text-yellow-500" />
                 </CardHeader>
                 <CardContent className='relative'>
                     <div className={cn("text-2xl font-bold", {

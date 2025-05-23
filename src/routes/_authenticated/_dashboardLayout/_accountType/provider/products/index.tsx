@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/button'
 import { createFileRoute, Link, useSearch } from '@tanstack/react-router'
-import { Plus } from 'lucide-react'
 import noProductsImage from '@/assets/no-products.png'
 import { useProviderProductSearch } from '@/hooks/useProviderProductSearch'
 import { useEffect, useRef, useState } from 'react'
@@ -15,6 +14,7 @@ import ProductFormFinder from '@/components/configuration/provider/products/prod
 import { PaginationSort, ProductsFormFinderType } from '@/lib/schemas'
 import NoProductsFound from '@/components/configuration/provider/products/noProductsFound'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { FaPlus } from 'react-icons/fa'
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/products/')({
     component: () => <Products />,
@@ -107,7 +107,7 @@ export default function Products() {
                 <div className='flex justify-center items-center w-fit'>
                     <Link to="/provider/products/newProducts">
                         <Button className='flex gap-2'>
-                            <Plus size={20} strokeWidth={3} />
+                            <FaPlus size={20} strokeWidth={3} />
                             <p>Agregar Productos</p>
                         </Button>
                     </Link>
@@ -166,7 +166,7 @@ export default function Products() {
                                 <p className='font-light mb-5'>Puedes hacerlo manualmete o subir una lista</p>
                                 <Link to="/provider/products/newProducts">
                                     <Button className='flex gap-2'>
-                                        <Plus size={20} strokeWidth={3} />
+                                        <FaPlus size={20} strokeWidth={3} />
                                         <p>Agregar Productos</p>
                                     </Button>
                                 </Link>

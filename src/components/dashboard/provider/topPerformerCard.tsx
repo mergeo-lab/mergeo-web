@@ -1,5 +1,4 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { CheckCircle } from "lucide-react"
 import { RiMedalFill } from "react-icons/ri";
 import { MdGppGood } from "react-icons/md";
 import { MdDoNotDisturbOn } from "react-icons/md";
@@ -9,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getUsersPerformance } from "@/lib/dashboard/provider";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LiaUserClockSolid } from "react-icons/lia";
+import { FiCheckCircle } from "react-icons/fi";
 
 const performance = {
     "excelent": {
@@ -107,7 +107,7 @@ export default function TopPerformerCard({ companyId }: { companyId: string }) {
                                     <div className="space-y-1">
                                         <p className="text-sm text-gray-500">Ordenes cerradas</p>
                                         <div className="flex items-center">
-                                            <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                                            <FiCheckCircle className="h-4 w-4 text-green-500 mr-2" />
                                             <p className="text-2xl font-bold">{salesData.closedOrders}</p>
                                         </div>
                                     </div>

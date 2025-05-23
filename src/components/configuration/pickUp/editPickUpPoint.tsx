@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { MapPin, Pencil, Store, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
@@ -17,6 +16,9 @@ import { PickUpSchedulesSchemaType, PickUpSchema, PickUpSchemaType, GoogleLocati
 import DaysPicker from "@/components/daysPicker";
 import useDaysPickerStore from "@/store/daysPicker.store";
 import { deletPickUpPoint, editPickUpPoints } from "@/lib/configuration/pickUp";
+import { GoPencil } from "react-icons/go";
+import { FaRegMap, FaRegTrashAlt } from "react-icons/fa";
+import { AiOutlineShop } from "react-icons/ai";
 
 type Props = {
     title?: string,
@@ -34,7 +36,7 @@ export function EditPickUp(
     {
         title = 'Detalles de la sucursal',
         subTitle = 'Aquí puedes ver los detalles de la sucursal',
-        icon = <Store />,
+        icon = <AiOutlineShop />,
         isOpen,
         pickUpData,
         onLoading,
@@ -181,7 +183,7 @@ export function EditPickUp(
                                     <Button variant="ghost" className={cn("w-fit flex gap-2 rounded-r-none border border-border border-r-0 hover:text-destructive", {
                                         "text-muted hover:text-muted hover:bg-white cursor-not-allowed": isEditing,
                                     })}>
-                                        <Trash2 size={15} />
+                                        <FaRegTrashAlt size={15} />
                                     </Button>
                                 }
                                 onLoading={() => {
@@ -197,7 +199,7 @@ export function EditPickUp(
                                 className={cn("w-fit flex gap-2 rounded-l-none border border-border border-l-none hover:text-highlight", {
                                     "bg-highlight text-white hover:bg-highlight/80 hover:text-white cursor-default": isEditing,
                                 })}>
-                                <Pencil size={15} />
+                                <GoPencil size={15} />
                             </Button>
                         </div>
                     </div>
@@ -306,7 +308,7 @@ export function EditPickUp(
                                 <Marker position={{ lat: markerPosition.latitude, lng: markerPosition.longitude }} />
                             </Map>
                             : <div className="flex flex-col justify-center items-center gap-2">
-                                <MapPin size={40} />
+                                <FaRegMap size={40} />
                                 <p>No has seleccionado una ubicación</p>
                             </div>
                         }

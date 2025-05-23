@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ChevronRight } from "lucide-react";
+import { LuChevronRight } from "react-icons/lu";
 import { useNavigate } from '@tanstack/react-router';
 import UseSearchConfigStore from "@/store/searchConfiguration.store.";
 
@@ -23,7 +23,7 @@ export default function NewOrderButton({ showArrow = true, onLinkClicked }: Prop
             <Button className="w-full text-base">
                 Nuevo Pedido
                 {showArrow &&
-                    <ChevronRight size={20} strokeWidth={3} className="ml-2" />
+                    <LuChevronRight size={20} strokeWidth={3} className="ml-2" />
                 }
             </Button>
         </div>

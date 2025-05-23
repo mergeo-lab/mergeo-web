@@ -2,8 +2,8 @@ import { memo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "@/components/ui/table";
 import { SearchListProductType } from "@/lib/searchLists/searchLists.schemas";
-import { Trash2 as TrashIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 type Props = {
     products: SearchListProductType[] | null,
@@ -12,7 +12,7 @@ type Props = {
 }
 
 // Memoize the Trash2 icon to prevent unnecessary re-renders
-const MemoizedTrashIcon = memo(TrashIcon);
+const MemoizedTrashIcon = memo(FaRegTrashAlt);
 
 export default function SearchProductsTable({ products, removeProduct, maxHeight = "200px" }: Props) {
     console.log(products);

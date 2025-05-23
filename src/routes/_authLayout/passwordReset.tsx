@@ -10,9 +10,9 @@ import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
-import { CircleCheckBig } from 'lucide-react';
 import { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
+import { LuCircleCheckBig } from 'react-icons/lu';
 import { z } from 'zod';
 
 type TokenSearch = { token: string };
@@ -84,7 +84,7 @@ function PasswordRecover() {
                         {
                             emailSent
                                 ? <div className='text-center space-y-4 flex flex-col items-center'>
-                                    <CircleCheckBig size={100} className="text-primary" />
+                                    <LuCircleCheckBig size={100} className="text-primary" />
                                     <h2 className='font-medium text-2xl text-center'>
                                         Gracias!
                                     </h2>

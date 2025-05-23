@@ -4,7 +4,7 @@ import { getBranches } from "@/lib/configuration/branch";
 import { BranchesSchemaType } from "@/lib/schemas";
 import UseCompanyStore from "@/store/company.store";
 import { useQuery } from "@tanstack/react-query";
-import { SetStateAction, useCallback, useEffect, useState } from "react";
+import { SetStateAction, useCallback, useState } from "react";
 
 export function BranchSlector({ defaultValue, onChange }: { defaultValue: string, onChange: (value: BranchesSchemaType) => void }) {
 

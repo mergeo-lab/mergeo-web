@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { RoleSchemaType } from "@/lib/schemas"
 import UseRoleStore from "@/store/roles.store"
-import { CircleX } from "lucide-react"
+import { LuCircleX } from "react-icons/lu";
 
 type Props = {
     className?: string,
@@ -25,7 +25,7 @@ export function RolePicker({ className }: Props) {
                                     <span className="flex gap-2 items-center text-sm">
                                         {role.name}
                                         {role.name !== "Admin" &&
-                                            <CircleX
+                                            <LuCircleX
                                                 size={18}
                                                 className="z-10 cursor-pointer"
                                                 onClick={() => roleStore.removeRole(role.id)}

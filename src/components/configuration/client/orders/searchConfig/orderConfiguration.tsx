@@ -4,8 +4,7 @@ import { JSX, useEffect, useState } from "react";
 import { DeliveryTimeSelector } from "@/components/configuration/client/orders/searchConfig/deliveryTimeSelector";
 import { DateRange } from "react-day-picker";
 import { BranchSlector } from "@/components/configuration/client/orders/searchConfig/branchsSelector";
-import UseSearchConfigStore, { PickUpLocationArea } from "@/store/searchConfiguration.store.";
-import { FileCog } from "lucide-react";
+import UseSearchConfigStore from "@/store/searchConfiguration.store.";
 import { Label } from "@/components/ui/label";
 import mapIcon from '@/assets/map.svg';
 import { Switch } from "@/components/ui/switch";
@@ -16,6 +15,7 @@ import { ReplacementCriteria, ReplacementCriteriaValues } from "@/lib/constants"
 import ListSelector from "@/components/configuration/client/orders/searchConfig/listSelector";
 import LoadingIndicator from "@/components/loadingIndicator";
 import UseSearchStore from "@/store/search.store";
+import { HiOutlineCog } from "react-icons/hi";
 
 type Props = {
     title?: string,
@@ -33,7 +33,7 @@ export default function OrderConfig(
     {
         title = 'Seleccione los parametros de su busqueda!',
         subTitle = '',
-        icon = <FileCog />,
+        icon = <HiOutlineCog />,
         triggerButton,
         openDialog = true,
         callback,

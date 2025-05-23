@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
-import { ClipboardList, ImageIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { getMorePresentations } from "@/lib/products";
 import { ProductSchemaType } from '../../../../lib/schemas/configuration.schema';
@@ -11,6 +10,7 @@ import UseMorePresentations from "@/store/productMorePresentations";
 import QuantitySelector from "@/components/configuration/client/orders/quantitySelector";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import UseSearchStore from "@/store/search.store";
+import { LuClipboardList, LuImage } from "react-icons/lu";
 
 type Props = {
     title?: string,
@@ -26,7 +26,7 @@ export function ProductsPresentations({
     subTitle = "Aca podras ver los productos que fuiste seleccionando!",
     productId,
     morePresentations = false,
-    icon = <ClipboardList size={25} />,
+    icon = <LuClipboardList size={25} />,
     callback,
 }: Props) {
     const [open, setOpen] = useState(false);
@@ -137,7 +137,7 @@ export function ProductsPresentations({
                                                 {product.image
                                                     ? <div className="w-full h-full bg-contain bg-no-repeat bg-center" style={{ backgroundImage: (`URL(${product.image})`) }}>
                                                     </div>
-                                                    : <ImageIcon size={50} className="text-white" />
+                                                    : <LuImage size={50} className="text-white" />
                                                 }
                                             </div>
                                             <div className="flex flex-col items-start ml-2 max-w-[17rem]">

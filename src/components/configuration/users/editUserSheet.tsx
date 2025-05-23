@@ -10,7 +10,7 @@ import { arraysAreEqual, splitFullName } from "@/lib/utils";
 import UseRoleStore from "@/store/roles.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { UserRoundPlus } from "lucide-react";
+import { LuUserRoundPlus } from "react-icons/lu";
 import { JSX, useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import React from "react"; // Import React to use React.memo
@@ -35,7 +35,7 @@ export function EditUserSheet({
     data,
     title = "Agregar un usuario",
     subTitle = "Agrega un nuevo usuario para poder compartir la cuenta",
-    icon = <UserRoundPlus size={20} />,
+    icon = <LuUserRoundPlus size={20} />,
     callback,
     triggerButton }: Props) {
     const roleStore = UseRoleStore();

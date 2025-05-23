@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { JSX, useCallback, useEffect, useState } from "react";
-import { FileCog } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import LoadingIndicator from "@/components/loadingIndicator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,6 +10,7 @@ import { createProductsList, getProductsLists } from "@/lib/products";
 import { ProductsListSchemaType } from "@/lib/schemas";
 import UseProductListStore from "@/store/productsList.store";
 import { cn } from "@/lib/utils";
+import { HiOutlineCog } from "react-icons/hi";
 
 type Props = {
     title?: string,
@@ -27,7 +27,7 @@ export function ProductsOverlay(
     {
         title = 'Crear o seleccionar una lista de productos',
         subTitle = '',
-        icon = <FileCog />,
+        icon = <HiOutlineCog />,
         companyId,
         triggerButton,
         openDialog = true,

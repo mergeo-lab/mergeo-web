@@ -9,12 +9,14 @@ import { GoogleLocationSchemaType, LatLngLiteralType, BranchesSchemaType, Branch
 import { deletBranch, editBranch } from "@/lib/configuration/branch";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { MapPin, Pencil, Store, Trash2 } from "lucide-react";
 import { useEffect, useState, useCallback, JSX } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import { DeleteConfirmationDialog } from "@/components/deleteConfirmationDialog";
 import { cn } from "@/lib/utils";
+import { GoPencil } from "react-icons/go";
+import { FaRegMap, FaRegTrashAlt } from "react-icons/fa";
+import { AiOutlineShop } from "react-icons/ai";
 
 type Props = {
     title?: string,
@@ -32,7 +34,7 @@ export function EditBranch(
     {
         title = 'Detalles de la sucursal',
         subTitle = 'Aquí puedes ver los detalles de la sucursal',
-        icon = <Store />,
+        icon = <AiOutlineShop />,
         isOpen,
         branchData,
         onLoading,
@@ -166,7 +168,7 @@ export function EditBranch(
                                     <Button variant="ghost" className={cn("w-fit flex gap-2 rounded-r-none border border-border border-r-0 hover:text-destructive", {
                                         "text-muted hover:text-muted hover:bg-white cursor-not-allowed": isEditing,
                                     })}>
-                                        <Trash2 size={15} />
+                                        <FaRegTrashAlt size={15} />
                                     </Button>
                                 }
                                 onLoading={() => {
@@ -182,7 +184,7 @@ export function EditBranch(
                                 className={cn("w-fit flex gap-2 rounded-l-none border border-border border-l-none hover:text-highlight", {
                                     "bg-highlight text-white hover:bg-highlight/80 hover:text-white cursor-default": isEditing,
                                 })}>
-                                <Pencil size={15} />
+                                <GoPencil size={15} />
                             </Button>
                         </div>
                     </DialogTitle>
@@ -274,7 +276,7 @@ export function EditBranch(
                                 <Marker position={{ lat: markerPosition.latitude, lng: markerPosition.longitude }} />
                             </Map>
                             : <div className="flex flex-col justify-center items-center gap-2">
-                                <MapPin size={40} />
+                                <FaRegMap size={40} />
                                 <p>No has seleccionado una ubicación</p>
                             </div>
                         }

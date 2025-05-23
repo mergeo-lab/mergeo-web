@@ -14,13 +14,13 @@ import UseCompanyStore from '@/store/company.store';
 import UseUserStore from '@/store/user.store';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { Eye } from 'lucide-react';
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import noOrders from '@/assets/no-odc.png';
 import { subscribeSSE, useSSE } from '@/hooks/server-events/useSse';
 import { useBuyOrders } from '@/hooks/useBuyOrders';
+import { LuEye } from 'react-icons/lu';
 
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/buyOrder/')({
@@ -123,7 +123,7 @@ export default function OrdenesDeCompra() {
                                             <TableCell className='text-center'>
                                                 <Link to='/buyOrder/$orderId' params={{ orderId: order.id }}>
                                                     <Button variant='ghost' className='space-x-2'>
-                                                        <Eye className='cursor-pointer' size={20} />
+                                                        <LuEye className='cursor-pointer' size={20} />
                                                         <p>Ver Orden de Compra</p>
                                                     </Button>
                                                 </Link>

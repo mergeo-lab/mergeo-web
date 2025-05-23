@@ -18,8 +18,8 @@ import UseCompanyStore from "@/store/company.store";
 import UseRoleStore from "@/store/roles.store";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ArrowBigRight, XCircle } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { LuArrowBigRight, LuCircleX } from "react-icons/lu";
 
 const emptyRole: RoleSchemaType = {
     name: 'Crear nuevo rol',
@@ -209,7 +209,7 @@ export function ManageRoles() {
                                                                                 </div>
                                                                             </TableCell>
                                                                             <TableCell>
-                                                                                <ArrowBigRight className={cn('text-primary opacity-0', {
+                                                                                <LuArrowBigRight className={cn('text-primary opacity-0', {
                                                                                     'opacity-100': viewRole?.id == role.id
                                                                                 })} />
                                                                             </TableCell>
@@ -226,7 +226,7 @@ export function ManageRoles() {
                                                                                 {role.name}
                                                                             </Button>
                                                                         </div>
-                                                                        <ArrowBigRight className={cn('text-primary opacity-0', {
+                                                                        <LuArrowBigRight className={cn('text-primary opacity-0', {
                                                                             'opacity-100': viewRole?.id == role.id
                                                                         })} />
                                                                     </TableRow>
@@ -246,7 +246,7 @@ export function ManageRoles() {
                                                         Puedes crear un <span className="font-bold text-primary">Nuevo Rol</span> usando la plantilla de la derecha
                                                     </AlertDescription>
                                                 </Alert>
-                                                <ArrowBigRight className="text-primary" />
+                                                <LuArrowBigRight className="text-primary" />
                                             </div>
                                         )
                                         : (
@@ -319,7 +319,7 @@ export function ManageRoles() {
                                             <span className="flex gap-2 items-center text-sm">
                                                 {role.name}
                                                 {role.name !== "Admin" &&
-                                                    <XCircle
+                                                    <LuCircleX
                                                         size={18}
                                                         className="z-10 cursor-pointer"
                                                         onClick={() => roleStore.removeRole(role.id)}

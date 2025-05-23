@@ -1,6 +1,5 @@
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useMutation } from "@tanstack/react-query";
-import { CloudUpload, Trash2 } from "lucide-react";
 import { useCallback, useState } from "react";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import { cn } from "@/lib/utils";
@@ -9,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { AddProductItem } from "@/components/configuration/provider/products/addProductItem";
 import sinSeleccion from '@/assets/empty-shelvs.png';
 import { saveMultipleProducts } from "@/lib/products";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { LuCloudUpload } from "react-icons/lu";
 
 type Props = {
     title?: string,
@@ -24,7 +25,7 @@ type Props = {
 export function SelectedProductsSheet({
     title = "Agergar productos ",
     subTitle = "Subir los productos seleccionados",
-    icon = <CloudUpload size={30} />,
+    icon = <LuCloudUpload size={30} />,
     companyId,
     products,
     triggerButton,
@@ -107,7 +108,7 @@ export function SelectedProductsSheet({
                                         className="hover:bg-white [&>*]:hover:text-destructive h-14"
                                         onClick={() => removeProduct && removeProduct(product.gtin)}
                                     >
-                                        <Trash2 />
+                                        <FaRegTrashAlt />
                                     </Button>
                                 </div>
                             </div>

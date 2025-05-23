@@ -6,13 +6,13 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link, useSearch } from '@tanstack/react-router'
 import { useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
 import UseProviderSellStore from '@/store/providerSell';
 import { SellProductSchemaType } from '@/lib/schemas/sell.schema';
 import { PreOrderProductSchemaType } from '@/lib/schemas';
 import { PRE_ORDER_STATUS } from '@/lib/constants';
 import LoadingIndicator from '@/components/loadingIndicator';
 import UseCompanyStore from '@/store/company.store';
+import { LuChevronLeft } from 'react-icons/lu';
 
 type Search = {
     orderId: string;
@@ -114,7 +114,7 @@ export function SellsDetail() {
                     <div className='flex items-center gap-2 pb-1'>
                         <Link to='/provider/sells'>
                             <Button variant="ghost" type="button" className="text-secondary px-2 pr-4">
-                                <ChevronLeft />
+                                <LuChevronLeft />
                                 Volver
                             </Button>
                         </Link>

@@ -1,7 +1,8 @@
 import { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Hand, Pentagon } from 'lucide-react';
 import { useDrawingManager } from '@/components/map/use-drawing-manager';
+import { FaRegHandRock } from "react-icons/fa";
+import { LuPentagon } from "react-icons/lu";
 
 type CustomDrawingControlsProps = {
     onPolygonComplete: (coordinates: google.maps.LatLngLiteral[]) => void;
@@ -69,14 +70,14 @@ const CustomDrawingControls = ({ onPolygonComplete }: CustomDrawingControlsProps
                     onClick={() => startDrawing(google.maps.drawing.OverlayType.POLYGON)}
                     disabled={polygonDrawn}
                 >
-                    <Pentagon />
+                    <LuPentagon />
                 </Button>
                 <Button
                     variant="ghost"
                     onClick={() => startDrawing(null)}
                     disabled={!polygonDrawn}
                 >
-                    <Hand />
+                    <FaRegHandRock />
                 </Button>
             </div>
         </div>

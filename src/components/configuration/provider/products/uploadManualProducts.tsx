@@ -9,8 +9,8 @@ import { ProductSchemaType } from "@/lib/schemas";
 import { useProductStore } from "@/store/addProductItem.store";
 import UseCompanyStore from "@/store/company.store";
 import { useProviderProductSearchStore } from "@/store/providerProductSearch.store";
-import { SearchX } from "lucide-react";
 import { useEffect, useState } from "react";
+import { LuSearchX } from "react-icons/lu";
 
 
 export default function UploadManualProducts() {
@@ -98,7 +98,7 @@ export default function UploadManualProducts() {
                         <div className="w-fit h-fit bg-white shadow rounded p-10 flex gap-5 items-center">
 
                             <div className="bg-destructive w-fit h-fit p-2 rounded">
-                                <SearchX size={36} strokeWidth={1.5} className="text-white" />
+                                <LuSearchX size={36} strokeWidth={1.5} className="text-white" />
                             </div>
                             <div>
                                 <p>

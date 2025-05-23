@@ -8,7 +8,8 @@ import { getBranches } from "@/lib/configuration/branch"
 import { BranchesSchemaType } from "@/lib/schemas"
 import { cn } from "@/lib/utils"
 import { useQuery } from "@tanstack/react-query"
-import { Plus } from "lucide-react"
+import { FaPlus } from "react-icons/fa";
+
 import { useState, useCallback, useMemo } from "react"
 
 type Props = {
@@ -78,7 +79,7 @@ export function BranchPicker({ className, companyId, isEditing, notFoundMessage,
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const memoTriggerButton = useMemo(() => (
         <Button className="w-8 h-8 absolute right-1 -top-1 flex justify-center items-center p-0">
-            <Plus size={15} className="text-white" />
+            <FaPlus size={15} className="text-white" />
         </Button>
     ), []);
 

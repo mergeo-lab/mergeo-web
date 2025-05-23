@@ -1,11 +1,12 @@
 
 import ChooseTime from "@/components/chooseTime";
 import { Button } from "@/components/ui/button";
-import { CalendarClock, Trash2 } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { PickUpSchedulesSchemaType } from '../lib/schemas'
 import useDaysPickerStore from "@/store/daysPicker.store";
 import { cn, numberToTimeString } from "@/lib/utils";
+import { TbCalendarTime } from "react-icons/tb";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 type Props = {
     defaultData?: PickUpSchedulesSchemaType[] | undefined,
@@ -41,7 +42,7 @@ export default function DaysPicker({ defaultData, isEditing, className, callback
             {isEditing &&
                 <ChooseTime triggerButton={
                     <Button className="absolute -top-[40px] right-0 flex gap-2 items-center h-8" variant="outline">
-                        <CalendarClock size={20} />
+                        <TbCalendarTime size={20} />
                         Agregar Dia y Horario
                     </Button>
                 } />
@@ -55,7 +56,7 @@ export default function DaysPicker({ defaultData, isEditing, className, callback
                                 <span>{numberToTimeString(dt.startHour)} - {numberToTimeString(dt.endHour)}</span>
                                 {isEditing &&
                                     <Button type="button" variant="ghost" size="xs" className="hover:text-destructive" onClick={() => handelRemoveDay(dt.id)}>
-                                        <Trash2 className="cursor-pointer" size={15} />
+                                        <FaRegTrashAlt className="cursor-pointer" size={15} />
                                     </Button>
                                 }
                             </div>

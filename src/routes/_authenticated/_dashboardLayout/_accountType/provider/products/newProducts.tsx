@@ -2,16 +2,16 @@ import UploadFile from '@/components/configuration/provider/products/uploadFile'
 import UploadManualProducts from '@/components/configuration/provider/products/uploadManualProducts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { createFileRoute } from '@tanstack/react-router'
-import { Keyboard, Upload } from 'lucide-react';
 import { useState } from 'react';
+import { LuKeyboard, LuUpload } from 'react-icons/lu';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/products/newProducts')({
     component: () => <UploadProducts />
 })
 
 const TabsConfig = {
-    MANUAL_UPLOAD: { value: 'manual', title: 'Subir productos manualmente', icon: <Keyboard /> },
-    FILE_UPLOAD: { value: 'upload', title: 'Subir productos desde Archivo', icon: <Upload /> },
+    MANUAL_UPLOAD: { value: 'manual', title: 'Subir productos manualmente', icon: <LuKeyboard /> },
+    FILE_UPLOAD: { value: 'upload', title: 'Subir productos desde Archivo', icon: <LuUpload /> },
 }
 
 export default function UploadProducts() {

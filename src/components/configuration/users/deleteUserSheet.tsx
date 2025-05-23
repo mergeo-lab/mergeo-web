@@ -8,9 +8,10 @@ import { deleteUser } from "@/lib/configuration/users"
 import { splitFullName } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
-import { Trash2, TriangleAlert } from "lucide-react"
 import { JSX, useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
+import { LuTriangleAlert } from "react-icons/lu";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 type Props = {
     userId: string
@@ -131,7 +132,7 @@ export function DeleteUserSheet({ userId, userData, title, subTitle, triggerButt
                         </form>
                         <div className="flex flex-col gap-2 mt-5 border border-destructive rounded p-10 space-y-3">
                             <div className="flex gap-3">
-                                <TriangleAlert className="text-destructive" />
+                                <LuTriangleAlert className="text-destructive" />
                                 <h2 className="text-lg font-black">CUIDADO!</h2>
                             </div>
                             <p>Una vez que se haya confirmado esta acción, no podra deshacerse</p>
@@ -164,7 +165,7 @@ export function DeleteUserSheet({ userId, userData, title, subTitle, triggerButt
                                     <span>
                                         Borrar
                                     </span>
-                                    <Trash2 size={18} />
+                                    <FaRegTrashAlt size={18} />
                                 </Button>
                             </FormProvider>
                         </div>

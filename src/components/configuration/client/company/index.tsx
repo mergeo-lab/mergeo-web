@@ -8,7 +8,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { Map, Marker } from '@vis.gl/react-google-maps';
 import UseCompanyStore from "@/store/company.store";
-import { MapPin, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import { useMutation } from "@tanstack/react-query";
@@ -18,6 +17,8 @@ import { GoogleAutoComplete } from "@/components/googleAutoComplete";
 import { BsFillBuildingsFill } from "react-icons/bs";
 import { RiRoadMapFill } from "react-icons/ri";
 import { BranchPicker } from "@/components/configuration/branches/branchPicker";
+import { GoPencil } from "react-icons/go";
+import { FaRegMap } from "react-icons/fa";
 
 export function Company() {
     const { company, saveCompany, updateCompany: updateStoredCompany } = UseCompanyStore();
@@ -128,7 +129,7 @@ export function Company() {
                                     </div>
                                     {isEditing &&
                                         <div className="bg-highlight w-8 h-8 rounded absolute top-1 right-1 flex justify-center items-center animate-heartbeat animate-iteration-count-2 animate-duration-1000">
-                                            <Pencil size={20} className="text-white" />
+                                            <GoPencil size={20} className="text-white" />
                                         </div>}
                                 </div>
                                 <div className="space-y-3 p-5 py-2 pb-4">
@@ -272,7 +273,7 @@ export function Company() {
                         ) : (
                             <Button variant='outline' onClick={() => setIsEditing(!isEditing)} className='min-w-[200px] flex gap-2' type="submit">
                                 <span>Editar</span>
-                                <Pencil size={15} />
+                                <GoPencil size={15} />
                             </Button>
                         )}
                     </div>
@@ -292,7 +293,7 @@ export function Company() {
                     </Map>
                 ) : (
                     <div className="flex flex-col justify-center items-center gap-2 h-full">
-                        <MapPin size={40} />
+                        <FaRegMap size={40} />
                         <p>No has seleccionado una ubicación</p>
                     </div>
                 )}

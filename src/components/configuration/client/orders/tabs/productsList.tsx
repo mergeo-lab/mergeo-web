@@ -2,11 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getSearchListById } from "@/lib/searchLists/searchLists";
 import UseSearcConfigStore from "@/store/searchConfiguration.store.";
-import { ListX, SquareCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import UseSearchStore from "@/store/search.store";
 import { useEffect } from "react";
 import { SearchListProductType } from "@/lib/schemas";
+import { LuListX } from "react-icons/lu";
+import { FaRegSquareCheck } from "react-icons/fa6";
 
 type Props = {
     configCanceled: boolean,
@@ -52,7 +53,7 @@ export default function ProductsList({ configCanceled, isVisible = false }: Prop
         return (
             <div className="flex flex-col justify-center items-center px-10">
                 <div className="w-full h-fit text-nowrap m-5 flex gap-2 p-2 border border-border justify-center items-center">
-                    <ListX className="text-destructive" size={25} />
+                    <LuListX className="text-destructive" size={25} />
                     <p className="text-secondary/60">No seleccionaste una lista</p>
                 </div>
                 <p className="text-secondary/60 font-light text-base leading-5 pb-5 text-center flex flex-col">
@@ -101,8 +102,8 @@ export default function ProductsList({ configCanceled, isVisible = false }: Prop
                         >
                             <div className="flex gap-2">
                                 {product?.id && savedProducts[product?.id]?.length
-                                    ? <SquareCheck className="text-primary/60" />
-                                    : <SquareCheck className={cn("text-border", {
+                                    ? <FaRegSquareCheck className="text-primary/60" />
+                                    : <FaRegSquareCheck className={cn("text-border", {
                                         'text-secondary/70': activeSearchItem?.id == product.id
                                     })} />
                                 }

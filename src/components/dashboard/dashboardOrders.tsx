@@ -5,11 +5,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn, formatToArgentinianPesos } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Clock } from "lucide-react";
 import { MdPendingActions } from "react-icons/md";
 import { StatusBadge } from '@/components/statusBadge';
 import { ACCOUNT, PRE_ORDER_STATUS } from "@/lib/constants";
 import { getPendingOrders, getLatestOrders } from "@/lib/dashboard";
+import { LuAlarmClock } from "react-icons/lu";
 
 type Props = {
     companyId: string;
@@ -79,7 +79,7 @@ export default function DashboardOrders({ companyId, accountType, queryKey, item
                                     <div className="font-medium">{formatToArgentinianPesos(order.totalPrice)}</div>
                                     {order?.status === 'pending' &&
                                         <div className="flex items-center text-sm text-gray-500">
-                                            <Clock className="mr-1 h-3 w-3" />
+                                            <LuAlarmClock className="mr-1 h-3 w-3" />
                                             <RemainingTime time={order.responseDeadline} />
                                         </div>
                                     }

@@ -8,11 +8,13 @@ import UseSearchStore from "@/store/search.store";
 import UseSearchConfigStore from "@/store/searchConfiguration.store.";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import { Heart, Search, X } from "lucide-react";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { IoMdCar } from "react-icons/io";
 import { z } from "zod";
+import { FaRegHeart } from "react-icons/fa";
+import { FiSearch } from "react-icons/fi";
+import { RxCross2 } from "react-icons/rx";
 
 const SearchSchema = z.object({
     search: z.string()
@@ -85,10 +87,10 @@ export default function ProductsSearch() {
                         {/* <Input value={productName} placeholder="Buscar" className="w-full" onChange={(e) => setProductName(e.target.value)} /> */}
                         {searchParams.name === ""
                             ? <Button type="submit" className="w-20">
-                                <Search className="w-5 h-5" />
+                                <FiSearch className="w-5 h-5" />
                             </Button>
                             : <Button onClick={cancelSearch} className="w-20 bg-destructive hover:bg-destructive/80">
-                                <X className="w-6 h-6" />
+                                <RxCross2 className="w-6 h-6" />
                             </Button>
                         }
                     </div>
@@ -96,7 +98,7 @@ export default function ProductsSearch() {
             </FormProvider>
             <div className="flex gap-2 items-center justify-center mt-4 border border-border p-2 rounded-md">
                 <Label className="text-sm m-2 flex gap-2">
-                    <Heart className="w-5 h-5" />
+                    <FaRegHeart className="w-5 h-5" />
                     <span>Solo mostrar Favoritos</span>
                 </Label>
                 <Switch id="favorites-switch" onClick={handleFavorites} defaultChecked={showOnlyFavorites} />

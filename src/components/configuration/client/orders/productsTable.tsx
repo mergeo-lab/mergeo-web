@@ -14,7 +14,7 @@ import { ProductSchemaType } from "@/lib/schemas";
 import { PaginationCustom } from "@/components/pagination";
 import UseProviderInventoryPaginationState from "@/store/providerInventoryPagination.store";
 import ProductRow from "@/components/configuration/client/orders/productRow";
-import { FileCog } from "lucide-react";
+import { HiOutlineCog } from "react-icons/hi";
 
 type Params = {
     configCanceled: boolean,
@@ -29,7 +29,7 @@ export default function ProductsTable({ configCanceled }: Params) {
     const [filteredProducts, setFilteredProducts] = useState<ProductSchemaType[]>([]);
     const tableRef = useRef<HTMLDivElement>(null);
 
-    const { data, isLoading, error, setPagination, refetch } = useProductSearch({
+    const { data, isLoading, error, setPagination } = useProductSearch({
         name: searchParams.name,
         brand: searchParams.brand,
         branchId: searchParams.branchId,
@@ -160,7 +160,7 @@ export default function ProductsTable({ configCanceled }: Params) {
                     setConfigDialogOpen(true);
                 }}>
                     Configuración
-                    <FileCog size={20} />
+                    <HiOutlineCog size={20} />
                 </Button>
             </div>
         )

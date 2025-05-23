@@ -10,11 +10,11 @@ import { formatDate } from '@/lib/utils';
 import UseCompanyStore from '@/store/company.store';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { Eye, Minus } from 'lucide-react';
 import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import sinPedidos from '@/assets/sin-pedidos.png'
 import { ConfigTabs } from '@/lib/constants';
+import { LuEye, LuMinus } from 'react-icons/lu';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/proOrders/')({
     component: () => <PreOrders />
@@ -123,7 +123,7 @@ export default function PreOrders() {
                                                     <TableCell className='text-center'>
                                                         <Link to={`/provider/proOrders/$preOrderId`} params={{ preOrderId: order.id }}>
                                                             <Button variant='ghost' className='space-x-2'>
-                                                                <Eye className='cursor-pointer' size={20} />
+                                                                <LuEye className='cursor-pointer' size={20} />
                                                                 <p>Ver Pedido</p>
                                                             </Button>
                                                         </Link>
@@ -133,13 +133,13 @@ export default function PreOrders() {
                                                             ? (
                                                                 <Link to={`/buyOrder/$orderId`} params={{ orderId: order.buyOrder.id }} key={order.buyOrder.id}>
                                                                     <Button variant='ghost' className='space-x-2'>
-                                                                        <Eye className='cursor-pointer' size={20} />
+                                                                        <LuEye className='cursor-pointer' size={20} />
                                                                         <p>Ver Ordern de Compra</p>
                                                                     </Button>
                                                                 </Link>
                                                             )
                                                             : <div className='flex justify-end mr-20'>
-                                                                <Minus size={15} strokeWidth={2} />
+                                                                <LuMinus size={15} strokeWidth={2} />
                                                             </div>
                                                         }
                                                     </TableCell>

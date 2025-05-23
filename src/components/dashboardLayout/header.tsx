@@ -1,4 +1,3 @@
-import { CircleHelp, Bell, CircleUserRound } from "lucide-react"
 import { Link, useRouter } from '@tanstack/react-router'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { useMutation } from "@tanstack/react-query"
@@ -6,6 +5,7 @@ import { logout } from "@/lib/auth"
 import { toast } from "@/components/ui/use-toast"
 import { useAuth } from "@/hooks"
 import { useEffect, useCallback, memo, JSX } from "react"
+import { LuCircleUserRound, LuBell, LuCircleHelp } from "react-icons/lu";
 
 type Props = {
     title?: {
@@ -66,14 +66,14 @@ export function DashboardHeader({ title }: Props) {
             </div>
             <div className="h-full flex items-center gap-6">
                 <Link to="/faq">
-                    <CircleHelp size={25} className="text-secondary-background" />
+                    <LuCircleHelp size={25} className="text-secondary-background" />
                 </Link>
                 <Link to="/notifications">
-                    <Bell size={25} className="text-secondary-background" />
+                    <LuBell size={25} className="text-secondary-background" />
                 </Link>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <CircleUserRound size={25} className="cursor-pointer text-secondary-background" />
+                        <LuCircleUserRound size={25} className="cursor-pointer text-secondary-background" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56 mr-12 mt-2 p-5 space-y-2">
                         <MemoizedProfileItem />

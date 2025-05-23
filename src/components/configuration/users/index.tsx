@@ -10,12 +10,14 @@ import { colorClasses } from "@/lib/constants"
 import { cn, formatDate } from "@/lib/utils"
 import UseCompanyStore from "@/store/company.store"
 import { useQuery } from "@tanstack/react-query"
-import { Pencil, Trash2, UserRoundPlus } from "lucide-react"
 import { RoleDetail } from "@/components/configuration/users/roles/roleDetail"
 import { AddUserSheet } from "@/components/configuration/users/addUserSheet"
 import { DeleteUserSheet } from "@/components/configuration/users/deleteUserSheet"
 import { EditUserSheet } from "@/components/configuration/users/editUserSheet"
 import { RoleSchemaType, UserSchemaType } from "@/lib/schemas"
+import { GoPencil } from "react-icons/go"
+import { FaRegTrashAlt } from "react-icons/fa"
+import { LuUserRoundPlus } from "react-icons/lu";
 
 export function Users() {
     const { company } = UseCompanyStore();
@@ -133,18 +135,18 @@ export function Users() {
                                                 data={user}
                                                 title="Editar usuario"
                                                 subTitle="Actualiza los datos del usuario"
-                                                icon={<Pencil size={20} />}
+                                                icon={<GoPencil size={20} />}
                                                 callback={refetch}
                                                 triggerButton={
                                                     <div className="h-9 px-3 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground">
-                                                        <Pencil size={18} />
+                                                        <GoPencil size={18} />
                                                     </div>
                                                 } />
                                         </TableCell>
                                         <TableCell className="text-right">
                                             {user.roles.find((role: RoleSchemaType) => role.name.toUpperCase() === "ADMIN") ?
                                                 <Button variant='ghost' size='sm' disabled>
-                                                    <Trash2 size={18} />
+                                                    <FaRegTrashAlt size={18} />
                                                 </Button>
                                                 :
                                                 <DeleteUserSheet
@@ -154,7 +156,7 @@ export function Users() {
                                                     subTitle="¿Deseas borrar este usuario?"
                                                     triggerButton={
                                                         <div className="h-9 px-3 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground">
-                                                            <Trash2 size={18} />
+                                                            <FaRegTrashAlt size={18} />
                                                         </div>}
                                                     callback={refetch}
                                                 />
@@ -175,7 +177,7 @@ export function Users() {
                                     <span>
                                         Agregar un usuario
                                     </span>
-                                    <UserRoundPlus size={18} />
+                                    <LuUserRoundPlus size={18} />
                                 </div>
                             } />
                     </div>

@@ -1,7 +1,7 @@
 import DropZoneItem from "@/components/configuration/provider/dropZone/dropZoneItem";
 import { DropZoneSchemaType } from "@/lib/schemas";
 import { cn } from "@/lib/utils";
-import { MapPinned } from "lucide-react";
+import { LuMapPinned } from "react-icons/lu";
 
 type Props = {
     list: DropZoneSchemaType[],
@@ -25,7 +25,7 @@ export default function DropZoneList({ list, className, isEditing, startEditing,
     return (
         <div>
             <p className="font-bold mx-3 my-5 flex items-center gap-2">
-                <MapPinned />
+                <LuMapPinned />
                 Zonas de reparto Agregadas:
             </p>
             <div className={cn("flex ml-3 flex-wrap w-full mt-2 gap-2 max-h-60 overflow-y-auto", className)}>

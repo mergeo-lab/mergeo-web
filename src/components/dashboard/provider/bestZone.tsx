@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getBestZone } from "@/lib/dashboard/provider";
 import { formatToArgentinianPesos } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { MapPin } from "lucide-react";
+import { LuMapPin } from "react-icons/lu";
 
 export default function BestZone({ companyId }: { companyId: string }) {
     const { data, isLoading } = useQuery({
@@ -22,7 +22,7 @@ export default function BestZone({ companyId }: { companyId: string }) {
         <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Zona con mas Ventas</CardTitle>
-                <MapPin className="h-4 w-4 text-primary" />
+                <LuMapPin className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
                 <div className="text-xl font-bold">{data?.zoneName}</div>

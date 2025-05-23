@@ -9,7 +9,8 @@ import { cn, formatDate, formatToArgentinianPesos } from "@/lib/utils"
 import UseCompanyStore from "@/store/company.store"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
-import { Edit, Trash2, Eye } from "lucide-react"
+import { FaRegTrashAlt } from "react-icons/fa"
+import { LuSquarePen, LuEye } from "react-icons/lu";
 
 type Props = {
     products: ProductSchemaType[],
@@ -110,7 +111,7 @@ export default function ProviderProductsTable({ products, currentPage, tableRef,
                                         variant="outlineSecondary"
                                         disabled={!product.isActive}
                                     >
-                                        <Eye className="h-4 w-4" />
+                                        <LuEye className="h-4 w-4" />
                                     </Button>
                                 </Link>
                                 <Link to="/provider/products/$productId" params={{ productId: product.id }} search={{ edit: true, currentPage }}>
@@ -120,7 +121,7 @@ export default function ProviderProductsTable({ products, currentPage, tableRef,
                                         disabled={!product.isActive}
 
                                     >
-                                        <Edit className="h-4 w-4" />
+                                        <LuSquarePen className="h-4 w-4" />
                                     </Button>
                                 </Link>
 
@@ -137,7 +138,7 @@ export default function ProviderProductsTable({ products, currentPage, tableRef,
                                             variant="outlineSecondary"
                                             disabled={!product.isActive}
                                         >
-                                            <Trash2 className="h-4 w-4" />
+                                            <FaRegTrashAlt className="h-4 w-4" />
                                         </Button>
                                     }
                                 />

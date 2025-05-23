@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn, formatToArgentinianPesos } from '@/lib/utils';
-import { Image, } from 'lucide-react';
 import { RiFileWarningFill } from "react-icons/ri";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { LuImage } from 'react-icons/lu';
 
 type Props = {
     className?: string;
@@ -61,7 +61,7 @@ export const AddProductItem = ({
                             {image && image != null
                                 ? <img src={image} alt={name} className='cover w-16 h-16 rounded' />
                                 : <div className="w-full h-full flex justify-center items-center bg-border">
-                                    <Image className='text-muted' size={35} />
+                                    <LuImage className='text-muted' size={35} />
                                 </div>
                             }
                         </div>

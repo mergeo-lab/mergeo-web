@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { getDropZones } from "@/lib/configuration/dropZone"
 import { IncomingDropZoneSchemaType } from "@/lib/schemas"
 import { useQuery } from "@tanstack/react-query"
-import { MapPinned } from "lucide-react"
+import { LuMapPinned } from "react-icons/lu";
 
 type Props = {
     companyId: string | undefined,
@@ -51,7 +51,7 @@ export function DropZonePicker({ className, companyId, newEntry, disabled }: Pro
                             {isFetching
                                 ? <LoadingIndicator className="text-white" />
                                 : <span className="flex items-center gap-2">
-                                    <MapPinned size={20} />
+                                    <LuMapPinned size={20} />
                                     <p>Ver Zonas de Entrega</p>
                                 </span>
                             }

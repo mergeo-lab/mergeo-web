@@ -9,11 +9,11 @@ import { formatDate } from '@/lib/utils';
 import UseCompanyStore from '@/store/company.store';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { Eye } from 'lucide-react';
 import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import noOrders from '@/assets/sin-pedidos.png'
 import { subscribeSSE, useSSE } from '@/hooks/server-events/useSse';
+import { LuEye } from 'react-icons/lu';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/sells')({
   component: () => <Sells />
@@ -100,7 +100,7 @@ export default function Sells() {
                       <TableCell className={`w-[150px]`}>
                         <Link to='/provider/sellDetail' search={{ orderId: order.id }}>
                           <Button variant='ghost'>
-                            <Eye className='cursor-pointer' size={20} />
+                            <LuEye className='cursor-pointer' size={20} />
                           </Button>
                         </Link>
                       </TableCell>

@@ -11,16 +11,16 @@ import useDaysPickerStore from "@/store/daysPicker.store";
 import useZoneStore from "@/store/zone.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { FilePenLine, Map, UserRoundPlus } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { MapPinned } from "lucide-react";
 import UseDropZonesStore from "@/store/dropZones.store";
 import DropZoneList from "@/components/configuration/provider/dropZone/dropZoneList";
 import { ShowDropZoneMap } from "@/components/configuration/provider/dropZone/showDropZoneMap";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import { DeleteConfirmationDialog } from "@/components/deleteConfirmationDialog";
 import { cn } from "@/lib/utils";
+import { LuFilePenLine, LuMapPinned, LuUserRoundPlus } from "react-icons/lu";
+import { FaRegMap } from "react-icons/fa";
 
 type Props = {
     zones: IncomingDropZoneSchemaType[],
@@ -38,7 +38,7 @@ export function DropZoneSheet({
     zones,
     title = "Agregar una zona de entrega",
     subTitle = "Aquí puedes agregar una nueva zona de entrega, los dias y horarios",
-    icon = <UserRoundPlus size={20} />,
+    icon = <LuUserRoundPlus size={20} />,
     companyId,
     triggerButton,
     isLoadingProp,
@@ -310,7 +310,7 @@ export function DropZoneSheet({
                                             <Button
                                                 variant={selectedZone.length ? "outline" : "secondary"}
                                                 className="w-full space-x-2 text-md font-black p-6 m-0" type="button">
-                                                <Map size={30} />
+                                                <FaRegMap size={30} />
                                                 <p className="uppercase text-sm">{
                                                     selectedZone.length
                                                         ? "Editar zona en el mapa"
@@ -343,7 +343,7 @@ export function DropZoneSheet({
                                                     className="w-fit space-x-2 px-14"
                                                     type="button"
                                                 >
-                                                    <FilePenLine />
+                                                    <LuFilePenLine />
                                                     <p>Guardar cambios</p>
                                                 </Button>
                                             </div>
@@ -355,7 +355,7 @@ export function DropZoneSheet({
                                                 className="w-fit space-x-2 px-14"
                                                 type="button"
                                             >
-                                                <MapPinned />
+                                                <LuMapPinned />
                                                 <p>Agregar Zona de entrega</p>
                                             </Button>
 

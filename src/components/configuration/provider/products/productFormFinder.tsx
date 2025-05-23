@@ -3,9 +3,10 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { ProductsFormFinder, ProductsFormFinderType } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Search, X } from "lucide-react";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { FiSearch } from "react-icons/fi";
+import { RxCross2 } from "react-icons/rx";
 
 type Props = {
     disabled: boolean,
@@ -62,7 +63,7 @@ export default function ProductFormFinder({ disabled, defaults, onChange }: Prop
                                             className="absolute right-0 top-[50%] -translate-y-[50%]"
                                             onClick={() => resetField(field.name)}
                                         >
-                                            <X size={20} strokeWidth={3} />
+                                            <RxCross2 size={20} strokeWidth={3} />
                                         </Button>
                                     }
                                 </div>
@@ -90,7 +91,7 @@ export default function ProductFormFinder({ disabled, defaults, onChange }: Prop
                                             className="absolute right-0 top-[50%] -translate-y-[50%]"
                                             onClick={() => resetField(field.name)}
                                         >
-                                            <X size={20} strokeWidth={3} />
+                                            <RxCross2 size={20} strokeWidth={3} />
                                         </Button>
                                     }
                                 </div>
@@ -105,7 +106,7 @@ export default function ProductFormFinder({ disabled, defaults, onChange }: Prop
                     className="flex gap-3 px-10"
                     disabled={isDisabled}
                 >
-                    <Search />
+                    <FiSearch />
                     Buscar
                 </Button>
             </form>

@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { Minus, Plus } from "lucide-react";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import debounce from 'lodash/debounce';
+import { FaMinus, FaPlus } from "react-icons/fa";
 
 type Props = {
     defaultValue?: number
@@ -75,7 +75,7 @@ export default memo(function QuantitySelector({ defaultValue, onChange }: Props)
                     variant='ghost'
                     onClick={() => handleQuantityChange(false)}
                     size='xs'>
-                    <Minus size={10} />
+                    <FaMinus size={10} />
                 </Button>
                 <Input
                     ref={inputRef}
@@ -89,7 +89,7 @@ export default memo(function QuantitySelector({ defaultValue, onChange }: Props)
                     variant='ghost'
                     onClick={() => handleQuantityChange(true)}
                     size='xs'>
-                    <Plus size={10} />
+                    <FaPlus size={10} />
                 </Button>
             </div>
         );

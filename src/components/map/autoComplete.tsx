@@ -3,7 +3,7 @@ import { useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import List from '@/components/list';
-import { MapPin } from 'lucide-react';
+import { LuMapPin } from "react-icons/lu";
 
 interface Props {
   onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void;
@@ -116,7 +116,7 @@ export const AutocompleteCustom = ({ onPlaceSelect }: Props) => {
           dataSource={predictionResults}
           renderItem={(item) => (
             <List.Item className="flex gap-2 bg-white" onClick={() => handleSuggestionClick(item.place_id)}>
-              <MapPin size={20} />
+              <LuMapPin size={20} />
               <List.Item.Meta title={item.description} />
             </List.Item>
           )}

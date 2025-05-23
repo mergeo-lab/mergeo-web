@@ -3,7 +3,8 @@ import { TableCell } from "@/components/ui/table";
 import { ProductSchemaType } from "@/lib/schemas";
 import { cn } from "@/lib/utils";
 import { motion, usePresence } from "framer-motion";
-import { ImageIcon, Trash2 } from "lucide-react";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { LuImage } from "react-icons/lu";
 
 export default function AnimatedRow({ product, handleRemove }: { product: ProductSchemaType; handleRemove: () => void }) {
     const [isPresent, safeToRemove] = usePresence();
@@ -43,7 +44,7 @@ export default function AnimatedRow({ product, handleRemove }: { product: Produc
                         {product.image
                             ? <div className="w-full h-full bg-contain bg-no-repeat bg-center" style={{ backgroundImage: (`URL(${product.image})`) }}>
                             </div>
-                            : <ImageIcon size={50} className="text-white" />
+                            : <LuImage size={50} className="text-white" />
                         }
                     </div>
                     <div className="flex flex-col ml-2">
@@ -64,7 +65,7 @@ export default function AnimatedRow({ product, handleRemove }: { product: Produc
                     className="hover:text-destructive"
                     onClick={handleRemove}
                 >
-                    <Trash2 size={18} />
+                    <FaRegTrashAlt size={18} />
                 </Button>
             </TableCell>
         </motion.tr>

@@ -1,5 +1,4 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Building, ChevronDown, UsersRound, WalletCards, Archive, Package, LayoutDashboard, List, Box, Heart, ThumbsDown, PlusCircle } from "lucide-react";
 import { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import UseUserStore from "@/store/user.store";
@@ -9,6 +8,8 @@ import SpecialLink from "@/components/dashboardLayout/specialLink";
 import { Link, useLocation, useSearch } from "@tanstack/react-router";
 import CollapsibleList from "@/components/listasCollapsible";
 import { MdOutlineDiscount } from "react-icons/md";
+import { LuBuilding, LuChevronDown, LuUsersRound, LuWalletCards, LuArchive, LuPackage, LuLayoutDashboard, LuList, LuBox, LuHeart, LuThumbsDown } from "react-icons/lu";
+import { FiPlusCircle } from "react-icons/fi";
 
 type Props = {
     companyName: string
@@ -57,7 +58,7 @@ export function SideBarMenu({ companyName }: Props) {
                                 <span className="truncate max-w-28">
                                     {companyName && companyName}
                                 </span>
-                                <ChevronDown size={15} strokeWidth={5} className={cn({ 'rotate-180': collapsibleIsOpen })} />
+                                <LuChevronDown size={15} strokeWidth={5} className={cn({ 'rotate-180': collapsibleIsOpen })} />
                             </div>
                         </CollapsibleTrigger>
                     </Link>
@@ -73,7 +74,7 @@ export function SideBarMenu({ companyName }: Props) {
                                     'text-primary': search.tab === tabs.company,
                                 })}
                             >
-                                <Building strokeWidth={2.5} />
+                                <LuBuilding strokeWidth={2.5} />
                                 Empresa
                             </Link>
                         </li>
@@ -86,7 +87,7 @@ export function SideBarMenu({ companyName }: Props) {
                                     'text-primary': search.tab === tabs.users,
                                 })}
                             >
-                                <UsersRound strokeWidth={2.5} />
+                                <LuUsersRound strokeWidth={2.5} />
                                 Usuarios
                             </Link>
                         </li>
@@ -110,7 +111,7 @@ export function SideBarMenu({ companyName }: Props) {
                                     activePaths={['/client/dashboard']}
                                     onClick={onLinkClicked}
                                 >
-                                    <LayoutDashboard />
+                                    <LuLayoutDashboard />
                                     Panel de Control
                                 </SpecialLink>
                             </li>
@@ -120,7 +121,7 @@ export function SideBarMenu({ companyName }: Props) {
                                     onClick={onLinkClicked}
                                     activePaths={['/client/proOrders']}
                                 >
-                                    <Archive />
+                                    <LuArchive />
                                     Pedidos
                                 </SpecialLink>
 
@@ -131,7 +132,7 @@ export function SideBarMenu({ companyName }: Props) {
                                     name="lists"
                                     mainButton={{
                                         label: "Listas",
-                                        icon: <List size={16} />,
+                                        icon: <LuList size={16} />,
                                         link: "/client/lists",
                                         activePaths: ['/client/lists'],
                                         onClick: onLinkClicked
@@ -139,19 +140,19 @@ export function SideBarMenu({ companyName }: Props) {
                                     links={[
                                         {
                                             label: "Productos",
-                                            icon: <Box size={16} />,
+                                            icon: <LuBox size={16} />,
                                             to: "/client/lists",
                                             activepathName: 'lists',
                                         },
                                         {
                                             label: "Favoritos",
-                                            icon: <Heart size={16} />,
+                                            icon: <LuHeart size={16} />,
                                             to: "/client/lists/favorites",
                                             activepathName: 'favorites'
                                         },
                                         {
                                             label: "Lista Negra",
-                                            icon: <ThumbsDown size={16} />,
+                                            icon: <LuThumbsDown size={16} />,
                                             to: "/client/lists/blackList",
                                             activepathName: 'blackList'
                                         },
@@ -168,7 +169,7 @@ export function SideBarMenu({ companyName }: Props) {
                                     activePaths={['/provider/dashboard']}
                                     onClick={onLinkClicked}
                                 >
-                                    <LayoutDashboard />
+                                    <LuLayoutDashboard />
                                     Panel de Control
                                 </SpecialLink>
                             </li>
@@ -177,7 +178,7 @@ export function SideBarMenu({ companyName }: Props) {
                                     name="products"
                                     mainButton={{
                                         label: "Productos",
-                                        icon: <Package />,
+                                        icon: <LuPackage />,
                                         link: "/provider/products",
                                         activePaths: ['/provider/products', '/provider/products/newProducts', '/provider/products/$productId'],
                                         onClick: onLinkClicked
@@ -185,13 +186,13 @@ export function SideBarMenu({ companyName }: Props) {
                                     links={[
                                         {
                                             label: "Inventario",
-                                            icon: <List size={16} />,
+                                            icon: <LuList size={16} />,
                                             to: "/provider/products",
                                             activepathName: 'products',
                                         },
                                         {
                                             label: "Agregar",
-                                            icon: <PlusCircle size={16} />,
+                                            icon: <FiPlusCircle size={16} />,
                                             to: "/provider/products/newProducts",
                                             activepathName: 'newProducts'
                                         }
@@ -214,7 +215,7 @@ export function SideBarMenu({ companyName }: Props) {
                                     activePaths={['/provider/proOrders']}
                                     onClick={onLinkClicked}
                                 >
-                                    <Archive />
+                                    <LuArchive />
                                     Pedidos
                                 </SpecialLink>
                             </li>
@@ -226,7 +227,7 @@ export function SideBarMenu({ companyName }: Props) {
                             activePaths={['/buyOrder']}
                             onClick={onLinkClicked}
                         >
-                            <WalletCards />
+                            <LuWalletCards />
                             Ordenes de Compra
                         </SpecialLink>
                     </li>

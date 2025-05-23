@@ -3,10 +3,10 @@ import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMe
 import { Progress } from "@/components/ui/progress";
 import { useProductUploads } from "@/hooks/useProductUploads";
 import { cn } from "@/lib/utils";
-import { CopyCheck, FolderCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { BiMessageAltError } from "react-icons/bi";
 import { BsDatabaseAdd } from "react-icons/bs";
+import { LuCopyCheck, LuFolderCheck } from "react-icons/lu";
 
 
 type Props = {
@@ -76,7 +76,7 @@ export function UploadEvents({ providerId, fileName, onFinish }: Props) {
                 ) : (
                     <div className="w-full flex items-center justify-between">
                         <div className="flex gap-2">
-                            <FolderCheck className="text-primary" />
+                            <LuFolderCheck className="text-primary" />
                             <p>Archivo <span className="font-medium">{fileName}</span> cargado!</p>
                         </div>
                         <div className="flex items-start gap-3">
@@ -105,7 +105,7 @@ export function UploadEvents({ providerId, fileName, onFinish }: Props) {
                                                         variant="ghost"
                                                         className="text-info w-full"
                                                         onClick={() => currentUpload.failedGtins && copyToClipboard(currentUpload.failedGtins?.join(', '))}
-                                                    >{!copy ? "Copiar" : <CopyCheck className="tect-primary" />}</Button>
+                                                    >{!copy ? "Copiar" : <LuCopyCheck className="tect-primary" />}</Button>
                                                 </NavigationMenuContent>
                                             </NavigationMenuItem>
                                         </NavigationMenuList>

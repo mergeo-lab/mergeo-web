@@ -8,7 +8,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { Map, Marker } from '@vis.gl/react-google-maps';
 import UseCompanyStore from "@/store/company.store";
-import { MapPin, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import { GoogleAutoComplete } from "@/components/googleAutoComplete";
@@ -19,6 +18,8 @@ import { PickUpPicker } from "@/components/configuration/pickUp/pickUpPicker";
 import { DropZonePicker } from "@/components/configuration/provider/dropZone/dropZonePicker";
 import { BsFillBuildingsFill } from "react-icons/bs";
 import { RiRoadMapFill } from "react-icons/ri";
+import { GoPencil } from "react-icons/go";
+import { LuMapPin } from "react-icons/lu";
 
 export function Company() {
     const { company, saveCompany } = UseCompanyStore();
@@ -134,7 +135,7 @@ export function Company() {
                                     </div>
                                     {isEditing &&
                                         <div className="bg-highlight w-8 h-8 rounded absolute top-1 right-1 flex justify-center items-center animate-heartbeat animate-iteration-count-2 animate-duration-1000">
-                                            <Pencil size={20} className="text-white" />
+                                            <GoPencil size={20} className="text-white" />
                                         </div>}
                                 </div>
                                 <div className="space-y-3 p-5 py-2 pb-4">
@@ -281,7 +282,7 @@ export function Company() {
                                                                 newEntry={{
                                                                     title: "Agregar una zona de entrega",
                                                                     subTitle: "Aqui puedes areguegar una zona de entrega",
-                                                                    icon: <MapPin size={20} />
+                                                                    icon: <LuMapPin size={20} />
                                                                 }}
                                                             />
                                                         }
@@ -317,7 +318,7 @@ export function Company() {
                                 <span>
                                     Editar
                                 </span>
-                                <Pencil size={15} />
+                                <GoPencil size={15} />
                             </Button>
                         }
                     </div>
@@ -336,7 +337,7 @@ export function Company() {
                         <Marker position={{ lat: markerPosition.latitude, lng: markerPosition.longitude }} />
                     </Map>
                     : <div className="flex flex-col justify-center items-center gap-2 h-full">
-                        <MapPin size={40} />
+                        <LuMapPin size={40} />
                         <p>No has seleccionado una ubicación</p>
                     </div>
                 }

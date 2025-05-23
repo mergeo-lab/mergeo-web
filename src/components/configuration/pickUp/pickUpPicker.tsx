@@ -8,8 +8,8 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { getPickUpPoints } from "@/lib/configuration/pickUp"
 import { PickUpSchemaType } from "@/lib/schemas"
 import { useQuery } from "@tanstack/react-query"
-import { Plus } from "lucide-react"
 import { useState } from "react"
+import { FaPlus } from "react-icons/fa"
 
 type Props = {
     companyId: string | undefined,
@@ -98,7 +98,7 @@ export function PickUpPicker({ className, companyId, disabled, notFoundMessage, 
                                 disabled={disabled}
                                 triggerButton={
                                     <Button className="w-8 h-8 absolute right-1 -top-1 flex justify-center items-center p-0">
-                                        <Plus size={15} className="text-white" strokeWidth={3} />
+                                        <FaPlus size={15} className="text-white" strokeWidth={3} />
                                     </Button>
                                 }
                                 callback={pickUpAdded}

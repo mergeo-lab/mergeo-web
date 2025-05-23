@@ -6,9 +6,9 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useParams } from '@tanstack/react-router'
 import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { FileDown, Printer } from 'lucide-react';
 import LoadingIndicator from '@/components/loadingIndicator';
 import { Skeleton } from '@/components/ui/skeleton';
+import { LuFileDown, LuPrinter } from 'react-icons/lu';
 
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/buyOrder/$orderId')({
@@ -92,7 +92,7 @@ export default function OdcDetail() {
             <p className='mr-2 font-bold '>Descargar Orden</p>
             {fileDowloadLoading
               ? <LoadingIndicator />
-              : <FileDown />
+              : <LuFileDown />
             }
           </Button>
           <Button
@@ -102,7 +102,7 @@ export default function OdcDetail() {
             <p className='mr-2 font-bold '>Imprimir Orden</p>
             {filePrintLoading
               ? <LoadingIndicator />
-              : <Printer />
+              : <LuPrinter />
             }
           </Button>
         </div>

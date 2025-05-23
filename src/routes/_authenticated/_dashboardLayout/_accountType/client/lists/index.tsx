@@ -8,7 +8,6 @@ import UseCompanyStore from '@/store/company.store';
 import UseSearchListsStore from '@/store/searchLists.store';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router'
-import { CircleAlert, PackagePlus, Pencil, Search, Trash2, X } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react';
 import { SearchListProductType, SearchListType } from '@/lib/searchLists/searchLists.schemas';
 import OverlayLoadingIndicator from '@/components/overlayLoadingIndicator';
@@ -19,6 +18,10 @@ import { useDebounceCallback } from 'usehooks-ts';
 import { formatDate } from '@/lib/utils';
 import EditNameDialog from '@/components/editNameDialog';
 import { CgPlayListAdd } from "react-icons/cg";
+import { GoPencil } from 'react-icons/go';
+import { RxCross2 } from "react-icons/rx";
+import { FaRegTrashAlt } from 'react-icons/fa';
+import { LuSearch, LuPackagePlus, LuCircleAlert } from "react-icons/lu";
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/lists/')({
     component: () => <SearchLists />
@@ -173,7 +176,7 @@ export function SearchLists() {
                     triggerButton={createListButton}
                 />
                 <div className='flex items-center w-2/5 gap-6 p-4 shadow rounded absolute bottom-44'>
-                    <CircleAlert className='text-info' size={70} />
+                    <LuCircleAlert className='text-info' size={70} />
                     <div className='space-y-2'>
                         <p>Las <strong className='text-info'>listas</strong> sirven para hacer que tu experiencia de compra sea mas rápida y ágil.
                             Evitaras buscar producto por producto cada vez que quieras hacer una compra.</p>
@@ -216,7 +219,7 @@ export function SearchLists() {
                                     dialogTitle="Editar nombre de la lista"
                                     triggerButton={
                                         <Button variant="ghost">
-                                            <Pencil size={18} />
+                                            <GoPencil size={18} />
                                         </Button>
                                     }
                                     name={selectedList?.name}
@@ -230,7 +233,7 @@ export function SearchLists() {
                                     disabled={!selectedList} onClick={() => handleRemoveListClick(selectedList?.id)}
                                     variant="ghost"
                                     className="w-fit flex gap-2 rounded-r-none border border-border border-r-0 hover:text-destructive">
-                                    <Trash2 size={18} />
+                                    <FaRegTrashAlt size={18} />
                                 </Button>
                             </div>
                         </div>
@@ -242,7 +245,7 @@ export function SearchLists() {
                     <div className='h-20 flex items-center justify-between px-8 py-3 border-b'>
                         <div className='flex gap-4 items-center'>
                             <div className='relative'>
-                                <Search className='absolute top-2 left-3' />
+                                <LuSearch className='absolute top-2 left-3' />
                                 <Input
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     disabled={!!selectedList && selectedList.products.length <= 1}
@@ -250,7 +253,7 @@ export function SearchLists() {
                                     className='w-30 pl-14'
                                     value={searchQuery}
                                 />
-                                {searchQuery.length > 0 && <X size={16} className='absolute top-3 right-3 cursor-pointer' onClick={() => setSearchQuery('')} />}
+                                {searchQuery.length > 0 && <RxCross2 size={16} className='absolute top-3 right-3 cursor-pointer' onClick={() => setSearchQuery('')} />}
                             </div>
                             <DropdownMenuCheckboxes
                                 disabled={categoriesFromList && categoriesFromList.length <= 1}
@@ -264,7 +267,7 @@ export function SearchLists() {
                                 title='Agrega productos'
                                 subTitle='Vas a agregar productos a la lista:'
                                 buttonText='Agregar'
-                                icon={<PackagePlus size={16} />}
+                                icon={<LuPackagePlus size={16} />}
                                 list={{ name: selectedList && selectedList?.name, id: selectedList && selectedList?.id }} callback={handleAddSearchListCallback}
                                 onLoading={handleIsLoading}
                                 triggerButton={
@@ -272,7 +275,7 @@ export function SearchLists() {
                                         variant="outline"
                                         className='w-60 flex items-center gap-4'>
                                         Agregar Productos a la Lista
-                                        <PackagePlus size={16} />
+                                        <LuPackagePlus size={16} />
                                     </Button>
                                 }
                             />

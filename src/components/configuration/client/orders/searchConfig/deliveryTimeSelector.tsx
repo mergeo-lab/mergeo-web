@@ -1,6 +1,5 @@
 import * as React from "react";
-import { addDays, format, isBefore, startOfToday } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { format, isBefore, startOfToday } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { TbCalendarTime } from "react-icons/tb";
 
 interface DatePickerWithRangeProps {
   className?: string;
@@ -67,7 +67,7 @@ export function DeliveryTimeSelector({
               !lastDate && "text-muted-foreground"
             )}
           >
-            <CalendarIcon className="mr-2" />
+            <TbCalendarTime className="mr-2" />
             {lastDate?.from ? (
               lastDate.to ? (
                 <>

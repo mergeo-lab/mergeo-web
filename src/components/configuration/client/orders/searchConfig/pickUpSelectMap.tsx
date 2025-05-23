@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { JSX, useEffect, useState } from "react";
-import { Compass } from "lucide-react";
 import UseSearchConfigStore from "@/store/searchConfiguration.store.";
 import MapRadiusSelection from "@/components/configuration/client/orders/searchConfig/mapRadiusSelection";
+import { ImCompass2 } from "react-icons/im";
 
 type Props = {
     title?: string,
@@ -17,7 +17,7 @@ export default function PickUpSelectMap(
     {
         title = 'Selecciona la zona de Pick Up',
         subTitle = 'Esta es la zona de Pick Up donde estas dispuesto a buscar tu pedido',
-        icon = <Compass />,
+        icon = <ImCompass2 />,
         showDialog = false,
         onClose
     }: Props) {

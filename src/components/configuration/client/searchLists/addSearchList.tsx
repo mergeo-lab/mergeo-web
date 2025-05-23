@@ -7,7 +7,6 @@ import { SearchListSchema, SearchListType } from "@/lib/searchLists/searchLists.
 import UseCompanyStore from "@/store/company.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { FileUp, ScrollText, X } from "lucide-react";
 import { JSX, useCallback, useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import AddSearchProduct from "@/components/configuration/client/searchLists/addSearchProduct";
@@ -16,6 +15,8 @@ import UseSearchProductStore from "@/store/searchProduct.store";
 import { addProductsToList, newSearchList, uploadSearchListFile } from "@/lib/searchLists/searchLists";
 import UseUserStore from "@/store/user.store";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
+import { LuFileUp, LuScrollText } from "react-icons/lu";
+import { RxCross2 } from "react-icons/rx";
 
 type FormSchemaType = Omit<SearchListType, 'id'>
 
@@ -37,7 +38,7 @@ export function AddSearchList({
     title = "Agregar una Lista nueva",
     subTitle = "Agregue una nueva lista de búsqueda para agilizar sus compras",
     buttonText = "Crear Lista",
-    icon = <ScrollText size={20} />,
+    icon = <LuScrollText size={20} />,
     list,
     onLoading,
     callback,
@@ -246,7 +247,7 @@ export function AddSearchList({
                                             <FormLabel id='file'>Subir un archivo excel</FormLabel>
                                             <FormControl>
                                                 <div className="flex items-center justify-between relative">
-                                                    <FileUp className="absolute left-3 pointer-events-none" />
+                                                    <LuFileUp className="absolute left-3 pointer-events-none" />
                                                     <Input ref={fileInputRef}
                                                         disabled={isFormValid || products.length > 0}
                                                         className="pl-10 cursor-pointer"
@@ -257,7 +258,7 @@ export function AddSearchList({
                                                     {field.value &&
                                                         <Button variant='ghost' className="absolute right-0"
                                                             onClick={resetFileInput}>
-                                                            <X size={16} />
+                                                            <RxCross2 size={16} />
                                                         </Button>
                                                     }
                                                 </div>

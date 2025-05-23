@@ -3,8 +3,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getProductsStats } from "@/lib/dashboard/provider";
 import { formatToArgentinianPesos } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Box, Zap } from "lucide-react";
 import { TbPigMoney } from "react-icons/tb";
+import { FiBox } from "react-icons/fi";
+import { LuZap } from "react-icons/lu";
 
 export default function ProductsStats({ companyId }: { companyId: string }) {
 
@@ -29,7 +30,7 @@ export default function ProductsStats({ companyId }: { companyId: string }) {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between ">
                     <CardTitle className="text-sm font-medium">Productos en el Inventario</CardTitle>
-                    <Box className="h-4 w-4 text-gray-500" />
+                    <FiBox className="h-4 w-4 text-gray-500" />
                 </CardHeader>
                 <CardContent>
                     {!data?.allProducts
@@ -42,7 +43,7 @@ export default function ProductsStats({ companyId }: { companyId: string }) {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between ">
                     <CardTitle className="text-sm font-medium">Products Activos</CardTitle>
-                    <Zap className="h-4 w-4 text-primary" />
+                    <LuZap className="h-4 w-4 text-primary" />
                 </CardHeader>
                 <CardContent>
                     {!data?.activeProducts

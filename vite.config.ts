@@ -7,21 +7,21 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import viteCompression from 'vite-plugin-compression';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import bundleAnalyzer from 'rollup-plugin-bundle-analyzer';
+import inject from '@rollup/plugin-inject';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    react({
-      // Optimize React production builds
-      babel: {
-        plugins: [
-          ['@babel/plugin-transform-react-jsx', { runtime: 'automatic' }],
-        ],
-      },
-    }),
+    {
+      ...inject({
+        React: 'react',
+      }),
+      enforce: 'pre',
+    },
+    react(),
     TanStackRouterVite(),
     tsconfigPaths(),
-    // Compress assets for production builds
+
     viteCompression({
       algorithm: 'gzip',
       ext: '.gz',
@@ -30,21 +30,21 @@ export default defineConfig({
       algorithm: 'brotliCompress',
       ext: '.br',
     }),
-    // Generate bundle visualization in stats.html
+
     (visualizer as any)({
       filename: 'stats.html',
       gzipSize: true,
       brotliSize: true,
       open: false,
     }),
-    // Interactive bundle analyzer (only when ANALYZE env is set)
+
     process.env.ANALYZE === 'true' &&
       bundleAnalyzer({
         analyzerMode: 'static',
         openBrowser: true,
         statsFilename: 'bundle-stats.json',
       }),
-    // Copy static assets that don't need processing
+
     viteStaticCopy({
       targets: [
         {
@@ -279,10 +279,7 @@ export default defineConfig({
           }
 
           // Icon libraries
-          if (
-            id.includes('node_modules/lucide-react/') ||
-            id.includes('node_modules/react-icons/')
-          ) {
+          if (id.includes('node_modules/react-icons/')) {
             return 'vendor-icons';
           }
 

@@ -12,21 +12,21 @@ import { MdOutlineDiscount } from "react-icons/md";
 const DashboardHeader = lazy(() => import('@/components/dashboardLayout').then(mod => ({ default: mod.DashboardHeader })));
 const SideBarMenu = lazy(() => import('@/components/dashboardLayout').then(mod => ({ default: mod.SideBarMenu })));
 
-// Dynamic import of icons to reduce bundle size
+
 import {
-    Bell,
-    CircleHelp,
-    Settings,
-    ScrollText,
-    Package,
-    Archive,
-    WalletCards,
-    FileSearch,
-    ShoppingCart,
-    Heart,
-    ThumbsDown,
-    LayoutDashboard
-} from 'lucide-react';
+    LuBell,
+    LuCircleHelp,
+    LuSettings,
+    LuScrollText,
+    LuPackage,
+    LuArchive,
+    LuWalletCards,
+    LuFileSearch,
+    LuShoppingCart,
+    LuHeart,
+    LuThumbsDown,
+    LuLayoutDashboard
+} from "react-icons/lu";
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout')({
     component: DashboardLayout,
@@ -77,55 +77,55 @@ function SubLink({ to, texts, search }: { to?: string | undefined, texts: string
 const getRoutTitles = (currentPage: number) => {
 
     const titles: Record<string, { text: string | JSX.Element; icon: JSX.Element }> = {
-        '/': { text: 'Dashboard', icon: <ScrollText {...iconProps} /> },
-        '/searchLists': { text: 'Mis Listas', icon: <ScrollText {...iconProps} /> },
-        '/configuration': { text: 'Configuración de cuenta', icon: <Settings {...iconProps} /> },
-        '/notifications': { text: 'Notificaciones', icon: <Bell {...iconProps} /> },
-        '/faq': { text: 'Preguntas Frecuentes', icon: <CircleHelp {...iconProps} /> },
-        '/orders': { text: 'Hacer Pedido', icon: <Package {...iconProps} /> },
-        '/mis-pedidos': { text: 'Pedidos', icon: <Archive {...iconProps} /> },
-        '/buyOrder': { text: 'Ordenes de Compra', icon: <WalletCards {...iconProps} /> },
+        '/': { text: 'Dashboard', icon: <LuScrollText {...iconProps} /> },
+        '/searchLists': { text: 'Mis Listas', icon: <LuScrollText {...iconProps} /> },
+        '/configuration': { text: 'Configuración de cuenta', icon: <LuSettings {...iconProps} /> },
+        '/notifications': { text: 'Notificaciones', icon: <LuBell {...iconProps} /> },
+        '/faq': { text: 'Preguntas Frecuentes', icon: <LuCircleHelp {...iconProps} /> },
+        '/orders': { text: 'Hacer Pedido', icon: <LuPackage {...iconProps} /> },
+        '/mis-pedidos': { text: 'Pedidos', icon: <LuArchive {...iconProps} /> },
+        '/buyOrder': { text: 'Ordenes de Compra', icon: <LuWalletCards {...iconProps} /> },
         '/provider/discounts': { text: 'Descuentos', icon: <MdOutlineDiscount {...iconProps} /> },
         '/buyOrder/$orderId': {
             text: <SubLink to={'/buyOrder'} texts={['Ordenes de Compra', 'Detalle de la orden de compra']} />,
-            icon: <WalletCards {...iconProps} />
+            icon: <LuWalletCards {...iconProps} />
         },
-        '/client/dashboard': { text: 'Panel de Control', icon: <LayoutDashboard {...iconProps} /> },
-        '/client/orders': { text: 'Hacer Pedido', icon: <ShoppingCart {...iconProps} /> },
-        '/client/proOrders': { text: 'Pedidos', icon: <Archive {...iconProps} /> },
+        '/client/dashboard': { text: 'Panel de Control', icon: <LuLayoutDashboard {...iconProps} /> },
+        '/client/orders': { text: 'Hacer Pedido', icon: <LuShoppingCart {...iconProps} /> },
+        '/client/proOrders': { text: 'Pedidos', icon: <LuArchive {...iconProps} /> },
         '/client/proOrders/$orderId': {
             text: <SubLink to={'/client/proOrders'} texts={['Pedidos', 'Detalle del pedido']} />,
-            icon: <Archive {...iconProps} />
+            icon: <LuArchive {...iconProps} />
         },
 
         '/client/lists': {
             text: <SubLink texts={['Mis Listas', 'Productos']} />,
-            icon: <ScrollText {...iconProps} />
+            icon: <LuScrollText {...iconProps} />
         },
         '/client/lists/favorites': {
             text: <SubLink texts={['Mis Listas', 'Favoritos']} />,
-            icon: <Heart {...iconProps} />
+            icon: <LuHeart {...iconProps} />
         },
         '/client/lists/blackList': {
             text: <SubLink texts={['Mis Listas', 'Lista Negra']} />,
-            icon: <ThumbsDown {...iconProps} />
+            icon: <LuThumbsDown {...iconProps} />
         },
 
-        '/provider/dashboard': { text: 'Panel de Control', icon: <LayoutDashboard {...iconProps} /> },
-        '/provider/proOrders': { text: 'Pedidos', icon: <Archive {...iconProps} /> },
+        '/provider/dashboard': { text: 'Panel de Control', icon: <LuLayoutDashboard {...iconProps} /> },
+        '/provider/proOrders': { text: 'Pedidos', icon: <LuArchive {...iconProps} /> },
         '/provider/proOrders/$orderId': {
             text: <SubLink to={'/provider/proOrders'} texts={['Pedidos', 'Detalle del pedido']} />,
-            icon: <Archive {...iconProps} />
+            icon: <LuArchive {...iconProps} />
         },
-        '/sellDetail': { text: 'Detalle del Pedido', icon: <FileSearch {...iconProps} /> },
-        '/provider/products': { text: 'Productos', icon: <Package {...iconProps} /> },
+        '/sellDetail': { text: 'Detalle del Pedido', icon: <LuFileSearch {...iconProps} /> },
+        '/provider/products': { text: 'Productos', icon: <LuPackage {...iconProps} /> },
         '/provider/products/newProducts': {
             text: <SubLink to={'/provider/products'} texts={['Productos', 'Agregar Productos']} />,
-            icon: <Package {...iconProps} />
+            icon: <LuPackage {...iconProps} />
         },
         '/provider/products/$productId': {
             text: <SubLink to={'/provider/products'} texts={['Productos', 'Detalle del Producto']} search={{ currentPage: currentPage }} />,
-            icon: <Package {...iconProps} />
+            icon: <LuPackage {...iconProps} />
         },
     };
 

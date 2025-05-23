@@ -7,10 +7,10 @@ import { useAuth } from "@/hooks"
 import { QueryClient, QueryClientProvider, QueryErrorResetBoundary } from "@tanstack/react-query"
 import { RouterProvider, createRouter, Link } from '@tanstack/react-router'
 import { ErrorInfo } from "react"
-import { Bug } from 'lucide-react';
 import { routeTree } from '@/routeTree.gen'
 import { APIProvider } from '@vis.gl/react-google-maps'
 import { Button } from '@/components/ui/button'
+import { LuBug } from 'react-icons/lu'
 
 const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
@@ -62,7 +62,7 @@ function fallbackRender({ error, clearError }: { error: Error; info: ErrorInfo; 
     <div className="container flex h-full flex-col justify-center">
       <div role="alert">
         <div className="flex flex-col items-center space-y-4">
-          <Bug className="h-10 w-10" />
+          <LuBug className="h-10 w-10" />
           <div className="space-y-2 text-center">
             <h1 className="text-lg font-bold">¡Algo salió mal!</h1>
             <p className="text-gray-500 dark:text-gray-400">

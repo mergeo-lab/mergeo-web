@@ -10,8 +10,8 @@ import { ProductMetadataType, ProductSchemaType } from '@/lib/schemas';
 import { cn, formatDate, formatToArgentinianPesos } from '@/lib/utils';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { createFileRoute, useParams, useSearch } from '@tanstack/react-router'
-import { Edit, Image, MoveRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { LuImage, LuMoveRight, LuSquarePen } from 'react-icons/lu';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/products/$productId')({
     component: () => <ProductDetail />,
@@ -109,7 +109,7 @@ export default function ProductDetail() {
                                 title='Editar producto'
                                 onClick={() => setIsEditing(true)}
                             >
-                                <Edit size={18} />
+                                <LuSquarePen size={18} />
                             </Button>
                         </>
                     }
@@ -120,7 +120,7 @@ export default function ProductDetail() {
                     : <div className="bg-gray-100 p-8 flex flex-col md:flex-row gap-8 rounded">
                         {!data?.product?.image
                             ? (<div className="bg-gray-200 border-2 rounded-xl h-72 aspect-square p-4 flex justify-center items-center">
-                                <Image size={100} className='text-muted' />
+                                <LuImage size={100} className='text-muted' />
                             </div>)
                             : (<div className="bg-white flex justify-center items-center border-2 rounded-xl h-72 aspect-square p-6">
                                 <img src={data?.product?.image} alt="" className='bg-contain h-72 p-2' />
@@ -214,7 +214,7 @@ export default function ProductDetail() {
                                                                 <span className="text-muted">
                                                                     {formatToArgentinianPesos(+(activity.details?.price?.old ?? 0))}
                                                                 </span>
-                                                                <MoveRight className="text-info" />
+                                                                <LuMoveRight className="text-info" />
                                                                 {formatToArgentinianPesos(+(activity.details?.price?.new ?? 0))}
                                                             </div>
                                                         </div>
@@ -226,7 +226,7 @@ export default function ProductDetail() {
                                                                 <span className="text-muted">
                                                                     {activity.details?.description?.old ?? ""}
                                                                 </span>
-                                                                <MoveRight className="text-info" />
+                                                                <LuMoveRight className="text-info" />
                                                                 {activity.details?.description?.new ?? ""}
                                                             </div>
                                                             {activity?.fileName &&

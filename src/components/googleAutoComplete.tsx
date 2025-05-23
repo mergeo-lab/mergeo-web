@@ -4,11 +4,12 @@ import { useRef, useState, useCallback, useEffect, SetStateAction } from "react"
 import { useDebounceCallback, useOnClickOutside } from 'usehooks-ts'
 import useGoogle from "react-google-autocomplete/lib/usePlacesAutocompleteService";
 import LoadingIndicator from '@/components/loadingIndicator';
-import { MapPin, Search, X } from "lucide-react";
 import { getLocationInfo } from "@/lib/auth";
 import { GoogleLocationSchemaType } from "@/lib/schemas";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import { LuMapPin, LuSearch } from "react-icons/lu";
+import { RxCross2 } from "react-icons/rx";
 
 type Props = {
     debounce?: number,
@@ -134,8 +135,8 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRem
                     : !disabled && <div className="absolute right-4 top-2">
                         {
                             selected || value
-                                ? <X className="cursor-pointer" onClick={clearSearch} />
-                                : <Search />}
+                                ? <RxCross2 className="cursor-pointer" onClick={clearSearch} />
+                                : <LuSearch />}
                     </div>}
             </div>
             {
@@ -150,7 +151,7 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRem
                             setIsLoading(false);
                             getAddressComponent(item.place_id, item.description);
                         }}>
-                            <MapPin size={20} />
+                            <LuMapPin size={20} />
                             <List.Item.Meta title={item.description} />
                         </List.Item>
                     )}

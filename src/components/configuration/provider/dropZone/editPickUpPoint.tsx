@@ -8,7 +8,6 @@ import { toast } from "@/components/ui/use-toast";
 import { GoogleLocationSchemaType, LatLngLiteralType, PickUpSchedulesSchemaType, PickUpSchema, PickUpSchemaType } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { MapPin, Store, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
@@ -17,6 +16,9 @@ import { cn } from "@/lib/utils";
 import DaysPicker from "@/components/daysPicker";
 import useDaysPickerStore from "@/store/daysPicker.store";
 import { deletPickUpPoint, editPickUpPoints } from "@/lib/configuration/pickUp";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { LuMapPin } from "react-icons/lu";
+import { AiOutlineShop } from "react-icons/ai";
 
 type Props = {
     title?: string,
@@ -35,7 +37,7 @@ export function EditPickUp(
     {
         title = 'Detalles de la sucursal',
         subTitle = 'Aquí puedes ver los detalles de la sucursal',
-        icon = <Store />,
+        icon = <AiOutlineShop />,
         isEditing,
         isOpen,
         pickUpData,
@@ -262,7 +264,7 @@ export function EditPickUp(
                                 <Marker position={{ lat: markerPosition.latitude, lng: markerPosition.longitude }} />
                             </Map>
                             : <div className="flex flex-col justify-center items-center gap-2">
-                                <MapPin size={40} />
+                                <LuMapPin size={40} />
                                 <p>No has seleccionado una ubicación</p>
                             </div>
                         }
@@ -285,7 +287,7 @@ export function EditPickUp(
                                     question={<p>¿Seguro que quieres borrar la sucursal <span className="font-bold">{pickUpData && pickUpData?.name}</span>?</p>}
                                     triggerButton={
                                         <Button variant="destructive" className="w-40 flex gap-2">
-                                            <Trash2 size={15} />
+                                            <FaRegTrashAlt size={15} />
                                             Borrar
                                         </Button>
                                     }

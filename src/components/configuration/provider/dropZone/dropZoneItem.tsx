@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { DropZoneSchemaType } from "@/lib/schemas"
-import { Map, PenIcon, Trash2 } from "lucide-react";
 import ScheduleHoverCard from "@/components/scheduleHoverCard";
 import { cn } from "@/lib/utils";
 import mapBg from '@/assets/fondo-mapa.png'
+import { GoPencil } from "react-icons/go";
+import { FaRegMap, FaRegTrashAlt } from "react-icons/fa";
 
 type Props = {
     item: DropZoneSchemaType,
@@ -18,7 +19,7 @@ export default function DropZoneItem({ item, isEditing, remove, edit, showMap }:
         <div className={cn(`flex flex-col justify-between w-[calc(50%-1rem)] rounded overflow-hidden bg-cover relative border border-border shadow-sm`)} style={{ backgroundImage: `url(${mapBg})` }}>
             <div className="flex flex-col">
                 <div className="flex items-center gap-2 px-4 pt-2">
-                    <Map size={20} className="text-primary" />
+                    <FaRegMap size={20} className="text-primary" />
                     <p className="text-ellipsis text-nowrap w-32 overflow-hidden">
                         {item.name}
                     </p>
@@ -31,13 +32,13 @@ export default function DropZoneItem({ item, isEditing, remove, edit, showMap }:
             <div className="w-full flex justify-end items-center bg-muted/40 relative">
                 {isEditing == item.id && <span className="bg-highlight text-white text-sm absolute left-2 px-2 rounded">EDITANDO</span>}
                 <Button variant="ghost" className="hover:bg-muted hover:text-white h-8 w-8 p-0" onClick={() => showMap(item.id!)}>
-                    <Map size={15} />
+                    <FaRegMap size={15} />
                 </Button>
                 <Button variant="ghost" className="hover:bg-muted hover:text-white h-8 w-8 p-0" onClick={() => remove(item.id!)}>
-                    <Trash2 size={15} />
+                    <FaRegTrashAlt size={15} />
                 </Button>
                 <Button variant="ghost" className="hover:bg-muted hover:text-white h-8 w-8 p-0" onClick={() => edit(item.id!)}>
-                    <PenIcon size={15} />
+                    <GoPencil size={15} />
                 </Button>
             </div>
         </div>
