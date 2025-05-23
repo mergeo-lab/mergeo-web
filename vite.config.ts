@@ -7,18 +7,18 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import viteCompression from 'vite-plugin-compression';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import bundleAnalyzer from 'rollup-plugin-bundle-analyzer';
-import inject from '@rollup/plugin-inject';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    {
-      ...inject({
-        React: 'react',
-      }),
-      enforce: 'pre',
-    },
-    react(),
+    react({
+      // Optimize React production builds
+      babel: {
+        plugins: [
+          ['@babel/plugin-transform-react-jsx', { runtime: 'automatic' }],
+        ],
+      },
+    }),
     TanStackRouterVite(),
     tsconfigPaths(),
 

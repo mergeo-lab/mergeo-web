@@ -64,7 +64,7 @@ export default function NewDiscount({ triggerButton, data, callback }: Props) {
                 <DialogHeader className="border-b-[1px] border-border">
                     <DialogTitle className="text-md flex items-center gap-2 p-4">
                         <MdOutlineDiscount size={30} />
-                        Nueva lista de descuentos
+                        {data ? 'Editar lista de descuentos' : "Nueva lista de descuentos"}
                     </DialogTitle>
                 </DialogHeader>
                 <div className="flex flex-col gap-4 px-10 pb-5">

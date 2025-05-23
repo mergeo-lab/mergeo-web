@@ -15,6 +15,8 @@ type Props = {
     companyName: string
 }
 
+const iconSize = 20;
+
 export function SideBarMenu({ companyName }: Props) {
     const { user } = UseUserStore();
     const [collapsibleIsOpen, setCollapsibleIsOpen] = useState(false);
@@ -74,7 +76,7 @@ export function SideBarMenu({ companyName }: Props) {
                                     'text-primary': search.tab === tabs.company,
                                 })}
                             >
-                                <LuBuilding strokeWidth={2.5} />
+                                <LuBuilding strokeWidth={2.5} size={iconSize} />
                                 Empresa
                             </Link>
                         </li>
@@ -87,7 +89,7 @@ export function SideBarMenu({ companyName }: Props) {
                                     'text-primary': search.tab === tabs.users,
                                 })}
                             >
-                                <LuUsersRound strokeWidth={2.5} />
+                                <LuUsersRound strokeWidth={2.5} size={iconSize} />
                                 Usuarios
                             </Link>
                         </li>
@@ -111,7 +113,7 @@ export function SideBarMenu({ companyName }: Props) {
                                     activePaths={['/client/dashboard']}
                                     onClick={onLinkClicked}
                                 >
-                                    <LuLayoutDashboard />
+                                    <LuLayoutDashboard size={iconSize} />
                                     Panel de Control
                                 </SpecialLink>
                             </li>
@@ -121,7 +123,7 @@ export function SideBarMenu({ companyName }: Props) {
                                     onClick={onLinkClicked}
                                     activePaths={['/client/proOrders']}
                                 >
-                                    <LuArchive />
+                                    <LuArchive size={iconSize} />
                                     Pedidos
                                 </SpecialLink>
 
@@ -132,7 +134,7 @@ export function SideBarMenu({ companyName }: Props) {
                                     name="lists"
                                     mainButton={{
                                         label: "Listas",
-                                        icon: <LuList size={16} />,
+                                        icon: <LuList size={iconSize} />,
                                         link: "/client/lists",
                                         activePaths: ['/client/lists'],
                                         onClick: onLinkClicked
@@ -140,19 +142,19 @@ export function SideBarMenu({ companyName }: Props) {
                                     links={[
                                         {
                                             label: "Productos",
-                                            icon: <LuBox size={16} />,
+                                            icon: <LuBox size={iconSize} />,
                                             to: "/client/lists",
                                             activepathName: 'lists',
                                         },
                                         {
                                             label: "Favoritos",
-                                            icon: <LuHeart size={16} />,
+                                            icon: <LuHeart size={iconSize} />,
                                             to: "/client/lists/favorites",
                                             activepathName: 'favorites'
                                         },
                                         {
                                             label: "Lista Negra",
-                                            icon: <LuThumbsDown size={16} />,
+                                            icon: <LuThumbsDown size={iconSize} />,
                                             to: "/client/lists/blackList",
                                             activepathName: 'blackList'
                                         },
@@ -169,7 +171,7 @@ export function SideBarMenu({ companyName }: Props) {
                                     activePaths={['/provider/dashboard']}
                                     onClick={onLinkClicked}
                                 >
-                                    <LuLayoutDashboard />
+                                    <LuLayoutDashboard size={iconSize} />
                                     Panel de Control
                                 </SpecialLink>
                             </li>
@@ -178,7 +180,7 @@ export function SideBarMenu({ companyName }: Props) {
                                     name="products"
                                     mainButton={{
                                         label: "Productos",
-                                        icon: <LuPackage />,
+                                        icon: <LuPackage size={iconSize} />,
                                         link: "/provider/products",
                                         activePaths: ['/provider/products', '/provider/products/newProducts', '/provider/products/$productId'],
                                         onClick: onLinkClicked
@@ -186,13 +188,13 @@ export function SideBarMenu({ companyName }: Props) {
                                     links={[
                                         {
                                             label: "Inventario",
-                                            icon: <LuList size={16} />,
+                                            icon: <LuList size={iconSize} />,
                                             to: "/provider/products",
                                             activepathName: 'products',
                                         },
                                         {
                                             label: "Agregar",
-                                            icon: <FiPlusCircle size={16} />,
+                                            icon: <FiPlusCircle size={iconSize} />,
                                             to: "/provider/products/newProducts",
                                             activepathName: 'newProducts'
                                         }
@@ -205,7 +207,7 @@ export function SideBarMenu({ companyName }: Props) {
                                     activePaths={['/provider/discounts']}
                                     onClick={onLinkClicked}
                                 >
-                                    <MdOutlineDiscount size={28} />
+                                    <MdOutlineDiscount size={iconSize} />
                                     Descuentos
                                 </SpecialLink>
                             </li>
@@ -215,7 +217,7 @@ export function SideBarMenu({ companyName }: Props) {
                                     activePaths={['/provider/proOrders']}
                                     onClick={onLinkClicked}
                                 >
-                                    <LuArchive />
+                                    <LuArchive size={iconSize} />
                                     Pedidos
                                 </SpecialLink>
                             </li>
@@ -227,7 +229,7 @@ export function SideBarMenu({ companyName }: Props) {
                             activePaths={['/buyOrder']}
                             onClick={onLinkClicked}
                         >
-                            <LuWalletCards />
+                            <LuWalletCards size={iconSize} />
                             Ordenes de Compra
                         </SpecialLink>
                     </li>
