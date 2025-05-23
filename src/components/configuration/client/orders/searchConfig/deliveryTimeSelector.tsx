@@ -67,7 +67,7 @@ export function DeliveryTimeSelector({
               !lastDate && "text-muted-foreground"
             )}
           >
-            <TbCalendarTime className="mr-2" />
+            <TbCalendarTime className="mr-2" size={20} />
             {lastDate?.from ? (
               lastDate.to ? (
                 <>
