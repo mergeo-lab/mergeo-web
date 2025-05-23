@@ -52,11 +52,11 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ className, ...props }) => (
-          <LuChevronLeft className={cn("h-4 w-4", className)} {...props} />
+        PreviousMonthButton: ({ className }) => (
+          <LuChevronLeft className={cn("h-4 w-4", className)} aria-hidden="true" />
         ),
-        IconRight: ({ className, ...props }) => (
-          <LuChevronRight className={cn("h-4 w-4", className)} {...props} />
+        NextMonthButton: ({ className }) => (
+          <LuChevronRight className={cn("h-4 w-4", className)} aria-hidden="true" />
         ),
       }}
       {...props}
