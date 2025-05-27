@@ -1,23 +1,57 @@
+import DiscountProductRow from "@/components/configuration/provider/discounts/discountProductRow";
 import SearchProducts from "@/components/configuration/provider/products/searchProducts"
 import CustomSearchField from "@/components/customSearchField"
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { UseNewProductSearch } from "@/hooks/useNewProductSearch";
+import UseDiscountProductsStore from "@/store/discountProducts";
 import { useProviderProductSearchStore } from "@/store/providerProductSearch.store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Label } from '@/components/ui/label';
+import { LuChevronUp } from "react-icons/lu";
+import { cn } from "@/lib/utils";
+import { MdFactCheck } from "react-icons/md";
+import { useMutation } from '@tanstack/react-query';
+import { saveDiscountProducts } from "@/lib/discounts";
 
 type Props = {
-    companyId: string
+    companyId: string,
+    discountListId: string,
+    discount: number
 }
-export default function DiscountAddProducts({ companyId }: Props) {
+export default function DiscountAddProducts({ companyId, discountListId, discount }: Props) {
+    const { addProduct, removeProduct, toggleAllProducts, removeAllProducts, products: savedProducts } = UseDiscountProductsStore();
     const { resetParams } = useProviderProductSearchStore();
+    const [showSearch, setShowSearch] = useState<boolean>(false);
     const { data, isLoading, isError, refetch } = UseNewProductSearch();
+    const saveProductsMutation = useMutation({ mutationFn: saveDiscountProducts });
 
     useEffect(() => {
         return () => {
             resetParams();
+            removeAllProducts();
         } // Cleanup function to cancel the query when the component unmounts or when the queryKey changes
     }, [])
+
+    function handleSaveProducts() {
+        saveProductsMutation.mutateAsync({
+            listId: discountListId,
+            products: savedProducts
+        })
+    }
+
+    useEffect(() => {
+        if (!isLoading && data?.products && data?.products?.length > 0) {
+            setTimeout(() => {
+                setShowSearch(true);
+            }, 300);
+        }
+    }, [data])
+
+    useEffect(() => {
+        removeAllProducts();
+    }, [discountListId])
 
     if (isError) {
         return (
@@ -36,20 +70,69 @@ export default function DiscountAddProducts({ companyId }: Props) {
 
     return (
         <div className="w-full h-full relative">
-            <SearchProducts companyId={companyId}>
-                <CustomSearchField
-                    name="name"
-                    label="Nombre"
-                    companyId={companyId}
-                    className="w-56"
-                />
-                <CustomSearchField
-                    name="brand"
-                    label="Marca"
-                    companyId={companyId}
-                    className="w-56"
-                />
-            </SearchProducts>
+            {saveProductsMutation.isPending && <OverlayLoadingIndicator className="bg-black/20" />}
+            <div className="w-full h-20 overflow-hidden rounded-t">
+                <SearchProducts companyId={companyId} className={cn("pt-0 pl-5 h-20 mt-0 border-b-[1px] border-border transition-all duration-700 bg-muted/10 ", {
+                    "-mt-20": showSearch
+                })}>
+                    <CustomSearchField
+                        name="name"
+                        label="Nombre"
+                        companyId={companyId}
+                        className="flex-col items-start [&>div]:w-44"
+                    />
+                    <CustomSearchField
+                        name="brand"
+                        label="Marca"
+                        companyId={companyId}
+                        className="flex-col items-start [&>div]:w-44"
+                    />
+                    <CustomSearchField
+                        name="ean"
+                        label="Ean/Gtin"
+                        companyId={companyId}
+                        className="flex-col items-start [&>div]:w-44"
+                    />
+                </SearchProducts>
+                <div className="w-full flex justify-between items-center h-20 gap-2 border-b-[1px] border-border text-sm bg-muted/20 px-3">
+
+                    <Button
+                        variant="outlineSecondary"
+                        onClick={() => { }}
+                    >
+                        Agregar todos los productos del inventario
+                    </Button>
+                    <Button
+                        className="flex gap-2"
+                        variant="outlineSecondary"
+                        onClick={handleSaveProducts}
+                    >
+                        <MdFactCheck size={20} />
+                        Agregar Seleccionados
+                    </Button>
+
+
+                    <Button
+                        className="ml-2"
+                        variant="ghost"
+                        onClick={() => setShowSearch(!showSearch)}
+                    >
+                        <LuChevronUp />
+                        Ver Buscador
+                    </Button>
+                    <div className="w-full flex justify-end items-center mr-4 gap-2"
+                        onClick={() => {
+                            const allProducts = data?.products?.map(p => p.id);
+                            if (allProducts) toggleAllProducts(allProducts)
+                        }}
+                    >
+                        <Label>Seleccionar todos</Label>
+                        <Checkbox
+                            checked={savedProducts.length !== data?.products?.length}
+                        />
+                    </div>
+                </div>
+            </div>
             {
                 isLoading && <OverlayLoadingIndicator className="w-full h-full" />
             }
@@ -73,16 +156,20 @@ export default function DiscountAddProducts({ companyId }: Props) {
                     </div>
                 )
             }
-            <div>
+
+            <div className="mt-2 overflow-y-auto pl-2 h-[650px]">
                 {
                     data && data.products.map(p => (
-                        <div>
-                            {p.name}
-                            {p.brand}
-                            {p.variety}
-                            {p.price}
-                        </div>)
-                    )
+                        <DiscountProductRow
+                            isSearch
+                            discountPercent={discount}
+                            key={p.id}
+                            product={p}
+                            onAdd={(id) => addProduct(id)}
+                            onRemove={(id) => removeProduct(id)}
+                            isAdded={savedProducts.some(prod => prod === p.id)}
+                        />
+                    ))
                 }
             </div>
         </div>

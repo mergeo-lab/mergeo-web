@@ -57,7 +57,7 @@ export default function SearchProducts({ companyId, className, children }: Props
             >
                 {children}
                 <Button type="submit" className="flex gap-3 px-10" disabled={isDisabled}>
-                    <FiSearch />
+                    <FiSearch size={20} />
                     Buscar
                 </Button>
             </form>

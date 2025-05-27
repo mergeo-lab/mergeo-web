@@ -143,6 +143,7 @@ export default {
   plugins: [
     require('tailwindcss-animate'),
     require('tailwindcss-multi'),
+	require("@tailwindcss/line-clamp"),
     animations
   ],
 };

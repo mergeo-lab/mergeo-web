@@ -5,6 +5,7 @@ import { RxCross2 } from "react-icons/rx";
 import { useFormContext } from "react-hook-form";
 import { HTMLInputTypeAttribute } from "react";
 import { useProviderProductSearchStore } from "@/store/providerProductSearch.store";
+import { cn } from "@/lib/utils";
 
 type Props = {
     name: "name" | "brand" | "ean"; // could be generic if needed
@@ -38,8 +39,8 @@ export default function CustomSearchField({ name, label, inputType = "text", cla
             control={form.control}
             name={name}
             render={({ field }) => (
-                <FormItem className={className}>
-                    <div className="flex items-center gap-2 w-full">
+                <FormItem>
+                    <div className={cn("flex items-center gap-2 w-full", className)}>
                         <FormLabel className="text-nowrap" htmlFor={name}>{label}</FormLabel>
                         <div className="relative w-full">
                             <FormControl>
@@ -52,7 +53,7 @@ export default function CustomSearchField({ name, label, inputType = "text", cla
                                     className="absolute right-0 top-[50%] -translate-y-[50%]"
                                     onClick={handleReset}
                                 >
-                                    <RxCross2 size={20} strokeWidth={3} />
+                                    <RxCross2 size={20} />
                                 </Button>
                             )}
                         </div>

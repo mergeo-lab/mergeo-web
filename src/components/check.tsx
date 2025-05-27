@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils"
+import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im"
 
 type Props = {
     className?: string,
@@ -10,8 +11,8 @@ export function Check({ className, positive }: Props) {
     return (
         <div className={cn("h-[20px] w-[20px] flex justify-center items-center", className)}>
             {positive
-                ? <span className="text-primary text-sm leading-none">✓</span>
-                : <span className="text-destructive text-sm leading-none">x</span>
+                ? <ImCheckboxChecked />
+                : <ImCheckboxUnchecked />
             }
         </div>
     )

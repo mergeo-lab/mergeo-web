@@ -2,6 +2,7 @@ import { API_BASE } from '@/lib/api/config';
 
 export enum configurationEndpoints {
   COMPANY = `${API_BASE}/company`,
+  COMPANY_BY_CUIT = `${API_BASE}/company/cuit`,
   USERS = `${API_BASE}/user`,
   ALL_ROLES = `${API_BASE}/role`,
   ROLE = `${API_BASE}/role`,

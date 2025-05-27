@@ -57,3 +57,28 @@ export async function updateCompany({
     throw error;
   }
 }
+
+export async function searchClientByCuit(
+  companyId: string
+): Promise<CompanySchemaType> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${configurationEndpoints.COMPANY_BY_CUIT}/${companyId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+    throw error;
+  }
+}

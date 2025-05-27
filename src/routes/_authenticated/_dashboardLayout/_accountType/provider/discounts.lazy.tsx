@@ -9,10 +9,13 @@ import NewDiscount from '@/components/configuration/provider/discounts/newDiscou
 import { getAllDiscountList } from '@/lib/discounts';
 import { useQuery } from '@tanstack/react-query';
 import OverlayLoadingIndicator from '@/components/overlayLoadingIndicator';
-import { CreateDiscountSchemaType } from '@/lib/schemas/discounts.schema';
+import { DiscountSchemaType } from '@/lib/schemas/discounts.schema';
 import DiscountListItem from '@/components/configuration/provider/discounts/discountListItem';
 import { useState } from 'react';
 import DiscountTabs from '@/components/configuration/provider/discounts/discountTabs';
+import { GoPencil } from 'react-icons/go';
+import ClientCuitList from '@/components/configuration/provider/discounts/clientsCuitList';
+import { MdAddBusiness } from "react-icons/md";
 
 export const Route = createLazyFileRoute(
     '/_authenticated/_dashboardLayout/_accountType/provider/discounts',
@@ -20,21 +23,14 @@ export const Route = createLazyFileRoute(
     component: Discounts,
 })
 
-const createListButton = (
-    <Button className='mt-5 w-60 flex items-center gap-2'>
-        <CgPlayListAdd size={22} className='-ml-2' />
-        Crear lista
-    </Button>
-)
-
 export function Discounts() {
     const { getCompanyId } = UseCompanyStore();
     const companyId = getCompanyId();
     const [selectedDiscount, setSelectedDiscount] = useState<string | null>(null)
-
+    const [showNewDiscountModal, setShowNewDiscountModal] = useState({ open: false, isEdit: false });
 
     const { data: lists, isLoading: searchListsLoading, isError, refetch } = useQuery({
-        queryKey: ['discountLists', companyId],
+        queryKey: ['discount-lists', companyId],
         queryFn: ({ queryKey }) => {
             const companyId = queryKey[1];
             if (!companyId) {
@@ -66,49 +62,97 @@ export function Discounts() {
                     <p className='text-center font-light'>
                         Crea tus listas para hacer descuentos a clientes especificos.
                     </p>
-                    <NewDiscount
-                        callback={refetch}
-                        triggerButton={<div className='mt-10'>{createListButton}</div>}
-                    />
+                    <Button className='mt-5 w-60 flex items-center gap-2'
+                        onClick={() => setShowNewDiscountModal({ open: true, isEdit: false })}
+                    >
+                        <CgPlayListAdd size={22} className='-ml-2' />
+                        Crear lista
+                    </Button>
                 </div>
             </div>
 
         )
     } else {
         return (
-            <div className='flex h-full'>
-                <div className='w-[30rem] relative bg-white shadow pb-2 flex flex-col items-center z-30'>
-                    <div className='w-full shadow flex justify-center items-center py-4 mb-2'>
-                        <h3 className='text-bold text-[1.2rem]'>Listas de descuentos</h3>
+            <>
+                <div className='flex h-full'>
+                    <div className='w-[25rem] max-w-[25rem] relative bg-white shadow pb-2 flex flex-col items-center z-30'>
+                        <div className='w-full shadow flex justify-center items-center py-4 mb-2'>
+                            <h3 className='text-bold text-[1.2rem]'>Listas de descuentos</h3>
+                        </div>
+                        <div className='w-full h-[80%] overflow-y-auto'>
+                            {lists && lists.map((list: DiscountSchemaType) => (
+                                <DiscountListItem
+                                    onClick={(id: string) => setSelectedDiscount(id)}
+                                    selectedItem={selectedDiscount === list.id}
+                                    key={list.id}
+                                    data={list}
+                                >
+                                    <Button
+                                        type='button'
+                                        variant="ghost"
+                                        className="h-8 w-8! flex justify-center items-center hover:bg-white"
+                                        onClick={() => setShowNewDiscountModal({ open: true, isEdit: true })}
+                                    >
+                                        <GoPencil size={16} />
+                                    </Button>
+
+                                </DiscountListItem>
+                            ))}
+                        </div>
+                        <div className='w-full flex justify-center items-center gap-4 bg-white'>
+                            <Button className='mt-5 w-60 flex items-center gap-2'
+                                onClick={() => {
+                                    setSelectedDiscount(null);
+                                    setShowNewDiscountModal({ open: true, isEdit: false })
+                                }}
+                            >
+                                <CgPlayListAdd size={22} className='-ml-2' />
+                                Crear lista
+                            </Button>
+                        </div>
                     </div>
-                    <div className='w-full h-[80%] overflow-y-auto'>
-                        {lists && lists.map((list: CreateDiscountSchemaType) => (
-                            <DiscountListItem
-                                onClick={(id: string) => setSelectedDiscount(id)}
-                                selectedItem={selectedDiscount === list.id}
-                                key={list.id}
-                                data={list}>
-                            </DiscountListItem>
-                        ))}
-                    </div>
-                    <NewDiscount
-                        callback={refetch}
-                        triggerButton={
-                            <div className='w-full flex justify-center items-center gap-4 bg-white'>
-                                {createListButton}
+                    <div className='w-full flex h-full bg-white'>
+                        <div className='h-full w-3/4 py-5 px-5 z-20 shadow'>
+                            <DiscountTabs
+                                selectedDiscountId={selectedDiscount}
+                                companyId={companyId}
+                                discount={selectedDiscount ? lists.find((item: DiscountSchemaType) => item.id === selectedDiscount)?.discount : 0}
+                            />
+                        </div>
+                        <div className='h-full w-2/6 z-10 relative'>
+                            <div className='w-full border-b-[1px] border-border flex justify-center items-center py-4 mb-2'>
+                                <h3 className='text-bold text-[1.2rem]'>Clientes</h3>
                             </div>
-                        }
-                    />
-                </div>
-                <div className='w-full flex h-full bg-white'>
-                    <div className='h-full w-3/4 py-5 px-10 z-20 shadow'>
-                        <DiscountTabs selectedDiscountId={selectedDiscount} companyId={companyId} />
+                            <div className='px-5'>
+                                {selectedDiscount &&
+                                    <ClientCuitList companies={lists.find((item: DiscountSchemaType) => item.id === selectedDiscount)?.companies} />
+                                }
+                            </div>
+                            <div className='absolute bottom-10 w-full flex justify-center'>
+                                <Button
+                                    variant="outline"
+                                    disabled={!selectedDiscount}
+                                    onClick={() => setShowNewDiscountModal({ open: true, isEdit: true })}
+                                    className='space-x-2'
+                                >
+                                    <MdAddBusiness size={24} />
+                                    <span>Agregar o sacar cliente</span>
+                                </Button>
+                            </div>
+                        </div>
                     </div>
-                    <div className='h-full w-1/4 py-5 px-10 z-10'>
-                        Aca van los clientes
-                    </div>
-                </div>
-            </div>
+                </div >
+                <NewDiscount
+                    itemId={selectedDiscount ? selectedDiscount : null}
+                    openit={showNewDiscountModal.open}
+                    isEdit={showNewDiscountModal.isEdit}
+                    callback={refetch}
+                    onClose={() => setShowNewDiscountModal({ open: false, isEdit: false })}
+                    data={selectedDiscount ? lists.find((item: DiscountSchemaType) => item.id === selectedDiscount) : null}
+                />
+            </>
+
         )
     }
 }

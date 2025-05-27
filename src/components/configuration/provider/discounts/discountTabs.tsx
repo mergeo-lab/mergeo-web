@@ -10,9 +10,10 @@ type Props = {
     className?: string,
     companyId: string,
     selectedDiscountId?: string | null,
+    discount?: number,
 }
 
-export default function DiscountTabs({ className, companyId, selectedDiscountId }: Props) {
+export default function DiscountTabs({ className, companyId, selectedDiscountId, discount = 0 }: Props) {
     const [tab, setTab] = useState("products");
 
     useEffect(() => {
@@ -39,10 +40,14 @@ export default function DiscountTabs({ className, companyId, selectedDiscountId 
                 </TabsList>
 
                 <TabsContent value="products" className="h-full">
-                    <DiscountProducts selectedDiscountId={selectedDiscountId} />
+                    <DiscountProducts selectedDiscountId={selectedDiscountId} discount={discount} />
                 </TabsContent>
                 <TabsContent value="add" className="h-full">
-                    <DiscountAddProducts companyId={companyId} />
+                    <DiscountAddProducts
+                        companyId={companyId}
+                        discountListId={selectedDiscountId}
+                        discount={discount}
+                    />
                 </TabsContent>
             </Tabs>
         </div>

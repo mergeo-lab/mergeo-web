@@ -1,25 +1,44 @@
+import DiscountProductRow from "@/components/configuration/provider/discounts/discountProductRow";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
-import { getDiscountListProducts } from "@/lib/discounts";
+import { getDiscountListProducts, removeDiscountProducts } from "@/lib/discounts";
 import { ProductSchemaType } from "@/lib/schemas";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 type Props = {
     selectedDiscountId: string;
+    discount: number;
 }
 
-export default function DiscountProducts({ selectedDiscountId }: Props) {
+export default function DiscountProducts({ selectedDiscountId, discount }: Props) {
+    const queryClient = useQueryClient();
+
     const { data, isLoading } = useQuery({
         queryKey: ['discount-products', selectedDiscountId],
         queryFn: ({ queryKey }) => {
             const selectedDiscountId = queryKey[1];
             if (!selectedDiscountId) {
-                // Return a rejected promise if companyId is undefined
                 return Promise.reject(new Error('The ID of the list is undefined'));
             }
             return getDiscountListProducts(selectedDiscountId);
         },
-        enabled: !!selectedDiscountId, // Ensure the query runs only if company ID exists
+        enabled: !!selectedDiscountId,
     });
+
+    const removeProductMutation = useMutation({
+        mutationFn: removeDiscountProducts,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ['discount-products', selectedDiscountId],
+            });
+        },
+    });
+
+    function handleRemoveProduct(id: string) {
+        removeProductMutation.mutate({
+            listId: selectedDiscountId,
+            products: [id]
+        })
+    }
 
     if (isLoading) {
         return (<div className='h-full w-full relative '>
@@ -35,14 +54,23 @@ export default function DiscountProducts({ selectedDiscountId }: Props) {
     );
 
     return (
-        data && data.products.map((p: ProductSchemaType) => (
-            <div>
-                {p.name}
-                {p.brand}
-                {p.variety}
-                {p.price}
-            </div>)
-        )
+        <div className="relative">
+            <div className="p-2 pl-5 border border-border rounded-md font-thin mb-4">
+                Descuento aplicado: <span className="text-highlight font-black">{discount}%</span>
+            </div>
+            {removeProductMutation.isPending && <OverlayLoadingIndicator />}
+            <div className="px-4 overflow-auto h-[690px]">
+                {
+                    data && data.products.map((p: ProductSchemaType) => (
+                        <DiscountProductRow
+                            discountPercent={discount}
+                            key={p.id}
+                            product={p}
+                            onRemove={(id) => handleRemoveProduct(id)}
+                        />
+                    ))}
+            </div>
+        </div>
     )
 }
 
