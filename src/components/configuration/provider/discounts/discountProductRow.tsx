@@ -4,7 +4,6 @@ import { ProductSchemaType } from "@/lib/schemas"
 import { cn, formatToArgentinianPesos } from "@/lib/utils"
 import { useCallback } from "react";
 import { LuTrash2 } from "react-icons/lu";
-import { RxCross2 } from "react-icons/rx";
 
 type Props = {
     className?: string,

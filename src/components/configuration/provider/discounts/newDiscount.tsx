@@ -2,7 +2,7 @@ import ClientCuitList from "@/components/configuration/provider/discounts/client
 import ClientFinder from "@/components/configuration/provider/discounts/clientFinder";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import { Button } from "@/components/ui/button";
-import { DialogContent, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
+import { DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
