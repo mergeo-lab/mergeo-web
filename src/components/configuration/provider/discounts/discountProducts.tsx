@@ -1,8 +1,15 @@
 import DiscountProductRow from "@/components/configuration/provider/discounts/discountProductRow";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
+import { PaginationCustom } from "@/components/pagination";
+import { usePaginatedSearch } from "@/hooks/usePaginatedSearch";
 import { getDiscountListProducts, removeDiscountProducts } from "@/lib/discounts";
-import { ProductSchemaType } from "@/lib/schemas";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { PaginationType, ProductSchemaType } from "@/lib/schemas";
+import { DiscountProductSearchSchemaType } from "@/lib/schemas/discounts.schema";
+import UseProviderInventoryPaginationState from "@/store/providerInventoryPagination.store";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from "@/lib/utils";
 
 type Props = {
     selectedDiscountId: string;
@@ -11,33 +18,55 @@ type Props = {
 
 export default function DiscountProducts({ selectedDiscountId, discount }: Props) {
     const queryClient = useQueryClient();
+    const { setPage, page } = UseProviderInventoryPaginationState()
+    const [removingIds, setRemovingIds] = useState<string[]>([]);
+    const [isRemoving, setIsRemoving] = useState(false);
 
-    const { data, isLoading } = useQuery({
-        queryKey: ['discount-products', selectedDiscountId],
-        queryFn: ({ queryKey }) => {
-            const selectedDiscountId = queryKey[1];
-            if (!selectedDiscountId) {
-                return Promise.reject(new Error('The ID of the list is undefined'));
-            }
-            return getDiscountListProducts(selectedDiscountId);
-        },
-        enabled: !!selectedDiscountId,
+    const {
+        data,
+        isLoading,
+        setPagination,
+        handleSearch,
+        refetch,
+    } = usePaginatedSearch<DiscountProductSearchSchemaType & PaginationType, {
+        products: ProductSchemaType[];
+        currentPage: number;
+        total: number;
+        totalPages: number;
+    }>({
+        queryKeyPrefix: ['discount-products', selectedDiscountId, page],
+        queryFn: getDiscountListProducts,
+        getEnabled: () => !!selectedDiscountId,
     });
+
+
+    useEffect(() => {
+        setPagination(prev => ({ ...prev, page: 0 }));
+        handleSearch({
+            listId: selectedDiscountId, page: page,
+        });
+    }, [selectedDiscountId]);
 
     const removeProductMutation = useMutation({
         mutationFn: removeDiscountProducts,
-        onSuccess: () => {
+        onSuccess: (_data) => {
             queryClient.invalidateQueries({
-                queryKey: ['discount-products', selectedDiscountId],
+                queryKey: ['discount-products', selectedDiscountId, page],
             });
+            refetch();
         },
     });
 
     function handleRemoveProduct(id: string) {
-        removeProductMutation.mutate({
-            listId: selectedDiscountId,
-            products: [id]
-        })
+        // Wait for animation before removing
+        setRemovingIds((prev) => [...prev, id]);
+
+        setTimeout(() => {
+            removeProductMutation.mutate({
+                listId: selectedDiscountId,
+                products: [id],
+            });
+        }, 300);
     }
 
     if (isLoading) {
@@ -55,21 +84,51 @@ export default function DiscountProducts({ selectedDiscountId, discount }: Props
 
     return (
         <div className="relative">
-            <div className="p-2 pl-5 border border-border rounded-md font-thin mb-4">
-                Descuento aplicado: <span className="text-highlight font-black">{discount}%</span>
-            </div>
-            {removeProductMutation.isPending && <OverlayLoadingIndicator />}
-            <div className="px-4 overflow-auto h-[690px]">
-                {
-                    data && data.products.map((p: ProductSchemaType) => (
-                        <DiscountProductRow
-                            discountPercent={discount}
-                            key={p.id}
-                            product={p}
-                            onRemove={(id) => handleRemoveProduct(id)}
-                        />
+            <div className="w-full px-5">
+                <div className="p-2 pl-5 border border-border rounded-md font-thin mb-4">
+                    Descuento aplicado: <span className="text-highlight font-black">{discount}%</span>
+                </div>
+                {removeProductMutation.isPending && <OverlayLoadingIndicator />}
+                <div className="px-4 overflow-auto h-[690px]">
+
+                    {data && data.products.map((p: ProductSchemaType) => (
+                        <div key={p.id} className={cn("transition-all overflow-hidden duration-300", {
+                            "opacity-0 max-h-0": removingIds.includes(p.id),
+                            "max-h-[200px]": !removingIds.includes(p.id), // adjust as needed
+                        })}>
+                            <DiscountProductRow
+                                discountPercent={discount}
+                                product={p}
+                                onRemove={() => handleRemoveProduct(p.id)}
+                            />
+                        </div>
                     ))}
+
+                </div>
             </div>
+
+            {data && data.totalPages > 1 && (
+                <div className='sticky bottom-0 bg-white py-5 shadow-[0_-4px_6px_-1px_rgb(0_0_0_/0.1)]'>
+                    <PaginationCustom
+                        currentPage={page}
+                        prev={page > 1}
+                        next={page < data.totalPages}
+                        pages={data.totalPages}
+                        onPageBack={() => {
+                            setPagination(prev => ({ ...prev, page: page - 1 }));
+                            setPage(page - 1);
+                        }}
+                        onPageForward={() => {
+                            setPagination(prev => ({ ...prev, page: page + 1 }));
+                            setPage(page + 1);
+                        }}
+                        onPageChange={(page: number) => {
+                            setPagination(prev => ({ ...prev, page }));
+                            setPage(page);
+                        }}
+                    />
+                </div>
+            )}
         </div>
     )
 }

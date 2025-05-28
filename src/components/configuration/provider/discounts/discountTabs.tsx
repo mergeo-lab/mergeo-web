@@ -34,10 +34,12 @@ export default function DiscountTabs({ className, companyId, selectedDiscountId,
     return (
         <div className={cn("w-full h-full", className)}>
             <Tabs value={tab} onValueChange={setTab} className="w-full h-full">
-                <TabsList className="grid w-full grid-cols-2 bg-muted/20">
-                    <TabsTrigger value="products">Productos</TabsTrigger>
-                    <TabsTrigger value="add">Agregar Productos</TabsTrigger>
-                </TabsList>
+                <div className="w-full px-5">
+                    <TabsList className="grid w-full grid-cols-2 bg-muted/20 ">
+                        <TabsTrigger value="products">Productos</TabsTrigger>
+                        <TabsTrigger value="add">Agregar Productos</TabsTrigger>
+                    </TabsList>
+                </div>
 
                 <TabsContent value="products" className="h-full">
                     <DiscountProducts selectedDiscountId={selectedDiscountId} discount={discount} />

@@ -1,7 +1,8 @@
 import * as React from "react"
-import { LuChevronLeft, LuChevronRight, LuMoveHorizontal } from "react-icons/lu";
+import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 import { cn } from "@/lib/utils"
 import { ButtonProps, buttonVariants } from "@/components/ui/button"
+import { LuEllipsis } from "react-icons/lu";
 
 const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
   <nav
@@ -99,7 +100,7 @@ const PaginationEllipsis = ({
     className={cn("flex h-9 w-9 items-center justify-center", className)}
     {...props}
   >
-    <LuMoveHorizontal className="h-4 w-4" />
+    <LuEllipsis className="h-4 w-4" />
     <span className="sr-only">More pages</span>
   </span>
 )

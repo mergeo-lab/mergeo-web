@@ -11,7 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import OverlayLoadingIndicator from '@/components/overlayLoadingIndicator';
 import { DiscountSchemaType } from '@/lib/schemas/discounts.schema';
 import DiscountListItem from '@/components/configuration/provider/discounts/discountListItem';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DiscountTabs from '@/components/configuration/provider/discounts/discountTabs';
 import { GoPencil } from 'react-icons/go';
 import ClientCuitList from '@/components/configuration/provider/discounts/clientsCuitList';
@@ -28,6 +28,7 @@ export function Discounts() {
     const companyId = getCompanyId();
     const [selectedDiscount, setSelectedDiscount] = useState<string | null>(null)
     const [showNewDiscountModal, setShowNewDiscountModal] = useState({ open: false, isEdit: false });
+    const [prevListLength, setPrevListLength] = useState(0);
 
     const { data: lists, isLoading: searchListsLoading, isError, refetch } = useQuery({
         queryKey: ['discount-lists', companyId],
@@ -41,6 +42,17 @@ export function Discounts() {
         },
         enabled: !!companyId, // Ensure the query runs only if company ID exists
     });
+
+    useEffect(() => {
+        if (!selectedDiscount && lists && lists.length > 0) {
+            setSelectedDiscount(lists[0].id);
+        }
+        if (lists && lists.length > prevListLength) {
+            setSelectedDiscount(lists[0].id);
+        }
+        setPrevListLength(lists ? lists.length : 0);
+
+    }, [lists, selectedDiscount]);
 
     if (isError) return <div>Error</div>
     if (searchListsLoading) return (
@@ -113,7 +125,7 @@ export function Discounts() {
                         </div>
                     </div>
                     <div className='w-full flex h-full bg-white'>
-                        <div className='h-full w-3/4 py-5 px-5 z-20 shadow'>
+                        <div className='h-full w-3/4 py-5 z-20 shadow'>
                             <DiscountTabs
                                 selectedDiscountId={selectedDiscount}
                                 companyId={companyId}

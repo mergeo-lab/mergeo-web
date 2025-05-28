@@ -4,7 +4,11 @@ import {
   DISCOUNT_BY_ID,
   DISCOUNT_UPDATE,
 } from '@/lib/discounts/endpoints';
-import { DiscountFormSchemaType } from '@/lib/schemas/discounts.schema';
+import { PaginationType, ProductSchemaType } from '@/lib/schemas';
+import {
+  DiscountFormSchemaType,
+  DiscountProductSearchSchemaType,
+} from '@/lib/schemas/discounts.schema';
 import { AxiosResponse, isAxiosError } from 'axios';
 
 export async function createDiscountList({
@@ -103,16 +107,35 @@ export async function getAllDiscountList(companyId: string) {
   }
 }
 
-export async function getDiscountListProducts(id: string) {
+export async function getDiscountListProducts(
+  searchParams: DiscountProductSearchSchemaType,
+  pagination: PaginationType
+): Promise<{
+  products: ProductSchemaType[];
+  currentPage: number;
+  total: number;
+  totalPages: number;
+}> {
   try {
+    const params: Record<string, string | number | boolean> = {};
+
+    // pagination
+    params.page = pagination.page || 1;
+    params.pageSize = pagination.pageSize || 10;
+    params.sortOrder = pagination.sortOrder || 'asc';
+
+    console.log('SP: ', params);
+
     const { data: response }: AxiosResponse = await axiosPrivate.get(
-      `${DISCOUNT_BY_ID}/${id}`,
+      `${DISCOUNT_BY_ID}/${searchParams.listId}`,
       {
+        params,
         headers: {
           'Content-Type': 'application/json',
         },
       }
     );
+    console.log(response);
     return response.data;
   } catch (error) {
     if (isAxiosError(error)) {

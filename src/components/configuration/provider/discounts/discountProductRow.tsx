@@ -20,7 +20,7 @@ export default function DiscountProductRow({ className, discountPercent = 0, isA
     }, [product.price, discountPercent]);
 
     return (
-        <div className={cn("w-full pr-6 py-2 border-b-[1px] border-border flex justify-between items-center gap-10 text-sm", className)}>
+        <div className={cn("w-full pr-6 py-2 border-b-[1px] border-border bg-white flex justify-between items-center gap-10 text-sm", className)}>
             <div className="flex gap-10 items-start">
                 <div className="flex flex-col w-36" title={`${product.name} ${product.brand}`}>
                     <span className="w-full truncate">

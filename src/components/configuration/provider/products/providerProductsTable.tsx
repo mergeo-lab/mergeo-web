@@ -9,6 +9,7 @@ import { cn, formatDate, formatToArgentinianPesos } from "@/lib/utils"
 import UseCompanyStore from "@/store/company.store"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
+import { useState } from "react"
 import { FaRegTrashAlt } from "react-icons/fa"
 import { LuSquarePen, LuEye } from "react-icons/lu";
 
@@ -23,34 +24,58 @@ export default function ProviderProductsTable({ products, currentPage, tableRef,
     const queryClient = useQueryClient();
     const { company } = UseCompanyStore();
     const companyId = company?.id ?? "";
+    const [optimisticStatus, setOptimisticStatus] = useState<Record<string, boolean>>({});
 
-    const toggleProductStatus = useMutation({
-        mutationFn: async ({ productId, isActive }: { productId: string; isActive: boolean }) => {
+    const toggleProductStatus = useMutation<
+        unknown, // mutation result type
+        unknown, // error type
+        { productId: string; isActive: boolean }, // variables type
+        { previousProducts?: ProductSchemaType[] } // context type
+    >({
+        mutationFn: async ({ productId, isActive }) => {
             return modifyProduct({ productId, isActive });
         },
-        // Optimistic update
+
         onMutate: async ({ productId, isActive }) => {
             await queryClient.cancelQueries({ queryKey: ["products"] });
 
             const previousProducts = queryClient.getQueryData<ProductSchemaType[]>(["products"]);
 
-            queryClient.setQueryData<ProductSchemaType[]>(["products"], (oldProducts) =>
-                oldProducts?.map((p) => (p.id === productId ? { ...p, isActive } : p)) ?? []
+            // Optimistically update cache
+            queryClient.setQueryData<ProductSchemaType[]>(["products"], (old) =>
+                old?.map((p) =>
+                    p.id === productId ? { ...p, isActive } : p
+                ) ?? []
             );
 
             return { previousProducts };
         },
+
         onError: (_error, _variables, context) => {
+            // Rollback to previous data if error
             if (context?.previousProducts) {
                 queryClient.setQueryData(["products"], context.previousProducts);
             }
         },
+
+        onSuccess: (_data, variables) => {
+            // Ensure the product remains correctly updated in cache
+            queryClient.setQueryData<ProductSchemaType[]>(["products"], (old) =>
+                old?.map((p) =>
+                    p.id === variables.productId ? { ...p, isActive: variables.isActive } : p
+                ) ?? []
+            );
+        },
+
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ["products"] });
+            // Optional: revalidate later if needed
+            // queryClient.invalidateQueries({ queryKey: ["products"] });
         },
     });
 
+
     const handleProductActiveChange = (productId: string, checked: boolean) => {
+        setOptimisticStatus((prev: any) => ({ ...prev, [productId]: checked }));
         toggleProductStatus.mutate({ productId, isActive: checked });
     };
 
@@ -79,8 +104,8 @@ export default function ProviderProductsTable({ products, currentPage, tableRef,
                 <TableBody>
                     {products.map((product: ProductSchemaType) => (
                         <TableRow key={product.id} className={cn("m-0 [&>*]:multi-[border-0;border-collapse;h-5] transition-all", {
-                            "hover:bg-muted/10 bg-muted/10 shadow-[inset_0px_0px_10px_-2px_rgba(0,_0,_0,_0.2)]": !product.isActive,
-                            '[&>td]:opacity-45': !product.isActive,
+                            "hover:bg-muted/10 bg-muted/10 shadow-[inset_0px_0px_10px_-2px_rgba(0,_0,_0,_0.2)]": !(optimisticStatus[product.id] ?? product.isActive),
+                            '[&>td]:opacity-45': !(optimisticStatus[product.id] ?? product.isActive),
                         })}>
                             <TableCell className="font-semibold">
                                 <p className="pl-5">
@@ -99,7 +124,7 @@ export default function ProviderProductsTable({ products, currentPage, tableRef,
                                 <div className="w-full flex justify-center items-center">
                                     <Switch
                                         className="data-[state=unchecked]:bg-destructive"
-                                        checked={product.isActive}
+                                        checked={optimisticStatus[product.id] ?? product.isActive}
                                         onCheckedChange={(checked) => handleProductActiveChange(product.id, checked)}
                                     />
                                 </div>
@@ -109,7 +134,7 @@ export default function ProviderProductsTable({ products, currentPage, tableRef,
                                     <Button
                                         className="hover:multi-[bg-info;text-white;border-info;] text-info"
                                         variant="outlineSecondary"
-                                        disabled={!product.isActive}
+                                        disabled={!(optimisticStatus[product.id] ?? product.isActive)}
                                     >
                                         <LuEye className="h-4 w-4" />
                                     </Button>
@@ -118,7 +143,7 @@ export default function ProviderProductsTable({ products, currentPage, tableRef,
                                     <Button
                                         className="hover:multi-[bg-highlight;text-white;border-highlight;] text-highlight"
                                         variant="outlineSecondary"
-                                        disabled={!product.isActive}
+                                        disabled={!(optimisticStatus[product.id] ?? product.isActive)}
 
                                     >
                                         <LuSquarePen className="h-4 w-4" />
@@ -136,7 +161,7 @@ export default function ProviderProductsTable({ products, currentPage, tableRef,
                                         <Button
                                             className="hover:multi-[bg-destructive;text-white;border-destructive;] text-destructive h-8"
                                             variant="outlineSecondary"
-                                            disabled={!product.isActive}
+                                            disabled={!(optimisticStatus[product.id] ?? product.isActive)}
                                         >
                                             <FaRegTrashAlt className="h-4 w-4" />
                                         </Button>

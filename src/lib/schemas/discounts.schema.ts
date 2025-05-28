@@ -16,6 +16,13 @@ export const DiscountFormSchema = z.object({
   discount: z.number().optional(),
 });
 
+export const DiscountProductSearchSchema = z.object({
+  listId: z.string(),
+});
+
 // Infer TypeScript type from the schema
 export type DiscountSchemaType = z.infer<typeof DiscountSchema>;
 export type DiscountFormSchemaType = z.infer<typeof DiscountFormSchema>;
+export type DiscountProductSearchSchemaType = z.infer<
+  typeof DiscountProductSearchSchema
+>;

@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { createFileRoute, Link, useSearch } from '@tanstack/react-router'
 import noProductsImage from '@/assets/no-products.png'
-import { useProviderProductSearch } from '@/hooks/useProviderProductSearch'
+import { usePaginatedSearch } from '@/hooks/usePaginatedSearch'
 import { useEffect, useRef, useState } from 'react'
 import UseCompanyStore from '@/store/company.store'
 import ErrorMessage from '@/components/errorMessage'
@@ -11,10 +11,11 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { PaginationCustom } from '@/components/pagination'
 import UseProviderInventoryPaginationState, { sortOptions, SortOptionsType } from '@/store/providerInventoryPagination.store'
 import ProductFormFinder from '@/components/configuration/provider/products/productFormFinder'
-import { PaginationSort, ProductsFormFinderType } from '@/lib/schemas'
+import { PaginationSort, ProductSchemaType, ProductsFormFinderType, ProviderProductSearchType } from '@/lib/schemas'
 import NoProductsFound from '@/components/configuration/provider/products/noProductsFound'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { FaPlus } from 'react-icons/fa'
+import { providerProductsSearch } from '@/lib/products'
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/products/')({
     component: () => <Products />,
@@ -27,7 +28,23 @@ export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountT
 
 export default function Products() {
     const { company } = UseCompanyStore();
-    const { data, isLoading, isError, handleSearch, setPagination, refetch } = useProviderProductSearch();
+    const {
+        data,
+        isLoading,
+        isError,
+        refetch,
+        handleSearch,
+        setPagination,
+    } = usePaginatedSearch<ProviderProductSearchType, {
+        products: ProductSchemaType[];
+        currentPage: number;
+        total: number;
+        totalPages: number;
+    }>({
+        queryKeyPrefix: 'products',
+        queryFn: providerProductsSearch,
+    });
+
     const { currentPage } = useSearch({ from: '/_authenticated/_dashboardLayout/_accountType/provider/products/' });
     const { sort, setSort, search, setSearch, setPage, page } = UseProviderInventoryPaginationState()
     const [isSearching, setIsSearching] = useState(false);
