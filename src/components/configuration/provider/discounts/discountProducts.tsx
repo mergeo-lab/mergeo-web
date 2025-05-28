@@ -8,7 +8,6 @@ import { DiscountProductSearchSchemaType } from "@/lib/schemas/discounts.schema"
 import UseProviderInventoryPaginationState from "@/store/providerInventoryPagination.store";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -20,7 +19,6 @@ export default function DiscountProducts({ selectedDiscountId, discount }: Props
     const queryClient = useQueryClient();
     const { setPage, page } = UseProviderInventoryPaginationState()
     const [removingIds, setRemovingIds] = useState<string[]>([]);
-    const [isRemoving, setIsRemoving] = useState(false);
 
     const {
         data,
