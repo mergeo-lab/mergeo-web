@@ -84,9 +84,7 @@ export function DeliveryTimeSelector({
         </PopoverTrigger>
         <PopoverContent className="w-auto p-1" align="start">
           <Calendar
-            initialFocus
             defaultMonth={today}
-            fromMonth={today}
             disabled={(date) => date < today}
             mode="range"
             selected={date}

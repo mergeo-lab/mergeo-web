@@ -56,8 +56,8 @@ export default function DashboardOrders({ companyId, accountType, queryKey, item
                 <div className="divide-y">
                     {data && data.map((order) => (
                         <div key={order.id} className="p-4 flex justify-between items-center hover:bg-gray-50">
-                            <div className="font-medium">Order #{order.preOrderNumber}</div>
-                            <div className="flex items-center">
+                            <div className="font-medium w-32">Order #{order.preOrderNumber}</div>
+                            <div className="flex items-center w-56">
                                 <span className="mr-1 text-gray-500 font-thin">
                                     Cantidad de Productos:
                                 </span>
@@ -74,7 +74,7 @@ export default function DashboardOrders({ companyId, accountType, queryKey, item
                                     :
                                     <StatusBadge className='py-1 font-black text-sm' status={order?.status || ""} />
                             }
-                            <div className="flex items-center justify-end space-x-4 min-w-60">
+                            <div className="flex items-center justify-end space-x-4 w-60">
                                 <div className="flex flex-col justify-end items-end">
                                     <div className="font-medium">{formatToArgentinianPesos(order.totalPrice)}</div>
                                     {order?.status === 'pending' &&
