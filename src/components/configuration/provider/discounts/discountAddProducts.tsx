@@ -70,7 +70,7 @@ export default function DiscountAddProducts({ companyId, discountListId, discoun
 
     return (
         <div className="w-full h-full relative">
-            {saveProductsMutation.isPending && <OverlayLoadingIndicator className="bg-black/20" />}
+            {saveProductsMutation.isPending && <OverlayLoadingIndicator />}
             <div className="w-full h-20 overflow-hidden rounded-t">
                 <SearchProducts companyId={companyId} className={cn("pt-0 pl-5 h-20 mt-0 border-b-[1px] border-border transition-all duration-700 bg-muted/10 ", {
                     "-mt-20": showSearch
