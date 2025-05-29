@@ -72,7 +72,7 @@ export async function login({
   password: string;
 }): Promise<Response<AuthType>> {
   try {
-    const response: Response<AuthType> = await axiosInstance.post(
+    const response: Response<AuthType> = await axiosPrivate.post(
       authEndpoints.LOGIN,
       JSON.stringify({ email: email, password: password }),
       {
