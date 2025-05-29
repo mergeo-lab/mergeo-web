@@ -49,6 +49,12 @@ function OrdersPage() {
     const savedProducts = getAllSavedProducts();
     // const [configSubmitted, setConfigSubmitted] = useState(false);
 
+    // Initialize pickUpDialog as false when component mounts
+    useEffect(() => {
+        setPickUpDialog(false);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     function onTabChange(value: string) {
         const selectedTab = value as TabsEnum;
         setTab(selectedTab)
@@ -81,7 +87,7 @@ function OrdersPage() {
                                     <TabsTrigger className={tabsTriggerClassName} value={TabsEnum.LISTA_DE_PRODUCTOS}>Lista</TabsTrigger>
                                     <TabsTrigger className={tabsTriggerClassName} value={TabsEnum.BUSCAR_PRODUCTOS}>Buscar</TabsTrigger>
                                     <Button variant="ghost" size="sm" onClick={() => toggleMenu()}>
-                                        <RxCross2 size={20}/>
+                                        <RxCross2 size={20} />
                                     </Button>
                                 </TabsList>
                                 <TabsContent className='w-full overflow-x-hidden h-[calc(100%-50px)] m-0 ' value={TabsEnum.LISTA_DE_PRODUCTOS}>
@@ -136,11 +142,11 @@ function OrdersPage() {
                                         <LuList size={20} />
                                     </Button>
                                     <Button variant="ghost" size="sm" onClick={() => toggleMenu(TabsEnum.LISTA_DE_PRODUCTOS)} className='flex flex-col'>
-                                        <LuClipboardList size={20}/>
+                                        <LuClipboardList size={20} />
                                         Lista
                                     </Button>
                                     <Button variant="ghost" size="sm" onClick={() => toggleMenu(TabsEnum.BUSCAR_PRODUCTOS)} className='flex flex-col'>
-                                        <LuPackageSearch size={20}/>
+                                        <LuPackageSearch size={20} />
                                         Buscar
                                     </Button>
                                 </TabsList>
