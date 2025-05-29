@@ -81,7 +81,7 @@ function OrdersPage() {
                                     <TabsTrigger className={tabsTriggerClassName} value={TabsEnum.LISTA_DE_PRODUCTOS}>Lista</TabsTrigger>
                                     <TabsTrigger className={tabsTriggerClassName} value={TabsEnum.BUSCAR_PRODUCTOS}>Buscar</TabsTrigger>
                                     <Button variant="ghost" size="sm" onClick={() => toggleMenu()}>
-                                        <RxCross2 />
+                                        <RxCross2 size={20}/>
                                     </Button>
                                 </TabsList>
                                 <TabsContent className='w-full overflow-x-hidden h-[calc(100%-50px)] m-0 ' value={TabsEnum.LISTA_DE_PRODUCTOS}>
@@ -133,14 +133,14 @@ function OrdersPage() {
                             <>
                                 <TabsList className='rounded-t flex flex-col justify-start rounded-b-none w-full h-full bg-accent px-4 gap-4'>
                                     <Button variant="ghost" size="sm" onClick={() => toggleMenu()}>
-                                        <LuList />
+                                        <LuList size={20} />
                                     </Button>
                                     <Button variant="ghost" size="sm" onClick={() => toggleMenu(TabsEnum.LISTA_DE_PRODUCTOS)} className='flex flex-col'>
-                                        <LuClipboardList />
+                                        <LuClipboardList size={20}/>
                                         Lista
                                     </Button>
                                     <Button variant="ghost" size="sm" onClick={() => toggleMenu(TabsEnum.BUSCAR_PRODUCTOS)} className='flex flex-col'>
-                                        <LuPackageSearch />
+                                        <LuPackageSearch size={20}/>
                                         Buscar
                                     </Button>
                                 </TabsList>

@@ -67,9 +67,9 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                                         <Label className='text-sm font-thin cursor-pointer'>{
                                             acceptedProducts.length !== data?.length ? 'Seleccionar todos' : 'Deseleccionar todos'}</Label>
                                         <Checkbox
-                                            checked={false || acceptedProducts.length === data?.length}
+                                            checked={false || acceptedProducts.length !== data?.length}
                                             disabled={
-                                                orderStatus !== PRE_ORDER_STATUS.pending && acceptedProducts.length === data?.length}
+                                                orderStatus !== PRE_ORDER_STATUS.pending && acceptedProducts.length !== data?.length}
                                         />
                                     </div >
                                 }
@@ -96,7 +96,7 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                                 data && data.map((item) => {
                                     const product = item.product
                                     return (
-                                        <TableRow key={item.product.id} className="hover:bg-white first:border-t-none">
+                                        <TableRow key={product.id} className="hover:bg-white first:border-t-none">
                                             <TableCell>
                                                 <div> {product?.name}</div>
                                                 <div className='text-muted font-thin'>{product?.brand}</div>
@@ -115,7 +115,7 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                                                                     orderStatus !== PRE_ORDER_STATUS.pending && !product.accepted}
                                                                 checked={
                                                                     orderStatus === PRE_ORDER_STATUS.pending
-                                                                        ? !!(acceptedProducts || []).find((p) => p.id === item.id)
+                                                                        ? !(acceptedProducts || []).find((p) => p.id === item.id)
                                                                         : product.accepted
                                                                 }
                                                                 onClick={() => {

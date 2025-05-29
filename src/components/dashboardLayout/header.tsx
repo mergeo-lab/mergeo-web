@@ -6,6 +6,7 @@ import { toast } from "@/components/ui/use-toast"
 import { useAuth } from "@/hooks"
 import { useEffect, useCallback, memo, JSX } from "react"
 import { LuCircleUserRound, LuBell, LuCircleHelp } from "react-icons/lu";
+import { Button } from '@/components/ui/button'
 
 type Props = {
     title?: {
@@ -41,20 +42,6 @@ export function DashboardHeader({ title }: Props) {
         }
     }, [isAuthenticated, router.history]);
 
-    // Memoize individual DropdownMenuItems to prevent unnecessary re-renders
-    const MemoizedProfileItem = memo(() => (
-        <DropdownMenuItem className="w-full justify-center border border-muted cursor-pointer">
-            Mi Perfil
-        </DropdownMenuItem>
-    ));
-
-    const MemoizedLogoutItem = memo(() => (
-        <DropdownMenuItem
-            onClick={closeSession}
-            className="w-full justify-center border border-muted cursor-pointer">
-            Cerrar Sesion
-        </DropdownMenuItem>
-    ));
 
     return (
         <div className='h-16 w-full flex items-center justify-between px-5'>
@@ -64,20 +51,33 @@ export function DashboardHeader({ title }: Props) {
                 </div>
                 {title && <h1 className='text-md'>{title.text}</h1>}
             </div>
-            <div className="h-full flex items-center gap-6">
+            <div className="h-full flex items-center">
                 <Link to="/faq">
-                    <LuCircleHelp size={25} className="text-secondary-background" />
+                    <Button variant="ghost" className='w-fit h-fit px-2'>
+                        <LuCircleHelp size={25} className="text-secondary-background" />
+                    </Button>
                 </Link>
                 <Link to="/notifications">
-                    <LuBell size={25} className="text-secondary-background" />
+                    <Button variant="ghost" className='w-fit h-fit px-2'>
+                        <LuBell size={25} className="text-secondary-background" />
+                    </Button>
                 </Link>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <LuCircleUserRound size={25} className="cursor-pointer text-secondary-background" />
+                        <Button variant="ghost" className='w-fit h-fit px-2'>
+                            <LuCircleUserRound size={25} className="cursor-pointer text-secondary-background" />
+                        </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56 mr-12 mt-2 p-5 space-y-2">
-                        <MemoizedProfileItem />
-                        <MemoizedLogoutItem />
+                    <DropdownMenuContent className="w-56 mr-11 mt-0 p-5 space-y-2">
+                        <DropdownMenuItem className="w-full justify-center border border-muted cursor-pointer">
+                            Mi Perfil
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={closeSession}
+                            className="w-full justify-center border border-muted cursor-pointer">
+
+                            Cerrar Sesion
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>

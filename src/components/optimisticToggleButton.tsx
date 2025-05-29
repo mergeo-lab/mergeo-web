@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { useOptimistic, useTransition } from "react";
+import { useQueryClient, useMutation, QueryKey } from "@tanstack/react-query";
+import React from "react";
 
 interface OptimisticToggleButtonProps<T> {
     itemId: T;
@@ -13,6 +14,10 @@ interface OptimisticToggleButtonProps<T> {
     tooltip?: string;
 }
 
+interface ToggleContext {
+    previousState?: boolean;
+}
+
 export function OptimisticToggleButton<T>({
     itemId,
     defaultState = false,
@@ -22,18 +27,38 @@ export function OptimisticToggleButton<T>({
     disabled,
     tooltip,
 }: OptimisticToggleButtonProps<T>) {
-    const [optimisticState, setOptimisticState] = useOptimistic(defaultState);
-    const [, startTransition] = useTransition(); // using useTransition to handle the state change transition
+    const queryClient = useQueryClient();
+    const queryKey: QueryKey = ['toggleState', itemId]; // itemId must be serializable (string, number, etc.)
+
+    // Use mutation with optimistic updates
+    const mutation = useMutation<void, Error, boolean, ToggleContext>({
+        mutationFn: (newState: boolean) => onToggle(itemId, newState),
+        onMutate: async (newState: boolean) => {
+            await queryClient.cancelQueries({ queryKey }); // correct usage for v4
+
+            const previousState = queryClient.getQueryData<boolean>(queryKey);
+            queryClient.setQueryData(queryKey, newState);
+
+            return { previousState }; // typed via ToggleContext
+        },
+        onError: (_err, _newState, context) => {
+            if (context?.previousState !== undefined) {
+                queryClient.setQueryData(queryKey, context.previousState);
+            }
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey });
+        },
+    });
+
+
+
+    // Get current state from cache or fallback to defaultState
+    const optimisticState = queryClient.getQueryData<boolean>(['toggleState', itemId]) ?? defaultState;
 
     async function handleClick() {
-        startTransition(() => {
-            setOptimisticState((prev) => !prev); // Instantly toggle the state
-        });
-        try {
-            await onToggle(itemId, !optimisticState); // Call mutation with the new state
-        } catch {
-            setOptimisticState(defaultState); // Rollback on failure
-        }
+        if (disabled) return;
+        mutation.mutate(!optimisticState);
     }
 
     return (
@@ -41,11 +66,11 @@ export function OptimisticToggleButton<T>({
             <Tooltip>
                 <TooltipTrigger className={cn({ "cursor-default": disabled })}>
                     <Button
-                        disabled={disabled}
+                        disabled={disabled || mutation.isPending}
                         variant="ghost"
                         onClick={handleClick}
                         className={cn("p-0 m-0 w-12", {
-                            "text-muted/50": disabled
+                            "text-muted/50": disabled || mutation.isPending,
                         })}
                     >
                         {optimisticState ? activeIcon : inactiveIcon}

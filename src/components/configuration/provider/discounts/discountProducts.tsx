@@ -87,7 +87,7 @@ export default function DiscountProducts({ selectedDiscountId, discount }: Props
                     Descuento aplicado: <span className="text-highlight font-black">{discount}%</span>
                 </div>
                 {removeProductMutation.isPending && <OverlayLoadingIndicator />}
-                <div className="px-4 overflow-auto h-[690px]">
+                <div className="px-4 overflow-auto h-[650px] pb-5">
 
                     {data && data.products.map((p: ProductSchemaType) => (
                         <div key={p.id} className={cn("transition-all overflow-hidden duration-300", {
