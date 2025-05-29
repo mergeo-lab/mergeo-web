@@ -15,7 +15,7 @@ const MapRadiusSelection = ({ hideControls = false, initialCenter = centerArgent
     const { setPickUpLocation, pickUpLocation } = UseSearcConfigStore();
     const map = useMap();
     const [radius, setRadius] = useState(pickUpLocation.radius * 1000 || 1000); // Convert to meters for Google Maps API
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     const [center, _] = useState(initialCenter);
 
     useEffect(() => {

@@ -8,14 +8,14 @@ import {
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 
-type SelectItem = {
+type SelectItemType = {
     name: string
     value: string
     disabled?: boolean
 }
 
 type Props = {
-    data: SelectItem[],
+    data: SelectItemType[],
     defautlt: string
     placeholder?: string
     className?: string
@@ -30,7 +30,7 @@ export function SelectScrollable({ data, defautlt, placeholder, className, onCha
             </SelectTrigger>
             <SelectContent className="max-h-60 overflow-y-auto">
                 {
-                    data.map((item: SelectItem) => (
+                    data.map((item: SelectItemType) => (
                         <SelectItem key={item.value} value={item.value} disabled={item.disabled}>
                             {item.name}
                         </SelectItem>

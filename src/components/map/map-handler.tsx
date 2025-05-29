@@ -6,7 +6,7 @@ interface Props {
     place: google.maps.places.PlaceResult | null;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
+ 
 const MapHandler = ({ place }: Props) => {
     const map = useMap();
 
@@ -21,5 +21,5 @@ const MapHandler = ({ place }: Props) => {
     return null;
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
+ 
 export default React.memo(MapHandler);

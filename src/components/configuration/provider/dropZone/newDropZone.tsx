@@ -24,7 +24,7 @@ export function NewDropZone(
         addZone
     }: Props) {
     const { zone } = useZoneStore();
-    const memoizedZone = useMemo(() => zone, [JSON.stringify(zone)]);
+    const memoizedZone = useMemo(() => zone, [zone]);
 
     return (
         <Dialog>

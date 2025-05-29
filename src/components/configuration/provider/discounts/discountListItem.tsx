@@ -14,7 +14,7 @@ export default function DiscountListItem({ className, data, selectedItem, onClic
         <div className={cn("w-full max-w-[23.13rem] py-2 px-10 border-border border-b-2 cursor-pointer hover:bg-border/90 transition-all relative", className, {
             "text-white bg-gradient-to-r from-primary/40 via-primary to-primary pl-16 font-bold cursor-default": selectedItem
         })}
-            onClick={() => onClick && onClick(data.id!)}
+            onClick={() => onClick && onClick(data.id ? data.id : "")}
         >
             <div className={cn("truncate max-w-52", {
                 'max-w-48': selectedItem,

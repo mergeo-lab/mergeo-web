@@ -122,7 +122,8 @@ export function EditPickUp(
 
     async function onSubmit(fields: PickUpSchemaType) {
         onLoading();
-        await mutation.mutateAsync({ branchId: fields.id!, body: fields });
+        if (!fields.id) return;
+        await mutation.mutateAsync({ branchId: fields.id, body: fields });
 
         if (mutation.isError) {
             toast({

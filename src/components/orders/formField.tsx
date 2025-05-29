@@ -15,16 +15,16 @@ export default function BuyOrderFormField({ label, value, className }: Props) {
         if (!containerRef.current) return;
 
         const calculateLines = () => {
-            const container = containerRef.current!;
+            const container = containerRef.current;
             const context = document.createElement("canvas").getContext("2d");
             if (!context) return;
 
             // Set font styles to match the container
-            const computedStyles = window.getComputedStyle(container);
-            context.font = `${computedStyles.fontSize} ${computedStyles.fontFamily}`;
+            const computedStyles = container && window.getComputedStyle(container);
+            context.font = computedStyles ? `${computedStyles.fontSize} ${computedStyles.fontFamily}` : "";
 
             const words = String(value).split(" ");
-            const maxWidth = container.offsetWidth - 50;
+            const maxWidth = container && container.offsetWidth - 50;
             const calculatedLines: string[] = [];
             let currentLine = "";
 
@@ -32,7 +32,7 @@ export default function BuyOrderFormField({ label, value, className }: Props) {
                 const testLine = currentLine ? `${currentLine} ${word}` : word;
                 const testWidth = context.measureText(testLine).width;
 
-                if (testWidth > maxWidth) {
+                if (maxWidth && testWidth > maxWidth) {
                     calculatedLines.push(currentLine);
                     currentLine = word; // Start new line
                 } else {

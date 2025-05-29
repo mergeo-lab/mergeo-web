@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const LastSellSchema = z.object({
+const _LastSellSchema = z.object({
   created: z.string(),
   updated: z.string(),
   id: z.string(),
@@ -10,7 +10,7 @@ const LastSellSchema = z.object({
   totalPrice: z.number(),
 });
 
-const BestMonthSellSchema = z.object({
+const _BestMonthSellSchema = z.object({
   created: z.string(),
   updated: z.string(),
   id: z.string(),
@@ -20,12 +20,12 @@ const BestMonthSellSchema = z.object({
   totalPrice: z.number(),
 });
 
-const SellInfoResponseSchema = z.object({
-  lastSell: LastSellSchema,
-  bestMonthSell: BestMonthSellSchema,
+const _SellInfoResponseSchema = z.object({
+  lastSell: _LastSellSchema,
+  bestMonthSell: _BestMonthSellSchema,
 });
 
-const BestZoneResponseSchema = z.object({
+const _BestZoneResponseSchema = z.object({
   dropZoneId: z.string(),
   zoneName: z.string(),
   totalRevenue: z.number(),
@@ -33,22 +33,22 @@ const BestZoneResponseSchema = z.object({
   totalProductsSold: z.number(),
 });
 
-const ChartDataSchema = z.object({
+const _ChartDataSchema = z.object({
   month: z.number(),
   total: z.number(),
 });
 
-const BestMonthSchema = z.object({
+const _BestMonthSchema = z.object({
   month: z.number(),
   total: z.number(),
 });
 
-const ChartSchema = z.object({
-  chartData: z.array(ChartDataSchema),
+const _ChartSchema = z.object({
+  chartData: z.array(_ChartDataSchema),
   totalPeriod: z.number(),
   averageMonthly: z.number(),
   growth: z.number(),
-  bestMonth: BestMonthSchema,
+  bestMonth: _BestMonthSchema,
 });
 
 export const UserPerformanceSchema = z.object({
@@ -59,7 +59,7 @@ export const UserPerformanceSchema = z.object({
   percentage: z.number(),
 });
 
-const TopSelledProductSchema = z.object({
+const _TopSelledProductSchema = z.object({
   id: z.string(),
   name: z.string(),
   totalSold: z.number(),
@@ -69,10 +69,10 @@ const TopSelledProductSchema = z.object({
 export const ProductsStatsSchema = z.object({
   allProducts: z.number(),
   activeProducts: z.number(),
-  topSelledProducts: z.array(TopSelledProductSchema),
+  topSelledProducts: z.array(_TopSelledProductSchema),
 });
 
-const OrderSchema = z.object({
+const _OrderSchema = z.object({
   id: z.string(),
   created: z.string(),
   preOrderNumber: z.number(),
@@ -84,17 +84,17 @@ const OrderSchema = z.object({
   buyOrderId: z.string().optional(),
 });
 
-const DashboardOrdersSchema = z.array(OrderSchema);
+const _DashboardOrdersSchema = z.array(_OrderSchema);
 
 // CLIENT
-const BranchSchema = z.object({
+const _BranchSchema = z.object({
   branchId: z.string(),
   branchName: z.string(),
   orderCount: z.number(),
   percent: z.number(),
 });
 
-const TopBranchSchema = z.object({
+const _TopBranchSchema = z.object({
   branchId: z.string(),
   branchName: z.string(),
   orderCount: z.number(),
@@ -103,19 +103,19 @@ const TopBranchSchema = z.object({
   approvalPercent: z.number(),
 });
 
-const DashboardBranchSchema = z.object({
-  branches: z.array(BranchSchema),
-  topBranch: TopBranchSchema,
+const _DashboardBranchSchema = z.object({
+  branches: z.array(_BranchSchema),
+  topBranch: _TopBranchSchema,
 });
 
-const ListCountSchema = z.object({
+const _ListCountSchema = z.object({
   title: z.string(),
   count: z.number(),
   type: z.string(),
 });
-const DashboardListCountSchema = z.array(ListCountSchema);
+const _DashboardListCountSchema = z.array(_ListCountSchema);
 
-const ProductSchema = z.object({
+const _ProductSchema = z.object({
   id: z.string(),
   name: z.string(),
   brand: z.string(),
@@ -123,33 +123,33 @@ const ProductSchema = z.object({
   netContent: z.string(),
 });
 
-const MostBuyedProductSchema = z.object({
-  product: ProductSchema,
+const _MostBuyedProductSchema = z.object({
+  product: _ProductSchema,
   totalBuyed: z.number(),
   spent: z.number(),
 });
 
-const TotalBuyedProductsSchema = z.object({
+const _TotalBuyedProductsSchema = z.object({
   week: z.number(),
   month: z.number(),
   year: z.number(),
 });
 
 export const ClientProductsStatsSchema = z.object({
-  totalBuyedProducts: TotalBuyedProductsSchema,
-  mostBuyedProducts: z.array(MostBuyedProductSchema),
+  totalBuyedProducts: _TotalBuyedProductsSchema,
+  mostBuyedProducts: z.array(_MostBuyedProductSchema),
 });
 
 // Infer TypeScript type from the schema
-export type SellInfoResponseType = z.infer<typeof SellInfoResponseSchema>;
-export type BestZoneResponseType = z.infer<typeof BestZoneResponseSchema>;
-export type ChartDataType = z.infer<typeof ChartSchema>;
+export type SellInfoResponseType = z.infer<typeof _SellInfoResponseSchema>;
+export type BestZoneResponseType = z.infer<typeof _BestZoneResponseSchema>;
+export type ChartDataType = z.infer<typeof _ChartSchema>;
 export type UserPerformanceType = z.infer<typeof UserPerformanceSchema>;
-export type TopSelledProductType = z.infer<typeof TopSelledProductSchema>;
+export type TopSelledProductType = z.infer<typeof _TopSelledProductSchema>;
 export type ProductsStatsType = z.infer<typeof ProductsStatsSchema>;
-export type DashboardOrdersType = z.infer<typeof DashboardOrdersSchema>;
+export type DashboardOrdersType = z.infer<typeof _DashboardOrdersSchema>;
 
 //CLIENT
-export type DashboardBranchType = z.infer<typeof DashboardBranchSchema>;
-export type DashboardListCountType = z.infer<typeof DashboardListCountSchema>;
+export type DashboardBranchType = z.infer<typeof _DashboardBranchSchema>;
+export type DashboardListCountType = z.infer<typeof _DashboardListCountSchema>;
 export type ClientProductsStatsType = z.infer<typeof ClientProductsStatsSchema>;

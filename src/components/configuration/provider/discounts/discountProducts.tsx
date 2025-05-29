@@ -43,6 +43,7 @@ export default function DiscountProducts({ selectedDiscountId, discount }: Props
         handleSearch({
             listId: selectedDiscountId, page: page,
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedDiscountId]);
 
     const removeProductMutation = useMutation({

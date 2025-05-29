@@ -50,7 +50,7 @@ export default function SearchProductsTable({ products, removeProduct, maxHeight
                                 </TableCell>
                                 <TableCell className="m-0 p-0 py-2 px-4 leading-none">
                                     <div className="w-full flex justify-end">
-                                        <Button variant="ghost" className="w-fit h-fit" onClick={() => handleRemoveProduct(product.id!)}>
+                                        <Button variant="ghost" className="w-fit h-fit" onClick={() => handleRemoveProduct(product.id ? product.id : "")}>
                                             <MemoizedTrashIcon size={15} className="text-destructive" />
                                         </Button>
                                     </div>

@@ -49,7 +49,7 @@ export default function BackLink({
     } else {
         return (
             <Button
-                onClick={!disabled ? callback : () => { }}
+                onClick={!disabled ? callback : undefined}
                 variant="ghost"
                 type="button"
                 className={cn("text-secondary px-4", {

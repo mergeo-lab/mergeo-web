@@ -172,7 +172,7 @@ export function useDrawingManagerEvents(
             break;
           }
 
-          // eslint-disable-next-line no-fallthrough
+           
           case google.maps.drawing.OverlayType.RECTANGLE:
             ['bounds_changed', 'dragstart', 'dragend'].forEach((eventName) =>
               addUpdateListener(eventName, drawResult)

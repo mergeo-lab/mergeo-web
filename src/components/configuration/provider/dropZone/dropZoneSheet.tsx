@@ -81,6 +81,7 @@ export function DropZoneSheet({
         ) {
             form.setValue('zone', { type: "Polygon", coordinates: selectedZone });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedZone]);
 
 

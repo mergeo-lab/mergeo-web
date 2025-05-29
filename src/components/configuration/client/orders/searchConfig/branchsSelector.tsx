@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+ 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getBranches } from "@/lib/configuration/branch";
 import { BranchesSchemaType } from "@/lib/schemas";

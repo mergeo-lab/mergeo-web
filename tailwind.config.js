@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 import animations from '@midudev/tailwind-animations'
 
 /** @type {import('tailwindcss').Config} */
@@ -139,7 +139,7 @@ export default {
   		}
   	}
   },
-  // eslint-disable-next-line no-undef
+   
   plugins: [
     require('tailwindcss-animate'),
     require('tailwindcss-multi'),

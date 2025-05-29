@@ -26,13 +26,13 @@ type Props = {
     callback?: () => void,
 }
 
-type EditBranch = {
+type EditBranchType = {
     branchData: BranchesSchemaType | null,
     isOpen: boolean,
 }
 
 export function BranchPicker({ className, companyId, isEditing, notFoundMessage, newBranch, onLoading, callback }: Props) {
-    const [editBranch, setEditBranch] = useState<EditBranch>({ branchData: null, isOpen: false });
+    const [editBranch, setEditBranch] = useState<EditBranchType>({ branchData: null, isOpen: false });
 
     const { data: branchesResult, isLoading, isError, refetch } = useQuery({
         queryKey: ['branches', companyId],

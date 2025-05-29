@@ -148,12 +148,12 @@ function DashboardLayout() {
                 try {
                     if (user.accountType === 'client') {
                         await Promise.all([
-                            import('./_dashboardLayout/_accountType/client/dashboard.lazy.tsx'),
+                            import('./_dashboardLayout/_accountType/client/dashboard.tsx'),
                             import('./_dashboardLayout/_accountType/client/orders'),
                         ]);
                     } else if (user.accountType === 'provider') {
                         await Promise.all([
-                            import('./_dashboardLayout/_accountType/provider/dashboard.lazy'),
+                            import('./_dashboardLayout/_accountType/provider/dashboard.tsx'),
                             import('./_dashboardLayout/_accountType/provider/products'),
                         ]);
                     }

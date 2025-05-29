@@ -32,7 +32,7 @@ export default function DiscountAddProducts({ companyId, discountListId, discoun
             resetParams();
             removeAllProducts();
         } // Cleanup function to cancel the query when the component unmounts or when the queryKey changes
-    }, [])
+    }, [removeAllProducts, resetParams])
 
     function handleSaveProducts() {
         saveProductsMutation.mutateAsync({
@@ -47,11 +47,11 @@ export default function DiscountAddProducts({ companyId, discountListId, discoun
                 setShowSearch(true);
             }, 300);
         }
-    }, [data])
+    }, [data, isLoading])
 
     useEffect(() => {
         removeAllProducts();
-    }, [discountListId])
+    }, [discountListId, removeAllProducts])
 
     if (isError) {
         return (
@@ -96,12 +96,12 @@ export default function DiscountAddProducts({ companyId, discountListId, discoun
                 </SearchProducts>
                 <div className="w-full flex justify-between items-center h-20 gap-2 border-b-[1px] border-border text-sm bg-muted/20 px-3">
 
-                    <Button
+                    {/* <Button
                         variant="outlineSecondary"
                         onClick={() => { }}
                     >
                         Agregar todos los productos del inventario
-                    </Button>
+                    </Button> */}
                     <Button
                         className="flex gap-2"
                         variant="outlineSecondary"

@@ -39,7 +39,7 @@ export default function SearchProducts({ companyId, className, children }: Props
         } else {
             try {
                 await setParams({ name, brand, ean, companyId });
-            } catch (error) {
+            } catch {
                 form.clearErrors();
                 form.reset(fields, {
                     keepValues: true,

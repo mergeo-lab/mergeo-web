@@ -199,7 +199,8 @@ export default function ProductsTable({ configCanceled }: Params) {
         if (quantity === 0) {
             removeProduct(product.id);
         } else {
-            saveProduct({ ...product, providerId: product.providerId!, dropZoneId: product.dropZoneId || '' }, quantity);
+            if (!product.providerId) return;
+            saveProduct({ ...product, providerId: product.providerId, dropZoneId: product.dropZoneId || '' }, quantity);
         }
 
         // Update filtered products without causing a full re-render

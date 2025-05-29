@@ -20,11 +20,15 @@ type Props = {
     deleteCallback?: () => void,
 }
 
+type OptimisticType = {
+    [key: string]: boolean
+}
+
 export default function ProviderProductsTable({ products, currentPage, tableRef, deleteCallback }: Props) {
     const queryClient = useQueryClient();
     const { company } = UseCompanyStore();
     const companyId = company?.id ?? "";
-    const [optimisticStatus, setOptimisticStatus] = useState<Record<string, boolean>>({});
+    const [optimisticStatus, setOptimisticStatus] = useState<OptimisticType>({});
 
     const toggleProductStatus = useMutation<
         unknown, // mutation result type
@@ -75,7 +79,7 @@ export default function ProviderProductsTable({ products, currentPage, tableRef,
 
 
     const handleProductActiveChange = (productId: string, checked: boolean) => {
-        setOptimisticStatus((prev: any) => ({ ...prev, [productId]: checked }));
+        setOptimisticStatus((prev: OptimisticType) => ({ ...prev, [productId]: checked }));
         toggleProductStatus.mutate({ productId, isActive: checked });
     };
 

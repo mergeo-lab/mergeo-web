@@ -67,7 +67,7 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                                         <Label className='text-sm font-thin cursor-pointer'>{
                                             acceptedProducts.length !== data?.length ? 'Seleccionar todos' : 'Deseleccionar todos'}</Label>
                                         <Checkbox
-                                            checked={false || acceptedProducts.length !== data?.length}
+                                            checked={acceptedProducts.length !== data?.length}
                                             disabled={
                                                 orderStatus !== PRE_ORDER_STATUS.pending && acceptedProducts.length !== data?.length}
                                         />
@@ -79,7 +79,7 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                 {isLoading ?
                     <TableBody className="bg-white hover:bg-white">
                         {Array.from({ length: 6 }).map((_, index) => (
-                            <TableRow className="hover:bg-transparent border-none">
+                            <TableRow key={"tr-" + index} className="hover:bg-transparent border-none">
                                 <TableCell colSpan={7} className="h-0 p-2 border-none hover:none ">
                                     <Skeleton key={index} className="h-14 w-full rounded-sm" />
                                 </TableCell>

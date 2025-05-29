@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query"
 import { logout } from "@/lib/auth"
 import { toast } from "@/components/ui/use-toast"
 import { useAuth } from "@/hooks"
-import { useEffect, useCallback, memo, JSX } from "react"
+import { useEffect, useCallback, JSX } from "react"
 import { LuCircleUserRound, LuBell, LuCircleHelp } from "react-icons/lu";
 import { Button } from '@/components/ui/button'
 

@@ -6,7 +6,10 @@ import { getAllBuyOrders } from '@/lib/orders';
 export const useBuyOrders = (companyId?: string, isClient?: boolean) => {
   return useQuery<BuyOrderSchemaType[]>({
     queryKey: ['buyOrders', companyId, isClient],
-    queryFn: () => getAllBuyOrders(companyId!, isClient!),
+    queryFn: async () => {
+      if (!companyId || typeof isClient !== 'boolean') return [];
+      return getAllBuyOrders(companyId, isClient);
+    },
     enabled: !!companyId && typeof isClient === 'boolean', // solo ejecuta cuando ambos existen
   });
 };

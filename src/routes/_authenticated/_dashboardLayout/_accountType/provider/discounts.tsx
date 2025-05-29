@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import UseCompanyStore from '@/store/company.store';
 
@@ -17,7 +17,7 @@ import { GoPencil } from 'react-icons/go';
 import ClientCuitList from '@/components/configuration/provider/discounts/clientsCuitList';
 import { MdAddBusiness } from "react-icons/md";
 
-export const Route = createLazyFileRoute(
+export const Route = createFileRoute(
     '/_authenticated/_dashboardLayout/_accountType/provider/discounts',
 )({
     component: Discounts,
@@ -52,6 +52,7 @@ export function Discounts() {
         }
         setPrevListLength(lists ? lists.length : 0);
 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lists, selectedDiscount]);
 
     if (isError) return <div>Error</div>

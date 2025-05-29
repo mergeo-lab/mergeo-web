@@ -31,13 +31,13 @@ export default function DropZoneItem({ item, isEditing, remove, edit, showMap }:
             </div>
             <div className="w-full flex justify-end items-center bg-muted/40 relative">
                 {isEditing == item.id && <span className="bg-highlight text-white text-sm absolute left-2 px-2 rounded">EDITANDO</span>}
-                <Button variant="ghost" className="hover:bg-muted hover:text-white h-8 w-8 p-0" onClick={() => showMap(item.id!)}>
+                <Button variant="ghost" className="hover:bg-muted hover:text-white h-8 w-8 p-0" onClick={() => showMap(item.id ? item.id : "")}>
                     <FaRegMap size={15} />
                 </Button>
-                <Button variant="ghost" className="hover:bg-muted hover:text-white h-8 w-8 p-0" onClick={() => remove(item.id!)}>
+                <Button variant="ghost" className="hover:bg-muted hover:text-white h-8 w-8 p-0" onClick={() => remove(item.id ? item.id : "")}>
                     <FaRegTrashAlt size={15} />
                 </Button>
-                <Button variant="ghost" className="hover:bg-muted hover:text-white h-8 w-8 p-0" onClick={() => edit(item.id!)}>
+                <Button variant="ghost" className="hover:bg-muted hover:text-white h-8 w-8 p-0" onClick={() => edit(item.id ? item.id : "")}>
                     <GoPencil size={15} />
                 </Button>
             </div>

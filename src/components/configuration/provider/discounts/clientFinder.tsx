@@ -74,7 +74,7 @@ export default function ClientFinder({ onCompanyAdded }: Props) {
             setSelectedItem(null);
             setErrorMsg(mutation.error.message);
         }
-    }, [mutation.isSuccess, mutation.isError]);
+    }, [mutation.isSuccess, mutation.isError, mutation.data, mutation.error?.message]);
 
     return (
         <div className="mb-2">

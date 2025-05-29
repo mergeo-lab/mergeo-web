@@ -11,6 +11,7 @@ import { routeTree } from '@/routeTree.gen'
 import { APIProvider } from '@vis.gl/react-google-maps'
 import { Button } from '@/components/ui/button'
 import { LuBug } from 'react-icons/lu'
+import { AuthContextType } from '@/types'
 
 const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
@@ -19,7 +20,7 @@ const router = createRouter({
   routeTree,
   defaultPreload: 'intent',
   context: {
-    auth: undefined!, // This will be set after we wrap the app in an AuthProvider
+    auth: {} as AuthContextType, // This will be set after we wrap the app in an AuthProvider
   },
   defaultNotFoundComponent: () => {
     return (
@@ -55,7 +56,14 @@ Bugsnag.start({
 })
 BugsnagPerformance.start({ apiKey: '667be40e7f392b57b0f07f6cd23f2de1' })
 
-const ErrorBoundary = Bugsnag.getPlugin('react')!.createErrorBoundary(React);
+const ErrorBoundary = Bugsnag.getPlugin('react')?.createErrorBoundary(React) as React.ComponentType<{
+  children: React.ReactNode
+  FallbackComponent?: React.ComponentType<{ error: Error; info: React.ErrorInfo }>
+}>;
+
+if (!ErrorBoundary) {
+  throw new Error('Bugsnag React plugin not loaded');
+}
 
 function fallbackRender({ error, clearError }: { error: Error; info: ErrorInfo; clearError: () => void }) {
   return (
@@ -85,7 +93,7 @@ function fallbackRender({ error, clearError }: { error: Error; info: ErrorInfo; 
 
 const InnerApp = React.memo(() => {
   const auth = useAuth()
-  return <RouterProvider router={router} context={{ auth }} />
+  return <RouterProvider router={router} context={{ auth: auth as AuthContextType }} />
 })
 
 export default function App() {

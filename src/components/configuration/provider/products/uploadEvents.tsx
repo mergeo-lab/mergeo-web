@@ -41,7 +41,7 @@ export function UploadEvents({ providerId, fileName, onFinish }: Props) {
         if (uploadPercent === 100) {
             onFinish(fileName);
         }
-    }, [currentUpload?.percent]);
+    }, [currentUpload.percent, fileName, onFinish, uploadPercent]);
 
     // If the file is not being uploaded yet or is already finished
     if (!currentUpload) {

@@ -43,8 +43,14 @@ export function SelectedProductsSheet({
     }, []);
 
     const saveProducts = async () => {
+        if (!companyId) {
+            console.error("Company ID is undefined");
+            setIsLoading(false);
+            return;
+        }
+        
         setIsLoading(true);
-        const response = await mutation.mutateAsync({ products, companyId: companyId! });
+        const response = await mutation.mutateAsync({ products, companyId });
         if (response.length > 0) {
             setIsLoading(false);
             onSaveCallback && onSaveCallback();
@@ -117,8 +123,8 @@ export function SelectedProductsSheet({
                 </div>
 
                 <SheetFooter className="absolute left-0 bottom-0 p-10 w-full flex justify-center border-t-2 bg-white">
-                    <Button disabled={!products.length} className="w-full" onClick={() => {
-                        products.length && saveProducts()
+                    <Button disabled={!products.length || !companyId} className="w-full" onClick={() => {
+                        products.length && companyId && saveProducts()
                     }}>
                         Subir productos
                     </Button>

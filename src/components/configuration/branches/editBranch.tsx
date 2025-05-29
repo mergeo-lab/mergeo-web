@@ -112,7 +112,8 @@ export function EditBranch(
 
     async function onSubmit(fields: BranchesSchemaType) {
         onLoading();
-        const response = await mutation.mutateAsync({ branchId: fields.id!, body: fields });
+        if (!fields.id) return;
+        const response = await mutation.mutateAsync({ branchId: fields.id, body: fields });
 
         if (response.error) {
             toast({

@@ -51,7 +51,8 @@ export default function NewDiscount({ openit = false, isEdit = false, onClose, d
     async function onSubmit(data: DiscountSchemaType) {
         const companiesId = selectedCompanies.map(c => c.id) || []
         if (isEdit) {
-            await mutation.mutateAsync({ id: itemId!, body: data, companies: companiesId });
+            if (!itemId) return;
+            await mutation.mutateAsync({ id: itemId, body: data, companies: companiesId });
         } else {
             console.log('agregandp lista con data : ', data)
             await mutation.mutateAsync({ id: companyId, body: data, companies: companiesId });
@@ -77,6 +78,7 @@ export default function NewDiscount({ openit = false, isEdit = false, onClose, d
             mutation.reset();
             setSelectedCompanies([]);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mutation.isSuccess])
 
     useEffect(() => {
@@ -95,6 +97,7 @@ export default function NewDiscount({ openit = false, isEdit = false, onClose, d
             });
             setSelectedCompanies([]);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [openit, isEdit]);
 
     return (

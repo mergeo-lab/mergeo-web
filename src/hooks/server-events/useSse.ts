@@ -41,7 +41,10 @@ export function subscribeSSE<T>(
     listeners.set(event, new Set());
   }
 
-  listeners.get(event)!.add(callback as Callback<unknown>);
+  const eventListeners = listeners.get(event);
+  if (eventListeners) {
+    eventListeners.add(callback as Callback<unknown>);
+  }
 
   return () => {
     listeners.get(event)?.delete(callback as Callback<unknown>);

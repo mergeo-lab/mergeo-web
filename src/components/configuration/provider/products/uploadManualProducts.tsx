@@ -28,13 +28,13 @@ export default function UploadManualProducts() {
     }
 
     useEffect(() => {
-        console.log('data in upload manual', data);
         if (data) {
             const filtered = data.products.filter(product => {
                 return !allProducts.some(p => p.id === product.id);
             });
             setFilteredProducts(filtered);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data])
 
     useEffect(() => {

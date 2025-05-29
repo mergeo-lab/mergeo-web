@@ -22,10 +22,11 @@ export default function UploadFile() {
 
     useEffect(() => {
         return () => {
+            // eslint-disable-next-line react-hooks/exhaustive-deps
             dropzoneRef.current?.reset();
             removeFinishedFromQueue();
         }
-    }, [])
+    }, [removeFinishedFromQueue])
 
     return (
         <div className='p-10'>
@@ -64,7 +65,7 @@ export default function UploadFile() {
             </div>
             <div>
                 <UploadQueueHandler
-                    providerId={companyId!}
+                    providerId={companyId ? companyId : ""}
                     onFinish={productsQueueFinishCallback}
                 />
 

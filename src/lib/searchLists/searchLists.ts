@@ -16,7 +16,7 @@ export async function newSearchList({
 }): Promise<{ data: SearchListType }> {
   try {
     const productsWithoutId =
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+       
       body.products && body.products.map(({ id, ...rest }) => rest);
     const response: AxiosResponse = await axiosPrivate.post(
       `${SEARCH_LISTS}/${companyId}`,
@@ -158,7 +158,7 @@ export async function addProductsToList({
   body: SearchListProductType[];
 }): Promise<{ data: SearchListType }> {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     const productsWithoutId = body && body.map(({ id, ...rest }) => rest);
     console.log(productsWithoutId);
     const response: AxiosResponse = await axiosPrivate.post(

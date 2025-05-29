@@ -57,7 +57,8 @@ export function ProductsPresentations({
             removeProduct(product.id);
             saveMorePresentations(hasMore.filter((id) => id !== productId))
         } else {
-            saveProduct({ ...product, providerId: product.providerId!, dropZoneId: product.dropZoneId || '' }, quantity);
+            if (!product.providerId) return;
+            saveProduct({ ...product, providerId: product.providerId, dropZoneId: product.dropZoneId || '' }, quantity);
             saveMorePresentations(productId ? [productId] : [])
         }
     }
@@ -176,7 +177,7 @@ export function ProductsPresentations({
                 </div>
                 <SheetFooter className="p-10 items-center">
                     <SheetClose className="w-full">
-                        <Button variant="secondary" className="w-full" onClick={() => { }}>Cerrar</Button>
+                        <Button variant="secondary" className="w-full" >Cerrar</Button>
                     </SheetClose>
                 </SheetFooter>
             </SheetContent >

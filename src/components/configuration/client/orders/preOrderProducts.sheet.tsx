@@ -93,7 +93,7 @@ export function PreOrderProductsSheet({
                 </div>
                 <SheetFooter className="p-10 items-center">
                     <SheetClose className="w-full">
-                        <Button variant="secondary" className="w-full" onClick={() => { }}>Cerrar</Button>
+                        <Button variant="secondary" className="w-full">Cerrar</Button>
                     </SheetClose>
                 </SheetFooter>
             </SheetContent >

@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import TopPerformerCard from '@/components/dashboard/provider/topPerformerCard';
 import SellsInfo from '@/components/dashboard/sellsInfo';
 import Chart from '@/components/dashboard/chart';
@@ -8,7 +8,7 @@ import BestZone from '@/components/dashboard/provider/bestZone';
 import DashboardOrders from '@/components/dashboard/dashboardOrders';
 import { ACCOUNT } from '@/lib/constants';
 
-export const Route = createLazyFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/dashboard')({
+export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/dashboard')({
     component: Index,
 })
 

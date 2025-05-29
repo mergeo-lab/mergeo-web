@@ -1,16 +1,10 @@
 import * as React from 'react'
-import { AuthContextType, UserType } from './types/user.type'
+import { UserType } from './types/user.type'
 import UseUserStore, { removeUser } from './store/user.store'
-import { createContext, useState } from 'react'
+import { useState } from 'react'
 import { removeRegistrationStore } from '@/store/registration.store';
 import { removeCompany } from '@/store/company.store';
-
-export const AuthContext = createContext<AuthContextType>({
-    user: null,
-    isAuthenticated: false,
-    logIn: () => { },
-    logOut: () => Promise.resolve(),
-});
+import { AuthContext } from '@/lib/auth/authContext';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const userState = UseUserStore();

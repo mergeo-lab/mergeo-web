@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import Chart from '@/components/dashboard/chart';
 import UseCompanyStore from '@/store/company.store';
 import DashboardOrders from '@/components/dashboard/dashboardOrders';
@@ -7,7 +7,7 @@ import DashboardBranches from '@/components/dashboard/client/dashboardBranches';
 import DashboardListsCount from '@/components/dashboard/client/dashboardListsCount';
 import ClientProductsStats from '@/components/dashboard/client/clientProductsStats';
 
-export const Route = createLazyFileRoute('/_authenticated/_dashboardLayout/_accountType/client/dashboard')({
+export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/dashboard')({
     component: Index,
 })
 
