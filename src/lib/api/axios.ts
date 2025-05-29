@@ -12,21 +12,58 @@ export const axiosPrivate = axios.create({
   withCredentials: true,
 });
 
+let isRefreshing = false;
+let failedQueue: {
+  resolve: (value?: unknown) => void;
+  reject: (reason?: any) => void;
+}[] = [];
+
+const processQueue = (error: any = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve();
+    }
+  });
+  failedQueue = [];
+};
+
 axiosPrivate.interceptors.response.use(
   (response) => response,
   async (error) => {
     const prevRequest = error?.config;
-    if (
-      error?.response?.status === 401 ||
-      (error?.response?.status === 403 && !prevRequest?.sent)
-    ) {
-      // Handle 401 and specific 403 cases here
+
+    if (error?.response?.status === 401 && !prevRequest?.sent) {
+      if (isRefreshing) {
+        // If another request is already refreshing, add this request to queue
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then(() => {
+            return axiosPrivate(prevRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
+
+      isRefreshing = true;
       prevRequest.sent = true;
-      await refresh();
-      return axiosPrivate(prevRequest);
+
+      try {
+        await refresh();
+        processQueue();
+        return axiosPrivate(prevRequest);
+      } catch (refreshError) {
+        processQueue(refreshError);
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
     }
-    // If not handled, throw the error for catch block
-    throw error;
+
+    return Promise.reject(error);
   }
 );
 
