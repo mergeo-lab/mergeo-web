@@ -1,6 +1,5 @@
 import axios from 'axios';
-const secure = import.meta.env.PROD ? 'https://' : 'http://';
-export const BASE_URL = `${secure}${import.meta.env.VITE_API_URL}`;
+export const BASE_URL = `${import.meta.env.VITE_API_URL}`;
 
 export const axiosInstance = axios.create({
   baseURL: BASE_URL,
