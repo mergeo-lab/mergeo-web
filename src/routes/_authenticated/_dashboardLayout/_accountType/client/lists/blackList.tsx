@@ -1,7 +1,6 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { getBlackList, removeFromBlackList } from '@/lib/products';
-import UseCompanyStore from '@/store/company.store';
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from '@tanstack/react-router'
 import { AnimatePresence } from "framer-motion";
@@ -9,6 +8,7 @@ import AnimatedRow from "@/components/animatedRow";
 import { ProductSchemaType } from '@/lib/schemas';
 import { useState } from 'react';
 import { MdOutlinePlaylistRemove } from "react-icons/md";
+import { useAuth } from '@/context/AuthContext';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/lists/blackList')({
   component: () => <BlackList />
@@ -16,8 +16,8 @@ export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountT
 
 
 export default function BlackList() {
-  const { company } = UseCompanyStore();
-  const companyId = company?.id;
+  const { account } = useAuth();
+  const companyId = account?.company.id || '';
   const queryClient = useQueryClient();
 
   const [, setRemovingItems] = useState<Set<string>>(new Set());
@@ -43,7 +43,7 @@ export default function BlackList() {
 
   const { mutate: removelackList } = useMutation({
     mutationFn: async ({ companyId, productId }: { companyId: string; productId: string }) => {
-      if (!company?.id) throw new Error("Company ID is required");
+      if (!companyId) throw new Error("Company ID is required");
       return removeFromBlackList(companyId, productId);
     },
     onMutate: async ({ companyId, productId }) => {
@@ -61,7 +61,7 @@ export default function BlackList() {
     },
     onError: (_err, _variables, context) => {
       if (context?.previousFavorites) {
-        queryClient.setQueryData(["blacklist", company?.id], context.previousFavorites);
+        queryClient.setQueryData(["blacklist", companyId], context.previousFavorites);
       }
       setRemovingItems(new Set());
     },
@@ -76,11 +76,11 @@ export default function BlackList() {
 
 
   function handleRemove(productId: string) {
-    if (!company?.id) return;
-    removelackList({ companyId: company.id, productId: productId });
+    if (!companyId) return;
+    removelackList({ companyId: companyId, productId: productId });
   }
 
-  if (data?.length === 0) return (
+  if (!data?.length) return (
     <div className="flex flex-col gap-4 items-center justify-center h-full">
       <MdOutlinePlaylistRemove size={100} className="text-destructive" />
       <p className="text-base font-bold">No hay productos en la lista Negra</p>

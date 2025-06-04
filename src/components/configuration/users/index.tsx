@@ -8,7 +8,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { getUsers } from "@/lib/configuration/users"
 import { colorClasses } from "@/lib/constants"
 import { cn, formatDate } from "@/lib/utils"
-import UseCompanyStore from "@/store/company.store"
 import { useQuery } from "@tanstack/react-query"
 import { RoleDetail } from "@/components/configuration/users/roles/roleDetail"
 import { AddUserSheet } from "@/components/configuration/users/addUserSheet"
@@ -18,12 +17,14 @@ import { RoleSchemaType, UserSchemaType } from "@/lib/schemas"
 import { GoPencil } from "react-icons/go"
 import { FaRegTrashAlt } from "react-icons/fa"
 import { LuUserRoundPlus } from "react-icons/lu";
+import { useAuth } from "@/context/AuthContext"
 
 export function Users() {
-    const { company } = UseCompanyStore();
+    const { account } = useAuth();
+    const companyId = account?.company.id || '';
 
     const { data: usersData, isLoading, isError, refetch } = useQuery({
-        queryKey: ['users', company?.id],
+        queryKey: ['users', companyId],
         queryFn: ({ queryKey }) => {
             const companyId = queryKey[1];
             if (!companyId) {
@@ -32,7 +33,7 @@ export function Users() {
             }
             return getUsers(companyId);
         },
-        enabled: !!company?.id, // Ensure the query runs only if company ID exists
+        enabled: !!companyId, // Ensure the query runs only if company ID exists
     });
     const usersArray: UserSchemaType[] = Array.isArray(usersData?.data?.data) ? usersData.data.data : [];
 
@@ -56,8 +57,6 @@ export function Users() {
     };
 
     if (isError) return <div>Hubo un error</div>;
-
-    console.log("USERS :: ", usersData)
 
     return (
         <div className="flex w-full h-full">
@@ -106,15 +105,15 @@ export function Users() {
                                                     : "INACTIVO"}
                                         </TableCell>
                                         <TableCell>
-                                            <div className="flex gap-2 items-center">
+                                            <div className="flex gap-2 items-center h-full">
                                                 {user.roles.length ?
                                                     user.roles.map((role: RoleSchemaType, index: number) => (
-                                                        <HoverCard key={role.id}>
+                                                        <HoverCard key={role.id} openDelay={0}>
                                                             <HoverCardTrigger>
                                                                 <Badge className={`text-sm cursor-pointer ${colorClasses[index]} hover:opacity-70 hover:${colorClasses[index]}`}>{role.name}</Badge>
                                                             </HoverCardTrigger>
-                                                            <HoverCardContent className="w-96">
-                                                                <div className="flex flex-col">
+                                                            <HoverCardContent className="w-96 px-2 h-full">
+                                                                <div className="flex flex-col h-full">
                                                                     {
                                                                         <RoleDetail role={role} />
                                                                     }

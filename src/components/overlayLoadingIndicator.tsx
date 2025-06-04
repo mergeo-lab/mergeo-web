@@ -12,7 +12,7 @@ const MemoizedLoadingIndicator = React.memo(LoadingIndicator);
 
 function OverlayLoadingIndicator({ className, label }: Props) {
     return (
-        <div className="absolute w-full h-full inset-0 flex flex-col items-center justify-center z-50">
+        <div className="absolute w-full h-full inset-0 flex flex-col items-center justify-center z-40">
             <motion.div
                 initial={{ opacity: 0, }}
                 animate={{ opacity: 1 }}
@@ -23,7 +23,7 @@ function OverlayLoadingIndicator({ className, label }: Props) {
                 )}
             >
             </motion.div>
-            <div>
+            <div className="z-50 flex flex-col items-center justify-center">
                 <MemoizedLoadingIndicator />
                 {label && <p className="mt-4 text-sm text-gray-700">{label}</p>}
             </div>

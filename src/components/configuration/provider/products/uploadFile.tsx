@@ -1,18 +1,21 @@
 import { UploadQueueHandler } from "@/components/configuration/provider/products/uploadQueueHandler";
+import { SavedUploads } from "@/components/configuration/provider/products/savedUploads";
 import Dropzone, { DropZoneRef } from "@/components/dropzone";
+import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
-import UseCompanyStore from "@/store/company.store";
-import { useUploadQueue } from "@/store/uploadQueue.store";
+import { useUploadQueue, UploadQueueItem } from "@/store/uploadQueue.store";
 import { useEffect, useRef } from "react";
 
 export default function UploadFile() {
-    const { company } = UseCompanyStore();
-    const companyId = company?.id;
+
+    const { account } = useAuth();
+    const userId = account?.user.id;
+    const companyId = account?.company.id;
     const dropzoneRef = useRef<DropZoneRef>(null);
     const { addToQueue, resetQueue, removeFinishedFromQueue } = useUploadQueue();
 
-    function fileUploadedCallback(uploadedFile: string) {
-        addToQueue(uploadedFile); // queue the file as "pending"
+    function fileUploadedCallback(item: UploadQueueItem) {
+        addToQueue(item); // queue the file as "pending"
     }
 
     function productsQueueFinishCallback() {
@@ -65,10 +68,10 @@ export default function UploadFile() {
             </div>
             <div>
                 <UploadQueueHandler
-                    providerId={companyId ? companyId : ""}
+                    userId={userId || ""}
                     onFinish={productsQueueFinishCallback}
                 />
-
+                <SavedUploads />
             </div>
         </div>
 

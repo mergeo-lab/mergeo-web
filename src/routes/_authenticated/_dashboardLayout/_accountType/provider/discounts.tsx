@@ -43,6 +43,12 @@ export function Discounts() {
         enabled: !!companyId, // Ensure the query runs only if company ID exists
     });
 
+    function handleCreateDiscountList() {
+        console.log('handleCreateDiscountList');
+        setSelectedDiscount(null);
+        setShowNewDiscountModal({ open: true, isEdit: false })
+    }
+
     useEffect(() => {
         if (!selectedDiscount && lists && lists.length > 0) {
             setSelectedDiscount(lists[0].id);
@@ -63,27 +69,36 @@ export function Discounts() {
     )
     if (lists.length === 0) {
         return (
-            <div className='h-full w-full relative'>
-                <div className='absolute w-full h-full flex justify-center items-center'>
-                    <MdOutlineDiscount className='absolute text-muted/10' size={500} />
-                </div>
+            <>
+                <div className='h-full w-full relative'>
+                    <div className='absolute w-full h-full flex justify-center items-center'>
+                        <MdOutlineDiscount className='absolute text-muted/10' size={500} />
+                    </div>
 
-                <div className='absolute w-full h-full flex flex-col justify-center items-center z-10'>
-                    <p className='text-center text-md'>
-                        No tienes nunguna lista de descuentos!<br />
-                    </p>
-                    <p className='text-center font-light'>
-                        Crea tus listas para hacer descuentos a clientes especificos.
-                    </p>
-                    <Button className='mt-5 w-60 flex items-center gap-2'
-                        onClick={() => setShowNewDiscountModal({ open: true, isEdit: false })}
-                    >
-                        <CgPlayListAdd size={22} className='-ml-2' />
-                        Crear lista
-                    </Button>
+                    <div className='absolute w-full h-full flex flex-col justify-center items-center z-10'>
+                        <p className='text-center text-md'>
+                            No tienes nunguna lista de descuentos!<br />
+                        </p>
+                        <p className='text-center font-light'>
+                            Crea tus listas para hacer descuentos a clientes especificos.
+                        </p>
+                        <Button className='mt-5 w-60 flex items-center gap-2 '
+                            onClick={handleCreateDiscountList}
+                        >
+                            <CgPlayListAdd size={22} className='-ml-2' />
+                            Crear lista
+                        </Button>
+                    </div>
                 </div>
-            </div>
-
+                <NewDiscount
+                    itemId={selectedDiscount ? selectedDiscount : null}
+                    isEdit={showNewDiscountModal.isEdit}
+                    openit={showNewDiscountModal.open}
+                    callback={refetch}
+                    onClose={() => setShowNewDiscountModal({ open: false, isEdit: false })}
+                    data={selectedDiscount ? lists.find((item: DiscountSchemaType) => item.id === selectedDiscount) : null}
+                />
+            </>
         )
     } else {
         return (
@@ -115,10 +130,7 @@ export function Discounts() {
                         </div>
                         <div className='w-full flex justify-center items-center gap-4 bg-white'>
                             <Button className='mt-5 w-60 flex items-center gap-2'
-                                onClick={() => {
-                                    setSelectedDiscount(null);
-                                    setShowNewDiscountModal({ open: true, isEdit: false })
-                                }}
+                                onClick={handleCreateDiscountList}
                             >
                                 <CgPlayListAdd size={22} className='-ml-2' />
                                 Crear lista
@@ -155,17 +167,16 @@ export function Discounts() {
                             </div>
                         </div>
                     </div>
-                </div >
+                </div>
                 <NewDiscount
                     itemId={selectedDiscount ? selectedDiscount : null}
-                    openit={showNewDiscountModal.open}
                     isEdit={showNewDiscountModal.isEdit}
+                    openit={showNewDiscountModal.open}
                     callback={refetch}
                     onClose={() => setShowNewDiscountModal({ open: false, isEdit: false })}
                     data={selectedDiscount ? lists.find((item: DiscountSchemaType) => item.id === selectedDiscount) : null}
                 />
             </>
-
         )
     }
 }

@@ -1,4 +1,4 @@
-import { createLazyFileRoute, Link, useRouter } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { CardBody, CardFooter } from '@/components/card'
 import { Button } from '@/components/ui/button'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
@@ -12,12 +12,12 @@ import UseRegistrationStore from '@/store/registration.store'
 import { useToast } from '@/components/ui/use-toast'
 import { GoogleAutoComplete } from '@/components/googleAutoComplete'
 
-export const Route = createLazyFileRoute('/_authLayout/registration/company')({
+export const Route = createFileRoute('/_authLayout/registration/company')({
   component: () => <RegisterCompany />
 })
 
 function RegisterCompany() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { toast } = useToast()
   const mutation = useMutation({ mutationFn: registerCompany })
   const registrationState = UseRegistrationStore();
@@ -27,7 +27,7 @@ function RegisterCompany() {
     defaultValues: {
       name: "",
       razonSocial: "",
-      cuit: undefined,
+      cuit: 0,
       branch: {
         address: {
           id: "",
@@ -43,27 +43,45 @@ function RegisterCompany() {
   })
 
   const onSubmit = async (fields: RegisterCompanySchemaType) => {
-    console.log("SUBMIT COMPANY REGISTER")
-    const response = await mutation.mutateAsync({
-      name: fields.name,
-      razonSocial: fields.razonSocial,
-      cuit: fields.cuit,
-      branch: fields.branch,
-      activity: fields.activity,
-    });
+    try {
+      // Validate the form data
+      const validationResult = RegisterCompanySchema.safeParse(fields);
+      if (!validationResult.success) {
+        console.error("Form validation failed:", validationResult.error);
+        toast({
+          variant: "destructive",
+          title: "Error de validación",
+          description: "Por favor, verifica todos los campos del formulario.",
+        });
+        return;
+      }
 
-    if (response.error) {
+      const response = await mutation.mutateAsync({
+        name: fields.name,
+        razonSocial: fields.razonSocial,
+        cuit: Number(fields.cuit),
+        branch: fields.branch,
+        activity: fields.activity,
+      });
+
+      if (response.error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: response.error,
+        })
+      } else if (response.companyId) {
+        registrationState.saveCompanyId(response.companyId)
+        navigate({ to: '/registration/user', replace: true });
+      }
+
+    } catch (error) {
+      console.error('Registration error:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: response.error,
-      })
-    } else if (response.data) {
-      const { data } = response.data;
-      registrationState.saveCompanyId(data.companyId)
-
-      const redirectTo = `/registration/user`;
-      router.history.push(redirectTo, { replace: true });
+        description: "Ocurrió un error al registrar la empresa. Por favor, intenta nuevamente.",
+      });
     }
   }
 
@@ -120,7 +138,14 @@ function RegisterCompany() {
                   <FormItem>
                     <FormLabel id='cuit'>CUIT</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input
+                        {...field}
+                        maxLength={11}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '');
+                          field.onChange(value ? Number(value) : 0);
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -167,7 +192,11 @@ function RegisterCompany() {
               </Button>
             </Link>
           </p>
-          <Button onClick={form.handleSubmit(onSubmit)} className='min-w-[200px]' type="submit">
+          <Button
+            disabled={mutation.isPending}
+            onClick={form.handleSubmit(onSubmit)}
+            className='min-w-[200px]'
+            type="submit">
             Continuar
           </Button>
         </div>

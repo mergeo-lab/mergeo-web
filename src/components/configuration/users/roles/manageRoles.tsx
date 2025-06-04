@@ -14,12 +14,12 @@ import { roleDelete, roleUpdate } from "@/lib/configuration/roles";
 import { PermissionSchemaType, RoleSchemaType } from "@/lib/schemas";
 import { getAllRoles, getPermissions } from "@/lib/configuration/users";
 import { cn } from "@/lib/utils";
-import UseCompanyStore from "@/store/company.store";
 import UseRoleStore from "@/store/roles.store";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LuArrowBigRight, LuCircleX } from "react-icons/lu";
+import { useAuth } from "@/context/AuthContext";
 
 const emptyRole: RoleSchemaType = {
     name: 'Crear nuevo rol',
@@ -32,7 +32,8 @@ const emptyRole: RoleSchemaType = {
 
 export function ManageRoles() {
     const roleStore = UseRoleStore();
-    const { company } = UseCompanyStore();
+    const { account } = useAuth();
+    const companyId = account?.company?.id;
     const [initialRoles, setInitialRoles] = useState<RoleSchemaType[]>([]);
     const [viewRole, setViewRole] = useState<RoleSchemaType>(emptyRole);
     const [roleEdited, setRoleEdited] = useState<RoleSchemaType>(emptyRole);
@@ -46,7 +47,7 @@ export function ManageRoles() {
     })
 
     const { data: rolesResponse, isLoading, isError, refetch } = useQuery({
-        queryKey: ['roles', company?.id],
+        queryKey: ['roles', companyId],
         queryFn: ({ queryKey }) => {
             const companyId = queryKey[1];
             if (!companyId) {
@@ -55,7 +56,7 @@ export function ManageRoles() {
             }
             return getAllRoles(companyId);
         },
-        enabled: !!company?.id, // Ensure the query runs only if company ID exists
+        enabled: !!companyId, // Ensure the query runs only if company ID exists
     });
 
     useEffect(() => {
@@ -68,25 +69,30 @@ export function ManageRoles() {
     }, [isLoading, isError, rolesResponse, roleStore]);
 
     const initializeRoles = useCallback(() => {
-
-        const initialPermissions = permissions?.data && permissions?.data.map((permission: PermissionSchemaType) => ({
-            ...permission,
-            hasPermission: false,
+        if (!permissions?.data) return;
+        // Map permissions for each role, setting hasPermission correctly
+        const allPermissions = permissions.data;
+        const initialEmptyRole = {
+            ...emptyRole,
+            permissions: allPermissions.map((permission: PermissionSchemaType) => ({
+                ...permission,
+                hasPermission: false,
+            })),
+        };
+        // Map all roles to include all permissions, marking hasPermission true if the role has it
+        const mappedRoles = roleStore.allRoles.map((role) => ({
+            ...role,
+            permissions: allPermissions.map((permission: PermissionSchemaType) => ({
+                ...permission,
+                hasPermission: !!role.permissions.find((p) => p.id === permission.id),
+            })),
         }));
-
-        if (initialPermissions && initialPermissions.length > 0) {
-            const initialEmptyRole = {
-                ...emptyRole,
-                permissions: initialPermissions,
-            };
-            if (!roleStore.allRoles.length) {
-                setViewRole(initialEmptyRole);
-            } else {
-                setViewRole(roleStore.allRoles[0]);
-            }
-            setInitialRoles([initialEmptyRole, ...roleStore.allRoles]);
+        if (!roleStore.allRoles.length) {
+            setViewRole(initialEmptyRole);
+        } else {
+            setViewRole(mappedRoles[0]);
         }
-
+        setInitialRoles([initialEmptyRole, ...mappedRoles]);
     }, [permissions, roleStore.allRoles]);
 
     async function saveRoleChanges(role: RoleSchemaType) {

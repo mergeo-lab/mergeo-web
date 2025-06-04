@@ -7,7 +7,6 @@ import UseSearchConfigStore from "@/store/searchConfiguration.store.";
 import cancelConfig from "@/assets/config-cancel.png";
 import productNotFound from "@/assets/product-not-found.png";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import UseCompanyStore from "@/store/company.store";
 import { addToBlackList, toggleFavorite } from "@/lib/products";
 import { useEffect, useRef, useState } from "react";
 import { ProductSchemaType } from "@/lib/schemas";
@@ -15,6 +14,7 @@ import { PaginationCustom } from "@/components/pagination";
 import UseProviderInventoryPaginationState from "@/store/providerInventoryPagination.store";
 import ProductRow from "@/components/configuration/client/orders/productRow";
 import { HiOutlineCog } from "react-icons/hi";
+import { useAuth } from "@/context/AuthContext";
 
 type Params = {
     configCanceled: boolean,
@@ -24,7 +24,8 @@ export default function ProductsTable({ configCanceled }: Params) {
     const { setConfigDialogOpen, searchParams, setConfigDataSubmitted, branch, showOnlyFavorites } = UseSearchConfigStore();
     const { saveProduct, removeProduct, getAllSavedProducts } = UseSearchStore();
     const { setPage, page } = UseProviderInventoryPaginationState()
-    const { company } = UseCompanyStore()
+    const { account } = useAuth();
+    const companyId = account?.company.id || '';
     const queryClient = useQueryClient();
     const [filteredProducts, setFilteredProducts] = useState<ProductSchemaType[]>([]);
     const tableRef = useRef<HTMLDivElement>(null);
@@ -43,10 +44,10 @@ export default function ProductsTable({ configCanceled }: Params) {
 
     const { mutate: toggleFavoriteMutation } = useMutation({
         mutationFn: async ({ productId, newState }: { productId: string, newState: boolean }) => {
-            if (!company?.id) {
+            if (!companyId) {
                 throw new Error('Company ID is required');
             }
-            return toggleFavorite(company.id, productId, newState);
+            return toggleFavorite(companyId, productId, newState);
         },
         onMutate: async ({ productId, newState }) => {
             await queryClient.cancelQueries({
@@ -99,10 +100,10 @@ export default function ProductsTable({ configCanceled }: Params) {
 
     const { mutate: addProductToBlackList } = useMutation({
         mutationFn: ({ productId }: { productId: string }) => {
-            if (!company?.id) {
+            if (!companyId) {
                 throw new Error('Company ID is required');
             }
-            return addToBlackList(company.id, productId);
+            return addToBlackList(companyId, productId);
         },
         onMutate: async ({ productId }) => {
             // Cancel any ongoing refetches to prevent overwriting the optistic update

@@ -6,7 +6,7 @@ import { ProductUploadUpdate } from '@/hooks/server-events/see';
 import { PRODUCT_UPLOAD_EVENTS } from '@/lib/orders/endpoints';
 
 type UploadStatus = {
-  [uploadId: string]: {
+  [key: string]: {
     percent: number;
     gtins: string[];
     finished?: boolean;
@@ -14,70 +14,76 @@ type UploadStatus = {
     fileName?: string;
     failedGtins?: string[];
     successGtins?: string[];
+    uploadId?: string;
+    timestamp?: number;
   };
 };
 
-export function useProductUploads(providerId: string) {
+export function useProductUploads(userId: string) {
   const [uploads, setUploads] = useState<UploadStatus>({});
   const [uploadPercent, setUploadPercent] = useState(0);
 
-  useSSE(`${PRODUCT_UPLOAD_EVENTS}${providerId}`);
+  // Initialize SSE connection
+  useSSE(`${PRODUCT_UPLOAD_EVENTS}${userId}`);
 
   useEffect(() => {
     const unsubProgress = subscribeSSE<ProductUploadUpdate>(
       SERVER_SENT_EVENTS.productsUploadSuccess,
       (data) => {
-        console.log('productsUploadSuccess', data);
+        const key = data.upload_id || data.fileName;
+        const ts = (data as any).timestamp || Date.now();
         setUploads((prev) => ({
           ...prev,
-          [data.fileName]: {
-            ...prev[data.fileName],
+          [key]: {
+            ...prev[key],
             percent: data.upload_percent,
             fileName: data.fileName,
-            gtins: [...(prev[data.fileName]?.gtins || []), data.gtin],
+            gtins: [...(prev[key]?.gtins || []), data.gtin],
+            uploadId: data.upload_id,
+            timestamp: ts,
           },
         }));
         setUploadPercent(data.upload_percent);
-
-        if (data.upload_percent === 100) {
-          setUploads((prev) => {
-            const newUploads = { ...prev };
-            delete newUploads[data.fileName];
-            return newUploads;
-          });
-        }
       }
     );
 
     const unsubSuccess = subscribeSSE<ProductUploadUpdate>(
       SERVER_SENT_EVENTS.productsUploadSummary,
       (data) => {
-        console.log('productsUploadSummary', data);
-
+        const key = data.upload_id || data.fileName;
+        const ts = (data as any).timestamp || Date.now();
         setUploads((prev) => ({
           ...prev,
-          [data.fileName]: {
-            ...prev[data.fileName],
+          [key]: {
+            ...prev[key],
             failedGtins: data.failedGtins,
             successGtins: data.successGtins,
             finished: true,
+            percent: 100, // Ensure we show 100% when finished
+            uploadId: data.upload_id,
+            timestamp: ts,
           },
         }));
+        setUploadPercent(100);
       }
     );
 
     const unsubFail = subscribeSSE<ProductUploadUpdate>(
       SERVER_SENT_EVENTS.productsUploadFail,
       (data) => {
-        console.log('productsUploadFail', data);
-
+        const key = data.upload_id || data.fileName;
+        const ts = (data as any).timestamp || Date.now();
         setUploads((prev) => ({
           ...prev,
-          [data.fileName]: {
-            ...prev[data.fileName],
+          [key]: {
+            ...prev[key],
             failed: true,
+            percent: 0, // Reset progress on failure
+            uploadId: data.upload_id,
+            timestamp: ts,
           },
         }));
+        setUploadPercent(0);
       }
     );
 
@@ -86,7 +92,7 @@ export function useProductUploads(providerId: string) {
       unsubSuccess();
       unsubFail();
     };
-  }, [uploads]);
+  }, []); // Remove uploads from dependency array to prevent infinite loop
 
-  return { uploads, uploadPercent, setUploadPercent };
+  return { uploads, uploadPercent };
 }

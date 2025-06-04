@@ -132,11 +132,11 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRem
                     ? (
                         <LoadingIndicator className="absolute right-4 top-2" />
                     )
-                    : !disabled && <div className="absolute right-4 top-2">
+                    : !disabled && <div className="absolute right-4 top-1/2 -translate-y-1/2">
                         {
                             selected || value
-                                ? <RxCross2 className="cursor-pointer" onClick={clearSearch} />
-                                : <LuSearch />}
+                                ? <RxCross2 size={20} className="cursor-pointer" onClick={clearSearch} />
+                                : <LuSearch size={20} />}
                     </div>}
             </div>
             {

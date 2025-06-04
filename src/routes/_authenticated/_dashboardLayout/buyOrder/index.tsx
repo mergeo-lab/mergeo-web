@@ -10,8 +10,6 @@ import { SERVER_SENT_EVENTS, ACCOUNT } from '@/lib/constants';
 import { ORDERS_EVENTS_PROVIDER } from '@/lib/orders/endpoints';
 import { BuyOrderSchemaType } from '@/lib/schemas/orders.schema';
 import { formatDate, numberToTimeString } from '@/lib/utils';
-import UseCompanyStore from '@/store/company.store';
-import UseUserStore from '@/store/user.store';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useEffect } from 'react';
@@ -21,6 +19,7 @@ import noOrders from '@/assets/no-odc.png';
 import { subscribeSSE, useSSE } from '@/hooks/server-events/useSse';
 import { useBuyOrders } from '@/hooks/useBuyOrders';
 import { LuEye } from 'react-icons/lu';
+import { useAuth } from '@/context/AuthContext';
 
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/buyOrder/')({
@@ -28,14 +27,14 @@ export const Route = createFileRoute('/_authenticated/_dashboardLayout/buyOrder/
 });
 
 export default function OrdenesDeCompra() {
-    const { company } = UseCompanyStore();
-    const { user } = UseUserStore();
-    const accountType = user?.accountType;
-    const companyId = company?.id;
+    const { account } = useAuth();
+    const companyId = account?.company.id || '';
+    const userId = account?.user.id || '';
+    const accountType = account?.user?.accountType;
 
     const queryClient = useQueryClient();
 
-    useSSE(`${ORDERS_EVENTS_PROVIDER}${companyId}`);
+    useSSE(`${ORDERS_EVENTS_PROVIDER}${userId}`);
 
     const {
         data,

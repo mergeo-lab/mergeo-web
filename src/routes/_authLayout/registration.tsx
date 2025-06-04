@@ -1,8 +1,8 @@
-import { createLazyFileRoute, Outlet, useRouterState } from '@tanstack/react-router';
+import { createFileRoute, Outlet, useRouterState } from '@tanstack/react-router';
 import Card, { CardHeader } from '@/components/card'
 import Steps from '@/components/steps'
 
-export const Route = createLazyFileRoute('/_authLayout/registration')({
+export const Route = createFileRoute('/_authLayout/registration')({
   component: () => <Registration />,
 })
 

@@ -75,7 +75,7 @@ export function RoleDetail({ role, canEdit = false, isEdited }: Props) {
                     if (matchedGroup) {
                         return {
                             ...permission,
-                            hasPermission: matchedGroup[permission.action as 'create' | 'edit' | 'delete']
+                            hasPermission: !matchedGroup[permission.action as 'create' | 'edit' | 'delete']
                         };
                     }
                     return permission;
@@ -87,9 +87,9 @@ export function RoleDetail({ role, canEdit = false, isEdited }: Props) {
     }, [permissionsList, role, isEdited]);
 
     return (
-        <div className="h-[430px] min-w-[370px]">
+        <div className="h-[430px] min-w-[370px] overflow-y-auto">
             <Table>
-                <TableHeader>
+                <TableHeader className="sticky top-0 bg-white z-10">
                     <TableRow className="hover:bg-white">
                         <TableHead className="m-0 w-1/2">Permisos</TableHead>
                         <TableHead className="w-fit pr-1 m-0">Crear</TableHead>
@@ -100,7 +100,7 @@ export function RoleDetail({ role, canEdit = false, isEdited }: Props) {
                         }
                     </TableRow>
                 </TableHeader>
-                <TableBody>
+                <TableBody className="overflow-y-auto">
                     {permissionsList.map((permisionGroup) => (
                         <TableRow key={permisionGroup.group} className="hover:bg-white [&>td]:!py-2">
                             <TableCell className="text-left m-0">{permisionGroup.group}</TableCell>

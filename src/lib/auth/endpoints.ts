@@ -1,6 +1,6 @@
 export enum authEndpoints {
   API_BASE = '/api/auth',
-  LOGIN = `${API_BASE}/login`,
+  PROFILE = `${API_BASE}/profile`,
   PASSWORD_RESET = `${API_BASE}/new-password`,
   PASSWORD_RECOVER = `${API_BASE}/password-recover`,
   REGISTER_USER = `${API_BASE}/register/user`,

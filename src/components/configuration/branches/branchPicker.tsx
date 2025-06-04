@@ -69,7 +69,8 @@ export function BranchPicker({ className, companyId, isEditing, notFoundMessage,
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const handleOnClose = useCallback(() => {
         setEditBranch({ branchData: null, isOpen: false });
-    }, []);
+        callback && callback();
+    }, [callback]);
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const handleOnLoading = useCallback(() => {
@@ -123,6 +124,7 @@ export function BranchPicker({ className, companyId, isEditing, notFoundMessage,
                                 callback={branchAdded}
                                 onLoading={handleOnLoading}
                                 disabled={isEditing}
+                                onClose={handleOnClose}
                             />
                         }
                     </div>

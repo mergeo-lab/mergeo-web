@@ -10,13 +10,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { createDiscountList, updateDiscountList } from "@/lib/discounts";
 import { CompanySchemaType } from "@/lib/schemas";
 import { DiscountFormSchema, DiscountFormSchemaType, DiscountSchemaType } from "@/lib/schemas/discounts.schema";
-import UseCompanyStore from "@/store/company.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dialog, DialogTitle } from "@radix-ui/react-dialog";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { MdOutlineDiscount } from "react-icons/md";
+import { useAuth } from "@/context/AuthContext";
 
 type Props = {
     openit?: boolean,
@@ -27,9 +27,9 @@ type Props = {
     callback?: () => void,
 }
 
-export default function NewDiscount({ openit = false, isEdit = false, onClose, data, itemId, callback }: Props) {
-    const { getCompanyId } = UseCompanyStore();
-    const companyId = getCompanyId();
+export default function NewDiscount({ openit, isEdit = false, onClose, data, itemId, callback }: Props) {
+    const { account } = useAuth();
+    const companyId = account?.company.id || '';
     const [selectedCompanies, setSelectedCompanies] = useState<CompanySchemaType[]>([]);
     const initialCompanyIds = useRef<number>(0);
     const mutation = useMutation({
@@ -82,6 +82,7 @@ export default function NewDiscount({ openit = false, isEdit = false, onClose, d
     }, [mutation.isSuccess])
 
     useEffect(() => {
+        console.log('openit', openit);
         if (isEdit && data) {
             const { id, ...formData } = data; // Remove id before resetting form
             form.reset(formData); // reset form when data changes

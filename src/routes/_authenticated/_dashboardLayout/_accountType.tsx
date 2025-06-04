@@ -1,7 +1,7 @@
 import { ACCOUNT } from '@/lib/constants';
 import { useEffect, useCallback } from 'react';
 import { createFileRoute, Outlet, useNavigate, useLocation } from '@tanstack/react-router'
-import { useAuth } from '@/hooks';
+import { useAuth } from '@/context/AuthContext';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType')({
     component: AccountTypeRoute,
@@ -14,7 +14,7 @@ export function AccountTypeRoute() {
 
     // Define the redirection logic inside useCallback
     const handleRedirect = useCallback(() => {
-        const accountType = auth.user?.accountType;
+        const accountType = auth.account?.user?.accountType;
         const currentPath = location.pathname;
         const searchParams = location.search;
 
@@ -25,7 +25,7 @@ export function AccountTypeRoute() {
             const newPath = currentPath.replace('/provider', '/client');
             navigate({ to: newPath, search: searchParams, replace: true });
         }
-    }, [auth.user?.accountType, location.pathname, location.search, navigate]);
+    }, [auth.account?.user?.accountType, location.pathname, location.search, navigate]);
 
     // Trigger the redirection logic using useEffect
     useEffect(() => {

@@ -1,11 +1,9 @@
 import { JSX, memo, useCallback, useEffect, useState, lazy, Suspense } from 'react';
-import UseCompanyStore from '@/store/company.store';
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import UseProviderInventoryPaginationState from '@/store/providerInventoryPagination.store';
 import { cn } from '@/lib/utils';
 import { ErrorBoundary } from 'react-error-boundary';
-import { useAuth } from '@/hooks/useAuth';
 import { MdOutlineDiscount } from "react-icons/md";
 
 // Lazy load components
@@ -27,6 +25,8 @@ import {
     LuThumbsDown,
     LuLayoutDashboard
 } from "react-icons/lu";
+import { useAuth } from '@/context/AuthContext.tsx';
+import { useGlobalLoading } from '@/store/globalLoading.store.ts';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout')({
     component: DashboardLayout,
@@ -134,39 +134,40 @@ const getRoutTitles = (currentPage: number) => {
 
 function DashboardLayout() {
     const router = useRouter();
-    const { company } = UseCompanyStore();
     const { getPage } = UseProviderInventoryPaginationState();
-    const { user } = useAuth();
+    const { account } = useAuth();
     const routeTitles = getRoutTitles(getPage());
+    const { hide } = useGlobalLoading();
 
     // Preload routes based on user type
     useEffect(() => {
-        if (!user?.accountType) return;
+        if (!account?.user?.accountType) return;
 
         const timer = setTimeout(() => {
             const preloadRoutes = async () => {
                 try {
-                    if (user.accountType === 'client') {
+                    if (account?.user?.accountType === 'client') {
                         await Promise.all([
                             import('./_dashboardLayout/_accountType/client/dashboard.tsx'),
                             import('./_dashboardLayout/_accountType/client/orders'),
                         ]);
-                    } else if (user.accountType === 'provider') {
+                    } else if (account?.user?.accountType === 'provider') {
                         await Promise.all([
                             import('./_dashboardLayout/_accountType/provider/dashboard.tsx'),
                             import('./_dashboardLayout/_accountType/provider/products'),
                         ]);
                     }
                 } catch (error) {
-                    console.warn(`Preloading ${user.accountType} routes failed:`, error);
+                    console.warn(`Preloading ${account?.user?.accountType} routes failed:`, error);
                 }
             };
 
             preloadRoutes();
         }, 2000);
 
+        hide();
         return () => clearTimeout(timer);
-    }, [user?.accountType]);
+    }, [account?.user?.accountType, hide]);
 
 
     // Store both text & icon in the state
@@ -203,7 +204,7 @@ function DashboardLayout() {
         <div className='w-full h-full flex overflow-hidden'>
             <ErrorBoundary fallback={<div className="p-4">Error loading sidebar</div>}>
                 <Suspense fallback={<div className="w-64 bg-secondary h-screen"></div>}>
-                    <MemoizedSideBarMenu companyName={company?.name || ''} />
+                    <MemoizedSideBarMenu companyName={account?.company.name || ''} />
                 </Suspense>
             </ErrorBoundary>
             <div className='w-full md:px-12 flex flex-col justify-center'>

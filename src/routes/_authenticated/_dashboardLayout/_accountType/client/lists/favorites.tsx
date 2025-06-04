@@ -80,9 +80,7 @@ export default function Favorites() {
         );
     }
 
-    console.log("DATA ---> ", data);
-
-    if (data && data?.length === 0) return (
+    if (!data?.length) return (
         <div className="flex flex-col gap-4 items-center justify-center h-full">
             <FaHeartCircleExclamation size={100} className="text-destructive" />
             <p className="text-base font-bold">No hay productos en la lista de favoritos</p>

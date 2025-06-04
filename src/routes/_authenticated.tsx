@@ -4,7 +4,7 @@ export const Route = createFileRoute('/_authenticated')({
   beforeLoad: async ({ context, location }) => {
     console.debug('This route is protected, checking authentication...');
 
-    if (!context.auth.isAuthenticated) {
+    if (!context.auth.account?.user) {
       console.debug('Not authenticated, redirecting to login...');
       throw redirect({
         to: '/login',

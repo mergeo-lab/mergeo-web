@@ -1,23 +1,17 @@
-import { CompanySchemaType } from '@/lib/schemas';
+import { CompanySchemaType, RoleSchemaType } from '@/lib/schemas';
 
 export type UserType = {
   id?: string;
   email: string;
   name: string;
   accountType: string;
+  password?: string;
 };
 
 export interface AuthType {
-  data: {
-    user: UserType;
-    company: CompanySchemaType;
-  };
-}
-
-export interface RegisterCompanyResult {
-  data: {
-    companyId: string;
-  };
+  user: UserType;
+  company: CompanySchemaType;
+  roles: RoleSchemaType[];
 }
 
 export interface OtpType {
@@ -35,13 +29,6 @@ export type TokensType = {
   refresh_token: string;
   expiresIn: Date;
 };
-
-export interface AuthContextType {
-  user: UserType | null;
-  isAuthenticated: boolean;
-  logIn: (data: UserType) => void;
-  logOut: () => Promise<unknown>;
-}
 
 export type GroupedPermissions = {
   [key: string]: {

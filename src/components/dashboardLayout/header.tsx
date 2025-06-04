@@ -1,12 +1,10 @@
 import { Link, useRouter } from '@tanstack/react-router'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from "@/components/ui/dropdown-menu"
-import { useMutation } from "@tanstack/react-query"
-import { logout } from "@/lib/auth"
-import { toast } from "@/components/ui/use-toast"
-import { useAuth } from "@/hooks"
-import { useEffect, useCallback, JSX } from "react"
+import { useEffect, JSX } from "react"
 import { LuCircleUserRound, LuBell, LuCircleHelp } from "react-icons/lu";
 import { Button } from '@/components/ui/button'
+import { useAuth } from '@/context/AuthContext'
+import { tabs } from "@/lib/constants";
 
 type Props = {
     title?: {
@@ -16,32 +14,28 @@ type Props = {
 }
 
 export function DashboardHeader({ title }: Props) {
-    const mutation = useMutation({ mutationFn: logout })
-    const { logOut, isAuthenticated } = useAuth();
+    const { logout, account } = useAuth();
     const router = useRouter();
 
     // Memoize the closeSession function to ensure it remains stable
-    const closeSession = useCallback(async () => {
-        const response = await mutation.mutateAsync();
-
-        if (response.error) {
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: response.error,
-            })
-        } else if (response.data) {
-            logOut();
-        }
-    }, [mutation, logOut]);
+    const closeSession = () => {
+        logout();
+    };
 
     useEffect(() => {
-        if (!isAuthenticated) {
+        if (!account?.user) {
             const redirectTo = "/login";
             router.history.push(redirectTo, { replace: true });
         }
-    }, [isAuthenticated, router.history]);
+    }, [account?.user, router.history]);
 
+    const handleProfileClick = () => {
+        if (account?.user.accountType === 'client') {
+            router.navigate({ to: '/client/configuration', search: { tab: "users" as tabs } });
+        } else {
+            router.navigate({ to: '/provider/configuration', search: { tab: "users" as tabs } });
+        }
+    };
 
     return (
         <div className='h-16 w-full flex items-center justify-between px-5'>
@@ -69,7 +63,9 @@ export function DashboardHeader({ title }: Props) {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56 mr-11 mt-0 p-5 space-y-2">
-                        <DropdownMenuItem className="w-full justify-center border border-muted cursor-pointer">
+                        <DropdownMenuItem
+                            onClick={handleProfileClick}
+                            className="w-full justify-center border border-muted cursor-pointer">
                             Mi Perfil
                         </DropdownMenuItem>
                         <DropdownMenuItem

@@ -37,7 +37,7 @@ export default function ProviderProductsTable({ products, currentPage, tableRef,
         { previousProducts?: ProductSchemaType[] } // context type
     >({
         mutationFn: async ({ productId, isActive }) => {
-            return modifyProduct({ productId, isActive });
+            return modifyProduct({ productId, isActive, companyId });
         },
 
         onMutate: async ({ productId, isActive }) => {

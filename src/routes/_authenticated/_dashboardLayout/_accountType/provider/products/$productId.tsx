@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
+import { useAuth } from '@/context/AuthContext';
 import { ActivityType } from '@/lib/constants';
 import { getProductById, getProductMetadata, modifyProduct } from '@/lib/products';
 import { ProductMetadataType, ProductSchemaType } from '@/lib/schemas';
@@ -24,6 +25,8 @@ export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountT
 })
 
 export default function ProductDetail() {
+    const { account } = useAuth();
+    const companyId = account?.company.id || '';
     const { productId } = useParams({ from: '/_authenticated/_dashboardLayout/_accountType/provider/products/$productId' });
     const { edit, currentPage } = useSearch({
         from: '/_authenticated/_dashboardLayout/_accountType/provider/products/$productId'
@@ -74,7 +77,7 @@ export default function ProductDetail() {
             productId: string,
             price: string,
             description: string | undefined
-        }) => modifyProduct({ productId, price, description }),
+        }) => modifyProduct({ productId, companyId, price, description }),
         onSuccess: () => {
             refetch();
         },

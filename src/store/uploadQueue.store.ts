@@ -1,41 +1,45 @@
 import { create } from 'zustand';
 
+export type UploadQueueItem = {
+  id: string;
+  fileName: string;
+};
+
 type UploadQueueStore = {
-  queue: string[];
-  finished: string[];
-  addToQueue: (fileName: string) => void;
-  addToFinished: (fileName: string) => void;
+  queue: UploadQueueItem[];
+  finished: UploadQueueItem[];
+  addToQueue: (item: UploadQueueItem) => void;
+  addToFinished: (id: string) => void;
   resetQueue: () => void;
-  removeFromQueue: (fileName: string) => void;
+  removeFromQueue: (id: string) => void;
   removeFinishedFromQueue: () => void;
 };
 
 export const useUploadQueue = create<UploadQueueStore>((set) => ({
   queue: [],
   finished: [],
-  addToQueue: (fileName) =>
+  addToQueue: (item) =>
     set((state) => ({
-      queue: state.queue.includes(fileName)
+      queue: state.queue.find((q) => q.id === item.id)
         ? state.queue
-        : [...state.queue, fileName],
+        : [...state.queue, item],
     })),
-  resetQueue: () => [],
-  addToFinished: (fileName) =>
+  resetQueue: () => set(() => ({ queue: [], finished: [] })),
+  addToFinished: (id) =>
     set((state) => ({
-      finished: [...state.finished, fileName],
+      finished: [...state.finished, ...state.queue.filter((q) => q.id === id)],
     })),
   removeFinishedFromQueue: () =>
     set((state) => {
-      const newQueue = state.queue.filter(
-        (file) => !state.finished.includes(file)
-      );
+      const finishedIds = state.finished.map((f) => f.id);
+      const newQueue = state.queue.filter((q) => !finishedIds.includes(q.id));
       return {
         queue: newQueue,
       };
     }),
-  removeFromQueue: (fileName) =>
+  removeFromQueue: (id) =>
     set((state) => {
-      const newQueue = state.queue.filter((file) => file !== fileName);
+      const newQueue = state.queue.filter((q) => q.id !== id);
       return {
         queue: newQueue,
       };

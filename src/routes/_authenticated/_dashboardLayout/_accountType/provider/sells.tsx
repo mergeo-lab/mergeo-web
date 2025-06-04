@@ -6,7 +6,6 @@ import { getSellPreOrders } from '@/lib/orders';
 import { ORDERS_EVENTS_PROVIDER } from '@/lib/orders/endpoints';
 import { PreOrderSchemaType } from '@/lib/schemas';
 import { formatDate } from '@/lib/utils';
-import UseCompanyStore from '@/store/company.store';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect } from 'react';
@@ -14,18 +13,20 @@ import { Skeleton } from '@/components/ui/skeleton';
 import noOrders from '@/assets/sin-pedidos.png'
 import { subscribeSSE, useSSE } from '@/hooks/server-events/useSse';
 import { LuEye } from 'react-icons/lu';
+import { useAuth } from '@/context/AuthContext';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/sells')({
   component: () => <Sells />
 })
 
 export default function Sells() {
-  const { company } = UseCompanyStore();
-  const companyId = company?.id;
-  useSSE(`${ORDERS_EVENTS_PROVIDER}${companyId}`);
+  const { account } = useAuth();
+  const companyId = account?.company.id || '';
+  const userId = account?.user.id || '';
+  useSSE(`${ORDERS_EVENTS_PROVIDER}${userId}`);
 
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['providerPreOrders', company?.id],
+    queryKey: ['providerPreOrders', companyId],
     queryFn: ({ queryKey }) => {
       const companyId = queryKey[1];
       if (!companyId) {
@@ -34,7 +35,7 @@ export default function Sells() {
       }
       return getSellPreOrders(companyId);
     },
-    enabled: !!company?.id, // Ensure the query runs only if company ID exists
+    enabled: !!companyId, // Ensure the query runs only if company ID exists
   });
 
   useEffect(() => {

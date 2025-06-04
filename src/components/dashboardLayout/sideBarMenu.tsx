@@ -1,7 +1,6 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import UseUserStore from "@/store/user.store";
 import { ACCOUNT, tabs } from "@/lib/constants";
 import NewOrderButton from "@/components/dashboardLayout/newOrderButton";
 import SpecialLink from "@/components/dashboardLayout/specialLink";
@@ -10,6 +9,7 @@ import CollapsibleList from "@/components/listasCollapsible";
 import { MdOutlineDiscount } from "react-icons/md";
 import { LuBuilding, LuChevronDown, LuUsersRound, LuWalletCards, LuArchive, LuPackage, LuLayoutDashboard, LuList, LuBox, LuHeart, LuThumbsDown } from "react-icons/lu";
 import { FiPlusCircle } from "react-icons/fi";
+import { useAuth } from "@/context/AuthContext";
 
 type Props = {
     companyName: string
@@ -18,7 +18,7 @@ type Props = {
 const iconSize = 20;
 
 export function SideBarMenu({ companyName }: Props) {
-    const { user } = UseUserStore();
+    const { account } = useAuth();
     const [collapsibleIsOpen, setCollapsibleIsOpen] = useState(false);
     const search = useSearch({ from: "/_authenticated/_dashboardLayout" }) as { tab?: tabs };
     const location = useLocation();
@@ -97,15 +97,15 @@ export function SideBarMenu({ companyName }: Props) {
                 </CollapsibleContent>
             </Collapsible>
 
-            <div className={cn("mt-8", { 'mt-0': user?.accountType === ACCOUNT.provider })}>
-                {user?.accountType === ACCOUNT.client &&
+            <div className={cn("mt-8", { 'mt-0': account?.user?.accountType === ACCOUNT.provider })}>
+                {account?.user?.accountType === ACCOUNT.client &&
                     <div className="px-5">
                         <NewOrderButton onLinkClicked={onLinkClicked} />
                     </div>
                 }
 
                 <ul className="py-4 pt-6 text-secondary-foreground [&>li]:multi-[w-full] [&>li>a]:multi-[flex;gap-2;text-sm;w-full;h-10;pl-6;py-6;items-center;] [&>li>a]:hover:multi-['hover:bg-secondary-foreground/20']">
-                    {user?.accountType === ACCOUNT.client && (
+                    {account?.user?.accountType === ACCOUNT.client && (
                         <>
                             <li>
                                 <SpecialLink
@@ -163,7 +163,7 @@ export function SideBarMenu({ companyName }: Props) {
                             </li>
                         </>
                     )}
-                    {user?.accountType === ACCOUNT.provider && (
+                    {account?.user?.accountType === ACCOUNT.provider && (
                         <>
                             <li>
                                 <SpecialLink

@@ -19,9 +19,12 @@ import { RiRoadMapFill } from "react-icons/ri";
 import { BranchPicker } from "@/components/configuration/branches/branchPicker";
 import { GoPencil } from "react-icons/go";
 import { FaRegMap } from "react-icons/fa";
+import { useAuth } from "@/context/AuthContext";
 
 export function Company() {
     const { company, saveCompany, updateCompany: updateStoredCompany } = UseCompanyStore();
+    const { account } = useAuth();
+    const companyId = account?.company.id || '';
     const [isLoading, setIsLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const mutation = useMutation({ mutationFn: updateCompany })
@@ -33,8 +36,11 @@ export function Company() {
         name: company?.name || "",
         branch: {
             address: {
-                name: companyMainBranch?.address.name || "",
-                location: { coordinates: companyMainBranch?.address?.location.coordinates || [0, 0], type: companyMainBranch?.address?.location.type || "Point" },
+                name: companyMainBranch?.address?.name || "",
+                location: {
+                    coordinates: companyMainBranch?.address?.location?.coordinates || [0, 0],
+                    type: companyMainBranch?.address?.location?.type || "Point"
+                },
             }
         },
         activity: company?.activity || "",
@@ -52,6 +58,9 @@ export function Company() {
 
     useEffect(() => {
         setIsLoading(mutation.isPending);
+        if (!mutation.isPending) {
+            setIsLoading(false);
+        }
     }, [mutation.isPending]);
 
     async function onSubmit(fields: UpdateCompanySchemaType) {
@@ -62,9 +71,9 @@ export function Company() {
             email: companyMainBranch?.email || "",
             phoneNumber: companyMainBranch?.phoneNumber || "",
         }
-        if (!company) return;
-        const response = await mutation.mutateAsync({ companyId: company.id, fields: fields });
-        updateStoredCompany(response.data)
+        if (!companyId) return;
+        const response = await mutation.mutateAsync({ companyId: companyId, fields: fields });
+        updateStoredCompany(response.data);
         form.reset(response.data);
 
         if (mutation.isError) {
@@ -82,6 +91,7 @@ export function Company() {
     function actionEnded() {
         setIsEditing(false);
         setIsLoading(false);
+        mutation.reset();
     }
 
     function addAddress(address: GoogleLocationSchemaType) {
@@ -101,7 +111,12 @@ export function Company() {
     }
 
     function handleCancelEdit() {
-        if (!companyMainBranch) return;
+        if (!companyMainBranch) {
+            setIsEditing(false);
+            setIsLoading(false);
+            mutation.reset();
+            return;
+        }
         form.reset(defaultCompnay);
         addAddress({
             id: companyMainBranch.address.id,
@@ -112,6 +127,8 @@ export function Company() {
             },
         });
         setIsEditing(false);
+        setIsLoading(false);
+        mutation.reset();
     }
 
     return (
@@ -242,7 +259,7 @@ export function Company() {
                                                 <FormItem>
                                                     <FormControl>
                                                         <BranchPicker
-                                                            companyId={company?.id}
+                                                            companyId={companyId}
                                                             isEditing={isEditing}
                                                             callback={actionEnded}
                                                             onLoading={() => setIsLoading(true)}

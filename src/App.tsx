@@ -2,8 +2,6 @@ import React, { useMemo } from 'react'
 import Bugsnag from '@bugsnag/js'
 import BugsnagPluginReact from '@bugsnag/plugin-react'
 import BugsnagPerformance from '@bugsnag/browser-performance'
-import { AuthProvider } from "@/auth"
-import { useAuth } from "@/hooks"
 import { QueryClient, QueryClientProvider, QueryErrorResetBoundary } from "@tanstack/react-query"
 import { RouterProvider, createRouter, Link } from '@tanstack/react-router'
 import { ErrorInfo } from "react"
@@ -11,7 +9,8 @@ import { routeTree } from '@/routeTree.gen'
 import { APIProvider } from '@vis.gl/react-google-maps'
 import { Button } from '@/components/ui/button'
 import { LuBug } from 'react-icons/lu'
-import { AuthContextType } from '@/types'
+import { AuthContextType, AuthProvider, useAuth } from '@/context/AuthContext'
+import GlobalOverlayLoadingIndicator from '@/components/GlobalOverlayLoadingIndicator'
 
 const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
@@ -120,6 +119,7 @@ export default function App() {
           </ErrorBoundary>
         )}
       </QueryErrorResetBoundary>
+      <GlobalOverlayLoadingIndicator />
     </QueryClientProvider>
   )
 }

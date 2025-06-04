@@ -244,11 +244,13 @@ export async function deleteProvidersProduct(
 
 export async function modifyProduct({
   productId,
+  companyId,
   price,
   description,
   isActive,
 }: {
   productId: string;
+  companyId: string;
   price?: string;
   description?: string | undefined;
   isActive?: boolean | null;
@@ -264,7 +266,7 @@ export async function modifyProduct({
     console.log('Params :', params);
 
     const { data: response }: AxiosResponse = await axiosPrivate.patch(
-      `${PRODUCT}/${productId}`,
+      `${PRODUCT}/${companyId}/${productId}`,
       JSON.stringify(params),
       {
         headers: {
@@ -388,7 +390,6 @@ export async function getFavorites(
         },
       }
     );
-    console.log('Response /search:', response);
     let responseData = [];
     if (response.data && response.data.products.length > 0) {
       responseData = response.data.products;

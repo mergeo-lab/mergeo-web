@@ -24,6 +24,7 @@ type Props = {
     disabled?: boolean,
     callback: () => void
     onLoading: () => void
+    onClose: () => void
 }
 
 export function NewBranch(
@@ -36,6 +37,7 @@ export function NewBranch(
         disabled,
         callback,
         onLoading,
+        onClose,
     }: Props) {
     const [open, setOpen] = useState(false);
     const mutation = useMutation({ mutationFn: newBranch })
@@ -94,6 +96,7 @@ export function NewBranch(
 
     function handleCancel() {
         form.reset();
+        onClose();
     }
 
     return (

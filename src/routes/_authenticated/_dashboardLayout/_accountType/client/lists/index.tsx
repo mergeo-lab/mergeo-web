@@ -158,11 +158,10 @@ export function SearchLists() {
         </Button>
     )
 
-    if (searchListsLoading) return <OverlayLoadingIndicator />
-
     if (lists.length === 0) {
         return (
-            <div className='w-full h-2/3 flex flex-col justify-center items-center'>
+            <div className='w-full flex flex-col justify-center items-center gap-10 h-full relative'>
+                {searchListsLoading && <OverlayLoadingIndicator />}
                 <p className='text-center'>
                     No esperes mas!<br />
                     Crea tus listas para hacer tus procesos mas ágiles
@@ -175,7 +174,7 @@ export function SearchLists() {
                     onLoading={() => setIsLoading(true)}
                     triggerButton={createListButton}
                 />
-                <div className='flex items-center w-2/5 gap-6 p-4 shadow rounded absolute bottom-44'>
+                <div className='flex items-center w-2/4 gap-6 p-4 shadow rounded'>
                     <LuCircleAlert className='text-info' size={70} />
                     <div className='space-y-2'>
                         <p>Las <strong className='text-info'>listas</strong> sirven para hacer que tu experiencia de compra sea mas rápida y ágil.
@@ -187,7 +186,7 @@ export function SearchLists() {
         )
     } else {
         return (
-            <div className='flex h-full'>
+            <div className='flex h-ful'>
                 <div className='w-96 relative bg-white shadow py-5 px-10 overflow-auto flex flex-col gap-1'>
                     {getAllListsNames().map((list: { name: string; id: string }) =>
                         <SearchListButton active={selectedList?.id === list.id} key={list.id} id={list.id} name={list.name} onClick={handleSelectedList} />

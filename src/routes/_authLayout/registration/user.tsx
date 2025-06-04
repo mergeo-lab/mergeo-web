@@ -1,31 +1,29 @@
-import { createLazyFileRoute, Link, useRouter } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { CardBody, CardFooter } from '@/components/card'
-import LoadingIndicator from '@/components/loadingIndicator'
 import PasswordInput from '@/components/passwordInput'
 import { Button } from '@/components/ui/button'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useToast } from '@/components/ui/use-toast'
 import { RegisterUserSchema, RegisterUserSchemaType, } from '@/lib/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
 import { useForm, FormProvider } from 'react-hook-form'
-import { registerUser } from '@/lib/auth'
 import UseRegistrationStore from '@/store/registration.store'
+import { useAuth } from '@/context/AuthContext'
+import { PhoneInput } from '@/components/phoneInput'
+import { toast } from '@/components/ui/use-toast'
 
-export const Route = createLazyFileRoute('/_authLayout/registration/user')({
+export const Route = createFileRoute('/_authLayout/registration/user')({
   component: () => <RegisterUser />
 })
 
 function RegisterUser() {
-  const router = useRouter();
-  const { toast } = useToast();
-  const userMutation = useMutation({ mutationFn: registerUser });
+  const navigate = useNavigate();
+  const { register } = useAuth();
   const registrationState = UseRegistrationStore();
 
   const form = useForm<RegisterUserSchemaType>({
     resolver: zodResolver(RegisterUserSchema),
-    disabled: userMutation.isPending,
+    disabled: false,
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -40,29 +38,29 @@ function RegisterUser() {
     const companyId = registrationState.companyId ? registrationState.companyId : "";
     const accountType = registrationState.accountType ? registrationState.accountType : "";
 
-    console.log("registrationState :: ", registrationState)
+    console.log("registrationState :: ", fields)
 
-    const response = await userMutation.mutateAsync({
-      firstName: fields.firstName,
-      lastName: fields.lastName,
-      email: fields.email,
-      password: fields.password,
-      phoneNumber: fields.phoneNumber,
-      companyId: companyId,
-      accountType: accountType,
-    });
-
-    if (response.error) {
+    try {
+      const success = await register({
+        email: fields.email,
+        password: fields.password,
+        firstName: fields.firstName,
+        lastName: fields.lastName,
+        accountType: accountType,
+        phoneNumber: fields.phoneNumber,
+        companyId: companyId,
+        roles: [],
+      });
+      if (success) {
+        navigate({ to: '/registration/validate', replace: true });
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: Array.isArray(response.error) ? response.error[0] : response.error,
-      })
-    } else if (response.data) {
-      registrationState.saveUserEmail(fields.email);
-
-      const redirectTo = '/registration/validate';
-      router.history.push(redirectTo, { replace: true });
+        description: "Ocurrió un error al registrar el usuario. Por favor, intenta nuevamente.",
+      });
     }
   }
 
@@ -120,7 +118,8 @@ function RegisterUser() {
                   <FormItem>
                     <FormLabel id='phoneNumber'>Numero de Telefono</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      {/* <Input {...field} /> */}
+                      <PhoneInput defaultCountry="AR" countrySelectProps={{ disabled: true }} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -172,8 +171,8 @@ function RegisterUser() {
               </Button>
             </Link>
           </p>
-          <Button onClick={form.handleSubmit(onSubmit)} disabled={userMutation.isPending} className='min-w-[200px]' type="submit">
-            {userMutation.isPending ? <LoadingIndicator className="w-4 h-4 text-primary-foreground" /> : 'Continuar'}
+          <Button onClick={form.handleSubmit(onSubmit)} className='min-w-[200px]' type="submit">
+            Continuar
           </Button>
         </div>
       </CardFooter>

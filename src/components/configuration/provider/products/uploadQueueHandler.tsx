@@ -1,34 +1,34 @@
 import { UploadEvents } from "@/components/configuration/provider/products/uploadEvents";
-import { useUploadQueue } from "@/store/uploadQueue.store";
 import { useProductUploads } from "@/hooks/useProductUploads";
 
 type Props = {
-    providerId: string;
+    userId: string;
     onFinish: () => void;
 };
 
-export function UploadQueueHandler({ providerId, onFinish }: Props) {
-    const { queue, addToFinished } = useUploadQueue(); // your zustand store with queued file names
-    const { uploads } = useProductUploads(providerId);
+export function UploadQueueHandler({ userId, onFinish }: Props) {
+    const { uploads } = useProductUploads(userId);
 
-    const isAllProcessed = Array.from(queue).every((file) =>
-        Object.values(uploads).some((u) => u.fileName === file && u.percent === 100)
+    // Only show in-progress uploads (not finished and percent < 100)
+    const inProgressUploads = Object.entries(uploads).filter(
+        ([, upload]) => !upload.finished && upload.percent < 100
     );
 
-    // Once all are done, we call onFinish
-    if (queue.length > 0 && isAllProcessed) {
+    // Optionally, call onFinish if all are done
+    if (Object.values(uploads).length > 0 && inProgressUploads.length === 0) {
         onFinish();
         return null;
     }
 
     return (
         <div className="flex flex-col gap-2">
-            {Array.from(queue).map((file, index) => (
+            {inProgressUploads.map(([key, upload]) => (
                 <UploadEvents
-                    key={file + index}
-                    fileName={file}
-                    providerId={providerId}
-                    onFinish={(filename) => { addToFinished(filename) }} // Let parent decide when to fully reset
+                    key={key}
+                    id={key}
+                    fileName={upload.fileName || key}
+                    userId={userId}
+                    onFinish={() => { }}
                 />
             ))}
         </div>

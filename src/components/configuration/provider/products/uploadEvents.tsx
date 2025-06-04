@@ -1,120 +1,68 @@
-import { Button } from "@/components/ui/button";
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
 import { Progress } from "@/components/ui/progress";
 import { useProductUploads } from "@/hooks/useProductUploads";
+import { useUploadResultsStore } from "@/store/uploadResults.store";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
-import { BiMessageAltError } from "react-icons/bi";
-import { BsDatabaseAdd } from "react-icons/bs";
-import { LuCopyCheck, LuFolderCheck } from "react-icons/lu";
-
+import { useEffect } from "react";
 
 type Props = {
-    providerId: string;
+    id: string;
+    userId: string;
     fileName: string;
-    onFinish: (fileName: string) => void;
+    onFinish: (id: string) => void;
 };
 
-export function UploadEvents({ providerId, fileName, onFinish }: Props) {
-    const { uploads, uploadPercent } = useProductUploads(providerId);
-    const [copy, setCopy] = useState(false);
+export function UploadEvents({ id, userId, fileName, onFinish }: Props) {
+    const { uploads } = useProductUploads(userId);
+    const { addResult } = useUploadResultsStore();
 
-    // Get the current file's upload statu
-    const currentUpload = uploads[fileName];
+    // Get the current file's upload status
+    const currentUpload = uploads[fileName] || uploads[id];
 
-    function copyToClipboard(text: string) {
-        navigator.clipboard.writeText(text)
-            .then(() => {
-                console.log("Copied to clipboard!");
-                setCopy(true);
-                setTimeout(() => {
-                    setCopy(false);
-                }, 1000);
-            })
-            .catch((err) => {
-                console.error("Failed to copy:", err);
-            });
-    }
-
-    // Call onFinish only when current file finishes uploading
+    // Save upload results to localStorage when they change
     useEffect(() => {
-        if (uploadPercent === 100) {
-            onFinish(fileName);
+        if (
+            currentUpload &&
+            (currentUpload.percent === 100 || currentUpload.finished)
+        ) {
+            addResult(fileName, {
+                ...currentUpload,
+                fileName,
+                timestamp: Date.now(),
+            });
+            onFinish(id);
         }
-    }, [currentUpload.percent, fileName, onFinish, uploadPercent]);
+    }, [currentUpload, fileName, addResult, onFinish, id]);
 
-    // If the file is not being uploaded yet or is already finished
+    // Guard: never access .percent if currentUpload is undefined
     if (!currentUpload) {
-        return <div className="flex flex-col gap-4 p-5 w-full rounded shadow">
-            <p className="text-sm text-muted-foreground">
-                Esperando a subir archivo <span className="font-medium">{fileName}</span>
-            </p>
-        </div>
+        return null;
+    }
+    if (
+        !('percent' in currentUpload) ||
+        currentUpload.percent === 0 ||
+        currentUpload.percent === 100 ||
+        currentUpload.finished
+    ) {
+        return null;
     }
 
     return (
         <div className="flex flex-col gap-4 p-5 w-full rounded shadow">
-            <div
-                className={cn("flex items-center gap-4 w-full transition-opacity duration-300")}
+            <div className={cn("flex items-center gap-4 w-full transition-opacity duration-300")}
             >
-                {currentUpload.percent < 100 ? (
-                    <>
-                        <p className="text-sm text-muted-foreground">
-                            Subiendo archivo <span className="font-medium">{fileName}</span>
-                        </p>
-                        <div className="w-1/2">
-                            <Progress value={currentUpload.percent} className="w-full rounded h-2" />
-                        </div>
-                        <div>{currentUpload.percent}%</div>
-                        <div className="text-sm text-muted-foreground">
-                            Procesando producto con Ean/Gtin:
-                            <span className="text-info pl-1">
-                                {currentUpload.gtins[currentUpload.gtins.length - 1]}
-                            </span>
-                        </div>
-                    </>
-                ) : (
-                    <div className="w-full flex items-center justify-between">
-                        <div className="flex gap-2">
-                            <LuFolderCheck className="text-primary" />
-                            <p>Archivo <span className="font-medium">{fileName}</span> cargado!</p>
-                        </div>
-                        <div className="flex items-start gap-3">
-                            <div className="flex items-center gap-2 border-2 border-muted/40 px-2 rounded h-10">
-                                <BsDatabaseAdd size={25} className="text-primary" />
-                                {`${currentUpload.successGtins?.length} productos procesados con exito`}
-                            </div>
-                            <div className="h-5">
-                                {currentUpload?.failedGtins && currentUpload?.failedGtins?.length > 0 &&
-                                    <NavigationMenu>
-                                        <NavigationMenuList>
-                                            <NavigationMenuItem>
-                                                <NavigationMenuTrigger className="border-2 border-destructive/40 px-4 rounded h-10 text-black/70 text-base">
-                                                    <div className="flex items-center gap-1">
-                                                        <BiMessageAltError size={30} className="text-destructive" />
-                                                        {`${currentUpload.failedGtins?.length}  productos procesados con error`}
-                                                    </div>
-                                                </NavigationMenuTrigger>
-                                                <NavigationMenuContent className="p-0! w-full min-w-80 max-h-50">
-                                                    <div className="h-50 overflow-auto flex justify-center flex-wrap p-4 gap-2">
-                                                        {currentUpload.failedGtins?.map((item, index) =>
-                                                            <div key={item + index} className="text-sm border border-muted px-3 rounded-sm flex items-center justify-center">{item}</div>
-                                                        )}
-                                                    </div>
-                                                    <Button
-                                                        variant="ghost"
-                                                        className="text-info w-full"
-                                                        onClick={() => currentUpload.failedGtins && copyToClipboard(currentUpload.failedGtins?.join(', '))}
-                                                    >{!copy ? "Copiar" : <LuCopyCheck className="tect-primary" />}</Button>
-                                                </NavigationMenuContent>
-                                            </NavigationMenuItem>
-                                        </NavigationMenuList>
-                                    </NavigationMenu>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                )}
+                <p className="text-sm text-muted-foreground">
+                    Subiendo archivo <span className="font-medium">{fileName}</span>
+                </p>
+                <div className="w-1/2">
+                    <Progress value={currentUpload.percent} className="w-full rounded h-2" />
+                </div>
+                <div>{currentUpload.percent}%</div>
+                <div className="text-sm text-muted-foreground">
+                    Procesando producto con Ean/Gtin:
+                    <span className="text-info pl-1">
+                        {currentUpload.gtins?.[currentUpload.gtins.length - 1]}
+                    </span>
+                </div>
             </div>
         </div>
     );

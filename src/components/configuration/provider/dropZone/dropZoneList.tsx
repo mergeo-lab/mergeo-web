@@ -28,7 +28,7 @@ export default function DropZoneList({ list, className, isEditing, startEditing,
                 <LuMapPinned />
                 Zonas de reparto Agregadas:
             </p>
-            <div className={cn("flex ml-3 flex-wrap w-full mt-2 gap-2 max-h-60 overflow-y-auto", className)}>
+            <div className={cn("flex ml-3 flex-wrap w-full mt-2 gap-2 max-h-full overflow-y-auto", className)}>
                 {list.length ?
                     list.map((item: DropZoneSchemaType, index: number) => (
                         <DropZoneItem isEditing={isEditing} key={index} item={item} remove={handleRemove} edit={handleEdit} showMap={handleShowMap} />

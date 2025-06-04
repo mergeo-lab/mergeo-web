@@ -113,6 +113,10 @@ export function DropZoneSheet({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open]);
 
+    useEffect(() => {
+        setIsLoading(mutation.isPending || editMutation.isPending || isLoadingProp || false);
+    }, [mutation.isPending, editMutation.isPending, isLoadingProp]);
+
     const closeModal = useCallback(() => {
         handleCancel()
         setSelectedZone([]);
@@ -131,6 +135,7 @@ export function DropZoneSheet({
     }
 
     async function saveDropZone() {
+        setIsLoading(true);
         if (!companyId) return;
         if (!form.getValues().name || !form.getValues().schedules || !form.getValues().zone) return;
         const dzone = {
@@ -155,6 +160,7 @@ export function DropZoneSheet({
             form.reset();
             setIsAdding(false);
             fetchZones();
+            setIsLoading(false);
         }
     }
 
@@ -205,6 +211,7 @@ export function DropZoneSheet({
 
     function handelDeleteZone(id: string) {
         if (!id) return;
+        setIsLoading(true);
         const toDelete = getDropZoneById(id);
         if (toDelete) setDeleteDropZoneData({ data: toDelete, isOpen: true });
     }
@@ -247,9 +254,6 @@ export function DropZoneSheet({
                 {triggerButton}
             </SheetTrigger>
             <SheetContent className="w-1/3 mx-w-1/3 sm:max-w-1/3">
-                {
-                    isLoading || isLoadingProp || mutation.isPending || editMutation.isPending && <OverlayLoadingIndicator />
-                }
                 <FormProvider {...form}>
                     <SheetHeader>
                         <SheetTitle className="flex gap-2 items-center">
@@ -260,6 +264,7 @@ export function DropZoneSheet({
                             {subTitle}
                         </SheetDescription>
                     </SheetHeader>
+
                     <Button onClick={() => {
                         isAdding ? cancelEdit() : openAddZone()
                     }} variant="outline" className={cn("mt-5 w-full", {
@@ -267,103 +272,108 @@ export function DropZoneSheet({
                     })}>
                         {isAdding ? "Cancelar" : "Añadir Zona"}
                     </Button>
-                    <div className={cn("rounded border mt-5 overflow-hidden transition-[height] duration-500", {
+                    <div className={cn("rounded border mt-5 overflow-hidden transition-[height] duration-500 relative", {
                         "h-0 p-0": !isAdding,
                         "h-[420px]": isAdding
                     })}>
-                        <form className='space-y-4 p-5'>
-                            <FormField
-                                control={form.control}
-                                name="name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel id='name'>Nombre</FormLabel>
-                                        <FormControl>
-                                            <Input className="h-8" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="schedules"
-                                render={() => (
-                                    <FormItem>
-                                        <FormLabel id='schedules'>Dias y Horarios</FormLabel>
-                                        <FormControl>
-                                            <DaysPicker
-                                                isEditing={true}
-                                                callback={() => setSelectedDays(schedules)}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormItem className="flex justify-center">
-                                <FormControl>
-                                    <NewDropZone
-                                        title="Dibuja una zona en el mapa"
-                                        subTitle="Agrega una nueva zona de reparto"
-                                        companyId={""}
-                                        triggerButton={
-                                            <Button
-                                                variant={selectedZone.length ? "outline" : "secondary"}
-                                                className="w-full space-x-2 text-md font-black p-6 m-0" type="button">
-                                                <FaRegMap size={30} />
-                                                <p className="uppercase text-sm">{
-                                                    selectedZone.length
-                                                        ? "Editar zona en el mapa"
-                                                        : "Dibujar zona en el mapa"
-                                                }
-                                                </p>
-                                            </Button>
-                                        }
-                                        addZone={addZoneHandler}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            <div className="w-full border-t flex justify-end pt-4">
-                                {
-                                    editingDz.editing ?
-                                        (
-                                            <div className="flex gap-2">
+                        <>
+                            {
+                                isLoading && <OverlayLoadingIndicator />
+                            }
+                            <form className='space-y-4 p-5'>
+                                <FormField
+                                    control={form.control}
+                                    name="name"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel id='name'>Nombre</FormLabel>
+                                            <FormControl>
+                                                <Input className="h-8" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="schedules"
+                                    render={() => (
+                                        <FormItem>
+                                            <FormLabel id='schedules'>Dias y Horarios</FormLabel>
+                                            <FormControl>
+                                                <DaysPicker
+                                                    isEditing={true}
+                                                    callback={() => setSelectedDays(schedules)}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormItem className="flex justify-center">
+                                    <FormControl>
+                                        <NewDropZone
+                                            title="Dibuja una zona en el mapa"
+                                            subTitle="Agrega una nueva zona de reparto"
+                                            companyId={""}
+                                            triggerButton={
                                                 <Button
-                                                    variant="secondary"
-                                                    onClick={() => cancelEdit()}
-                                                    className="w-fit space-x-2 px-14"
-                                                    type="button"
-                                                >
-                                                    <p>Cancelar</p>
+                                                    variant={selectedZone.length ? "outline" : "secondary"}
+                                                    className="w-full space-x-2 text-md font-black p-6 m-0" type="button">
+                                                    <FaRegMap size={30} />
+                                                    <p className="uppercase text-sm">{
+                                                        selectedZone.length
+                                                            ? "Editar zona en el mapa"
+                                                            : "Dibujar zona en el mapa"
+                                                    }
+                                                    </p>
                                                 </Button>
+                                            }
+                                            addZone={addZoneHandler}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                                <div className="w-full border-t flex justify-end pt-4">
+                                    {
+                                        editingDz.editing ?
+                                            (
+                                                <div className="flex gap-2">
+                                                    <Button
+                                                        variant="secondary"
+                                                        onClick={() => cancelEdit()}
+                                                        className="w-fit space-x-2 px-14"
+                                                        type="button"
+                                                    >
+                                                        <p>Cancelar</p>
+                                                    </Button>
+                                                    <Button
+                                                        onClick={() => saveEdit()}
+                                                        disabled={!canSubmit}
+                                                        className="w-fit space-x-2 px-14"
+                                                        type="button"
+                                                    >
+                                                        <LuFilePenLine />
+                                                        <p>Guardar cambios</p>
+                                                    </Button>
+                                                </div>
+                                            )
+                                            : (
                                                 <Button
-                                                    onClick={() => saveEdit()}
+                                                    onClick={saveDropZone}
                                                     disabled={!canSubmit}
                                                     className="w-fit space-x-2 px-14"
                                                     type="button"
                                                 >
-                                                    <LuFilePenLine />
-                                                    <p>Guardar cambios</p>
+                                                    <LuMapPinned />
+                                                    <p>Agregar Zona de entrega</p>
                                                 </Button>
-                                            </div>
-                                        )
-                                        : (
-                                            <Button
-                                                onClick={saveDropZone}
-                                                disabled={!canSubmit}
-                                                className="w-fit space-x-2 px-14"
-                                                type="button"
-                                            >
-                                                <LuMapPinned />
-                                                <p>Agregar Zona de entrega</p>
-                                            </Button>
 
-                                        )
-                                }
-                            </div>
-                        </form>
+                                            )
+                                    }
+                                </div>
+                            </form>
+                        </>
                     </div>
 
                     <ShowDropZoneMap

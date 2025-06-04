@@ -1,10 +1,4 @@
-import {
-  AuthType,
-  EmailRecoverType,
-  OtpType,
-  RegisterCompanyResult,
-  Response,
-} from '@/types';
+import { AuthType, EmailRecoverType, OtpType, Response } from '@/types';
 import { authEndpoints } from './endpoints';
 import {
   GoogleLocationSchemaType,
@@ -17,22 +11,42 @@ import { HelpersData } from '@/types/authHelpers.type';
 import axios, { AxiosResponse, isAxiosError } from 'axios';
 
 export async function registerUser(
-  fields: RegisterUserSchemaType
+  fields: Omit<RegisterUserSchemaType, 'password' | 'confirmPassword'>
 ): Promise<Response<AuthType>> {
   try {
+    console.log('Registering user with fields:', fields);
+    console.log('Using endpoint:', authEndpoints.REGISTER_USER);
+    console.log('Using base URL:', import.meta.env.VITE_API_URL);
+
     const response: Response<AuthType> = await axiosInstance.post(
       authEndpoints.REGISTER_USER,
-      JSON.stringify({ ...fields }),
+      fields, // Don't stringify the data, let axios handle it
       {
-        headers: { 'Content-Type': 'application/json' },
-        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        withCredentials: false,
       }
     );
+    console.log('Registration response:', response);
     return response;
   } catch (error) {
+    console.error('Registration error:', error);
     let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
 
     if (isAxiosError(error)) {
+      console.error('Axios error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        headers: error.response?.headers,
+        config: {
+          url: error.config?.url,
+          method: error.config?.method,
+          headers: error.config?.headers,
+          data: error.config?.data,
+        },
+      });
       errorMessage = error.response?.data.message || errorMessage;
     }
 
@@ -42,57 +56,88 @@ export async function registerUser(
 
 export async function registerCompany(
   fields: RegisterCompanySchemaType
-): Promise<Response<RegisterCompanyResult>> {
+): Promise<{ companyId: string; error?: string }> {
   try {
-    const response: Response<RegisterCompanyResult> = await axiosInstance.post(
+    console.log('Registering company with fields:', fields);
+    console.log('Using endpoint:', authEndpoints.REGISTER_COMPANY);
+    console.log('Using base URL:', import.meta.env.VITE_API_URL);
+
+    const { data: response } = await axiosInstance.post(
       authEndpoints.REGISTER_COMPANY,
-      JSON.stringify({ ...fields }),
+      fields, // Don't stringify the data, let axios handle it
       {
-        headers: { 'Content-Type': 'application/json' },
-        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        withCredentials: false,
       }
     );
-    return response;
+    console.log('Registration response:', response);
+    return { companyId: response.data.companyId };
   } catch (error) {
+    console.error('Registration error:', error);
     let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
 
     if (isAxiosError(error)) {
+      console.error('Axios error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        headers: error.response?.headers,
+        config: {
+          url: error.config?.url,
+          method: error.config?.method,
+          headers: error.config?.headers,
+          data: error.config?.data,
+        },
+      });
       errorMessage = error.response?.data.message || errorMessage;
     }
 
-    return { error: errorMessage };
+    return { companyId: '', error: errorMessage };
   }
 }
 
-export async function login({
-  email,
-  password,
-}: {
-  email: string;
-  password: string;
-}): Promise<Response<AuthType>> {
+export async function getProfile(userId: string): Promise<AuthType> {
   try {
-    const response: Response<AuthType> = await axiosPrivate.post(
-      authEndpoints.LOGIN,
-      JSON.stringify({ email: email, password: password }),
+    console.log('Getting profile for user:', userId);
+    console.log('Using endpoint:', `${authEndpoints.PROFILE}/${userId}`);
+
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${authEndpoints.PROFILE}/${userId}`,
       {
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
         withCredentials: true,
       }
     );
-    return response;
+    console.log('Profile response:', response);
+    return response.data;
   } catch (error) {
-    let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
-
+    console.error('Profile error:', error);
     if (isAxiosError(error)) {
+      console.error('Axios error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        headers: error.response?.headers,
+        config: {
+          url: error.config?.url,
+          method: error.config?.method,
+          headers: error.config?.headers,
+          withCredentials: error.config?.withCredentials,
+        },
+      });
+
       if (error.response?.data.statusCode === 400) {
-        errorMessage = 'El email o la contraseña son incorrectos';
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
       } else {
-        errorMessage = error.response?.data.message;
+        error.message = error.response?.data.message;
       }
     }
 
-    return { error: errorMessage };
+    throw error;
   }
 }
 
@@ -113,7 +158,7 @@ export async function passwordRecover(
     let errorMessage = 'Algo salio mal, vuelve a intentarlo!';
 
     if (isAxiosError(error)) {
-      errorMessage = error.response?.data.message || errorMessage;
+      errorMessage = error.message || errorMessage;
     }
 
     return { error: errorMessage };

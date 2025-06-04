@@ -2,6 +2,7 @@ import { BranchesSchema } from '@/lib/schemas';
 import * as z from 'zod';
 
 export const BaseRegisterUserSchema = z.object({
+  id: z.string().optional(),
   firstName: z.string().min(3, { message: 'El nombre no es valido!' }),
   lastName: z.string().min(3, { message: 'Ingresa tu apellido' }),
   email: z
@@ -21,6 +22,7 @@ export const BaseRegisterUserSchema = z.object({
     .optional(),
   companyId: z.string().optional(),
   accountType: z.string().optional(),
+  roles: z.array(z.string()).optional(),
 });
 
 export const RegisterUserSchema = BaseRegisterUserSchema.superRefine(
@@ -41,12 +43,9 @@ export const RegisterCompanySchema = z.object({
   name: z.string().min(3, { message: 'El nombre no es valido!' }),
   razonSocial: z.string().min(3, { message: 'Ingresa tu Razon Social' }),
   cuit: z
-    .string() // Expect string input from form
-    .min(11, { message: 'CUIT debe tener 11 dígitos' }) // Ensure it has 11 characters
-    .transform((val) => Number(val)) // Transform string to number
-    .refine((val) => !isNaN(val), {
-      message: 'CUIT debe ser un número válido',
-    }),
+    .number()
+    .min(10000000000, { message: 'CUIT debe tener 11 dígitos' })
+    .max(99999999999, { message: 'CUIT debe tener 11 dígitos' }),
   branch: BranchesSchema,
   activity: z
     .string()
