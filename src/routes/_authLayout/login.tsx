@@ -34,9 +34,9 @@ type Schema = z.infer<typeof LoginSchema>
 const MemoizedFormField = memo(FormField);
 
 function Login() {
-  const { show } = useGlobalLoading();
+  const { show, hide } = useGlobalLoading();
 
-  const { account, loading, login } = useAuth();
+  const { account, loading, login, error: loginError } = useAuth();
   const router = useRouter();
 
   // Memoize the form object
@@ -53,7 +53,10 @@ function Login() {
     if (loading) {
       show();
     }
-  }, [loading, show]);
+    if (loginError) {
+      hide();
+    }
+  }, [loading, loginError, show, hide]);
 
   const onSubmit = async (fields: Schema) => {
     await login(fields.email, fields.password);
@@ -66,8 +69,6 @@ function Login() {
       router.history.replace(redirectTo);
     }
   }, [account, loading, router.history]);
-
-
 
   return (
     <Form {...form}>

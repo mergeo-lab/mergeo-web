@@ -12,6 +12,7 @@ import { Session } from '@supabase/supabase-js';
 export interface AuthContextType {
     account: AuthType | null;
     loading: boolean;
+    error: string | null;
     login: (email: string, password: string) => Promise<void>;
     register: (userData: Omit<RegisterUserSchemaType, 'id'>) => Promise<boolean>;
     logout: () => void;
@@ -49,6 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const companyState = UseCompanyStore();
     const [account, setAccount] = useState<AuthType | null>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         console.log('account', account);
@@ -74,6 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 }
             } catch (error) {
                 console.error('Session check failed:', error);
+                setError(error instanceof Error ? error.message : "Error al verificar la sesión. Por favor, intenta nuevamente.");
                 toast({
                     variant: "destructive",
                     title: "Error",
@@ -99,6 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (data.session) {
                 saveSession(data.session);
             } else {
+                setError("No session in login response");
                 console.error('No session in login response:', data);
             }
 
@@ -108,6 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 companyState.saveCompany(profile.company);
             }
         } catch (error) {
+            setError(error instanceof Error ? error.message : "Error al iniciar sesión. Por favor, intenta nuevamente.");
             console.error('Login failed:', error);
             toast({
                 variant: "destructive",
@@ -134,6 +139,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (data.session) {
                 saveSession(data.session);
             } else {
+                setError("No session in register response");
                 console.error('No session in register response:', data);
             }
 
@@ -167,6 +173,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setLoading(false);
             return false;
         } catch (error) {
+            setError(error instanceof Error ? error.message : "Error al registrar el usuario. Por favor, intenta nuevamente.");
             console.error('Registration error:', error);
             toast({
                 variant: "destructive",
@@ -188,6 +195,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 description: "Has cerrado sesión correctamente.",
             });
         } catch (error) {
+            setError(error instanceof Error ? error.message : "Error al cerrar sesión. Por favor, intenta nuevamente.");
             console.error('Logout failed:', error);
             toast({
                 variant: "destructive",
@@ -219,6 +227,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 description: "Se ha enviado un email con instrucciones para restablecer tu contraseña.",
             });
         } catch (error) {
+            setError(error instanceof Error ? error.message : "Error al enviar el email de recuperación. Por favor, intenta nuevamente.");
             console.error('Forgot password failed:', error);
             toast({
                 variant: "destructive",
@@ -241,6 +250,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 description: "Tu contraseña ha sido actualizada correctamente.",
             });
         } catch (error) {
+            setError(error instanceof Error ? error.message : "Error al restablecer la contraseña. Por favor, intenta nuevamente.");
             console.error('Reset password failed:', error);
             toast({
                 variant: "destructive",
@@ -254,7 +264,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ account, loading, login, register, logout, forgotPassword, resetPassword }}>
+        <AuthContext.Provider value={{ account, loading, error, login, register, logout, forgotPassword, resetPassword }}>
             {children}
         </AuthContext.Provider>
     );
