@@ -49,16 +49,6 @@ function Login() {
     },
   });
 
-  useEffect(() => {
-    if (loading) {
-      show();
-    } else {
-      hide();
-    }
-    if (hasError) {
-      hide();
-    }
-  }, [loading, hasError, show, hide]);
 
   const onSubmit = async (fields: Schema) => {
     await login(fields.email, fields.password);
@@ -69,8 +59,10 @@ function Login() {
       const accountType = account?.user?.accountType;
       const redirectTo = (accountType === ACCOUNT.provider ? "/provider" : "/client") + "/dashboard";
       router.history.replace(redirectTo);
+    } else if (account && loading) {
+      show();
     }
-  }, [account, loading, router.history]);
+  }, [account, loading, router.history, show]);
 
   return (
     <Form {...form}>

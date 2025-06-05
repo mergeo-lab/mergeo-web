@@ -1,4 +1,3 @@
-import { createPortal } from 'react-dom';
 import { useGlobalLoading } from '@/store/globalLoading.store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -7,7 +6,7 @@ import LoadingIndicator from '@/components/loadingIndicator';
 export default function GlobalOverlayLoadingIndicator() {
     const { visible, label } = useGlobalLoading();
 
-    return createPortal(
+    return (
         <AnimatePresence>
             {visible && (
                 <div className="absolute w-full h-full inset-0 flex flex-col items-center justify-center z-40">
@@ -24,7 +23,6 @@ export default function GlobalOverlayLoadingIndicator() {
                     </div>
                 </div>
             )}
-        </AnimatePresence>,
-        document.body
+        </AnimatePresence>
     );
 }
