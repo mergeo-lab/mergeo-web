@@ -34,9 +34,9 @@ type Schema = z.infer<typeof LoginSchema>
 const MemoizedFormField = memo(FormField);
 
 function Login() {
-  const { show, hide } = useGlobalLoading();
+  const { show } = useGlobalLoading();
 
-  const { account, loading, login, hasError } = useAuth();
+  const { account, loading, login } = useAuth();
   const router = useRouter();
 
   // Memoize the form object
