@@ -52,6 +52,8 @@ function Login() {
   useEffect(() => {
     if (loading) {
       show();
+    } else {
+      hide();
     }
     if (hasError) {
       hide();
