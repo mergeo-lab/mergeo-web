@@ -36,7 +36,7 @@ const MemoizedFormField = memo(FormField);
 function Login() {
   const { show, hide } = useGlobalLoading();
 
-  const { account, loading, login, error: loginError } = useAuth();
+  const { account, loading, login, hasError } = useAuth();
   const router = useRouter();
 
   // Memoize the form object
@@ -50,13 +50,15 @@ function Login() {
   });
 
   useEffect(() => {
+    console.log("loginError", hasError);
+    console.log("loading", loading);
     if (loading) {
       show();
     }
-    if (loginError) {
+    if (hasError) {
       hide();
     }
-  }, [loading, loginError, show, hide]);
+  }, [loading, hasError, show, hide]);
 
   const onSubmit = async (fields: Schema) => {
     await login(fields.email, fields.password);
