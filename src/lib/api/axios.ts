@@ -72,7 +72,6 @@ axiosInstance.interceptors.response.use(
 export const axiosPrivate = axios.create({
   ...baseConfig,
   withCredentials: true,
-  timeout: 10000, // Add a timeout
 });
 
 // Add request interceptor to add the token to requests
