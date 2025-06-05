@@ -50,8 +50,6 @@ function Login() {
   });
 
   useEffect(() => {
-    console.log("loginError", hasError);
-    console.log("loading", loading);
     if (loading) {
       show();
     }

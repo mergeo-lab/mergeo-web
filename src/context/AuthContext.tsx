@@ -12,7 +12,7 @@ import { Session } from '@supabase/supabase-js';
 export interface AuthContextType {
     account: AuthType | null;
     loading: boolean;
-    hasError: string | null;
+    hasError: boolean;
     login: (email: string, password: string) => Promise<void>;
     register: (userData: Omit<RegisterUserSchemaType, 'id'>) => Promise<boolean>;
     logout: () => void;
