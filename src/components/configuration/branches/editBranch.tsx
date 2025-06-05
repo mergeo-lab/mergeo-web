@@ -59,7 +59,6 @@ export function EditBranch(
         if (branchData) {
             form.reset(branchData);
             addAddress({
-                id: branchData.address.id,
                 displayName: { text: branchData.address.name },
                 location: {
                     latitude: branchData.address.location.coordinates[1],
@@ -92,7 +91,6 @@ export function EditBranch(
 
     function addAddress(address: GoogleLocationSchemaType) {
         form.setValue('address', {
-            id: address.id,
             location: {
                 type: "Point",
                 coordinates: [address.location.latitude, address.location.longitude]

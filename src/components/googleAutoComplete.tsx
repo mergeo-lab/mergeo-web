@@ -72,7 +72,6 @@ export function GoogleAutoComplete({ debounce = 500, selectedAddress, addressRem
             if (response) {
                 setIsLoading(false);
                 let data: GoogleLocationSchemaType = {
-                    id: response.id,
                     location: response.location,
                     displayName: {
                         text: ''
