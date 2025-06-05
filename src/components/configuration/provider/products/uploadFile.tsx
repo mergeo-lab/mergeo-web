@@ -4,32 +4,34 @@ import Dropzone, { DropZoneRef } from "@/components/dropzone";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import { useUploadQueue, UploadQueueItem } from "@/store/uploadQueue.store";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 
 export default function UploadFile() {
-
     const { account } = useAuth();
     const userId = account?.user.id;
     const companyId = account?.company.id;
     const dropzoneRef = useRef<DropZoneRef>(null);
     const { addToQueue, resetQueue, removeFinishedFromQueue } = useUploadQueue();
 
-    function fileUploadedCallback(item: UploadQueueItem) {
+    const fileUploadedCallback = useCallback((item: UploadQueueItem) => {
         addToQueue(item); // queue the file as "pending"
-    }
+    }, [addToQueue]);
 
-    function productsQueueFinishCallback() {
-        dropzoneRef.current?.reset();
+    const productsQueueFinishCallback = useCallback(() => {
+        if (dropzoneRef.current) {
+            dropzoneRef.current.reset();
+        }
         resetQueue();
-    }
+    }, [resetQueue]);
 
     useEffect(() => {
         return () => {
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-            dropzoneRef.current?.reset();
+            if (dropzoneRef.current) {
+                dropzoneRef.current.reset();
+            }
             removeFinishedFromQueue();
         }
-    }, [removeFinishedFromQueue])
+    }, [removeFinishedFromQueue]);
 
     return (
         <div className='p-10'>
@@ -74,6 +76,5 @@ export default function UploadFile() {
                 <SavedUploads />
             </div>
         </div>
-
     )
 }

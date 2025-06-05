@@ -97,7 +97,6 @@ export function Company() {
     function addAddress(address: GoogleLocationSchemaType) {
         form.setValue('branch', {
             address: {
-                id: address.id,
                 location: {
                     type: "Point",
                     coordinates: [address.location.latitude, address.location.longitude]
@@ -119,7 +118,6 @@ export function Company() {
         }
         form.reset(defaultCompnay);
         addAddress({
-            id: companyMainBranch.address.id,
             displayName: { text: companyMainBranch.address.name },
             location: {
                 latitude: companyMainBranch.address.location.coordinates[1],
@@ -221,7 +219,6 @@ export function Company() {
                                                                 addressRemoved={() => {
                                                                     field?.value.name && form.setValue('branch', {
                                                                         address: {
-                                                                            id: "",
                                                                             location: {
                                                                                 type: "Point",
                                                                                 coordinates: [0, 0]

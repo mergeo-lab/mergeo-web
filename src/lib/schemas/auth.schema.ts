@@ -43,9 +43,9 @@ export const RegisterCompanySchema = z.object({
   name: z.string().min(3, { message: 'El nombre no es valido!' }),
   razonSocial: z.string().min(3, { message: 'Ingresa tu Razon Social' }),
   cuit: z
-    .number()
-    .min(10000000000, { message: 'CUIT debe tener 11 dígitos' })
-    .max(99999999999, { message: 'CUIT debe tener 11 dígitos' }),
+    .string()
+    .min(11, { message: 'CUIT debe tener 11 dígitos' })
+    .max(11, { message: 'CUIT debe tener 11 dígitos' }),
   branch: BranchesSchema,
   activity: z
     .string()

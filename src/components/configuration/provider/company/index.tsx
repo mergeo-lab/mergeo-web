@@ -42,11 +42,11 @@ export function Company() {
         activity: company?.activity || "",
     }
 
-
     const form = useForm<UpdateCompanySchemaType>({
         resolver: zodResolver(UpdateCompanySchema),
         defaultValues: defaultCompnay
     })
+
 
     useEffect(() => {
         handleCancelEdit();
@@ -88,7 +88,6 @@ export function Company() {
     function addAddress(address: GoogleLocationSchemaType) {
         form.setValue('branch', {
             address: {
-                id: address.id,
                 location: {
                     type: "Point",
                     coordinates: [address.location.latitude, address.location.longitude]
@@ -105,11 +104,10 @@ export function Company() {
         if (!companyMainBranch) return;
         form.reset(defaultCompnay);
         addAddress({
-            id: companyMainBranch.address.id,
             displayName: { text: companyMainBranch.address.name },
             location: {
-                latitude: companyMainBranch.address.location.coordinates[1],
-                longitude: companyMainBranch.address.location.coordinates[0]
+                latitude: companyMainBranch.address.location.coordinates[0],
+                longitude: companyMainBranch.address.location.coordinates[1]
             },
         });
         setIsEditing(false);
@@ -210,7 +208,6 @@ export function Company() {
                                                                 addressRemoved={() => {
                                                                     field?.value.name && form.setValue('branch', {
                                                                         address: {
-                                                                            id: "",
                                                                             location: {
                                                                                 type: "Point",
                                                                                 coordinates: [0, 0]
@@ -307,14 +304,16 @@ export function Company() {
                                         Cancelar
                                     </span>
                                 </Button>
-                                <Button onClick={form.handleSubmit(onSubmit)} className='min-w-[200px] flex gap-2' type="submit">
+                                <Button onClick={form.handleSubmit(onSubmit)}
+                                    disabled={mutation.isPending || !form.getFieldState("branch.address.name").isDirty}
+                                    className='min-w-[200px] flex gap-2' type="submit">
                                     <span>
                                         Guardar
                                     </span>
                                 </Button>
                             </>
                             :
-                            <Button variant='outline' onClick={() => setIsEditing(!isEditing)} className='min-w-[200px] flex gap-2' type="submit">
+                            <Button disabled={mutation.isPending} variant='outline' onClick={() => setIsEditing(!isEditing)} className='min-w-[200px] flex gap-2' type="submit">
                                 <span>
                                     Editar
                                 </span>

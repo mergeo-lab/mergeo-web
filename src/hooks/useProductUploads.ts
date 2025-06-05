@@ -32,17 +32,24 @@ export function useProductUploads(userId: string) {
       (data) => {
         const key = data.upload_id || data.fileName;
         const ts = (data as any).timestamp || Date.now();
-        setUploads((prev) => ({
-          ...prev,
-          [key]: {
-            ...prev[key],
-            percent: data.upload_percent,
-            fileName: data.fileName,
-            gtins: [...(prev[key]?.gtins || []), data.gtin],
-            uploadId: data.upload_id,
-            timestamp: ts,
-          },
-        }));
+
+        // Update the upload status
+        setUploads((prev) => {
+          const currentUpload = prev[key] || { gtins: [] };
+          return {
+            ...prev,
+            [key]: {
+              ...currentUpload,
+              percent: data.upload_percent,
+              fileName: data.fileName,
+              gtins: [...(currentUpload.gtins || []), data.gtin],
+              uploadId: data.upload_id,
+              timestamp: ts,
+            },
+          };
+        });
+
+        // Update the global progress
         setUploadPercent(data.upload_percent);
       }
     );
@@ -52,18 +59,25 @@ export function useProductUploads(userId: string) {
       (data) => {
         const key = data.upload_id || data.fileName;
         const ts = (data as any).timestamp || Date.now();
-        setUploads((prev) => ({
-          ...prev,
-          [key]: {
-            ...prev[key],
-            failedGtins: data.failedGtins,
-            successGtins: data.successGtins,
-            finished: true,
-            percent: 100, // Ensure we show 100% when finished
-            uploadId: data.upload_id,
-            timestamp: ts,
-          },
-        }));
+
+        // Update the upload status with final state
+        setUploads((prev) => {
+          const currentUpload = prev[key] || { gtins: [] };
+          return {
+            ...prev,
+            [key]: {
+              ...currentUpload,
+              failedGtins: data.failedGtins,
+              successGtins: data.successGtins,
+              finished: true,
+              percent: 100, // Force 100% on completion
+              uploadId: data.upload_id,
+              timestamp: ts,
+            },
+          };
+        });
+
+        // Force 100% progress on completion
         setUploadPercent(100);
       }
     );
@@ -73,16 +87,23 @@ export function useProductUploads(userId: string) {
       (data) => {
         const key = data.upload_id || data.fileName;
         const ts = (data as any).timestamp || Date.now();
-        setUploads((prev) => ({
-          ...prev,
-          [key]: {
-            ...prev[key],
-            failed: true,
-            percent: 0, // Reset progress on failure
-            uploadId: data.upload_id,
-            timestamp: ts,
-          },
-        }));
+
+        // Update the upload status with failure state
+        setUploads((prev) => {
+          const currentUpload = prev[key] || { gtins: [] };
+          return {
+            ...prev,
+            [key]: {
+              ...currentUpload,
+              failed: true,
+              percent: 0,
+              uploadId: data.upload_id,
+              timestamp: ts,
+            },
+          };
+        });
+
+        // Reset progress on failure
         setUploadPercent(0);
       }
     );
@@ -92,7 +113,7 @@ export function useProductUploads(userId: string) {
       unsubSuccess();
       unsubFail();
     };
-  }, []); // Remove uploads from dependency array to prevent infinite loop
+  }, []); // Empty dependency array since we don't want to recreate subscriptions
 
   return { uploads, uploadPercent };
 }

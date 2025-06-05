@@ -10,10 +10,7 @@ export const CompanySchema = z.object({
   cuit: z
     .string() // Expect string input from form
     .min(11, { message: 'CUIT debe tener 11 dígitos' }) // Ensure it has 11 characters
-    .transform((val) => Number(val)) // Transform string to number
-    .refine((val) => !isNaN(val), {
-      message: 'CUIT debe ser un número válido',
-    }),
+    .max(11, { message: 'CUIT debe tener 11 dígitos' }),
   branches: BranchesSchema.array(),
   activity: z
     .string()

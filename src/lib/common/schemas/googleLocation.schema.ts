@@ -7,7 +7,6 @@ export const LatLngLiteral = z.object({
 export type LatLngLiteralType = z.infer<typeof LatLngLiteral>;
 
 export const GoogleLocationSchema = z.object({
-  id: z.string(),
   location: LatLngLiteral,
   displayName: z.object({
     text: z.string(),
@@ -15,7 +14,7 @@ export const GoogleLocationSchema = z.object({
 });
 
 export const LocationSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   location: z.object({
     type: z.string(),
     coordinates: z.tuple([

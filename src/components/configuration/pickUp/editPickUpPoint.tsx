@@ -2,7 +2,7 @@ import { GoogleAutoComplete } from "@/components/googleAutoComplete";
 import { Map, Marker } from '@vis.gl/react-google-maps';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,6 +19,7 @@ import { deletPickUpPoint, editPickUpPoints } from "@/lib/configuration/pickUp";
 import { GoPencil } from "react-icons/go";
 import { FaRegMap, FaRegTrashAlt } from "react-icons/fa";
 import { AiOutlineShop } from "react-icons/ai";
+import { PhoneInput } from "@/components/phoneInput";
 
 type Props = {
     title?: string,
@@ -62,7 +63,6 @@ export function EditPickUp(
         if (pickUpData) {
             form.reset(pickUpData);
             addAddress({
-                id: pickUpData.address.id,
                 displayName: { text: pickUpData.address.name },
                 location: {
                     latitude: pickUpData.address.location.coordinates[1],
@@ -96,7 +96,6 @@ export function EditPickUp(
 
     function addAddress(address: GoogleLocationSchemaType) {
         form.setValue('address', {
-            id: address.id,
             location: {
                 type: "Point",
                 coordinates: [address.location.latitude, address.location.longitude]
@@ -127,6 +126,7 @@ export function EditPickUp(
     }
 
     async function onSubmit(fields: PickUpSchemaType) {
+        console.log("fields en onSubmit", fields)
         onLoading();
         if (!fields.id) return;
         await mutation.mutateAsync({ branchId: fields.id, body: fields });
@@ -139,6 +139,7 @@ export function EditPickUp(
             })
         } else {
             form.reset();
+            setIsEditing(false);
             setOpen(false);
             callback();
         }
@@ -266,10 +267,16 @@ export function EditPickUp(
                                             <FormItem>
                                                 <FormLabel id='phoneNumber'>Phone</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} disabled={!isEditing} className={cn("", {
-                                                        'disabledStyle': !isEditing
-                                                    })} />
+                                                    <PhoneInput
+                                                        defaultCountry="AR"
+                                                        disabled={!isEditing}
+                                                        countrySelectProps={{ disabled: true }}
+                                                        international={false}
+                                                        initialValueFormat="national"
+                                                        {...field}
+                                                    />
                                                 </FormControl>
+                                                {isEditing && <FormDescription>Solo el numero sin el prefijo de pais</FormDescription>}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -326,11 +333,16 @@ export function EditPickUp(
                         </DialogClose>
                         : (
                             <div className="w-full flex justify-end gap-2">
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 w-1/2">
                                     <Button variant="secondary" className="w-full" onClick={() => cancelEdit()}>Cancelar</Button>
-                                    <DialogClose className="w-40" disabled={!form.formState.isValid}>
-                                        <Button disabled={!form.formState.isValid} onClick={form.handleSubmit(onSubmit)} type="submit" className="w-full">Guardar</Button>
-                                    </DialogClose>
+                                    <Button
+                                        disabled={JSON.stringify(form.getValues()) === JSON.stringify(defaultValues)}
+                                        onClick={form.handleSubmit(onSubmit)}
+                                        type="submit"
+                                        className="w-full"
+                                    >
+                                        Guardar
+                                    </Button>
                                 </div>
                             </div>
                         )

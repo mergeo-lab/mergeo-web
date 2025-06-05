@@ -28,10 +28,9 @@ function RegisterCompany() {
     defaultValues: {
       name: "",
       razonSocial: "",
-      cuit: 0,
+      cuit: "",
       branch: {
         address: {
-          id: "",
           location: {
             type: "Point",
             coordinates: [0, 0],
@@ -56,11 +55,11 @@ function RegisterCompany() {
         });
         return;
       }
-
+      // Remove id field from branch.address
       const response = await mutation.mutateAsync({
         name: fields.name,
         razonSocial: fields.razonSocial,
-        cuit: Number(fields.cuit),
+        cuit: fields.cuit,
         branch: fields.branch,
         activity: fields.activity,
       });
@@ -88,7 +87,6 @@ function RegisterCompany() {
 
   const addBranch = (address: GoogleLocationSchemaType) => {
     form.setValue('branch.address', {
-      id: address.id,
       location: {
         type: "Point",
         coordinates: [address.location.latitude, address.location.longitude]
@@ -140,14 +138,7 @@ function RegisterCompany() {
                   <FormItem>
                     <FormLabel id='cuit'>CUIT</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        maxLength={11}
-                        onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, '');
-                          field.onChange(value ? Number(value) : 0);
-                        }}
-                      />
+                      <Input {...field} maxLength={11} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -195,7 +186,7 @@ function RegisterCompany() {
             </Link>
           </p>
           <Button
-            disabled={mutation.isPending}
+            disabled={mutation.isPending || !form.formState.isValid}
             onClick={form.handleSubmit(onSubmit)}
             className='min-w-[200px]'
             type="submit">

@@ -63,7 +63,6 @@ export function EditPickUp(
         if (pickUpData) {
             form.reset(pickUpData);
             addAddress({
-                id: pickUpData.address.id,
                 displayName: { text: pickUpData.address.name },
                 location: {
                     latitude: pickUpData.address.location.coordinates[1],
@@ -97,7 +96,6 @@ export function EditPickUp(
 
     function addAddress(address: GoogleLocationSchemaType) {
         form.setValue('address', {
-            id: address.id,
             location: {
                 type: "Point",
                 coordinates: [address.location.longitude, address.location.latitude]

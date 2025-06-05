@@ -62,7 +62,6 @@ export function NewBranch(
     function addAddress(address: GoogleLocationSchemaType) {
         console.log(" address", address)
         form.setValue('address', {
-            id: address.id,
             location: {
                 type: "Point",
                 coordinates: [address.location.latitude, address.location.longitude]

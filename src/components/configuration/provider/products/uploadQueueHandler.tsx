@@ -1,5 +1,6 @@
 import { UploadEvents } from "@/components/configuration/provider/products/uploadEvents";
 import { useProductUploads } from "@/hooks/useProductUploads";
+import { useEffect, useRef } from "react";
 
 type Props = {
     userId: string;
@@ -8,15 +9,25 @@ type Props = {
 
 export function UploadQueueHandler({ userId, onFinish }: Props) {
     const { uploads } = useProductUploads(userId);
+    const hasCalledOnFinish = useRef(false);
 
     // Only show in-progress uploads (not finished and percent < 100)
     const inProgressUploads = Object.entries(uploads).filter(
         ([, upload]) => !upload.finished && upload.percent < 100
     );
 
-    // Optionally, call onFinish if all are done
-    if (Object.values(uploads).length > 0 && inProgressUploads.length === 0) {
-        onFinish();
+    useEffect(() => {
+        // Only call onFinish if we have uploads and they're all done
+        if (Object.values(uploads).length > 0 && inProgressUploads.length === 0 && !hasCalledOnFinish.current) {
+            hasCalledOnFinish.current = true;
+            onFinish();
+        } else if (inProgressUploads.length > 0) {
+            // Reset the flag if we get new uploads
+            hasCalledOnFinish.current = false;
+        }
+    }, [uploads, inProgressUploads.length, onFinish]);
+
+    if (inProgressUploads.length === 0) {
         return null;
     }
 

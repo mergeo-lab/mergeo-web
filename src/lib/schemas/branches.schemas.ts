@@ -34,27 +34,10 @@ export const BranchesSchema = z.object({
   phoneNumber: zPhoneNumber.optional(),
   isMain: z.boolean().optional(),
   address: LocationSchema.superRefine((address, ctx) => {
-    if (!address.id || !address.name) {
+    if (!address) {
       ctx.addIssue({
-        path: ['name'],
         code: z.ZodIssueCode.custom,
-        message: 'El nombre de la dirección y su ID son obligatorios',
-      });
-    }
-
-    if (!address.location || address.location.coordinates.length !== 2) {
-      ctx.addIssue({
-        path: ['location', 'coordinates'],
-        code: z.ZodIssueCode.custom,
-        message: 'Las coordenadas deben contener latitud y longitud',
-      });
-    } else if (
-      !address.location.coordinates.every((coord) => typeof coord === 'number')
-    ) {
-      ctx.addIssue({
-        path: ['location', 'coordinates'],
-        code: z.ZodIssueCode.custom,
-        message: 'Las coordenadas deben ser números válidos',
+        message: 'La dirección es obligatoria',
       });
     }
   }),
