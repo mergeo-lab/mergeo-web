@@ -11,6 +11,7 @@ import UseRegistrationStore from '@/store/registration.store'
 import { useAuth } from '@/context/AuthContext'
 import { PhoneInput } from '@/components/phoneInput'
 import { toast } from '@/components/ui/use-toast'
+import OverlayLoadingIndicator from '@/components/overlayLoadingIndicator'
 
 export const Route = createFileRoute('/_authLayout/registration/user')({
   component: () => <RegisterUser />
@@ -18,7 +19,7 @@ export const Route = createFileRoute('/_authLayout/registration/user')({
 
 function RegisterUser() {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register, loading } = useAuth();
   const registrationState = UseRegistrationStore();
 
   const form = useForm<RegisterUserSchemaType>({
@@ -66,7 +67,9 @@ function RegisterUser() {
 
   return (
     <>
-      <CardBody className='w-full h-full flex flex-col justify-center' >
+      <CardBody className='w-full h-full flex flex-col justify-center relative' >
+        {loading && <OverlayLoadingIndicator />}
+
         <FormProvider {...form}>
           <form className='space-y-8'>
             <div className='grid grid-cols-2 gap-14'>

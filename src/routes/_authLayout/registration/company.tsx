@@ -11,6 +11,7 @@ import { registerCompany } from '@/lib/auth'
 import UseRegistrationStore from '@/store/registration.store'
 import { useToast } from '@/components/ui/use-toast'
 import { GoogleAutoComplete } from '@/components/googleAutoComplete'
+import OverlayLoadingIndicator from '@/components/overlayLoadingIndicator'
 
 export const Route = createFileRoute('/_authLayout/registration/company')({
   component: () => <RegisterCompany />
@@ -98,7 +99,8 @@ function RegisterCompany() {
 
   return (
     <>
-      <CardBody className='w-full h-full flex flex-col overflow-y-auto' >
+      <CardBody className='w-full h-full flex flex-col overflow-y-auto relative' >
+        {mutation.isPending && <OverlayLoadingIndicator />}
         <FormProvider {...form}>
           <form className='space-y-8'>
 
