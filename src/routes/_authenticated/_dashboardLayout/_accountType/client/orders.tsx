@@ -3,7 +3,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import UseCompanyStore from '@/store/company.store';
 import UseSearchConfigStore from '@/store/searchConfiguration.store.';
 import { CartSheet } from '@/components/configuration/client/orders/cartSheet';
 import UseSearchStore from '@/store/search.store';
@@ -15,6 +14,7 @@ import ProductsSearch from '@/components/configuration/client/orders/tabs/produc
 import PickUpSelectMap from '@/components/configuration/client/orders/searchConfig/pickUpSelectMap';
 import { LuClipboardList, LuFileCog, LuList, LuPackageSearch, LuShoppingBag } from 'react-icons/lu';
 import { RxCross2 } from 'react-icons/rx';
+import { useAuth } from '@/context/AuthContext';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/orders')({
     component: OrdersPage,
@@ -32,7 +32,9 @@ function OrdersPage() {
     const [menuOpen, setMenuStatus] = useState(true);
     const [cartOpen, setOpenCart] = useState(false);
     const [configCanceled, setcCnfigCanceled] = useState(false);
-    const { company } = UseCompanyStore();
+    const { account } = useAuth();
+    const companyId = account?.company.id || '';
+
     const {
         pickUpDialog,
         setPickUpDialog,
@@ -176,7 +178,7 @@ function OrdersPage() {
             <PickUpSelectMap showDialog={pickUpDialog} onClose={() => setPickUpDialog(false)} />
 
             <OrderConfig
-                companyId={company?.id}
+                companyId={companyId}
                 callback={(listId: string) => {
                     setTab(listId ? TabsEnum.LISTA_DE_PRODUCTOS : TabsEnum.BUSCAR_PRODUCTOS);
                     setConfigDataSubmitted(true);

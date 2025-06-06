@@ -19,7 +19,7 @@ type Params = {
     addProductToBlackList: (productId: string) => Promise<void>,
 }
 
- 
+
 const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavorite, addProductToBlackList }: Params) => {
     // Remove memo from inner components and move them outside
     const { toggleSheetOpen } = UseMorePresentations();
@@ -106,7 +106,7 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
 };
 
 // Export as a memoized component
- 
+
 export default memo(ProductRow, (prevProps, nextProps) => {
     return prevProps.product.id === nextProps.product.id &&
         prevProps.product.isFavorite === nextProps.product.isFavorite &&

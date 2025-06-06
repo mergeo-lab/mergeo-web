@@ -44,6 +44,9 @@ const UseSearchStore = create<SearchState>((set, get) => ({
 
     // Use the active search ID or default to a "generic" list
     const activeSearchId = activeSearchItem?.id || 'default';
+    console.log('Saving product with ID:', activeSearchId);
+    console.log('Current savedProducts:', savedProducts);
+
     const productsArray = savedProducts[activeSearchId] || [];
 
     // Check if the product already exists
@@ -60,11 +63,14 @@ const UseSearchStore = create<SearchState>((set, get) => ({
       productsArray.push(updatedProduct);
     }
 
+    const updatedSavedProducts = {
+      ...savedProducts,
+      [activeSearchId]: [...productsArray],
+    };
+    console.log('Updated savedProducts:', updatedSavedProducts);
+
     set({
-      savedProducts: {
-        ...savedProducts,
-        [activeSearchId]: [...productsArray],
-      },
+      savedProducts: updatedSavedProducts,
     });
   },
 
@@ -100,8 +106,9 @@ const UseSearchStore = create<SearchState>((set, get) => ({
 
   getAllSavedProducts: () => {
     const { savedProducts } = get();
-    // Flatten the arrays from all entries into a single array
-    return Object.values(savedProducts).flat();
+    const allProducts = Object.values(savedProducts).flat();
+    console.log('Getting all saved products:', allProducts);
+    return allProducts;
   },
 
   reset: () => set({ savedProducts: {}, activeSearchItem: null }),
