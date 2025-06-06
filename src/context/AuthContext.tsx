@@ -9,6 +9,12 @@ import UseRegistrationStore from '@/store/registration.store';
 import UseCompanyStore from '@/store/company.store';
 import { Session } from '@supabase/supabase-js';
 
+// Development credentials
+const DEV_CREDENTIALS = {
+    email: 'dev@mergeo.com',
+    password: 'dev123456'
+};
+
 export interface AuthContextType {
     account: AuthType | null;
     loading: boolean;
@@ -74,7 +80,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                         }
                     }
                 } else {
-                    setAccount(null);
+                    // In development mode, try to auto-login with dev credentials
+                    if (import.meta.env.DEV) {
+                        console.log('Development mode: Attempting auto-login');
+                        try {
+                            const { data, error } = await supabase.auth.signInWithPassword({
+                                email: DEV_CREDENTIALS.email,
+                                password: DEV_CREDENTIALS.password
+                            });
+                            if (error) throw error;
+                            if (data.session) {
+                                saveSession(data.session);
+                                const profile = await getProfile(data.user.id);
+                                if (profile) {
+                                    setAccount(profile);
+                                    companyState.saveCompany(profile.company);
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Development auto-login failed:', error);
+                            setAccount(null);
+                        }
+                    } else {
+                        setAccount(null);
+                    }
                 }
             } catch (error) {
                 console.error('Session check failed:', error);
@@ -188,7 +217,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setLoading(false);
             throw error;
         }
-    }
+    };
 
     const logout = async () => {
         try {

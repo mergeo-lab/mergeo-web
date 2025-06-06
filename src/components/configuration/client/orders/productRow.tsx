@@ -19,9 +19,13 @@ type Params = {
     addProductToBlackList: (productId: string) => Promise<void>,
 }
 
+// Helper function to compare saved products arrays
+const areSavedProductsEqual = (prev: ProductSchemaType[], next: ProductSchemaType[]) => {
+    if (prev.length !== next.length) return false;
+    return prev.every((p, i) => p.id === next[i].id && p.quantity === next[i].quantity);
+};
 
 const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavorite, addProductToBlackList }: Params) => {
-    // Remove memo from inner components and move them outside
     const { toggleSheetOpen } = UseMorePresentations();
 
     return (
@@ -54,13 +58,11 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
             </TableCell>
             <TableCell className="p-0 m-0 py-2">
                 <div className="flex justify-start items-center w-full">
-
                     <div className={cn("rounded w-20 h-20 flex justify-center items-center border border-border", {
                         "bg-border": !product.image
                     })}>
                         {product.image
                             ? <div className="w-full h-full bg-contain bg-no-repeat bg-center" style={{ backgroundImage: (`URL(${product.image})`) }}>
-                                {/* <img className="w-full h-auto" src={product.image} alt={product.name} /> */}
                             </div>
                             : <LuImage size={50} className="text-white" />
                         }
@@ -83,8 +85,6 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
             }</TableCell>
             <TableCell className={`text-right`}>
                 <div className="flex justify-end items-center gap-2 w-full">
-
-
                     <ProductsPresentations
                         callback={() => toggleSheetOpen(null)}
                         productId={product.id}
@@ -92,7 +92,6 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
                         subTitle='Puedes seleccionar otras presentaciones del mismo producto'
                         morePresentations={product.morePresentations || false}
                     />
-
                     <div>
                         <QuantitySelector
                             defaultValue={savedProducts.find((item) => item.id === product.id)?.quantity}
@@ -105,10 +104,9 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
     );
 };
 
-// Export as a memoized component
-
+// Export as a memoized component with optimized comparison
 export default memo(ProductRow, (prevProps, nextProps) => {
     return prevProps.product.id === nextProps.product.id &&
         prevProps.product.isFavorite === nextProps.product.isFavorite &&
-        JSON.stringify(prevProps.savedProducts) === JSON.stringify(nextProps.savedProducts);
+        areSavedProductsEqual(prevProps.savedProducts, nextProps.savedProducts);
 });

@@ -49,6 +49,21 @@ function Login() {
     },
   });
 
+  // Get redirect param from search using router.state.location.search
+  let searchString = '';
+  if (typeof router.state.location.search === 'string') {
+    searchString = router.state.location.search;
+  } else if (router.state.location.search && typeof router.state.location.search === 'object') {
+    searchString = new URLSearchParams(
+      Object.entries(router.state.location.search).reduce((acc, [key, value]) => {
+        acc[key] = value?.toString() ?? '';
+        return acc;
+      }, {} as Record<string, string>)
+    ).toString();
+    if (searchString) searchString = '?' + searchString;
+  }
+  const searchParams = new URLSearchParams(searchString);
+  const redirectParam = searchParams.get('redirect');
 
   const onSubmit = async (fields: Schema) => {
     await login(fields.email, fields.password);
@@ -56,13 +71,24 @@ function Login() {
 
   useEffect(() => {
     if (account && !loading) {
-      const accountType = account?.user?.accountType;
-      const redirectTo = (accountType === ACCOUNT.provider ? "/provider" : "/client") + "/dashboard";
+      let redirectTo;
+      if (redirectParam && redirectParam.startsWith(window.location.origin)) {
+        // Absolute URL, use pathname + search only
+        const url = new URL(redirectParam);
+        redirectTo = url.pathname + url.search;
+      } else if (redirectParam && redirectParam.startsWith('/')) {
+        // Relative path, safe to use
+        redirectTo = redirectParam;
+      } else {
+        // Fallback to default
+        const accountType = account?.user?.accountType;
+        redirectTo = (accountType === ACCOUNT.provider ? "/provider" : "/client") + "/dashboard";
+      }
       router.history.replace(redirectTo);
     } else if (account && loading) {
       show();
     }
-  }, [account, loading, router.history, show]);
+  }, [account, loading, router.history, show, redirectParam]);
 
   return (
     <Form {...form}>

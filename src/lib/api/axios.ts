@@ -3,13 +3,32 @@ import { supabase } from '@/context/supabaseClient';
 import { toast } from '@/components/ui/use-toast';
 export const BASE_URL = `${import.meta.env.VITE_API_URL}`;
 
+// Type for session object
+interface SessionData {
+  access_token: string;
+  refresh_token?: string;
+  user_metadata?: Record<string, any>;
+}
+
+// Helper to decode JWT and check expiry (optional, used for pre-check)
+function isTokenExpired(token: string): boolean {
+  try {
+    const [, payload] = token.split('.');
+    const decoded = JSON.parse(atob(payload));
+    if (!decoded.exp) return false;
+    return Date.now() >= decoded.exp * 1000;
+  } catch {
+    return false;
+  }
+}
+
 // Create a function to get the access token
 const getAccessToken = () => {
   const session = localStorage.getItem('sb-auth-token');
   if (session) {
     try {
-      const { access_token, user_metadata } = JSON.parse(session);
-      return { access_token, user_metadata };
+      const parsed: SessionData = JSON.parse(session);
+      return parsed;
     } catch (error) {
       console.error('Error parsing session:', error);
       return null;
@@ -78,19 +97,26 @@ export const axiosPrivate = axios.create({
 axiosPrivate.interceptors.request.use(
   (config) => {
     const session = getAccessToken();
-    console.log('Session for request:', session);
     if (session?.access_token) {
-      // Ensure the headers object exists
+      // Pre-check token expiry (optional)
+      if (isTokenExpired(session.access_token)) {
+        // Token is expired, clear and redirect
+        localStorage.removeItem('sb-auth-token');
+        toast({
+          variant: 'destructive',
+          title: 'Sesión expirada',
+          description:
+            'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
+        });
+        window.location.href = '/login?expired=1';
+        return Promise.reject(new Error('Token expired'));
+      }
       config.headers = config.headers || {};
-      // Set the Authorization header with the Bearer token
       config.headers.Authorization = `Bearer ${session.access_token}`;
-      console.log('Request headers:', config.headers);
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 let isRefreshing = false;
@@ -240,6 +266,13 @@ axiosPrivate.interceptors.response.use(
         processQueue(refreshError);
         // Clear the tokens if refresh fails
         localStorage.removeItem('sb-auth-token');
+        toast({
+          variant: 'destructive',
+          title: 'Sesión expirada',
+          description:
+            'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
+        });
+        window.location.href = '/login?expired=1';
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
@@ -249,3 +282,17 @@ axiosPrivate.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Multi-tab logout sync
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (event) => {
+    if (event.key === 'sb-auth-token' && !event.newValue) {
+      toast({
+        variant: 'destructive',
+        title: 'Sesión cerrada',
+        description: 'Has cerrado sesión en otra pestaña.',
+      });
+      window.location.href = '/login?loggedout=1';
+    }
+  });
+}

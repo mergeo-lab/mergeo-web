@@ -8,16 +8,33 @@ import cancelConfig from "@/assets/config-cancel.png";
 import productNotFound from "@/assets/product-not-found.png";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addToBlackList, toggleFavorite } from "@/lib/products";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ProductSchemaType } from "@/lib/schemas";
 import { PaginationCustom } from "@/components/pagination";
 import UseProviderInventoryPaginationState from "@/store/providerInventoryPagination.store";
 import ProductRow from "@/components/configuration/client/orders/productRow";
 import { HiOutlineCog } from "react-icons/hi";
 import { useAuth } from "@/context/AuthContext";
+import { ErrorBoundary } from "react-error-boundary";
 
 type Params = {
     configCanceled: boolean,
+}
+
+// Error fallback component
+function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) {
+    return (
+        <div className="w-full h-full flex justify-center items-center">
+            <div className="w-1/2 h-fit flex flex-col justify-center border border-border p-6 gap-5">
+                <p className="text-destructive p-5 text-center">
+                    {error.message || "Ocurrió un error al cargar los productos"}
+                </p>
+                <Button variant="outlineSecondary" onClick={resetErrorBoundary}>
+                    Volver a cargar
+                </Button>
+            </div>
+        </div>
+    );
 }
 
 export default function ProductsTable({ configCanceled }: Params) {
@@ -37,10 +54,85 @@ export default function ProductsTable({ configCanceled }: Params) {
         onlyFavorites: showOnlyFavorites,
     });
 
+    // Memoized scroll to top function
+    const scrollToTop = useCallback(() => {
+        tableRef.current?.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }, []);
+
+    // Memoized handleProductChange function
+    const handleProductChange = useCallback((product: ProductSchemaType, quantity: number) => {
+        // Save current scroll position
+        const currentScroll = tableRef.current?.scrollTop;
+
+        if (quantity === 0) {
+            removeProduct(product.id);
+            // Update filtered products without causing a full re-render
+            setFilteredProducts(prevProducts =>
+                prevProducts.map(p =>
+                    p.id === product.id ? { ...p, quantity: 0 } : p
+                )
+            );
+        } else {
+            if (!product.providerId) return;
+
+            // Create a basic search item if none exists
+            const searchItem = {
+                id: product.id,
+                name: product.name,
+                created: new Date().toISOString(),
+                updated: new Date().toISOString()
+            };
+
+            // Set active search item if not already set
+            if (!activeSearchItem) {
+                setActiveSearchItem(searchItem);
+            }
+
+            saveProduct({ ...product, providerId: product.providerId, dropZoneId: product.dropZoneId || '' }, quantity);
+
+            // Update filtered products without causing a full re-render
+            setFilteredProducts(prevProducts =>
+                prevProducts.map(p =>
+                    p.id === product.id ? { ...p, quantity } : p
+                )
+            );
+        }
+
+        // Restore scroll position after state update
+        requestAnimationFrame(() => {
+            if (tableRef.current && currentScroll !== undefined) {
+                tableRef.current.scrollTop = currentScroll;
+            }
+        });
+    }, [activeSearchItem, removeProduct, saveProduct, setActiveSearchItem]);
+
+    // Memoized loading indicator
+    const loadingIndicator = useCallback(() => {
+        return (
+            <TableRow className="mt-12 opacity-25">
+                <TableCell colSpan={100} className="p-0">
+                    <div className="w-full flex flex-col space-y-2 mt-2">
+                        {Array.from({ length: 7 }).map((_, index) => (
+                            <Skeleton key={index} className="w-full h-20 rounded-sm" />
+                        ))}
+                    </div>
+                </TableCell>
+            </TableRow>
+        );
+    }, []);
+
     useEffect(() => {
         setPage(1);
         setPagination(prev => ({ ...prev, page: 1 }));
     }, [showOnlyFavorites, setPage, setPagination]);
+
+    useEffect(() => {
+        setPagination(defaultPagination);
+        setPage(defaultPagination.page)
+    }, [branch, setPage, setPagination]);
 
     const { mutate: toggleFavoriteMutation } = useMutation({
         mutationFn: async ({ productId, newState }: { productId: string, newState: boolean }) => {
@@ -88,7 +180,6 @@ export default function ProductsTable({ configCanceled }: Params) {
         },
     });
 
-
     const handleToggleFavorite = async (productId: string, newState: boolean): Promise<void> => {
         toggleFavoriteMutation({ productId, newState });
     };
@@ -129,26 +220,6 @@ export default function ProductsTable({ configCanceled }: Params) {
         }
     });
 
-    const scrollToTop = () => {
-        tableRef.current?.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    };
-
-    useEffect(() => {
-        setPagination(defaultPagination);
-        setPage(defaultPagination.page)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [branch]);
-
-    useEffect(() => {
-        console.log("FETCHING DATA", data);
-        if (!data) return;
-        setFilteredProducts(data?.products || []);
-        console.log("Updated filteredProducts:", data?.products);
-    }, [data]);
-
     if (configCanceled) {
         return (
             <div className="w-full h-full flex flex-col gap-10 pt-10 items-center">
@@ -179,124 +250,69 @@ export default function ProductsTable({ configCanceled }: Params) {
         )
     }
 
-    function loadingIndicator() {
-        return (
-            <TableRow className="mt-12 opacity-25">
-                <TableCell colSpan={100} className="p-0">
-                    <div className="w-full flex flex-col space-y-2 mt-2">
-                        {Array.from({ length: 7 }).map((_, index) => (
-                            <Skeleton key={index} className="w-full h-20 rounded-sm" />
-                        ))}
-                    </div>
-                </TableCell>
-            </TableRow>
-        )
-    }
-
-    function handleProductChange(product: ProductSchemaType, quantity: number) {
-        // Save current scroll position
-        const currentScroll = tableRef.current?.scrollTop;
-
-        if (quantity === 0) {
-            removeProduct(product.id);
-        } else {
-            if (!product.providerId) return;
-
-            // Create a basic search item if none exists
-            const searchItem = {
-                id: product.id,
-                name: product.name,
-                created: new Date().toISOString(),
-                updated: new Date().toISOString()
-            };
-
-            // Set active search item if not already set
-            if (!activeSearchItem) {
-                setActiveSearchItem(searchItem);
-            }
-
-            saveProduct({ ...product, providerId: product.providerId, dropZoneId: product.dropZoneId || '' }, quantity);
-        }
-
-        // Update filtered products without causing a full re-render
-        setFilteredProducts(prevProducts =>
-            prevProducts.map(p =>
-                p.id === product.id ? { ...p, quantity } : p
-            )
-        );
-
-        // Restore scroll position after state update
-        requestAnimationFrame(() => {
-            if (tableRef.current && currentScroll !== undefined) {
-                tableRef.current.scrollTop = currentScroll;
-            }
-        });
-    }
-
     if (error) return <p>{error.message}</p>;
 
     return (
-        <div className="relative">
-            {/* <div className="h-1 w-full bg-transparent shadow-sm"></div> */}
-            <div ref={tableRef} className="h-[calc(100vh-200px)] -mt-8 overflow-y-auto px-2">
-                <Table>
-                    <TableHeader className="sticky top-0 bg-white z-10 shadow-sm">
-                        <TableRow className="hover:bg-white">
-                            <TableHead className=""></TableHead>
-                            <TableHead className="w-96">Producto</TableHead>
-                            <TableHead className={`text-center`}>Unidad</TableHead>
-                            <TableHead className={`text-center`}>Precio Unitario</TableHead>
-                            <TableHead className={`text-center`}>Precio</TableHead>
-                            <TableHead className={`text-center`}></TableHead>
-                            <TableHead className={`text-right pr-12 w-[17rem]`}>Cantidad</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody className="[&>*]:hover:bg-white">
-                        {
-                            isLoading || isFetching
+        <ErrorBoundary FallbackComponent={ErrorFallback}>
+            <div className="relative w-full p-10">
+                <div className="h-[calc(100vh-220px)] overflow-y-auto px-2" ref={tableRef}>
+                    <Table>
+                        <TableHeader className="sticky top-0 bg-white z-10 shadow-sm">
+                            <tr className="hover:bg-white">
+                                <TableHead className="w-20"></TableHead>
+                                <TableHead className="w-96">Producto</TableHead>
+                                <TableHead className="text-center">Unidad</TableHead>
+                                <TableHead className="text-center">Unidad de Medida</TableHead>
+                                <TableHead className="text-center">Precio</TableHead>
+                                <TableHead className="text-center">Precio por Unidad de Medida</TableHead>
+                                <TableHead className="text-right"></TableHead>
+                            </tr>
+                        </TableHeader>
+                        <TableBody className="[&>*]:hover:bg-white">
+                            {isLoading || isFetching
                                 ? loadingIndicator()
                                 : (
                                     filteredProducts && filteredProducts.map((product: ProductSchemaType) => (
                                         <ProductRow
                                             key={product.id}
                                             product={product}
-                                            onQuantityChange={(product, quantity) => handleProductChange(product, quantity)}
+                                            onQuantityChange={handleProductChange}
                                             savedProducts={getAllSavedProducts()}
                                             handleToggleFavorite={handleToggleFavorite}
                                             addProductToBlackList={handleAddProductToBlackList}
                                         />
                                     ))
                                 )
-
-                        }
-                    </TableBody>
-                </Table>
+                            }
+                        </TableBody>
+                    </Table>
+                </div>
+                {data && data.totalPages > 1 &&
+                    <PaginationCustom
+                        className="mt-5"
+                        currentPage={page}
+                        prev={page > 1}
+                        next={page < data.totalPages}
+                        pages={data.totalPages}
+                        onPageBack={() => {
+                            setPagination(prev => ({ ...prev, page: page - 1 }));
+                            setPage(page - 1);
+                            scrollToTop();
+                        }}
+                        onPageForward={() => {
+                            setPagination(prev => ({ ...prev, page: page + 1 }));
+                            setPage(page + 1);
+                            scrollToTop();
+                        }}
+                        onPageChange={(page: number) => {
+                            setPagination(prev => ({ ...prev, page }));
+                            setPage(page);
+                            scrollToTop();
+                        }}
+                    />
+                }
             </div>
-            {data && data.totalPages > 1 &&
-                <PaginationCustom
-                    className="mt-5"
-                    currentPage={page}
-                    prev={page > 1}
-                    next={page < data.totalPages}
-                    pages={data.totalPages}
-                    onPageBack={() => {
-                        setPagination(prev => ({ ...prev, page: page - 1 }));
-                        setPage(page - 1);
-                        scrollToTop();
-                    }}
-                    onPageForward={() => {
-                        setPagination(prev => ({ ...prev, page: page + 1 }));
-                        setPage(page + 1);
-                        scrollToTop();
-
-                    }}
-                    onPageChange={(page: number) => {
-                        setPagination(prev => ({ ...prev, page }));
-                        setPage(page);
-                        scrollToTop();
-                    }}
-                />
-            }
-        </div>
+        </ErrorBoundary>
     )
 }
+
