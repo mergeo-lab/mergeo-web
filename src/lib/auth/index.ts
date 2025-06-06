@@ -114,6 +114,16 @@ export async function getProfile(userId: string): Promise<AuthType> {
       }
     );
     console.log('Profile response:', response);
+
+    // Get the session to include user metadata
+    const session = localStorage.getItem('sb-auth-token');
+    if (session) {
+      const { user_metadata } = JSON.parse(session);
+      if (user_metadata) {
+        response.data.user.user_metadata = user_metadata;
+      }
+    }
+
     return response.data;
   } catch (error) {
     console.error('Profile error:', error);

@@ -32,7 +32,9 @@ export function useSSE(connectionPath: string) {
     }
 
     // Add token as a query parameter
-    const url = new URL(`${BASE_URL}${connectionPath}`);
+    const url = new URL(
+      `${BASE_URL}${connectionPath.startsWith('/') ? connectionPath.slice(1) : connectionPath}`
+    );
     url.searchParams.append('token', token);
 
     console.log('Connecting to SSE:', url.toString());

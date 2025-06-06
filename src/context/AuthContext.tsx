@@ -28,6 +28,7 @@ const saveSession = (session: Session) => {
         // Get the access token directly from the session
         const access_token = session.access_token;
         const refresh_token = session.refresh_token;
+        const user_metadata = session.user?.user_metadata;
 
         if (!access_token) {
             console.error('No access token in session:', session);
@@ -36,7 +37,8 @@ const saveSession = (session: Session) => {
 
         const sessionData = {
             access_token,
-            refresh_token
+            refresh_token,
+            user_metadata
         };
         console.log('Saving session data:', sessionData);
         localStorage.setItem('sb-auth-token', JSON.stringify(sessionData));
@@ -102,15 +104,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // Save the session
             if (data.session) {
                 saveSession(data.session);
+                // Get the profile with metadata
+                const profile = await getProfile(data.user.id);
+                if (profile) {
+                    // Ensure user metadata is set from the session
+                    profile.user.user_metadata = data.session.user.user_metadata;
+                    setAccount(profile);
+                    companyState.saveCompany(profile.company);
+                }
             } else {
                 setError(true);
                 console.error('No session in login response:', data);
-            }
-
-            const profile = await getProfile(data.user.id);
-            if (profile) {
-                setAccount(profile);
-                companyState.saveCompany(profile.company);
             }
         } catch (error) {
             setError(true);

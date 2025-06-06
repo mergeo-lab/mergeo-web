@@ -8,8 +8,8 @@ const getAccessToken = () => {
   const session = localStorage.getItem('sb-auth-token');
   if (session) {
     try {
-      const { access_token } = JSON.parse(session);
-      return access_token;
+      const { access_token, user_metadata } = JSON.parse(session);
+      return { access_token, user_metadata };
     } catch (error) {
       console.error('Error parsing session:', error);
       return null;
@@ -77,13 +77,13 @@ export const axiosPrivate = axios.create({
 // Add request interceptor to add the token to requests
 axiosPrivate.interceptors.request.use(
   (config) => {
-    const token = getAccessToken();
-    console.log('Token for request:', token);
-    if (token) {
+    const session = getAccessToken();
+    console.log('Session for request:', session);
+    if (session?.access_token) {
       // Ensure the headers object exists
       config.headers = config.headers || {};
       // Set the Authorization header with the Bearer token
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${session.access_token}`;
       console.log('Request headers:', config.headers);
     }
     return config;
@@ -178,13 +178,15 @@ axiosPrivate.interceptors.response.use(
       errorMessage = error.response.data.error;
     }
 
-    console.log('Other error message:', errorMessage);
-
-    toast({
-      variant: 'destructive',
-      title: 'Error',
-      description: errorMessage,
-    });
+    // Don't show toast for "Invalid Token" error
+    if (errorMessage !== 'Invalid Token') {
+      console.log('Other error message:', errorMessage);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: errorMessage,
+      });
+    }
 
     if (error?.response?.status === 401 && !prevRequest?.sent) {
       if (isRefreshing) {

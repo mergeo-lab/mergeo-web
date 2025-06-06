@@ -22,6 +22,7 @@ import { useAuth } from "@/context/AuthContext"
 export function Users() {
     const { account } = useAuth();
     const companyId = account?.company.id || '';
+    const emailVerified = account?.user.user_metadata?.email_verified || false;
 
     const { data: usersData, isLoading, isError, refetch } = useQuery({
         queryKey: ['users', companyId],
@@ -100,7 +101,7 @@ export function Users() {
                                             'text-highlight': !user.isActive
                                         })}>
                                             {
-                                                user.isActive
+                                                emailVerified
                                                     ? "ACTIVO"
                                                     : "INACTIVO"}
                                         </TableCell>

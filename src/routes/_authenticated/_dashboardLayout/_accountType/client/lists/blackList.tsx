@@ -80,12 +80,34 @@ export default function BlackList() {
     removelackList({ companyId: companyId, productId: productId });
   }
 
+  if (isLoading) return (
+    <div className="relative w-full p-10">
+      <div className="h-[calc(100vh-220px)] overflow-y-auto px-2">
+        <Table>
+          <TableHeader className="sticky top-0 bg-white z-10 shadow-sm">
+            <TableRow className="hover:bg-white">
+              <TableHead className="w-96">Producto</TableHead>
+              <TableHead className={`text-center`}>Unidad</TableHead>
+              <TableHead className={`text-center`}>Unidad de Medida</TableHead>
+              <TableHead className={`text-center`}>Precio</TableHead>
+              <TableHead className={`text-center`}>Precio por Unidad de Medida</TableHead>
+              <TableHead className={`text-right`}></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loadingIndicator()}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+
   if (!data?.length) return (
     <div className="flex flex-col gap-4 items-center justify-center h-full">
       <MdOutlinePlaylistRemove size={100} className="text-destructive" />
       <p className="text-base font-bold">No hay productos en la lista Negra</p>
-    </div>)
-
+    </div>
+  )
 
   return (
     <div className="relative w-full p-10">
@@ -103,21 +125,15 @@ export default function BlackList() {
             </TableRow>
           </TableHeader>
           <TableBody className="[&>*]:hover:bg-white">
-            {
-              isLoading
-                ? loadingIndicator()
-                : (
-                  <AnimatePresence mode="popLayout">
-                    {data?.map((product) => (
-                      <AnimatedRow
-                        key={product.id}
-                        product={product}
-                        handleRemove={() => handleRemove(product.id)}
-                      />
-                    ))}
-                  </AnimatePresence>
-                )
-            }
+            <AnimatePresence mode="popLayout">
+              {data?.map((product) => (
+                <AnimatedRow
+                  key={product.id}
+                  product={product}
+                  handleRemove={() => handleRemove(product.id)}
+                />
+              ))}
+            </AnimatePresence>
           </TableBody>
         </Table>
       </div>

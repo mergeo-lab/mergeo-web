@@ -80,6 +80,28 @@ export default function Favorites() {
         );
     }
 
+    if (isLoading) return (
+        <div className="relative w-full p-10">
+            <div className="h-[calc(100vh-220px)] overflow-y-auto px-2">
+                <Table>
+                    <TableHeader className="sticky top-0 bg-white z-10 shadow-sm">
+                        <tr className="hover:bg-white">
+                            <TableHead className="w-96">Producto</TableHead>
+                            <TableHead className="text-center">Unidad</TableHead>
+                            <TableHead className="text-center">Unidad de Medida</TableHead>
+                            <TableHead className="text-center">Precio</TableHead>
+                            <TableHead className="text-center">Precio por Unidad de Medida</TableHead>
+                            <TableHead className="text-right"></TableHead>
+                        </tr>
+                    </TableHeader>
+                    <TableBody>
+                        {loadingIndicator()}
+                    </TableBody>
+                </Table>
+            </div>
+        </div>
+    );
+
     if (!data?.length) return (
         <div className="flex flex-col gap-4 items-center justify-center h-full">
             <FaHeartCircleExclamation size={100} className="text-destructive" />
@@ -102,19 +124,17 @@ export default function Favorites() {
                         </tr>
                     </TableHeader>
                     <TableBody className="transition-all duration-300 ease-in-out">
-                        {isLoading ? (
-                            loadingIndicator()
-                        ) : (
-                            <AnimatePresence mode="popLayout">
-                                {data?.map((product) => (
-                                    <AnimatedRow
-                                        key={product.id}
-                                        product={product}
-                                        handleRemove={() => handleRemoveFromFavorite(product.id)}
-                                    />
-                                ))}
-                            </AnimatePresence>
-                        )}
+
+                        <AnimatePresence mode="popLayout">
+                            {data?.map((product) => (
+                                <AnimatedRow
+                                    key={product.id}
+                                    product={product}
+                                    handleRemove={() => handleRemoveFromFavorite(product.id)}
+                                />
+                            ))}
+                        </AnimatePresence>
+
                     </TableBody>
                 </Table>
             </div>

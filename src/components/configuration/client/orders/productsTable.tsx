@@ -22,7 +22,7 @@ type Params = {
 
 export default function ProductsTable({ configCanceled }: Params) {
     const { setConfigDialogOpen, searchParams, setConfigDataSubmitted, branch, showOnlyFavorites } = UseSearchConfigStore();
-    const { saveProduct, removeProduct, getAllSavedProducts } = UseSearchStore();
+    const { saveProduct, removeProduct, getAllSavedProducts, setActiveSearchItem, activeSearchItem } = UseSearchStore();
     const { setPage, page } = UseProviderInventoryPaginationState()
     const { account } = useAuth();
     const companyId = account?.company.id || '';
@@ -201,6 +201,20 @@ export default function ProductsTable({ configCanceled }: Params) {
             removeProduct(product.id);
         } else {
             if (!product.providerId) return;
+
+            // Create a basic search item if none exists
+            const searchItem = {
+                id: product.id,
+                name: product.name,
+                created: new Date().toISOString(),
+                updated: new Date().toISOString()
+            };
+
+            // Set active search item if not already set
+            if (!activeSearchItem) {
+                setActiveSearchItem(searchItem);
+            }
+
             saveProduct({ ...product, providerId: product.providerId, dropZoneId: product.dropZoneId || '' }, quantity);
         }
 
