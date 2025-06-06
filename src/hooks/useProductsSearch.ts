@@ -50,7 +50,7 @@ export function useProductSearch(searchParams: Partial<SearchParams>) {
     }));
   }, [searchParams.name, searchParams.brand]);
 
-  const { data, isLoading, isError, error, refetch } = useQuery<{
+  const { data, isLoading, isError, error, refetch, isFetching } = useQuery<{
     products: ProductSchemaType[];
     currentPage: number;
     total: number;
@@ -125,5 +125,6 @@ export function useProductSearch(searchParams: Partial<SearchParams>) {
     resetSearch,
     setPagination,
     pagination,
+    isFetching,
   };
 }

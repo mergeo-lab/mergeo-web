@@ -30,7 +30,7 @@ export default function ProductsTable({ configCanceled }: Params) {
     const [filteredProducts, setFilteredProducts] = useState<ProductSchemaType[]>([]);
     const tableRef = useRef<HTMLDivElement>(null);
 
-    const { data, isLoading, error, setPagination } = useProductSearch({
+    const { data, isLoading, error, setPagination, isFetching } = useProductSearch({
         name: searchParams.name,
         brand: searchParams.brand,
         branchId: searchParams.branchId,
@@ -172,7 +172,7 @@ export default function ProductsTable({ configCanceled }: Params) {
             <div className={
                 "w-full h-full flex flex-col gap-4 justify-center pb-10 items-center [&>p]:multi-[font-thin;text-secondary/80;text-center;leading-3;p-0;m-0]"}>
                 <img className="h-[350px]" src={productNotFound} alt="config incomplete" />
-                <h1 className="text-3xl font-thin text-secondary text-wrap text-center">No encontramos el producto!</h1>
+                <h1 className="text-3xl font-thin text-secondary text-wrap text-center">No encontramos productos para tu busqueda!</h1>
                 <p>Para encontrar el producto que estas buscando utiliza el buscador de la derecha.</p>
                 <p>También puedes usar una de tus listas ya cargadas y hacer tus búsquedas <span className="text-info font-normal">super rápidas</span> </p>
             </div>
@@ -239,7 +239,7 @@ export default function ProductsTable({ configCanceled }: Params) {
                     </TableHeader>
                     <TableBody className="[&>*]:hover:bg-white">
                         {
-                            isLoading
+                            isLoading || isFetching
                                 ? loadingIndicator()
                                 : (
                                     filteredProducts && filteredProducts.map((product: ProductSchemaType) => (

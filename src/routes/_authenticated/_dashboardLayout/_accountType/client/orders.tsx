@@ -31,7 +31,7 @@ function OrdersPage() {
     const [tab, setTab] = useState(TabsEnum.LISTA_DE_PRODUCTOS);
     const [menuOpen, setMenuStatus] = useState(true);
     const [cartOpen, setOpenCart] = useState(false);
-    const [configCanceled, setcCnfigCanceled] = useState(false);
+    const [configCanceled, setConfigCanceled] = useState(false);
     const { account } = useAuth();
     const companyId = account?.company.id || '';
 
@@ -186,7 +186,7 @@ function OrdersPage() {
                 }}
                 openDialog={configDialogOpen}
                 onCancel={() => {
-                    setcCnfigCanceled(true);
+                    setConfigCanceled(true);
                     setConfigDialogOpen(false)
                 }}
             />
