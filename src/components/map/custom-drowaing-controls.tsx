@@ -70,14 +70,14 @@ const CustomDrawingControls = ({ onPolygonComplete }: CustomDrawingControlsProps
                     onClick={() => startDrawing(google.maps.drawing.OverlayType.POLYGON)}
                     disabled={polygonDrawn}
                 >
-                    <LuPentagon />
+                    <LuPentagon size={20} />
                 </Button>
                 <Button
                     variant="ghost"
                     onClick={() => startDrawing(null)}
                     disabled={!polygonDrawn}
                 >
-                    <FaRegHandRock />
+                    <FaRegHandRock size={20} />
                 </Button>
             </div>
         </div>

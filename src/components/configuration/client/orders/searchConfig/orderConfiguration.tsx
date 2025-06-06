@@ -43,7 +43,7 @@ export default function OrderConfig(
 
     const [open, setOpen] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
-    const { deliveryTime, setDeliveryTime, setBranch, branch, setTempBranch, setPickUp, pickUp, setPickUpDialog, setPickUpLocation, pickUpLocation, selectList, listId, setReplacementCriteria, replacementCriteria, resetConfig, shouldResetConfig, setShouldResetConfig } = UseSearchConfigStore();
+    const { deliveryTime, setDeliveryTime, setBranch, branch, setTempBranch, setPickUp, pickUp, setPickUpDialog, setPickUpLocation, pickUpLocation, selectList, listId, setReplacementCriteria, replacementCriteria, resetConfig, shouldResetConfig, setShouldResetConfig, setConfigDataSubmitted } = UseSearchConfigStore();
     const { reset } = UseSearchStore();
 
     const [internalList, setInternalList] = useState("");
@@ -84,6 +84,7 @@ export default function OrderConfig(
         internalRc && setReplacementCriteria(internalRc);
 
         onLoading && onLoading();
+        setConfigDataSubmitted(true);
         callback(internalList ? internalList : "");
         handleOpenChange(false);
     }
@@ -97,8 +98,9 @@ export default function OrderConfig(
     useEffect(() => {
         if (openDialog) {
             setOpen(true);
+            setConfigDataSubmitted(false);
         } else setOpen(false);
-    }, [openDialog, onCancel]);
+    }, [openDialog, onCancel, setConfigDataSubmitted]);
 
     return (
         <Dialog open={open}

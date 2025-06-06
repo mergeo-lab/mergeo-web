@@ -81,8 +81,8 @@ function OrdersPage() {
         deliveryTime,
         branch,
     } = UseSearchConfigStore();
-    const { getAllSavedProducts, reset } = UseSearchStore();
-    const savedProducts = getAllSavedProducts();
+    const reset = UseSearchStore(state => state.reset);
+    const savedProducts = UseSearchStore(state => state.getAllSavedProducts());
 
     // Memoized handlers
     const onTabChange = useCallback((value: string) => {
