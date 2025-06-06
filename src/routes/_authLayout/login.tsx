@@ -8,12 +8,11 @@ import LoadingIndicator from '@/components/loadingIndicator';
 import Card, { CardBody, CardFooter, CardHeader } from '@/components/card';
 import PasswordInput from '@/components/passwordInput';
 import { z } from 'zod';
-import { useEffect, memo, useState } from 'react';
+import { useEffect, memo, } from 'react';
 import { ACCOUNT } from '@/lib/constants';
 import { useAuth } from '@/context/AuthContext';
 import OverlayLoadingIndicator from '@/components/overlayLoadingIndicator';
 import { useGlobalLoading } from '@/store/globalLoading.store';
-import { SheetTrigger, SheetContent, SheetWithConfirm } from '@/components/ui/sheet';
 
 // Memoize Card and its subcomponents
 const MemoizedCard = memo(Card);
@@ -36,8 +35,6 @@ const MemoizedFormField = memo(FormField);
 
 function Login() {
   const { show } = useGlobalLoading();
-  const [open, setOpen] = useState(false);
-
   const { account, loading, login } = useAuth();
   const router = useRouter();
 
@@ -97,31 +94,12 @@ function Login() {
       <form onSubmit={form.handleSubmit(onSubmit)} className='w-full h-full'>
         <MemoizedCard>
           <MemoizedCardHeader>
-            <>
-              <div className='h-24 flex flex-col justify-center'>
-                <h2 className="text-2xl md:text-3xl font-black text-secondary-background pb-2">
-                  Ingresa a tu cuenta
-                </h2>
-                <p className='text-muted text-sm md:text-base'>Ingresa tu email y contraseña para ingresar a tu cuenta</p>
-              </div>
-
-              <SheetWithConfirm open={open} onOpenChange={(isOpen) => {
-                if (!isOpen) {
-                  setOpen(false);
-                } else {
-                  setOpen(isOpen);
-                }
-              }}>
-                <SheetTrigger>
-                  <Button type='button' variant="outlineSecondary" onClick={() => setOpen(true)} >
-                    abrir
-                  </Button>
-                </SheetTrigger>
-                <SheetContent className="w-1/3 mx-w-1/3 sm:max-w-1/3">
-                  Hola
-                </SheetContent>
-              </SheetWithConfirm>
-            </>
+            <div className='h-24 flex flex-col justify-center'>
+              <h2 className="text-2xl md:text-3xl font-black text-secondary-background pb-2">
+                Ingresa a tu cuenta
+              </h2>
+              <p className='text-muted text-sm md:text-base'>Ingresa tu email y contraseña para ingresar a tu cuenta</p>
+            </div>
           </MemoizedCardHeader>
           <MemoizedCardBody className='w-full flex justify-center m-auto h-auto relative'>
             {loading &&

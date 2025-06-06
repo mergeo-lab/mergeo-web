@@ -1,7 +1,7 @@
 import QuantitySelector from "@/components/configuration/client/orders/quantitySelector";
 import { Button } from "@/components/ui/button";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger, SheetWithConfirm } from "@/components/ui/sheet";
+import { SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger, SheetWithConfirm } from "@/components/ui/sheet";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { cratePreOrder } from "@/lib/orders";
 import UseSearchStore, { CartProduct } from "@/store/search.store";
