@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger, SheetWithConfirm } from "@/components/ui/sheet";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { useCallback, useEffect, useState } from "react";
 import { getMorePresentations } from "@/lib/products";
@@ -64,7 +64,7 @@ export function ProductsPresentations({
     }
 
     return (
-        <Sheet open={open} onOpenChange={(isOpen) => {
+        <SheetWithConfirm open={open} onOpenChange={(isOpen) => {
             if (!isOpen) {
                 closeModal();
             } else {
@@ -181,6 +181,6 @@ export function ProductsPresentations({
                     </SheetClose>
                 </SheetFooter>
             </SheetContent >
-        </Sheet >
+        </SheetWithConfirm >
     )
 }

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger, SheetWithConfirm } from "@/components/ui/sheet";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { JSX, useEffect, useState } from "react";
 import { PreOrderProductSchemaType } from "@/lib/schemas";
@@ -37,7 +37,7 @@ export function PreOrderProductsSheet({
     console.log("products", products)
 
     return (
-        <Sheet open={open} onOpenChange={(isOpen) => {
+        <SheetWithConfirm open={open} onOpenChange={(isOpen) => {
             if (!isOpen) {
                 setOpen(false);
             } else {
@@ -97,6 +97,6 @@ export function PreOrderProductsSheet({
                     </SheetClose>
                 </SheetFooter>
             </SheetContent >
-        </Sheet >
+        </SheetWithConfirm >
     )
 }

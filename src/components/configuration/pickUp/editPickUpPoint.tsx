@@ -336,7 +336,7 @@ export function EditPickUp(
                                 <div className="flex gap-2 w-1/2">
                                     <Button variant="secondary" className="w-full" onClick={() => cancelEdit()}>Cancelar</Button>
                                     <Button
-                                        disabled={JSON.stringify(form.getValues()) === JSON.stringify(defaultValues)}
+                                        disabled={!form.formState.isValid || JSON.stringify(form.getValues()) === JSON.stringify(defaultValues)}
                                         onClick={form.handleSubmit(onSubmit)}
                                         type="submit"
                                         className="w-full"

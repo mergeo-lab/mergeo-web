@@ -1,8 +1,11 @@
 import * as React from "react"
 import * as SheetPrimitive from "@radix-ui/react-dialog"
 import { cva, type VariantProps } from "class-variance-authority"
-import { RxCross2 } from "react-icons/rx";
 import { cn } from "@/lib/utils"
+import { useState } from 'react';
+import { Dialog, DialogContent, DialogFooter, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import type { ReactNode } from 'react';
 
 const Sheet = SheetPrimitive.Root
 
@@ -62,10 +65,6 @@ const SheetContent = React.forwardRef<
       {...props}
     >
       {children}
-      <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
-        <RxCross2 className="h-4 w-4" />
-        <span className="sr-only">Close</span>
-      </SheetPrimitive.Close>
     </SheetPrimitive.Content>
   </SheetPortal>
 ))
@@ -122,6 +121,54 @@ const SheetDescription = React.forwardRef<
   />
 ))
 SheetDescription.displayName = SheetPrimitive.Description.displayName
+
+export function SheetWithConfirm({ open, onOpenChange, children, ...props }: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  children: ReactNode;
+  [key: string]: any;
+}) {
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      setShowConfirm(true);
+    } else {
+      onOpenChange(true);
+    }
+  };
+
+  const handleConfirmLeave = () => {
+    setShowConfirm(false);
+    onOpenChange(false);
+  };
+
+  const handleCancel = () => {
+    setShowConfirm(false);
+  };
+
+  return (
+    <>
+      <Sheet open={open} onOpenChange={handleOpenChange} {...props}>
+        {children}
+      </Sheet>
+      {showConfirm && (
+        <Dialog open onOpenChange={handleCancel}>
+          <DialogContent className="!bg-transparent !shadow-none !pointer-events-none max-w-lg">
+            <div className="bg-white rounded shadow-lg pointer-events-auto p-10 flex flex-col gap-1">
+              <DialogTitle>¿Seguro que quieres salir?</DialogTitle>
+              <p>Se perderán los cambios no guardados.</p>
+              <DialogFooter className="mt-5 w-full flex justify-center">
+                <Button className="w-full" variant="secondary" onClick={handleCancel}>No, continuar</Button>
+                <Button className="w-full" variant="destructive" onClick={handleConfirmLeave}>Sí, salir</Button>
+              </DialogFooter>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
+  );
+}
 
 export {
   Sheet,

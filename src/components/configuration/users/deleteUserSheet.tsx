@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger, SheetWithConfirm } from "@/components/ui/sheet"
 import { toast } from "@/components/ui/use-toast"
 import { DeleteUserSchemaType, DeleteUserSchema, NewUserSchema, NewUserSchemaType, UserSchemaType } from "@/lib/schemas"
 import { deleteUser } from "@/lib/configuration/users"
@@ -72,7 +72,7 @@ export function DeleteUserSheet({ userId, userData, title, subTitle, triggerButt
     }, [form, userData]);
 
     return (
-        <Sheet open={open} onOpenChange={setOpen}>
+        <SheetWithConfirm open={open} onOpenChange={setOpen}>
             <SheetTrigger>
                 {triggerButton}
             </SheetTrigger>
@@ -178,6 +178,6 @@ export function DeleteUserSheet({ userId, userData, title, subTitle, triggerButt
                     </SheetFooter>
                 </FormProvider>
             </SheetContent>
-        </Sheet>
+        </SheetWithConfirm>
     )
 }

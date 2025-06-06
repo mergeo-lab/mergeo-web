@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger, SheetWithConfirm } from "@/components/ui/sheet";
 import { toast } from "@/components/ui/use-toast";
 import { SearchListSchema, SearchListType } from "@/lib/searchLists/searchLists.schemas";
 import UseCompanyStore from "@/store/company.store";
@@ -194,7 +194,7 @@ export function AddSearchList({
     }
 
     return (
-        <Sheet open={open} onOpenChange={handleOpenChange}>
+        <SheetWithConfirm open={open} onOpenChange={handleOpenChange}>
             <SheetTrigger>
                 {triggerButton}
             </SheetTrigger>
@@ -305,6 +305,6 @@ export function AddSearchList({
                     </SheetFooter>
                 </FormProvider>
             </SheetContent>
-        </Sheet >
+        </SheetWithConfirm >
     )
 }

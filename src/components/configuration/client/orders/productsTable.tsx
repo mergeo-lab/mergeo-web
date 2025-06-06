@@ -134,6 +134,12 @@ export default function ProductsTable({ configCanceled }: Params) {
         setPage(defaultPagination.page)
     }, [branch, setPage, setPagination]);
 
+    useEffect(() => {
+        if (data && data.products) {
+            setFilteredProducts(data.products);
+        }
+    }, [data]);
+
     const { mutate: toggleFavoriteMutation } = useMutation({
         mutationFn: async ({ productId, newState }: { productId: string, newState: boolean }) => {
             if (!companyId) {

@@ -1,4 +1,4 @@
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger, SheetWithConfirm } from "@/components/ui/sheet";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
@@ -48,7 +48,7 @@ export function SelectedProductsSheet({
             setIsLoading(false);
             return;
         }
-        
+
         setIsLoading(true);
         const response = await mutation.mutateAsync({ products, companyId });
         if (response.length > 0) {
@@ -60,7 +60,7 @@ export function SelectedProductsSheet({
     }
 
     return (
-        <Sheet open={open} onOpenChange={(isOpen) => {
+        <SheetWithConfirm open={open} onOpenChange={(isOpen) => {
             if (!isOpen) {
                 closeModal();
             } else {
@@ -131,6 +131,6 @@ export function SelectedProductsSheet({
                 </SheetFooter>
 
             </SheetContent>
-        </Sheet >
+        </SheetWithConfirm >
     )
 }

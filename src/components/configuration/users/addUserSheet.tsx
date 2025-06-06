@@ -2,7 +2,7 @@ import { ManageRoles } from "@/components/configuration/users/roles/manageRoles"
 import { Button } from "@/components/ui/button";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger, SheetWithConfirm } from "@/components/ui/sheet";
 import { toast } from "@/components/ui/use-toast";
 import { NewUserSchemaType, NewUserSchema } from "@/lib/schemas";
 import { addUser } from "@/lib/configuration/users";
@@ -12,7 +12,7 @@ import UseUserStore from "@/store/user.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { LuUserRoundPlus } from "react-icons/lu";
-import { JSX, useCallback, useEffect, useState } from "react";
+import { JSX, useCallback, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
 type FormSchemaType = Omit<NewUserSchemaType, 'id' | 'companyId'>
@@ -36,7 +36,6 @@ export function AddUserSheet({
     const { user } = UseUserStore();
     const mutation = useMutation({ mutationFn: addUser })
     const [open, setOpen] = useState(false);
-    const [canSubmit, setCanSubmit] = useState(false);
 
     const form = useForm<FormSchemaType>({
         resolver: zodResolver(NewUserSchema),
@@ -46,6 +45,7 @@ export function AddUserSheet({
             lastName: "",
             email: "",
         },
+        mode: 'onChange',
     })
 
     const handleCancel = useCallback(() => {
@@ -53,36 +53,20 @@ export function AddUserSheet({
         form.reset();
     }, [roleStore, form]);
 
-
-    useEffect(() => {
-        if (form.formState.isDirty) {
-            setCanSubmit(true);
-        } else {
-            setCanSubmit(false);
-        }
-    }, [form.formState.isDirty]);
-
-
     const closeModal = useCallback(() => {
-        // Close the modal
-        handleCancel()
+        handleCancel();
         setOpen(false);
     }, [handleCancel]);
 
     const onSubmit = async (fields: FormSchemaType) => {
-        if (!canSubmit) return;
-
         if (user?.id && company?.id) {
-            console.log(roleStore.roles)
             const formData = { ...fields, roles: roleStore.roles };
             const payload = {
                 id: user?.id,
                 companyId: company?.id,
                 fields: formData
             };
-
             const response = await mutation.mutateAsync(payload);
-
             if (response.error) {
                 toast({
                     variant: "destructive",
@@ -98,7 +82,7 @@ export function AddUserSheet({
     }
 
     return (
-        <Sheet open={open} onOpenChange={(isOpen) => {
+        <SheetWithConfirm open={open} onOpenChange={(isOpen) => {
             if (!isOpen) {
                 closeModal();
             } else {
@@ -120,7 +104,7 @@ export function AddUserSheet({
                         </SheetDescription>
                     </SheetHeader>
                     <div className="h-4/5 p-10">
-                        <form className='space-y-8'>
+                        <form className='space-y-8' onSubmit={form.handleSubmit(onSubmit)}>
                             <FormField
                                 control={form.control}
                                 name="firstName"
@@ -167,17 +151,16 @@ export function AddUserSheet({
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
+                            <SheetFooter className="p-10 items-center">
+                                <SheetClose className="w-full">
+                                    <Button variant="secondary" className="w-full" onClick={handleCancel}>Cancelar</Button>
+                                </SheetClose>
+                                <Button disabled={!form.formState.isValid} type="submit" className="w-full">Guardar</Button>
+                            </SheetFooter>
                         </form>
-
                     </div>
-                    <SheetFooter className="p-10 items-center">
-                        <SheetClose className="w-full">
-                            <Button variant="secondary" className="w-full" onClick={handleCancel}>Cancelar</Button>
-                        </SheetClose>
-                        <Button disabled={!canSubmit} onClick={form.handleSubmit(onSubmit)} type="submit" className="w-full">Guardar</Button>
-                    </SheetFooter>
                 </FormProvider>
             </SheetContent>
-        </Sheet>
+        </SheetWithConfirm>
     )
 }
