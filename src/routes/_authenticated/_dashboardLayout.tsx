@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils';
 import { ErrorBoundary } from 'react-error-boundary';
 import { MdOutlineDiscount } from "react-icons/md";
 import type { FallbackProps } from 'react-error-boundary';
-import React from 'react';
 
 // Lazy load components
 const DashboardHeader = lazy(() => import('@/components/dashboardLayout').then(mod => ({ default: mod.DashboardHeader })));
