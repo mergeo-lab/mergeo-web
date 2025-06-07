@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import UseCompanyStore from '@/store/company.store';
-import UseSearchConfigStore from '@/store/searchConfiguration.store.';
+import UseSearchConfigStore from '@/store/searchConfiguration.store';
 import { getProducts, SearchParams } from '@/lib/orders';
 import { useEffect, useState } from 'react';
 import {

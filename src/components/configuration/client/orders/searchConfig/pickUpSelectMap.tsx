@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { JSX, useEffect, useState } from "react";
-import UseSearchConfigStore from "@/store/searchConfiguration.store.";
+import UseSearchConfigStore from "@/store/searchConfiguration.store";
 import MapRadiusSelection from "@/components/configuration/client/orders/searchConfig/mapRadiusSelection";
 import { ImCompass2 } from "react-icons/im";
 

@@ -1,6 +1,6 @@
 import { Map, Marker, useMap } from '@vis.gl/react-google-maps';
 import { useState, useEffect } from 'react';
-import UseSearcConfigStore from '@/store/searchConfiguration.store.';
+import UseSearchConfigStore from "@/store/searchConfiguration.store";
 
 const centerArgentina = { lat: -35.196593198428815, lng: -64.71031145842831 };
 
@@ -12,10 +12,10 @@ type Props = {
 };
 
 const MapRadiusSelection = ({ hideControls = false, initialCenter = centerArgentina, branchName }: Props) => {
-    const { setPickUpLocation, pickUpLocation } = UseSearcConfigStore();
+    const { setPickUpLocation, pickUpLocation } = UseSearchConfigStore();
     const map = useMap();
     const [radius, setRadius] = useState(pickUpLocation.radius * 1000 || 1000); // Convert to meters for Google Maps API
-     
+
     const [center, _] = useState(initialCenter);
 
     useEffect(() => {

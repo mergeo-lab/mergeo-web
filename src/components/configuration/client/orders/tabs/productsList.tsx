@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getSearchListById } from "@/lib/searchLists/searchLists";
-import UseSearcConfigStore from "@/store/searchConfiguration.store.";
+import UseSearchConfigStore from "@/store/searchConfiguration.store";
 import { cn } from "@/lib/utils";
 import UseSearchStore from "@/store/search.store";
 import { useEffect } from "react";
@@ -16,7 +16,7 @@ type Props = {
 }
 
 export default function ProductsList({ configCanceled, isVisible = false }: Props) {
-    const { listId, setSearchParams } = UseSearcConfigStore();
+    const { listId, setSearchParams } = UseSearchConfigStore();
     const { setActiveSearchItem, activeSearchItem, savedProducts } = UseSearchStore();
 
     const { data, isLoading, isError } = useQuery({

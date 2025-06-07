@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { LuChevronRight } from "react-icons/lu";
 import { useNavigate } from '@tanstack/react-router';
-import UseSearchConfigStore from "@/store/searchConfiguration.store.";
+import UseSearchConfigStore from "@/store/searchConfiguration.store";
 
 type Props = {
     showArrow?: boolean,

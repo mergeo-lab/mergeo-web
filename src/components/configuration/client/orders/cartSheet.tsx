@@ -4,8 +4,8 @@ import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import { SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger, SheetWithConfirm } from "@/components/ui/sheet";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { cratePreOrder } from "@/lib/orders";
-import UseSearchStore, { CartProduct } from "@/store/search.store";
-import UseSearchConfigStore from "@/store/searchConfiguration.store.";
+import UseSearchStore, { CartProduct, ProductWithQuantity } from "@/store/search.store";
+import UseSearchConfigStore from "@/store/searchConfiguration.store";
 import UseUserStore from "@/store/user.store";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
@@ -32,14 +32,14 @@ export function CartSheet({
     const mutation = useMutation({ mutationFn: cratePreOrder })
     const [open, setOpen] = useState(false);
     const { saveProduct, removeProduct } = UseSearchStore();
-    const products = UseSearchStore(state => state.getAllSavedProducts());
-    const getAllConfig = UseSearchConfigStore(state => state.getAllConfig);
+    const products = UseSearchStore((state: { getAllSavedProducts: () => ProductWithQuantity[] }) => state.getAllSavedProducts());
+    const getAllConfig = UseSearchConfigStore((state: { getAllConfig: () => any }) => state.getAllConfig);
     const user = UseUserStore(state => state.user);
     const router = useRouter();
 
     const totalPrice = products
         .reduce((sum, product) => {
-            const price = parseFloat(product.price) * product.quantity;
+            const price = parseFloat(product.price) * (product.quantity || 0);
             return sum + (isNaN(price) ? 0 : price);
         }, 0)
         .toFixed(2);
@@ -152,7 +152,7 @@ export function CartSheet({
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex justify-center items-center gap-2">
-                                            <QuantitySelector defaultValue={product.quantity} onChange={(quantity) => handleProductChange(product, quantity)} />
+                                            <QuantitySelector defaultValue={product.quantity || 0} onChange={(quantity) => handleProductChange(product, quantity)} />
                                             <Button variant="ghost" className="[&>*]:hover:text-destructive" onClick={() => handleProductChange(product, 0)}>
                                                 <FaRegTrashAlt size={15} className="text-muted-foreground" />
                                             </Button>
@@ -163,7 +163,7 @@ export function CartSheet({
                                     </TableCell>
                                     <TableCell className="bg-muted/20 text-center">
                                         <p className="text-sm text-muted-foreground">
-                                            ${(+product.price * product.quantity).toFixed(2)}
+                                            ${(+product.price * (product.quantity || 0)).toFixed(2)}
                                         </p>
                                     </TableCell>
                                 </TableRow>

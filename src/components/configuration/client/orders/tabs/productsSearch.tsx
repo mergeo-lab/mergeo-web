@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import UseSearchStore from "@/store/search.store";
-import UseSearchConfigStore from "@/store/searchConfiguration.store.";
+import UseSearchConfigStore from "@/store/searchConfiguration.store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { Suspense, useEffect } from "react";
