@@ -132,7 +132,7 @@ function OrdersPage() {
     // Initialize all effects
     useEffect(() => {
         searchConfigStore?.setPickUpDialog?.(false);
-    }, [searchConfigStore?.setPickUpDialog]);
+    }, [searchConfigStore, searchConfigStore.setPickUpDialog]);
 
     useEffect(() => {
         return () => {
@@ -140,7 +140,7 @@ function OrdersPage() {
             searchConfigStore?.resetConfig?.();
             searchConfigStore?.setShouldResetConfig?.(true);
         }
-    }, [searchStore?.reset, searchConfigStore?.resetConfig, searchConfigStore?.setShouldResetConfig]);
+    }, [searchStore.reset, searchConfigStore.resetConfig, searchConfigStore.setShouldResetConfig, searchStore, searchConfigStore]);
 
     // Initialize all memoized values
     const hasSavedProducts = useMemo(() => searchStore?.getAllSavedProducts?.()?.length > 0, [searchStore]);

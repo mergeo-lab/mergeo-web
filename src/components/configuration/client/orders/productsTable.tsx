@@ -3,7 +3,6 @@ import { defaultPagination, useProductSearch } from "@/hooks/useProductsSearch";
 import UseSearchStore from "@/store/search.store";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import UseSearchConfigStore from "@/store/searchConfiguration.store.";
 import cancelConfig from "@/assets/config-cancel.png";
 import productNotFound from "@/assets/product-not-found.png";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -16,6 +15,7 @@ import ProductRow from "@/components/configuration/client/orders/productRow";
 import { HiOutlineCog } from "react-icons/hi";
 import { useAuth } from "@/context/AuthContext";
 import { ErrorBoundary } from "react-error-boundary";
+import UseSearchConfigStore from "@/store/searchConfiguration.store";
 
 type Params = {
     configCanceled: boolean,

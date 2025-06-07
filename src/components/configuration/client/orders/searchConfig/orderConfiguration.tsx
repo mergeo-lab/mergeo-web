@@ -4,7 +4,6 @@ import { JSX, useEffect, useState } from "react";
 import { DeliveryTimeSelector } from "@/components/configuration/client/orders/searchConfig/deliveryTimeSelector";
 import { DateRange } from "react-day-picker";
 import { BranchSlector } from "@/components/configuration/client/orders/searchConfig/branchsSelector";
-import UseSearchConfigStore from "@/store/searchConfiguration.store.";
 import { Label } from "@/components/ui/label";
 import mapIcon from '@/assets/map.svg';
 import { Switch } from "@/components/ui/switch";
@@ -16,6 +15,7 @@ import ListSelector from "@/components/configuration/client/orders/searchConfig/
 import LoadingIndicator from "@/components/loadingIndicator";
 import UseSearchStore from "@/store/search.store";
 import { HiOutlineCog } from "react-icons/hi";
+import UseSearchConfigStore from "@/store/searchConfiguration.store";
 
 type Props = {
     title?: string,
