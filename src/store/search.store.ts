@@ -41,11 +41,11 @@ const UseSearchStore = create<SearchState>((set, get) => ({
 
   saveProduct: (product: CartProduct, quantity: number) => {
     const { activeSearchItem, savedProducts } = get();
-
+    console.log('[saveProduct] called with:', product, quantity);
     // Use the active search ID or default to a "generic" list
     const activeSearchId = activeSearchItem?.id || 'default';
-    console.log('Saving product with ID:', activeSearchId);
-    console.log('Current savedProducts:', savedProducts);
+    console.log('[saveProduct] activeSearchId:', activeSearchId);
+    console.log('[saveProduct] Current savedProducts:', savedProducts);
 
     const productsArray = savedProducts[activeSearchId] || [];
 
@@ -67,7 +67,7 @@ const UseSearchStore = create<SearchState>((set, get) => ({
       ...savedProducts,
       [activeSearchId]: [...productsArray],
     };
-    console.log('Updated savedProducts:', updatedSavedProducts);
+    console.log('[saveProduct] Updated savedProducts:', updatedSavedProducts);
 
     set({
       savedProducts: updatedSavedProducts,
@@ -79,16 +79,16 @@ const UseSearchStore = create<SearchState>((set, get) => ({
 
   removeProduct: (productId: string) => {
     const { activeSearchItem, savedProducts } = get();
-
+    console.log('[removeProduct] called with:', productId);
     // Use the active search ID or default to "generic"
     const activeSearchId = activeSearchItem?.id || 'default';
     const productsArray = savedProducts[activeSearchId] || [];
-
+    console.log('[removeProduct] Current productsArray:', productsArray);
     // Filter out the product with the matching id and providerId
     const updatedProductsArray = productsArray.filter(
       (p) => !(p.id === productId)
     );
-
+    console.log('[removeProduct] Updated productsArray:', updatedProductsArray);
     set({
       savedProducts: {
         ...savedProducts,
@@ -107,11 +107,16 @@ const UseSearchStore = create<SearchState>((set, get) => ({
   getAllSavedProducts: () => {
     const { savedProducts } = get();
     const allProducts = Object.values(savedProducts).flat();
-    console.log('Getting all saved products:', allProducts);
+    console.log('[getAllSavedProducts] allProducts:', allProducts);
     return allProducts;
   },
 
-  reset: () => set({ savedProducts: {}, activeSearchItem: null }),
+  reset: () => {
+    console.log(
+      '[reset] called. Resetting savedProducts and activeSearchItem.'
+    );
+    set({ savedProducts: {}, activeSearchItem: null });
+  },
 }));
 
 export default UseSearchStore;
