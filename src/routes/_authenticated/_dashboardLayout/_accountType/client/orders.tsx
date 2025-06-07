@@ -151,7 +151,7 @@ function OrdersPage() {
         setConfigDialogOpen(false);
     }, [setConfigDataSubmitted, setConfigDialogOpen]);
 
-    const handleCartOpen = useCallback(() => setOpenCart(true), []);
+    // const handleCartOpen = useCallback(() => setOpenCart(true), []);
     const handleCartClose = useCallback(() => setOpenCart(false), []);
     const handlePickUpDialogClose = useCallback(() => setPickUpDialog(false), [setPickUpDialog]);
 
