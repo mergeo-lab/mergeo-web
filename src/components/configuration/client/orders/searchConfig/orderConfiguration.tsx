@@ -41,21 +41,23 @@ export default function OrderConfig(props: Props) {
         onCancel,
         companyId,
     } = props;
+
+    // All hooks at the top level
+    const [open, setOpen] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const {
+        deliveryTime, setDeliveryTime, setBranch, branch, setTempBranch, setPickUp, pickUp, setPickUpDialog, setPickUpLocation, pickUpLocation, selectList, listId, setReplacementCriteria, replacementCriteria, resetConfig, shouldResetConfig, setShouldResetConfig, setConfigDataSubmitted
+    } = UseSearchConfigStore();
+    const { reset } = UseSearchStore();
+
+    const [internalList, setInternalList] = useState("");
+    const [time, setTime] = useState<DateRange | null>();
+    const [selcetedBranch, setSelectedBranch] = useState<BranchesSchemaType | null>(null);
+    const [internalRc, setInternalRc] = useState<ReplacementCriteria | null>(null);
+    const [internalPickUp, setInternalPickUp] = useState(false);
+
     try {
         console.log('OrderConfig props:', props);
-        const [open, setOpen] = useState(true);
-        const [isLoading, setIsLoading] = useState(false);
-        const {
-            deliveryTime, setDeliveryTime, setBranch, branch, setTempBranch, setPickUp, pickUp, setPickUpDialog, setPickUpLocation, pickUpLocation, selectList, listId, setReplacementCriteria, replacementCriteria, resetConfig, shouldResetConfig, setShouldResetConfig, setConfigDataSubmitted
-        } = UseSearchConfigStore();
-        const { reset } = UseSearchStore();
-
-        const [internalList, setInternalList] = useState("");
-        const [time, setTime] = useState<DateRange | null>();
-        const [selcetedBranch, setSelectedBranch] = useState<BranchesSchemaType | null>(null);
-        const [internalRc, setInternalRc] = useState<ReplacementCriteria | null>(null);
-        const [internalPickUp, setInternalPickUp] = useState(false);
-
         console.log('OrderConfig state:', {
             deliveryTime, branch, pickUp, pickUpLocation, listId, replacementCriteria, shouldResetConfig, openDialog, open, isLoading, companyId
         });
