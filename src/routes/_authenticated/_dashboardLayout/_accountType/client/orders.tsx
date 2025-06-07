@@ -15,6 +15,7 @@ import PickUpSelectMap from '@/components/configuration/client/orders/searchConf
 import { LuClipboardList, LuFileCog, LuList, LuPackageSearch, LuShoppingBag } from 'react-icons/lu';
 import { RxCross2 } from 'react-icons/rx';
 import { useAuth } from '@/context/AuthContext';
+import React from 'react';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/orders')({
     component: OrdersPage,
@@ -60,6 +61,29 @@ const CartButton = memo(({ onClick, menuOpen, disabled }: { onClick: () => void;
         <LuShoppingBag size={20} />
     </Button>
 ));
+
+// Global error boundary for debugging
+class GlobalErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean, error: any }> {
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null };
+    }
+    static getDerivedStateFromError(error) {
+        return { hasError: true, error };
+    }
+    componentDidCatch(error, info) {
+        console.error('GlobalErrorBoundary caught:', error, info);
+    }
+    render() {
+        if (this.state.hasError) {
+            return <div style={{ color: 'red', padding: 40 }}>
+                <h2>Global error: {String(this.state.error)}</h2>
+                <pre>{this.state.error?.stack || ''}</pre>
+            </div>;
+        }
+        return this.props.children;
+    }
+}
 
 function OrdersPage() {
     const [tab, setTab] = useState(TabsEnum.LISTA_DE_PRODUCTOS);
@@ -189,36 +213,38 @@ function OrdersPage() {
     ), [hasSavedProducts, handleConfigOpen, handleCartOpen, toggleMenu]);
 
     return (
-        <section className="h-full w-full flex">
-            <div className={cn('w-[22rem] border-2 border-r-border transition-all ease-out', {
-                'w-16': !menuOpen
-            })}>
-                <Tabs value={tab} className="w-full h-full rounded relative" onValueChange={onTabChange}>
-                    <div className='w-full h-full flex flex-col'>
-                        {menuOpen ? menuContent : hiddenMenuContent}
-                    </div>
-                </Tabs>
-            </div>
+        <GlobalErrorBoundary>
+            <section className="h-full w-full flex">
+                <div className={cn('w-[22rem] border-2 border-r-border transition-all ease-out', {
+                    'w-16': !menuOpen
+                })}>
+                    <Tabs value={tab} className="w-full h-full rounded relative" onValueChange={onTabChange}>
+                        <div className='w-full h-full flex flex-col'>
+                            {menuOpen ? menuContent : hiddenMenuContent}
+                        </div>
+                    </Tabs>
+                </div>
 
-            {/* Products table */}
-            <div className='w-full p-10'>
-                <ProductsTable configCanceled={isConfigCanceled} />
-            </div>
+                {/* Products table */}
+                <div className='w-full p-10'>
+                    <ProductsTable configCanceled={isConfigCanceled} />
+                </div>
 
-            <PickUpSelectMap showDialog={pickUpDialog} onClose={handlePickUpDialogClose} />
+                <PickUpSelectMap showDialog={pickUpDialog} onClose={handlePickUpDialogClose} />
 
-            <OrderConfig
-                companyId={companyId}
-                callback={handleConfigCallback}
-                openDialog={configDialogOpen}
-                onCancel={handleConfigCancel}
-            />
+                <OrderConfig
+                    companyId={companyId}
+                    callback={handleConfigCallback}
+                    openDialog={configDialogOpen}
+                    onCancel={handleConfigCancel}
+                />
 
-            <CartSheet
-                callback={handleCartClose}
-                title="Resumen de su pedido"
-                isOpen={cartOpen}
-            />
-        </section>
+                <CartSheet
+                    callback={handleCartClose}
+                    title="Resumen de su pedido"
+                    isOpen={cartOpen}
+                />
+            </section>
+        </GlobalErrorBoundary>
     )
 }
