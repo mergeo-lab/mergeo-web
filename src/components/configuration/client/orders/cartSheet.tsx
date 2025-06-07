@@ -4,7 +4,7 @@ import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import { SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger, SheetWithConfirm } from "@/components/ui/sheet";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { cratePreOrder } from "@/lib/orders";
-import UseSearchStore from "@/store/search.store";
+import UseSearchStore, { CartProduct } from "@/store/search.store";
 import UseSearchConfigStore from "@/store/searchConfiguration.store.";
 import UseUserStore from "@/store/user.store";
 import { useMutation } from "@tanstack/react-query";
