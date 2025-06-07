@@ -29,6 +29,7 @@ export function CartSheet({
     callback,
     isOpen,
     triggerButton }: Props) {
+    console.log('Rendering CartSheet');
     const mutation = useMutation({ mutationFn: cratePreOrder })
     const [open, setOpen] = useState(false);
     const { saveProduct, removeProduct } = UseSearchStore();

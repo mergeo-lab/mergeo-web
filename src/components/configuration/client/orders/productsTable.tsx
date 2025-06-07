@@ -39,6 +39,7 @@ function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetError
 }
 
 export default function ProductsTable({ configCanceled }: Params) {
+    console.log('Rendering ProductsTable');
     const { setConfigDialogOpen, searchParams, setConfigDataSubmitted, branch, showOnlyFavorites } = UseSearchConfigStore();
     const { saveProduct, removeProduct, getAllSavedProducts, setActiveSearchItem, activeSearchItem } = UseSearchStore();
     const { setPage, page } = UseProviderInventoryPaginationState()

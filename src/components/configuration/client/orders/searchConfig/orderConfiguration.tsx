@@ -30,6 +30,7 @@ type Props = {
 }
 
 export default function OrderConfig(props: Props) {
+    console.log('Rendering OrderConfig');
     const {
         title = 'Seleccione los parametros de su busqueda!',
         subTitle = '',

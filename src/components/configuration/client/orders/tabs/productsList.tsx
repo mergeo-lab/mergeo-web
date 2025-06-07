@@ -16,6 +16,7 @@ type Props = {
 }
 
 export default function ProductsList({ configCanceled, isVisible = false }: Props) {
+    console.log('Rendering ProductsList');
     const { listId, setSearchParams } = UseSearchConfigStore();
     const { setActiveSearchItem, activeSearchItem, savedProducts } = UseSearchStore();
 

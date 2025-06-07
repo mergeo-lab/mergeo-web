@@ -87,6 +87,7 @@ class GlobalErrorBoundary extends React.Component<{ children: React.ReactNode },
 }
 
 function OrdersPage() {
+    console.log('Rendering OrdersPage');
     // Initialize all hooks first
     const [tab, setTab] = useState(TabsEnum.LISTA_DE_PRODUCTOS);
     const [menuOpen, setMenuStatus] = useState(true);

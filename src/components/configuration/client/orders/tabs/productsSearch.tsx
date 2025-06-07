@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import UseSearchStore from "@/store/search.store";
 import UseSearchConfigStore from "@/store/searchConfiguration.store";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Label } from "@radix-ui/react-dropdown-menu";
+import { Label as DropdownLabel } from "@radix-ui/react-dropdown-menu";
 import { Suspense, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { IoMdCar } from "react-icons/io";
@@ -22,6 +22,7 @@ const SearchSchema = z.object({
 type SearchSchemaType = z.infer<typeof SearchSchema>
 
 export default function ProductsSearch() {
+    console.log('Rendering ProductsSearch');
 
     const { setSearchParams, searchParams, setShowOnlyFavorites, showOnlyFavorites, configDataSubmitted, pickUp, setShowPickUp, showPickUp } = UseSearchConfigStore();
     const { setActiveSearchItem } = UseSearchStore();
@@ -97,21 +98,21 @@ export default function ProductsSearch() {
                 </form>
             </FormProvider>
             <div className="flex gap-2 items-center justify-center mt-4 border border-border p-2 rounded-md">
-                <Label className="text-sm m-2 flex gap-2">
+                <DropdownLabel className="text-sm m-2 flex gap-2">
                     <FaRegHeart className="w-5 h-5" />
                     <span>Solo mostrar Favoritos</span>
-                </Label>
+                </DropdownLabel>
                 <Switch id="favorites-switch" onClick={handleFavorites} defaultChecked={showOnlyFavorites} />
             </div>
             <div className={cn("flex gap-2 items-center justify-center mt-4 border border-border p-2 rounded-md", {
                 'opacity-80': !pickUp,
             })}>
-                <Label className="text-sm m-2 flex gap-2">
+                <DropdownLabel className="text-sm m-2 flex gap-2">
                     <IoMdCar size={20} className={cn("text-highlight", {
                         'text-muted': !pickUp,
                     })} />
                     <span>Ver prodcutos con pickUp</span>
-                </Label>
+                </DropdownLabel>
                 <Switch onClick={handleShowPickUp} defaultChecked={pickUp} checked={showPickUp} disabled={!pickUp} />
             </div>
         </Suspense>

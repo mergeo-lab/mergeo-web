@@ -21,6 +21,7 @@ export default function PickUpSelectMap(
         showDialog = false,
         onClose
     }: Props) {
+    console.log('Rendering PickUpSelectMap');
     const [open, setOpen] = useState(showDialog);
     const { tempBranch: branch } = UseSearchConfigStore();
 
