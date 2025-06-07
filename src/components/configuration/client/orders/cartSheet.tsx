@@ -4,7 +4,7 @@ import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 import { SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger, SheetWithConfirm } from "@/components/ui/sheet";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { cratePreOrder } from "@/lib/orders";
-import UseSearchStore, { CartProduct } from "@/store/search.store";
+import UseSearchStore from "@/store/search.store";
 import UseSearchConfigStore from "@/store/searchConfiguration.store.";
 import UseUserStore from "@/store/user.store";
 import { useMutation } from "@tanstack/react-query";
@@ -31,10 +31,10 @@ export function CartSheet({
     triggerButton }: Props) {
     const mutation = useMutation({ mutationFn: cratePreOrder })
     const [open, setOpen] = useState(false);
-    const { getAllSavedProducts, saveProduct, removeProduct } = UseSearchStore();
-    const { getAllConfig } = UseSearchConfigStore();
-    const { user } = UseUserStore();
-    const products = getAllSavedProducts();
+    const { saveProduct, removeProduct } = UseSearchStore();
+    const products = UseSearchStore(state => state.getAllSavedProducts());
+    const getAllConfig = UseSearchConfigStore(state => state.getAllConfig);
+    const user = UseUserStore(state => state.user);
     const router = useRouter();
 
     const totalPrice = products
@@ -68,7 +68,7 @@ export function CartSheet({
         const config = getAllConfig();
 
         console.log(" ------- PRODUCT --------")
-        console.log(getAllSavedProducts())
+        console.log(products)
         console.log(" ------- PRODUCT --------")
 
         mutation.mutate({
@@ -89,13 +89,13 @@ export function CartSheet({
                 pickUpRadius: config.pickUpLocation.radius,
             },
             reacteplacementCriteria: config.replacementCriteria,
-            cartProducts: getAllSavedProducts()
+            cartProducts: products
         })
         callback();
     }
 
     function checkProductsAmount() {
-        const savedProducts = getAllSavedProducts();
+        const savedProducts = products;
         if (savedProducts.length < 1) {
             closeModal();
         }

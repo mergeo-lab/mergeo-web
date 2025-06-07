@@ -32,8 +32,8 @@ export function ProductsPresentations({
     const [open, setOpen] = useState(false);
     const { openProductId, toggleSheetOpen } = UseMorePresentations();
     const isOpen = openProductId === productId;
-    const { saveProduct, removeProduct, getAllSavedProducts, saveMorePresentations, morePresentations: hasMore } = UseSearchStore();
-    const allSavedProducts = getAllSavedProducts();
+    const { saveProduct, removeProduct, saveMorePresentations, morePresentations: hasMore } = UseSearchStore();
+    const allSavedProducts = UseSearchStore(state => state.getAllSavedProducts());
     const { data, isLoading } = useQuery({
         queryKey: ['more-presentations', productId],
         queryFn: () => productId ? getMorePresentations(productId) : Promise.reject(new Error('Product ID is undefined')),
