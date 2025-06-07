@@ -12,7 +12,7 @@ import ProductsTable from '@/components/configuration/client/orders/productsTabl
 import ProductsList from '@/components/configuration/client/orders/tabs/productsList';
 import ProductsSearch from '@/components/configuration/client/orders/tabs/productsSearch';
 import PickUpSelectMap from '@/components/configuration/client/orders/searchConfig/pickUpSelectMap';
-import { LuClipboardList, LuFileCog, LuList, LuPackageSearch, LuShoppingBag } from 'react-icons/lu';
+import { LuClipboardList, LuFileCog, LuList, LuPackageSearch } from 'react-icons/lu';
 import { RxCross2 } from 'react-icons/rx';
 // import { useAuth } from '@/context/AuthContext';
 import React from 'react';
@@ -50,18 +50,18 @@ const ConfigButton = memo(({ onClick, menuOpen }: { onClick: () => void; menuOpe
     </Button>
 ));
 
-const CartButton = memo(({ onClick, menuOpen, disabled }: { onClick: () => void; menuOpen: boolean; disabled: boolean }) => (
-    <Button
-        className='w-full flex gap-4 disabled:bg-muted/80'
-        disabled={disabled}
-        onClick={onClick}
-    >
-        <MotionConfig menuOpen={menuOpen}>
-            Ver Pedido
-        </MotionConfig>
-        <LuShoppingBag size={20} />
-    </Button>
-));
+// const CartButton = memo(({ onClick, menuOpen, disabled }: { onClick: () => void; menuOpen: boolean; disabled: boolean }) => (
+//     <Button
+//         className='w-full flex gap-4 disabled:bg-muted/80'
+//         disabled={disabled}
+//         onClick={onClick}
+//     >
+//         <MotionConfig menuOpen={menuOpen}>
+//             Ver Pedido
+//         </MotionConfig>
+//         <LuShoppingBag size={20} />
+//     </Button>
+// ));
 
 // Global error boundary for debugging
 class GlobalErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean, error: unknown }> {
@@ -120,8 +120,8 @@ function OrdersPage() {
         branch,
     });
     const reset = UseSearchStore(state => state.reset);
-    const savedProducts = UseSearchStore(state => state.getAllSavedProducts());
-    console.log('OrdersPage savedProducts:', savedProducts);
+    // const savedProducts = UseSearchStore(state => state.getAllSavedProducts());
+    // console.log('OrdersPage savedProducts:', savedProducts);
 
     // Memoized handlers
     const onTabChange = useCallback((value: string) => {
@@ -157,7 +157,7 @@ function OrdersPage() {
 
     // Memoized values
     const isConfigCanceled = useMemo(() => !branch || !deliveryTime, [branch, deliveryTime]);
-    const hasSavedProducts = useMemo(() => savedProducts.length > 0, [savedProducts]);
+    // const hasSavedProducts = useMemo(() => savedProducts.length > 0, [savedProducts]);
 
     // Initialize pickUpDialog as false when component mounts
     useEffect(() => {
@@ -195,10 +195,10 @@ function OrdersPage() {
             </TabsContent>
             <div className='w-full p-5 border-t-2 border-t-border flex flex-col gap-2'>
                 <ConfigButton onClick={handleConfigOpen} menuOpen={menuOpen} />
-                <CartButton onClick={handleCartOpen} menuOpen={menuOpen} disabled={!hasSavedProducts} />
+                {/* <CartButton onClick={handleCartOpen} menuOpen={menuOpen} disabled={!hasSavedProducts} /> */}
             </div>
         </>
-    ), [menuOpen, configDataSubmitted, hasSavedProducts, handleConfigOpen, handleCartOpen, toggleMenu, configCanceled]);
+    ), [menuOpen, configDataSubmitted, handleConfigOpen, toggleMenu, configCanceled]);
 
     // Memoized hidden menu content
     const hiddenMenuContent = useMemo(() => (
@@ -220,12 +220,13 @@ function OrdersPage() {
                 <Button onClick={handleConfigOpen} variant='outline' className="p-0 px-3 overflow-hidden">
                     <LuFileCog size={20} />
                 </Button>
+                {/* 
                 <Button disabled={!hasSavedProducts} className='p-0 px-3 disabled:bg-muted/80 overflow-hidden' onClick={handleCartOpen}>
                     <LuShoppingBag size={20} />
-                </Button>
+                </Button> */}
             </div>
         </>
-    ), [hasSavedProducts, handleConfigOpen, handleCartOpen, toggleMenu]);
+    ), [handleConfigOpen, toggleMenu]);
 
     return (
         <GlobalErrorBoundary>
