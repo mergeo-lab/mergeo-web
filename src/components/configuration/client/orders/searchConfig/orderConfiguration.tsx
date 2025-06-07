@@ -56,223 +56,223 @@ export default function OrderConfig(props: Props) {
     const [internalRc, setInternalRc] = useState<ReplacementCriteria | null>(null);
     const [internalPickUp, setInternalPickUp] = useState(false);
 
+    // when we open we load and reset the data
+    // this is to avoid a flicker in the main screen
+    useEffect(() => {
+        setIsLoading(true);
+        if (open && shouldResetConfig) {
+            // this is resetting the config when the button in the left is clicked
+            setTimeout(() => {
+                setShouldResetConfig(false);
+                resetConfig();
+                setIsLoading(false);
+                setInternalList("");
+                setInternalRc(null);
+                setPickUp(false);
+                setInternalPickUp(false);
+                setTime(null);
+                setSelectedBranch(null);
+                setDeliveryTime(undefined)
+                reset();
+            }, 300)
+        } else {
+            setIsLoading(false);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open])
+
+    useEffect(() => {
+        if (openDialog) {
+            setOpen(true);
+            setConfigDataSubmitted(false);
+        } else setOpen(false);
+    }, [openDialog, onCancel, setConfigDataSubmitted]);
+
+    function onConfigSave() {
+        time && setDeliveryTime(time);
+        selcetedBranch && setBranch(selcetedBranch);
+        internalList && selectList(internalList);
+        internalRc && setReplacementCriteria(internalRc);
+
+        onLoading && onLoading();
+        setConfigDataSubmitted(true);
+        callback(internalList ? internalList : "");
+        handleOpenChange(false);
+    }
+    // we prevent the dialog from closing when clicking outside
+    const handleOpenChange = (open: boolean) => {
+        // Prevent closing the dialog when clicking outside
+        if (open === false) return;
+        setOpen(open);
+    };
+
+    // Logging and debugging (can be inside try/catch)
     try {
         console.log('OrderConfig props:', props);
         console.log('OrderConfig state:', {
             deliveryTime, branch, pickUp, pickUpLocation, listId, replacementCriteria, shouldResetConfig, openDialog, open, isLoading, companyId
         });
-
-        // when we open we load and reset the data
-        // this is to avoid a flicker in the main screen
-        useEffect(() => {
-            setIsLoading(true);
-            if (open && shouldResetConfig) {
-                // this is resetting the config when the button in the left is clicked
-                setTimeout(() => {
-                    setShouldResetConfig(false);
-                    resetConfig();
-                    setIsLoading(false);
-                    setInternalList("");
-                    setInternalRc(null);
-                    setPickUp(false);
-                    setInternalPickUp(false);
-                    setTime(null);
-                    setSelectedBranch(null);
-                    setDeliveryTime(undefined)
-                    reset();
-                }, 300)
-            } else {
-                setIsLoading(false);
-            }
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [open])
-
-        async function onConfigSave() {
-            time && setDeliveryTime(time);
-            selcetedBranch && setBranch(selcetedBranch);
-            internalList && selectList(internalList);
-            internalRc && setReplacementCriteria(internalRc);
-
-            onLoading && onLoading();
-            setConfigDataSubmitted(true);
-            callback(internalList ? internalList : "");
-            handleOpenChange(false);
-        }
-        // we prevent the dialog from closing when clicking outside
-        const handleOpenChange = (open: boolean) => {
-            // Prevent closing the dialog when clicking outside
-            if (open === false) return;
-            setOpen(open);
-        };
-
-        useEffect(() => {
-            if (openDialog) {
-                setOpen(true);
-                setConfigDataSubmitted(false);
-            } else setOpen(false);
-        }, [openDialog, onCancel, setConfigDataSubmitted]);
-
-        return (
-            <Dialog open={open}
-                onOpenChange={handleOpenChange}>
-                <DialogTrigger className="w-full flex mt-2" asChild>
-                    {triggerButton}
-                </DialogTrigger>
-                <DialogContent className="w-full" showClose={false}>
-                    <DialogHeader className="px-6 py-3 border bottom-1">
-                        <DialogTitle className="flex items-center gap-2">
-                            {icon}
-                            {title}
-                        </DialogTitle>
-                        <DialogDescription>
-                            {subTitle}
-                        </DialogDescription>
-                    </DialogHeader>
-                    {isLoading ? (
-                        <div className="w-full h-full min-h-[445px] px-20 flex items-center justify-center">
-                            <LoadingIndicator />
-                        </div>
-                    ) :
-                        <div className='space-y-4 px-20 min-h-[435px]'>
-                            {/* first section - tiempo y lugar */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <Label id='name'>Tiempo de entrega</Label>
-                                    <div className="border rounded border-border p-5">
-                                        <DeliveryTimeSelector
-                                            placeholder="Seleccione un rango de fechas"
-                                            className="w-full"
-                                            defaultValue={time || deliveryTime}
-                                            onDateChange={(newDate: DateRange) => {
-                                                if (newDate.from && newDate.to) {
-                                                    setTime({ from: newDate.from, to: newDate.to });
-                                                }
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                                <div>
-                                    <Label id='address'>Lugar de entrega</Label>
-                                    <div className="border rounded border-border p-5">
-                                        <BranchSlector
-                                            defaultValue={selcetedBranch?.id || branch?.id || ""}
-                                            onChange={(branch: BranchesSchemaType) => {
-                                                setPickUp(false);
-                                                setInternalPickUp(false);
-                                                setPickUpLocation({
-                                                    location: {
-                                                        latitude: branch?.address?.location?.coordinates[1] ?? 0,
-                                                        longitude: branch?.address?.location?.coordinates[0] ?? 0
-                                                    },
-                                                    radius: 1
-                                                })
-                                                setSelectedBranch(branch)
-                                                setTempBranch(branch)
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* second section - pickup */}
-                            <div className="grid grid-cols-1">
-                                <div>
-                                    <Label id='name'>
-                                        Pick Up
-                                        <span className={cn("text-sm font-thin text-muted-foreground ml-2",
-                                            {
-                                                "hidden": !pickUp
-                                            }
-                                        )}>( Haz click en el mapa para cambiar el area seleccionada! )</span>
-                                    </Label>
-                                    <div className="border rounded border-border p-2 flex gap-4 relative overflow-hidden">
-                                        <div className={cn("absolute top-0 right-0 bg-black/10 w-full h-full transition-all pointer-events-none", {
-                                            "opacity-0 pointer-events-all": selcetedBranch !== null
-                                        })}></div>
-                                        <div onClick={() => internalPickUp || pickUp == true ? setPickUpDialog(true) : ""}
-                                            className={cn("bg-border rounded p-2 w-14 flex justify-center items-center",
-                                                {
-                                                    "shadow-sm shadow-primary bg-primary/10 cursor-pointer": internalPickUp || pickUp
-                                                }
-                                            )}>
-                                            <img src={mapIcon} alt="map" />
-                                        </div>
-                                        <div className="flex flex-col justify-center ">
-                                            <div className="flex items-center space-x-2">
-                                                <Switch
-                                                    checked={internalPickUp || pickUp}
-                                                    defaultChecked={internalPickUp == true || pickUp == true}
-                                                    disabled={selcetedBranch === null}
-                                                    onClick={() => {
-                                                        if (selcetedBranch === null) return
-                                                        // we set the location of the selected branch on the map to select the pikup radius
-                                                        setPickUpLocation({
-                                                            location: {
-                                                                latitude: selcetedBranch?.address?.location?.coordinates[1] ?? 0,
-                                                                longitude: selcetedBranch?.address?.location?.coordinates[0] ?? 0
-                                                            },
-                                                            radius: pickUpLocation.radius || 1
-                                                        })
-                                                        setPickUp(true);
-                                                        setInternalPickUp(true)
-                                                        setPickUpDialog()
-                                                    }} />
-                                                <Label htmlFor="airplane-mode">Estoy dispuesto a hacer pick up</Label>
-                                            </div>
-                                            <p className="text-sm ml-10 text-muted font-light">Hay proveedores que no tienen entrega en tu local, selecciona si estas dispuesto a ir a buscar el pedido</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* third section - criterio de reemplazo y listas de busqueda */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <Label id='name'>Criterio de reemplazo</Label>
-                                    <div className="border rounded border-border h-48">
-                                        <RadioGroup
-                                            value={internalRc || replacementCriteria}
-                                            className="flex flex-col gap-3 p-5"
-                                        >
-                                            {Object.entries(ReplacementCriteriaValues).map(([key, item]) => (
-                                                <div key={item.value} className="flex items-center space-x-2" onClick={() => setInternalRc(item.value)}>
-                                                    <RadioGroupItem value={item.value} id={key} />
-                                                    <Label htmlFor={key}>{item.label}</Label>
-                                                </div>
-                                            ))}
-                                        </RadioGroup>
-                                        <div className="border-t border-border p-5 text-sm text-muted font-thin">
-                                            En el caso que el producto seleccionado no se encuentre en stock o el proveedor no acepte la orden de compra.
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <Label id='address'>Usar una Lista</Label>
-                                    <div className="border rounded border-border p-5 h-48 overflow-auto">
-                                        <ListSelector
-                                            selectedListId={internalList || listId}
-                                            onChange={(listId: string) => setInternalList(listId)}
-                                            removeSelection={() => setInternalList("")}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    }
-
-                    <DialogFooter className="w-full border top-1 px-6 py-3">
-                        <DialogClose className="w-40">
-                            <Button onClick={onCancel} variant="secondary" type="button" className="w-full">Cancelar</Button>
-                        </DialogClose>
-                        <DialogClose className="w-40" disabled={!time && !selcetedBranch}>
-                            <Button disabled={!time || !selcetedBranch} onClick={onConfigSave} type="button" className="w-full">Guardar</Button>
-                        </DialogClose>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog >
-        )
-    } catch (err) {
-        console.error('OrderConfig crashed:', err);
-        throw err;
+    } catch {
+        // handle logging error
     }
+
+    return (
+        <Dialog open={open}
+            onOpenChange={handleOpenChange}>
+            <DialogTrigger className="w-full flex mt-2" asChild>
+                {triggerButton}
+            </DialogTrigger>
+            <DialogContent className="w-full" showClose={false}>
+                <DialogHeader className="px-6 py-3 border bottom-1">
+                    <DialogTitle className="flex items-center gap-2">
+                        {icon}
+                        {title}
+                    </DialogTitle>
+                    <DialogDescription>
+                        {subTitle}
+                    </DialogDescription>
+                </DialogHeader>
+                {isLoading ? (
+                    <div className="w-full h-full min-h-[445px] px-20 flex items-center justify-center">
+                        <LoadingIndicator />
+                    </div>
+                ) :
+                    <div className='space-y-4 px-20 min-h-[435px]'>
+                        {/* first section - tiempo y lugar */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <Label id='name'>Tiempo de entrega</Label>
+                                <div className="border rounded border-border p-5">
+                                    <DeliveryTimeSelector
+                                        placeholder="Seleccione un rango de fechas"
+                                        className="w-full"
+                                        defaultValue={time || deliveryTime}
+                                        onDateChange={(newDate: DateRange) => {
+                                            if (newDate.from && newDate.to) {
+                                                setTime({ from: newDate.from, to: newDate.to });
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <Label id='address'>Lugar de entrega</Label>
+                                <div className="border rounded border-border p-5">
+                                    <BranchSlector
+                                        defaultValue={selcetedBranch?.id || branch?.id || ""}
+                                        onChange={(branch: BranchesSchemaType) => {
+                                            setPickUp(false);
+                                            setInternalPickUp(false);
+                                            setPickUpLocation({
+                                                location: {
+                                                    latitude: branch?.address?.location?.coordinates[1] ?? 0,
+                                                    longitude: branch?.address?.location?.coordinates[0] ?? 0
+                                                },
+                                                radius: 1
+                                            })
+                                            setSelectedBranch(branch)
+                                            setTempBranch(branch)
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* second section - pickup */}
+                        <div className="grid grid-cols-1">
+                            <div>
+                                <Label id='name'>
+                                    Pick Up
+                                    <span className={cn("text-sm font-thin text-muted-foreground ml-2",
+                                        {
+                                            "hidden": !pickUp
+                                        }
+                                    )}>( Haz click en el mapa para cambiar el area seleccionada! )</span>
+                                </Label>
+                                <div className="border rounded border-border p-2 flex gap-4 relative overflow-hidden">
+                                    <div className={cn("absolute top-0 right-0 bg-black/10 w-full h-full transition-all pointer-events-none", {
+                                        "opacity-0 pointer-events-all": selcetedBranch !== null
+                                    })}></div>
+                                    <div onClick={() => internalPickUp || pickUp == true ? setPickUpDialog(true) : ""}
+                                        className={cn("bg-border rounded p-2 w-14 flex justify-center items-center",
+                                            {
+                                                "shadow-sm shadow-primary bg-primary/10 cursor-pointer": internalPickUp || pickUp
+                                            }
+                                        )}>
+                                        <img src={mapIcon} alt="map" />
+                                    </div>
+                                    <div className="flex flex-col justify-center ">
+                                        <div className="flex items-center space-x-2">
+                                            <Switch
+                                                checked={internalPickUp || pickUp}
+                                                defaultChecked={internalPickUp == true || pickUp == true}
+                                                disabled={selcetedBranch === null}
+                                                onClick={() => {
+                                                    if (selcetedBranch === null) return
+                                                    // we set the location of the selected branch on the map to select the pikup radius
+                                                    setPickUpLocation({
+                                                        location: {
+                                                            latitude: selcetedBranch?.address?.location?.coordinates[1] ?? 0,
+                                                            longitude: selcetedBranch?.address?.location?.coordinates[0] ?? 0
+                                                        },
+                                                        radius: pickUpLocation.radius || 1
+                                                    })
+                                                    setPickUp(true);
+                                                    setInternalPickUp(true)
+                                                    setPickUpDialog()
+                                                }} />
+                                            <Label htmlFor="airplane-mode">Estoy dispuesto a hacer pick up</Label>
+                                        </div>
+                                        <p className="text-sm ml-10 text-muted font-light">Hay proveedores que no tienen entrega en tu local, selecciona si estas dispuesto a ir a buscar el pedido</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* third section - criterio de reemplazo y listas de busqueda */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <Label id='name'>Criterio de reemplazo</Label>
+                                <div className="border rounded border-border h-48">
+                                    <RadioGroup
+                                        value={internalRc || replacementCriteria}
+                                        className="flex flex-col gap-3 p-5"
+                                    >
+                                        {Object.entries(ReplacementCriteriaValues).map(([key, item]) => (
+                                            <div key={item.value} className="flex items-center space-x-2" onClick={() => setInternalRc(item.value)}>
+                                                <RadioGroupItem value={item.value} id={key} />
+                                                <Label htmlFor={key}>{item.label}</Label>
+                                            </div>
+                                        ))}
+                                    </RadioGroup>
+                                    <div className="border-t border-border p-5 text-sm text-muted font-thin">
+                                        En el caso que el producto seleccionado no se encuentre en stock o el proveedor no acepte la orden de compra.
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <Label id='address'>Usar una Lista</Label>
+                                <div className="border rounded border-border p-5 h-48 overflow-auto">
+                                    <ListSelector
+                                        selectedListId={internalList || listId}
+                                        onChange={(listId: string) => setInternalList(listId)}
+                                        removeSelection={() => setInternalList("")}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <DialogFooter className="w-full border top-1 px-6 py-3">
+                    <DialogClose className="w-40">
+                        <Button onClick={onCancel} variant="secondary" type="button" className="w-full">Cancelar</Button>
+                    </DialogClose>
+                    <DialogClose className="w-40" disabled={!time && !selcetedBranch}>
+                        <Button disabled={!time || !selcetedBranch} onClick={onConfigSave} type="button" className="w-full">Guardar</Button>
+                    </DialogClose>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog >
+    )
 }
