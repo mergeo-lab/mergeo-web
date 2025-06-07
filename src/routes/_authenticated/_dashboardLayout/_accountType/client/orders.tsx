@@ -4,18 +4,19 @@ import { useCallback, useEffect, useState, memo, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import UseSearchConfigStore from '@/store/searchConfiguration.store.';
-import { CartSheet } from '@/components/configuration/client/orders/cartSheet';
+// import { CartSheet } from '@/components/configuration/client/orders/cartSheet';
 import UseSearchStore from '@/store/search.store';
 import { motion } from "framer-motion";
-// import OrderConfig from '@/components/configuration/client/orders/searchConfig/orderConfiguration';
+import OrderConfig from '@/components/configuration/client/orders/searchConfig/orderConfiguration';
 import ProductsTable from '@/components/configuration/client/orders/productsTable';
 import ProductsList from '@/components/configuration/client/orders/tabs/productsList';
 import ProductsSearch from '@/components/configuration/client/orders/tabs/productsSearch';
 import PickUpSelectMap from '@/components/configuration/client/orders/searchConfig/pickUpSelectMap';
-import { LuClipboardList, LuFileCog, LuList, LuPackageSearch, LuShoppingBag } from 'react-icons/lu';
+import { LuClipboardList, LuFileCog, LuList, LuPackageSearch } from 'react-icons/lu';
 import { RxCross2 } from 'react-icons/rx';
 // import { useAuth } from '@/context/AuthContext';
 import React from 'react';
+import { useAuth } from '@/context/AuthContext';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/orders')({
     component: OrdersPage,
@@ -49,18 +50,18 @@ const ConfigButton = memo(({ onClick, menuOpen }: { onClick: () => void; menuOpe
     </Button>
 ));
 
-const CartButton = memo(({ onClick, menuOpen, disabled }: { onClick: () => void; menuOpen: boolean; disabled: boolean }) => (
-    <Button
-        className='w-full flex gap-4 disabled:bg-muted/80'
-        disabled={disabled}
-        onClick={onClick}
-    >
-        <MotionConfig menuOpen={menuOpen}>
-            Ver Pedido
-        </MotionConfig>
-        <LuShoppingBag size={20} />
-    </Button>
-));
+// const CartButton = memo(({ onClick, menuOpen, disabled }: { onClick: () => void; menuOpen: boolean; disabled: boolean }) => (
+//     <Button
+//         className='w-full flex gap-4 disabled:bg-muted/80'
+//         disabled={disabled}
+//         onClick={onClick}
+//     >
+//         <MotionConfig menuOpen={menuOpen}>
+//             Ver Pedido
+//         </MotionConfig>
+//         <LuShoppingBag size={20} />
+//     </Button>
+// ));
 
 // Global error boundary for debugging
 class GlobalErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean, error: unknown }> {
@@ -88,16 +89,16 @@ class GlobalErrorBoundary extends React.Component<{ children: React.ReactNode },
 function OrdersPage() {
     const [tab, setTab] = useState(TabsEnum.LISTA_DE_PRODUCTOS);
     const [menuOpen, setMenuStatus] = useState(true);
-    const [cartOpen, setOpenCart] = useState(false);
-    // const [configCanceled, setConfigCanceled] = useState(false);
-    // const { account } = useAuth();
-    // const companyId = account?.company.id || '';
+    // const [cartOpen, setOpenCart] = useState(false);
+    const [configCanceled, setConfigCanceled] = useState(false);
+    const { account } = useAuth();
+    const companyId = account?.company.id || '';
 
     const {
         pickUpDialog,
         setPickUpDialog,
         resetConfig,
-        // configDialogOpen,
+        configDialogOpen,
         setConfigDialogOpen,
         configDataSubmitted,
         setConfigDataSubmitted,
@@ -125,19 +126,19 @@ function OrdersPage() {
         setConfigDialogOpen(true);
     }, [setConfigDataSubmitted, setShouldResetConfig, setConfigDialogOpen]);
 
-    // const handleConfigCancel = useCallback(() => {
-    //     setConfigCanceled(true);
-    //     setConfigDialogOpen(false);
-    // }, [setConfigDialogOpen]);
+    const handleConfigCancel = useCallback(() => {
+        setConfigCanceled(true);
+        setConfigDialogOpen(false);
+    }, [setConfigDialogOpen]);
 
-    // const handleConfigCallback = useCallback((listId: string) => {
-    //     setTab(listId ? TabsEnum.LISTA_DE_PRODUCTOS : TabsEnum.BUSCAR_PRODUCTOS);
-    //     setConfigDataSubmitted(true);
-    //     setConfigDialogOpen(false);
-    // }, [setConfigDataSubmitted, setConfigDialogOpen]);
+    const handleConfigCallback = useCallback((listId: string) => {
+        setTab(listId ? TabsEnum.LISTA_DE_PRODUCTOS : TabsEnum.BUSCAR_PRODUCTOS);
+        setConfigDataSubmitted(true);
+        setConfigDialogOpen(false);
+    }, [setConfigDataSubmitted, setConfigDialogOpen]);
 
-    const handleCartOpen = useCallback(() => setOpenCart(true), []);
-    const handleCartClose = useCallback(() => setOpenCart(false), []);
+    // const handleCartOpen = useCallback(() => setOpenCart(true), []);
+    // const handleCartClose = useCallback(() => setOpenCart(false), []);
     const handlePickUpDialogClose = useCallback(() => setPickUpDialog(false), [setPickUpDialog]);
 
     // Memoized values
@@ -170,7 +171,7 @@ function OrdersPage() {
             </TabsList>
             <TabsContent className='w-full overflow-x-hidden h-[calc(100%-50px)] m-0 ' value={TabsEnum.LISTA_DE_PRODUCTOS}>
                 <ProductsList
-                    configCanceled={false}
+                    configCanceled={configCanceled}
                     isVisible={configDataSubmitted}
                     selectList={handleConfigOpen}
                 />
@@ -180,10 +181,10 @@ function OrdersPage() {
             </TabsContent>
             <div className='w-full p-5 border-t-2 border-t-border flex flex-col gap-2'>
                 <ConfigButton onClick={handleConfigOpen} menuOpen={menuOpen} />
-                <CartButton onClick={handleCartOpen} menuOpen={menuOpen} disabled={!hasSavedProducts} />
+                {/* <CartButton onClick={handleCartOpen} menuOpen={menuOpen} disabled={!hasSavedProducts} /> */}
             </div>
         </>
-    ), [menuOpen, configDataSubmitted, hasSavedProducts, handleConfigOpen, handleCartOpen, toggleMenu]);
+    ), [menuOpen, configDataSubmitted, hasSavedProducts, handleConfigOpen, toggleMenu, configCanceled]);
 
     // Memoized hidden menu content
     const hiddenMenuContent = useMemo(() => (
@@ -205,12 +206,12 @@ function OrdersPage() {
                 <Button onClick={handleConfigOpen} variant='outline' className="p-0 px-3 overflow-hidden">
                     <LuFileCog size={20} />
                 </Button>
-                <Button disabled={!hasSavedProducts} className='p-0 px-3 disabled:bg-muted/80 overflow-hidden' onClick={handleCartOpen}>
+                {/* <Button disabled={!hasSavedProducts} className='p-0 px-3 disabled:bg-muted/80 overflow-hidden' onClick={handleCartOpen}>
                     <LuShoppingBag size={20} />
-                </Button>
+                </Button> */}
             </div>
         </>
-    ), [hasSavedProducts, handleConfigOpen, handleCartOpen, toggleMenu]);
+    ), [hasSavedProducts, handleConfigOpen, toggleMenu]);
 
     return (
         <GlobalErrorBoundary>
@@ -232,18 +233,18 @@ function OrdersPage() {
 
                 <PickUpSelectMap showDialog={pickUpDialog} onClose={handlePickUpDialogClose} />
 
-                {/* <OrderConfig
+                <OrderConfig
                     companyId={companyId}
                     callback={handleConfigCallback}
                     openDialog={configDialogOpen}
                     onCancel={handleConfigCancel}
-                /> */}
+                />
 
-                <CartSheet
+                {/* <CartSheet
                     callback={handleCartClose}
                     title="Resumen de su pedido"
                     isOpen={cartOpen}
-                />
+                /> */}
             </section>
         </GlobalErrorBoundary>
     )
