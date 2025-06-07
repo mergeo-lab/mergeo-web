@@ -90,14 +90,14 @@ function OrdersPage() {
     const [menuOpen, setMenuStatus] = useState(true);
     const [cartOpen, setOpenCart] = useState(false);
     const [configCanceled, setConfigCanceled] = useState(false);
-    const { account } = useAuth();
-    const companyId = account?.company.id || '';
+    // const { account } = useAuth();
+    // const companyId = account?.company.id || '';
 
     const {
         pickUpDialog,
         setPickUpDialog,
         resetConfig,
-        configDialogOpen,
+        // configDialogOpen,
         setConfigDialogOpen,
         configDataSubmitted,
         setConfigDataSubmitted,
@@ -125,16 +125,16 @@ function OrdersPage() {
         setConfigDialogOpen(true);
     }, [setConfigDataSubmitted, setShouldResetConfig, setConfigDialogOpen]);
 
-    const handleConfigCancel = useCallback(() => {
-        setConfigCanceled(true);
-        setConfigDialogOpen(false);
-    }, [setConfigDialogOpen]);
+    // const handleConfigCancel = useCallback(() => {
+    //     setConfigCanceled(true);
+    //     setConfigDialogOpen(false);
+    // }, [setConfigDialogOpen]);
 
-    const handleConfigCallback = useCallback((listId: string) => {
-        setTab(listId ? TabsEnum.LISTA_DE_PRODUCTOS : TabsEnum.BUSCAR_PRODUCTOS);
-        setConfigDataSubmitted(true);
-        setConfigDialogOpen(false);
-    }, [setConfigDataSubmitted, setConfigDialogOpen]);
+    // const handleConfigCallback = useCallback((listId: string) => {
+    //     setTab(listId ? TabsEnum.LISTA_DE_PRODUCTOS : TabsEnum.BUSCAR_PRODUCTOS);
+    //     setConfigDataSubmitted(true);
+    //     setConfigDialogOpen(false);
+    // }, [setConfigDataSubmitted, setConfigDialogOpen]);
 
     const handleCartOpen = useCallback(() => setOpenCart(true), []);
     const handleCartClose = useCallback(() => setOpenCart(false), []);
