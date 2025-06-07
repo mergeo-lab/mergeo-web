@@ -7,7 +7,7 @@ import UseSearchConfigStore from '@/store/searchConfiguration.store.';
 import { CartSheet } from '@/components/configuration/client/orders/cartSheet';
 import UseSearchStore from '@/store/search.store';
 import { motion } from "framer-motion";
-import OrderConfig from '@/components/configuration/client/orders/searchConfig/orderConfiguration';
+// import OrderConfig from '@/components/configuration/client/orders/searchConfig/orderConfiguration';
 import ProductsTable from '@/components/configuration/client/orders/productsTable';
 import ProductsList from '@/components/configuration/client/orders/tabs/productsList';
 import ProductsSearch from '@/components/configuration/client/orders/tabs/productsSearch';
@@ -232,12 +232,12 @@ function OrdersPage() {
 
                 <PickUpSelectMap showDialog={pickUpDialog} onClose={handlePickUpDialogClose} />
 
-                <OrderConfig
+                {/* <OrderConfig
                     companyId={companyId}
                     callback={handleConfigCallback}
                     openDialog={configDialogOpen}
                     onCancel={handleConfigCancel}
-                />
+                /> */}
 
                 <CartSheet
                     callback={handleCartClose}
