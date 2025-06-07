@@ -5,6 +5,8 @@ import UseProviderInventoryPaginationState from '@/store/providerInventoryPagina
 import { cn } from '@/lib/utils';
 import { ErrorBoundary } from 'react-error-boundary';
 import { MdOutlineDiscount } from "react-icons/md";
+import type { FallbackProps } from 'react-error-boundary';
+import React from 'react';
 
 // Lazy load components
 const DashboardHeader = lazy(() => import('@/components/dashboardLayout').then(mod => ({ default: mod.DashboardHeader })));
@@ -132,6 +134,17 @@ const getRoutTitles = (currentPage: number) => {
     return titles;
 }
 
+function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
+    return (
+        <div className="p-8">
+            <h2>An error occurred loading this page</h2>
+            <pre style={{ color: 'red', whiteSpace: 'pre-wrap' }}>{error?.message}</pre>
+            <pre style={{ color: 'gray', fontSize: 12 }}>{error?.stack}</pre>
+            <button onClick={resetErrorBoundary}>Try again</button>
+        </div>
+    );
+}
+
 function DashboardLayout() {
     const router = useRouter();
     const { getPage } = UseProviderInventoryPaginationState();
@@ -214,7 +227,12 @@ function DashboardLayout() {
                     </Suspense>
                 </ErrorBoundary>
                 <div className='w-[calc(100vw-300px)] h-screen mt-0 my-10 border rounded shadow overflow-hidden lg:max-h-[calc(100vh-110px)] bg-white'>
-                    <ErrorBoundary fallback={<div className="p-8">An error occurred loading this page</div>}>
+                    <ErrorBoundary
+                        FallbackComponent={ErrorFallback}
+                        onError={(error, info) => {
+                            console.error('ErrorBoundary caught an error:', error, info);
+                        }}
+                    >
                         <Outlet />
                     </ErrorBoundary>
                 </div>
