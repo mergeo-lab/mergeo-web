@@ -63,22 +63,22 @@ const CartButton = memo(({ onClick, menuOpen, disabled }: { onClick: () => void;
 ));
 
 // Global error boundary for debugging
-class GlobalErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean, error: any }> {
-    constructor(props) {
+class GlobalErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean, error: unknown }> {
+    constructor(props: { children: React.ReactNode }) {
         super(props);
         this.state = { hasError: false, error: null };
     }
-    static getDerivedStateFromError(error) {
+    static getDerivedStateFromError(error: unknown) {
         return { hasError: true, error };
     }
-    componentDidCatch(error, info) {
+    componentDidCatch(error: unknown, info: unknown) {
         console.error('GlobalErrorBoundary caught:', error, info);
     }
     render() {
         if (this.state.hasError) {
             return <div style={{ color: 'red', padding: 40 }}>
                 <h2>Global error: {String(this.state.error)}</h2>
-                <pre>{this.state.error?.stack || ''}</pre>
+                <pre>{(this.state.error as Error)?.stack || ''}</pre>
             </div>;
         }
         return this.props.children;
