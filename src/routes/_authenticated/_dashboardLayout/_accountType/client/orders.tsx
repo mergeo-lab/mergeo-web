@@ -14,7 +14,7 @@ import ProductsSearch from '@/components/configuration/client/orders/tabs/produc
 import PickUpSelectMap from '@/components/configuration/client/orders/searchConfig/pickUpSelectMap';
 import { LuClipboardList, LuFileCog, LuList, LuPackageSearch, LuShoppingBag } from 'react-icons/lu';
 import { RxCross2 } from 'react-icons/rx';
-import { useAuth } from '@/context/AuthContext';
+// import { useAuth } from '@/context/AuthContext';
 import React from 'react';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/orders')({
@@ -89,7 +89,7 @@ function OrdersPage() {
     const [tab, setTab] = useState(TabsEnum.LISTA_DE_PRODUCTOS);
     const [menuOpen, setMenuStatus] = useState(true);
     const [cartOpen, setOpenCart] = useState(false);
-    const [configCanceled, setConfigCanceled] = useState(false);
+    // const [configCanceled, setConfigCanceled] = useState(false);
     // const { account } = useAuth();
     // const companyId = account?.company.id || '';
 
@@ -170,7 +170,7 @@ function OrdersPage() {
             </TabsList>
             <TabsContent className='w-full overflow-x-hidden h-[calc(100%-50px)] m-0 ' value={TabsEnum.LISTA_DE_PRODUCTOS}>
                 <ProductsList
-                    configCanceled={configCanceled}
+                    configCanceled={false}
                     isVisible={configDataSubmitted}
                     selectList={handleConfigOpen}
                 />
@@ -183,7 +183,7 @@ function OrdersPage() {
                 <CartButton onClick={handleCartOpen} menuOpen={menuOpen} disabled={!hasSavedProducts} />
             </div>
         </>
-    ), [menuOpen, configCanceled, configDataSubmitted, hasSavedProducts, handleConfigOpen, handleCartOpen, toggleMenu]);
+    ), [menuOpen, configDataSubmitted, hasSavedProducts, handleConfigOpen, handleCartOpen, toggleMenu]);
 
     // Memoized hidden menu content
     const hiddenMenuContent = useMemo(() => (
