@@ -3,7 +3,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useCallback, useEffect, useState, memo, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import UseSearchConfigStore from '@/store/searchConfiguration.store.';
+import UseSearchConfigStore from '@/store/searchConfiguration.store';
 import { CartSheet } from '@/components/configuration/client/orders/cartSheet';
 import UseSearchStore from '@/store/search.store';
 import { motion } from "framer-motion";
@@ -87,90 +87,64 @@ class GlobalErrorBoundary extends React.Component<{ children: React.ReactNode },
 }
 
 function OrdersPage() {
-    console.log('OrdersPage rendering');
+    // Initialize all hooks first
     const [tab, setTab] = useState(TabsEnum.LISTA_DE_PRODUCTOS);
     const [menuOpen, setMenuStatus] = useState(true);
     const [cartOpen, setOpenCart] = useState(false);
     const [configCanceled, setConfigCanceled] = useState(false);
     const { account } = useAuth();
-    const companyId = account?.company.id || '';
+    const companyId = account?.company?.id || '';
 
-    const {
-        pickUpDialog,
-        setPickUpDialog,
-        resetConfig,
-        configDialogOpen,
-        setConfigDialogOpen,
-        configDataSubmitted,
-        setConfigDataSubmitted,
-        setShouldResetConfig,
-        deliveryTime,
-        branch,
-    } = UseSearchConfigStore();
-    console.log('OrdersPage store values:', {
-        pickUpDialog,
-        setPickUpDialog,
-        resetConfig,
-        configDialogOpen,
-        setConfigDialogOpen,
-        configDataSubmitted,
-        setConfigDataSubmitted,
-        setShouldResetConfig,
-        deliveryTime,
-        branch,
-    });
-    const reset = UseSearchStore(state => state.reset);
-    const savedProducts = UseSearchStore(state => state.getAllSavedProducts());
+    const searchConfigStore = UseSearchConfigStore();
+    const searchStore = UseSearchStore();
+
+    // Initialize all callbacks
     const handleCartOpen = useCallback(() => setOpenCart(true), []);
-    const hasSavedProducts = useMemo(() => savedProducts.length > 0, [savedProducts]);
-
-    // Memoized handlers
     const onTabChange = useCallback((value: string) => {
         const selectedTab = value as TabsEnum;
         setTab(selectedTab);
     }, []);
-
     const toggleMenu = useCallback((tab?: TabsEnum) => {
         if (tab) setTab(tab);
         setMenuStatus(prev => !prev);
     }, []);
 
     const handleConfigOpen = useCallback(() => {
-        setConfigDataSubmitted(false);
-        setShouldResetConfig(false);
-        setConfigDialogOpen(true);
-    }, [setConfigDataSubmitted, setShouldResetConfig, setConfigDialogOpen]);
+        searchConfigStore?.setConfigDataSubmitted?.(false);
+        searchConfigStore?.setShouldResetConfig?.(false);
+        searchConfigStore?.setConfigDialogOpen?.(true);
+    }, [searchConfigStore]);
 
     const handleConfigCancel = useCallback(() => {
         setConfigCanceled(true);
-        setConfigDialogOpen(false);
-    }, [setConfigDialogOpen]);
+        searchConfigStore?.setConfigDialogOpen?.(false);
+    }, [searchConfigStore]);
 
     const handleConfigCallback = useCallback((listId: string) => {
         setTab(listId ? TabsEnum.LISTA_DE_PRODUCTOS : TabsEnum.BUSCAR_PRODUCTOS);
-        setConfigDataSubmitted(true);
-        setConfigDialogOpen(false);
-    }, [setConfigDataSubmitted, setConfigDialogOpen]);
+        searchConfigStore?.setConfigDataSubmitted?.(true);
+        searchConfigStore?.setConfigDialogOpen?.(false);
+    }, [searchConfigStore]);
 
     const handleCartClose = useCallback(() => setOpenCart(false), []);
-    const handlePickUpDialogClose = useCallback(() => setPickUpDialog(false), [setPickUpDialog]);
+    const handlePickUpDialogClose = useCallback(() => searchConfigStore?.setPickUpDialog?.(false), [searchConfigStore]);
 
-    // Memoized values
-    const isConfigCanceled = useMemo(() => !branch || !deliveryTime, [branch, deliveryTime]);
-
-    // Initialize pickUpDialog as false when component mounts
+    // Initialize all effects
     useEffect(() => {
-        setPickUpDialog(false);
-    }, [setPickUpDialog]);
+        searchConfigStore?.setPickUpDialog?.(false);
+    }, [searchConfigStore?.setPickUpDialog]);
 
-    // Cleanup on unmount
     useEffect(() => {
         return () => {
-            reset();
-            resetConfig();
-            setShouldResetConfig(true);
+            searchStore?.reset?.();
+            searchConfigStore?.resetConfig?.();
+            searchConfigStore?.setShouldResetConfig?.(true);
         }
-    }, [reset, resetConfig, setShouldResetConfig]);
+    }, [searchStore?.reset, searchConfigStore?.resetConfig, searchConfigStore?.setShouldResetConfig]);
+
+    // Initialize all memoized values
+    const hasSavedProducts = useMemo(() => searchStore?.getAllSavedProducts?.()?.length > 0, [searchStore]);
+    const isConfigCanceled = useMemo(() => !searchConfigStore?.branch || !searchConfigStore?.deliveryTime, [searchConfigStore]);
 
     // Memoized menu content
     const menuContent = useMemo(() => (
@@ -185,7 +159,7 @@ function OrdersPage() {
             <TabsContent className='w-full overflow-x-hidden h-[calc(100%-50px)] m-0 ' value={TabsEnum.LISTA_DE_PRODUCTOS}>
                 <ProductsList
                     configCanceled={configCanceled}
-                    isVisible={configDataSubmitted}
+                    isVisible={searchConfigStore?.configDataSubmitted}
                     selectList={handleConfigOpen}
                 />
             </TabsContent>
@@ -197,7 +171,7 @@ function OrdersPage() {
                 <CartButton onClick={handleCartOpen} menuOpen={menuOpen} disabled={!hasSavedProducts} />
             </div>
         </>
-    ), [menuOpen, configCanceled, configDataSubmitted, hasSavedProducts, handleConfigOpen, handleCartOpen, toggleMenu]);
+    ), [menuOpen, configCanceled, searchConfigStore?.configDataSubmitted, hasSavedProducts, handleConfigOpen, handleCartOpen, toggleMenu]);
 
     // Memoized hidden menu content
     const hiddenMenuContent = useMemo(() => (
@@ -244,21 +218,21 @@ function OrdersPage() {
                     <ProductsTable configCanceled={isConfigCanceled} />
                 </div>
 
-                <PickUpSelectMap showDialog={pickUpDialog} onClose={handlePickUpDialogClose} />
+                <PickUpSelectMap showDialog={searchConfigStore?.pickUpDialog} onClose={handlePickUpDialogClose} />
 
                 <OrderConfig
                     companyId={companyId}
-                    callback={handleConfigCallback}
-                    openDialog={configDialogOpen}
+                    openDialog={searchConfigStore?.configDialogOpen}
                     onCancel={handleConfigCancel}
+                    callback={handleConfigCallback}
                 />
 
                 <CartSheet
+                    isOpen={cartOpen}
                     callback={handleCartClose}
                     title="Resumen de su pedido"
-                    isOpen={cartOpen}
                 />
             </section>
         </GlobalErrorBoundary>
-    )
+    );
 }

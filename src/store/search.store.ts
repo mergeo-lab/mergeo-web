@@ -106,6 +106,10 @@ const UseSearchStore = create<SearchState>((set, get) => ({
 
   getAllSavedProducts: () => {
     const { savedProducts } = get();
+    if (!savedProducts) {
+      console.warn('[getAllSavedProducts] savedProducts is undefined');
+      return [];
+    }
     const allProducts = Object.values(savedProducts).flat();
     console.log('[getAllSavedProducts] allProducts:', allProducts);
     return allProducts;
