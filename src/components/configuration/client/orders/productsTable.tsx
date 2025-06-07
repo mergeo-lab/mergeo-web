@@ -23,6 +23,7 @@ type Params = {
 
 // Error fallback component
 function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) {
+    console.error('ErrorBoundary caught:', error);
     return (
         <div className="w-full h-full flex justify-center items-center">
             <div className="w-1/2 h-fit flex flex-col justify-center border border-border p-6 gap-5">
