@@ -107,16 +107,6 @@ export default function OrderConfig(props: Props) {
         setOpen(open);
     };
 
-    // Logging and debugging (can be inside try/catch)
-    try {
-        console.log('OrderConfig props:', props);
-        console.log('OrderConfig state:', {
-            deliveryTime, branch, pickUp, pickUpLocation, listId, replacementCriteria, shouldResetConfig, openDialog, open, isLoading, companyId
-        });
-    } catch {
-        // handle logging error
-    }
-
     return (
         <Dialog open={open}
             onOpenChange={handleOpenChange}>
