@@ -40,7 +40,6 @@ export default function OrderConfig(props: Props) {
         callback,
         onLoading,
         onCancel,
-        companyId,
     } = props;
 
     // All hooks at the top level
