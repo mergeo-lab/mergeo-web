@@ -5,10 +5,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import UseSearchConfigStore from '@/store/searchConfiguration.store';
 // import { CartSheet } from '@/components/configuration/client/orders/cartSheet';
-import UseSearchStore from '@/store/search.store';
+// import UseSearchStore from '@/store/search.store';
 // import { motion } from "framer-motion";
 // import OrderConfig from '@/components/configuration/client/orders/searchConfig/orderConfiguration';
-import ProductsTable from '@/components/configuration/client/orders/productsTable';
+// import ProductsTable from '@/components/configuration/client/orders/productsTable';
 // import ProductsList from '@/components/configuration/client/orders/tabs/productsList';
 // import ProductsSearch from '@/components/configuration/client/orders/tabs/productsSearch';
 // import PickUpSelectMap from '@/components/configuration/client/orders/searchConfig/pickUpSelectMap';
@@ -96,7 +96,7 @@ function OrdersPage() {
     // const companyId = account?.company?.id || '';
 
     const searchConfigStore = UseSearchConfigStore();
-    const searchStore = UseSearchStore();
+    // const searchStore = UseSearchStore();
 
     // Initialize all callbacks
     // const handleCartOpen = useCallback(() => setOpenCart(true), []);
@@ -136,11 +136,11 @@ function OrdersPage() {
 
     useEffect(() => {
         return () => {
-            searchStore?.reset?.();
+            // searchStore?.reset?.();
             searchConfigStore?.resetConfig?.();
             searchConfigStore?.setShouldResetConfig?.(true);
         }
-    }, [searchStore.reset, searchConfigStore.resetConfig, searchConfigStore.setShouldResetConfig, searchStore, searchConfigStore]);
+    }, [/*searchStore.reset,*/ searchConfigStore.resetConfig, searchConfigStore.setShouldResetConfig, /*searchStore,*/ searchConfigStore]);
 
     // Initialize all memoized values
     // const hasSavedProducts = useMemo(() => searchStore?.getAllSavedProducts?.()?.length > 0, [searchStore]);
@@ -217,7 +217,7 @@ function OrdersPage() {
                 {/* Products table */}
                 <div className='w-full p-10'>
                     {/* <ProductsTable configCanceled={isConfigCanceled} /> */}
-                    <ProductsTable configCanceled={true} />
+                    {/* <ProductsTable configCanceled={true} /> */}
                 </div>
 
                 {/* <PickUpSelectMap showDialog={searchConfigStore?.pickUpDialog} onClose={handlePickUpDialogClose} />
