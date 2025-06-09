@@ -10,6 +10,7 @@ import { APIProvider } from '@vis.gl/react-google-maps'
 import { Button } from '@/components/ui/button'
 import { LuBug } from 'react-icons/lu'
 import { AuthContextType, AuthProvider, useAuth } from '@/context/AuthContext'
+import { NotificationsProvider } from '@/context/NotificationsContext'
 import GlobalOverlayLoadingIndicator from '@/components/GlobalOverlayLoadingIndicator'
 
 const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
@@ -112,9 +113,11 @@ export default function App() {
             }
           >
             <AuthProvider>
-              <APIProvider apiKey={apiKeyMemo} libraries={['places']}>
-                <InnerApp />
-              </APIProvider>
+              <NotificationsProvider>
+                <APIProvider apiKey={apiKeyMemo} libraries={['places']}>
+                  <InnerApp />
+                </APIProvider>
+              </NotificationsProvider>
             </AuthProvider>
           </ErrorBoundary>
         )}

@@ -13,7 +13,6 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as FaqImport } from './routes/faq'
 import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as AuthLayoutImport } from './routes/_authLayout'
 import { Route as IndexImport } from './routes/index'
@@ -53,17 +52,8 @@ import { Route as AuthenticatedDashboardLayoutAccountTypeClientListsBlackListImp
 const AuthenticatedDashboardLayoutNotificationsLazyImport = createFileRoute(
   '/_authenticated/_dashboardLayout/notifications',
 )()
-const AuthenticatedDashboardLayoutAboutLazyImport = createFileRoute(
-  '/_authenticated/_dashboardLayout/about',
-)()
 
 // Create/Update Routes
-
-const FaqRoute = FaqImport.update({
-  id: '/faq',
-  path: '/faq',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const AuthenticatedRoute = AuthenticatedImport.update({
   id: '/_authenticated',
@@ -125,17 +115,6 @@ const AuthenticatedDashboardLayoutNotificationsLazyRoute =
     getParentRoute: () => AuthenticatedDashboardLayoutRoute,
   } as any).lazy(() =>
     import('./routes/_authenticated/_dashboardLayout/notifications.lazy').then(
-      (d) => d.Route,
-    ),
-  )
-
-const AuthenticatedDashboardLayoutAboutLazyRoute =
-  AuthenticatedDashboardLayoutAboutLazyImport.update({
-    id: '/about',
-    path: '/about',
-    getParentRoute: () => AuthenticatedDashboardLayoutRoute,
-  } as any).lazy(() =>
-    import('./routes/_authenticated/_dashboardLayout/about.lazy').then(
       (d) => d.Route,
     ),
   )
@@ -343,13 +322,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedImport
       parentRoute: typeof rootRoute
     }
-    '/faq': {
-      id: '/faq'
-      path: '/faq'
-      fullPath: '/faq'
-      preLoaderRoute: typeof FaqImport
-      parentRoute: typeof rootRoute
-    }
     '/_authLayout/forgotPassword': {
       id: '/_authLayout/forgotPassword'
       path: '/forgotPassword'
@@ -411,13 +383,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
-      parentRoute: typeof AuthenticatedDashboardLayoutImport
-    }
-    '/_authenticated/_dashboardLayout/about': {
-      id: '/_authenticated/_dashboardLayout/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AuthenticatedDashboardLayoutAboutLazyImport
       parentRoute: typeof AuthenticatedDashboardLayoutImport
     }
     '/_authenticated/_dashboardLayout/notifications': {
@@ -685,7 +650,6 @@ const AuthenticatedDashboardLayoutAccountTypeRouteWithChildren =
 
 interface AuthenticatedDashboardLayoutRouteChildren {
   AuthenticatedDashboardLayoutAccountTypeRoute: typeof AuthenticatedDashboardLayoutAccountTypeRouteWithChildren
-  AuthenticatedDashboardLayoutAboutLazyRoute: typeof AuthenticatedDashboardLayoutAboutLazyRoute
   AuthenticatedDashboardLayoutNotificationsLazyRoute: typeof AuthenticatedDashboardLayoutNotificationsLazyRoute
   AuthenticatedDashboardLayoutBuyOrderOrderIdRoute: typeof AuthenticatedDashboardLayoutBuyOrderOrderIdRoute
   AuthenticatedDashboardLayoutBuyOrderIndexRoute: typeof AuthenticatedDashboardLayoutBuyOrderIndexRoute
@@ -695,8 +659,6 @@ const AuthenticatedDashboardLayoutRouteChildren: AuthenticatedDashboardLayoutRou
   {
     AuthenticatedDashboardLayoutAccountTypeRoute:
       AuthenticatedDashboardLayoutAccountTypeRouteWithChildren,
-    AuthenticatedDashboardLayoutAboutLazyRoute:
-      AuthenticatedDashboardLayoutAboutLazyRoute,
     AuthenticatedDashboardLayoutNotificationsLazyRoute:
       AuthenticatedDashboardLayoutNotificationsLazyRoute,
     AuthenticatedDashboardLayoutBuyOrderOrderIdRoute:
@@ -726,7 +688,6 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AuthenticatedDashboardLayoutAccountTypeRouteWithChildren
-  '/faq': typeof FaqRoute
   '/forgotPassword': typeof AuthLayoutForgotPasswordRoute
   '/login': typeof AuthLayoutLoginRoute
   '/passwordReset': typeof AuthLayoutPasswordResetRoute
@@ -734,7 +695,6 @@ export interface FileRoutesByFullPath {
   '/registration/company': typeof AuthLayoutRegistrationCompanyRoute
   '/registration/user': typeof AuthLayoutRegistrationUserRoute
   '/registration/validate': typeof AuthLayoutRegistrationValidateRoute
-  '/about': typeof AuthenticatedDashboardLayoutAboutLazyRoute
   '/notifications': typeof AuthenticatedDashboardLayoutNotificationsLazyRoute
   '/registration/': typeof AuthLayoutRegistrationIndexRoute
   '/buyOrder/$orderId': typeof AuthenticatedDashboardLayoutBuyOrderOrderIdRoute
@@ -762,14 +722,12 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof AuthenticatedDashboardLayoutAccountTypeRouteWithChildren
-  '/faq': typeof FaqRoute
   '/forgotPassword': typeof AuthLayoutForgotPasswordRoute
   '/login': typeof AuthLayoutLoginRoute
   '/passwordReset': typeof AuthLayoutPasswordResetRoute
   '/registration/company': typeof AuthLayoutRegistrationCompanyRoute
   '/registration/user': typeof AuthLayoutRegistrationUserRoute
   '/registration/validate': typeof AuthLayoutRegistrationValidateRoute
-  '/about': typeof AuthenticatedDashboardLayoutAboutLazyRoute
   '/notifications': typeof AuthenticatedDashboardLayoutNotificationsLazyRoute
   '/registration': typeof AuthLayoutRegistrationIndexRoute
   '/buyOrder/$orderId': typeof AuthenticatedDashboardLayoutBuyOrderOrderIdRoute
@@ -799,7 +757,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authLayout': typeof AuthLayoutRouteWithChildren
   '/_authenticated': typeof AuthenticatedRouteWithChildren
-  '/faq': typeof FaqRoute
   '/_authLayout/forgotPassword': typeof AuthLayoutForgotPasswordRoute
   '/_authLayout/login': typeof AuthLayoutLoginRoute
   '/_authLayout/passwordReset': typeof AuthLayoutPasswordResetRoute
@@ -809,7 +766,6 @@ export interface FileRoutesById {
   '/_authLayout/registration/user': typeof AuthLayoutRegistrationUserRoute
   '/_authLayout/registration/validate': typeof AuthLayoutRegistrationValidateRoute
   '/_authenticated/_dashboardLayout/_accountType': typeof AuthenticatedDashboardLayoutAccountTypeRouteWithChildren
-  '/_authenticated/_dashboardLayout/about': typeof AuthenticatedDashboardLayoutAboutLazyRoute
   '/_authenticated/_dashboardLayout/notifications': typeof AuthenticatedDashboardLayoutNotificationsLazyRoute
   '/_authLayout/registration/': typeof AuthLayoutRegistrationIndexRoute
   '/_authenticated/_dashboardLayout/buyOrder/$orderId': typeof AuthenticatedDashboardLayoutBuyOrderOrderIdRoute
@@ -839,7 +795,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | ''
-    | '/faq'
     | '/forgotPassword'
     | '/login'
     | '/passwordReset'
@@ -847,7 +802,6 @@ export interface FileRouteTypes {
     | '/registration/company'
     | '/registration/user'
     | '/registration/validate'
-    | '/about'
     | '/notifications'
     | '/registration/'
     | '/buyOrder/$orderId'
@@ -874,14 +828,12 @@ export interface FileRouteTypes {
   to:
     | '/'
     | ''
-    | '/faq'
     | '/forgotPassword'
     | '/login'
     | '/passwordReset'
     | '/registration/company'
     | '/registration/user'
     | '/registration/validate'
-    | '/about'
     | '/notifications'
     | '/registration'
     | '/buyOrder/$orderId'
@@ -909,7 +861,6 @@ export interface FileRouteTypes {
     | '/'
     | '/_authLayout'
     | '/_authenticated'
-    | '/faq'
     | '/_authLayout/forgotPassword'
     | '/_authLayout/login'
     | '/_authLayout/passwordReset'
@@ -919,7 +870,6 @@ export interface FileRouteTypes {
     | '/_authLayout/registration/user'
     | '/_authLayout/registration/validate'
     | '/_authenticated/_dashboardLayout/_accountType'
-    | '/_authenticated/_dashboardLayout/about'
     | '/_authenticated/_dashboardLayout/notifications'
     | '/_authLayout/registration/'
     | '/_authenticated/_dashboardLayout/buyOrder/$orderId'
@@ -949,14 +899,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthLayoutRoute: typeof AuthLayoutRouteWithChildren
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
-  FaqRoute: typeof FaqRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthLayoutRoute: AuthLayoutRouteWithChildren,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
-  FaqRoute: FaqRoute,
 }
 
 export const routeTree = rootRoute
@@ -971,8 +919,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/_authLayout",
-        "/_authenticated",
-        "/faq"
+        "/_authenticated"
       ]
     },
     "/": {
@@ -992,9 +939,6 @@ export const routeTree = rootRoute
       "children": [
         "/_authenticated/_dashboardLayout"
       ]
-    },
-    "/faq": {
-      "filePath": "faq.tsx"
     },
     "/_authLayout/forgotPassword": {
       "filePath": "_authLayout/forgotPassword.tsx",
@@ -1023,7 +967,6 @@ export const routeTree = rootRoute
       "parent": "/_authenticated",
       "children": [
         "/_authenticated/_dashboardLayout/_accountType",
-        "/_authenticated/_dashboardLayout/about",
         "/_authenticated/_dashboardLayout/notifications",
         "/_authenticated/_dashboardLayout/buyOrder/$orderId",
         "/_authenticated/_dashboardLayout/buyOrder/"
@@ -1064,10 +1007,6 @@ export const routeTree = rootRoute
         "/_authenticated/_dashboardLayout/_accountType/provider/proOrders/",
         "/_authenticated/_dashboardLayout/_accountType/provider/products/"
       ]
-    },
-    "/_authenticated/_dashboardLayout/about": {
-      "filePath": "_authenticated/_dashboardLayout/about.lazy.tsx",
-      "parent": "/_authenticated/_dashboardLayout"
     },
     "/_authenticated/_dashboardLayout/notifications": {
       "filePath": "_authenticated/_dashboardLayout/notifications.lazy.tsx",
