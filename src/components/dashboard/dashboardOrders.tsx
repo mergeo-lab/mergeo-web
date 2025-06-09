@@ -52,7 +52,9 @@ export default function DashboardOrders({ companyId, accountType, queryKey, item
 
     return (
         <Card>
-            <CardContent className="p-0">
+            <CardContent className={cn("p-0", {
+                "h-64 overflow-y-auto": accountType === ACCOUNT.provider
+            })}>
                 <div className="divide-y">
                     {data && data.map((order) => (
                         <div key={order.id} className="p-4 flex justify-between items-center hover:bg-gray-50">

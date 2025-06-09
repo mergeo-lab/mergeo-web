@@ -179,13 +179,6 @@ axiosPrivate.interceptors.response.use(
 
       console.log('Final error message:', errorMessage);
 
-      // Show toast notification with the actual error message
-      toast({
-        variant: 'destructive',
-        title: 'Error de permisos',
-        description: errorMessage,
-      });
-
       // Create a custom error that can be caught and handled by the component
       const permissionError = new PermissionError(errorMessage);
       permissionError.response = error.response;
@@ -194,36 +187,22 @@ axiosPrivate.interceptors.response.use(
       return Promise.reject(permissionError);
     }
 
-    // Handle other errors
-    let errorMessage = 'Algo salió mal, vuelve a intentarlo';
-
-    // Check for specific error messages
-    if (error?.response?.data?.message) {
-      errorMessage = error.response.data.message;
-    } else if (error?.response?.data?.error) {
-      errorMessage = error.response.data.error;
-    }
-
-    // Don't show toast for "Invalid Token" error
-    if (errorMessage !== 'Invalid Token') {
-      console.log('Other error message:', errorMessage);
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: errorMessage,
-      });
-    }
-
     if (error?.response?.status === 401 && !prevRequest?.sent) {
+      console.log('Token expired, attempting to refresh...');
+
       if (isRefreshing) {
-        // If another request is already refreshing, add this request to queue
+        console.log(
+          'Another request is already refreshing, queueing this request'
+        );
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
           .then(() => {
+            console.log('Retrying queued request with new token');
             return axiosPrivate(prevRequest);
           })
           .catch((err) => {
+            console.log('Queued request failed:', err);
             return Promise.reject(err);
           });
       }
@@ -235,19 +214,25 @@ axiosPrivate.interceptors.response.use(
         // Get the refresh token from localStorage
         const session = localStorage.getItem('sb-auth-token');
         if (!session) {
+          console.log('No refresh token found in localStorage');
           throw new Error('No refresh token available');
         }
 
+        console.log('Attempting to refresh session with Supabase');
         // Use Supabase's refresh token functionality
         const {
           data: { session: newSession },
           error: refreshError,
         } = await supabase.auth.refreshSession();
 
-        if (refreshError) throw refreshError;
+        if (refreshError) {
+          console.log('Supabase refresh failed:', refreshError);
+          throw refreshError;
+        }
 
         // Save the new session
         if (newSession) {
+          console.log('Session refreshed successfully, updating tokens');
           localStorage.setItem(
             'sb-auth-token',
             JSON.stringify({
@@ -260,9 +245,11 @@ axiosPrivate.interceptors.response.use(
           prevRequest.headers.Authorization = `Bearer ${newSession.access_token}`;
         }
 
+        console.log('Processing queued requests and retrying original request');
         processQueue();
         return axiosPrivate(prevRequest);
       } catch (refreshError) {
+        console.log('Token refresh failed:', refreshError);
         processQueue(refreshError);
         // Clear the tokens if refresh fails
         localStorage.removeItem('sb-auth-token');
