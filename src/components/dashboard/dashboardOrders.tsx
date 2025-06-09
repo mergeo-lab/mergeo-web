@@ -9,7 +9,6 @@ import { MdPendingActions } from "react-icons/md";
 import { StatusBadge } from '@/components/statusBadge';
 import { ACCOUNT, PRE_ORDER_STATUS } from "@/lib/constants";
 import { getPendingOrders, getLatestOrders } from "@/lib/dashboard";
-import { LuAlarmClock } from "react-icons/lu";
 
 type Props = {
     companyId: string;
@@ -67,24 +66,24 @@ export default function DashboardOrders({ companyId, accountType, queryKey, item
                             </div>
                             {
                                 accountType === ACCOUNT.provider && order.dropZoneName ?
-                                    <div>
-                                        <span className="mr-1 text-gray-500 font-thin">
-                                            Zona:
-                                        </span>
-                                        {order.dropZoneName}
+                                    <div className="flex flex-col justify-center">
+                                        <div>
+                                            <span className="mr-1 text-gray-500 font-thin">
+                                                Zona:
+                                            </span>
+                                            {order.dropZoneName}
+                                        </div>
+                                        <RemainingTime time={order.responseDeadline} />
                                     </div>
                                     :
-                                    <StatusBadge className='py-1 font-black text-sm' status={order?.status || ""} />
+                                    <div className="flex flex-col justify-center">
+                                        <StatusBadge className='py-1 font-black text-sm' status={order?.status || ""} />
+                                        <RemainingTime time={order.responseDeadline} />
+                                    </div>
                             }
                             <div className="flex items-center justify-end space-x-4 w-60">
                                 <div className="flex flex-col justify-end items-end">
                                     <div className="font-medium">{formatToArgentinianPesos(order.totalPrice)}</div>
-                                    {order?.status === 'pending' &&
-                                        <div className="flex items-center text-sm text-gray-500">
-                                            <LuAlarmClock className="mr-1 h-3 w-3" />
-                                            <RemainingTime time={order.responseDeadline} />
-                                        </div>
-                                    }
                                 </div>
                                 <Button variant='outline'>
                                     <Link to={'/provider/proOrders/$preOrderId'} params={{ preOrderId: order.id || "" }}>
