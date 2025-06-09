@@ -51,7 +51,9 @@ export function CartSheet({
 
     useEffect(() => {
         if (mutation.isSuccess) {
-            router.navigate({ to: '/client/proOrders', search: { id: mutation.data.preOrderId } });
+            setTimeout(() => {
+                router.navigate({ to: '/client/proOrders', search: { id: mutation.data.preOrderId } });
+            }, 500);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mutation.isSuccess]);

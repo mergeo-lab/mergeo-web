@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const SellProductSchema = z.object({
   id: z.string(),
   quantity: z.number(),
+  price: z.string(),
   providerId: z.string(),
   dropZoneId: z.string(),
 });

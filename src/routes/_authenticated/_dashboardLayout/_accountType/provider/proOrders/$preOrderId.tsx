@@ -11,8 +11,8 @@ import { SellProductSchemaType } from '@/lib/schemas/sell.schema';
 import { PreOrderProductSchemaType } from '@/lib/schemas';
 import { PRE_ORDER_STATUS } from '@/lib/constants';
 import LoadingIndicator from '@/components/loadingIndicator';
-import UseCompanyStore from '@/store/company.store';
 import BackLink from '@/components/backLink';
+import { useAuth } from '@/context/AuthContext';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId')({
     component: () => <SellsDetail />,
@@ -29,8 +29,8 @@ export function SellsDetail() {
         toggleProductAcceptance,
     } = UseProviderSellStore();
 
-    const { company } = UseCompanyStore();
-    const companyId = company?.id;
+    const { account } = useAuth();
+    const companyId = account?.company.id;
 
     const { data: order, isLoading, refetch } = useQuery({
         queryKey: ['proOrderDetail', preOrderId],
@@ -68,6 +68,7 @@ export function SellsDetail() {
                 return {
                     id: item.id,
                     quantity: item.quantity,
+                    price: item.price,
                     providerId: companyId || '',
                     dropZoneId: order.dropZoneId || '',
                 }
@@ -83,6 +84,7 @@ export function SellsDetail() {
             return {
                 id: item.id,
                 quantity: item.quantity,
+                price: item.price,
                 providerId: companyId,
                 dropZoneId: order.dropZoneId || '',
             };

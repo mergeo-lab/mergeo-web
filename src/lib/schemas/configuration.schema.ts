@@ -67,6 +67,7 @@ const PreOrderProductSchema = z.object({
   quantity: z.number(),
   accepted: z.boolean(),
   product: ProductSchema,
+  price: z.string(),
 });
 
 // Define the Criteria schema
