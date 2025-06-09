@@ -8,7 +8,7 @@ import UseSearchStore, { CartProduct, ProductWithQuantity } from "@/store/search
 import UseSearchConfigStore from "@/store/searchConfiguration.store";
 import UseUserStore from "@/store/user.store";
 import { useMutation } from "@tanstack/react-query";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { useRouter } from '@tanstack/react-router'
 import { LuClipboardList } from "react-icons/lu";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -33,13 +33,14 @@ export function CartSheet({
     const mutation = useMutation({ mutationFn: cratePreOrder })
     const [open, setOpen] = useState(false);
     const { saveProduct, removeProduct } = UseSearchStore();
-    const products = UseSearchStore((state: { getAllSavedProducts: () => ProductWithQuantity[] }) => state.getAllSavedProducts());
+    const getAllSavedProducts = UseSearchStore((state) => state.getAllSavedProducts);
+    const products = useMemo(() => getAllSavedProducts(), [getAllSavedProducts]);
     const getAllConfig = UseSearchConfigStore((state: { getAllConfig: () => any }) => state.getAllConfig);
     const user = UseUserStore(state => state.user);
     const router = useRouter();
 
     const totalPrice = products
-        .reduce((sum, product) => {
+        .reduce((sum: number, product: ProductWithQuantity) => {
             const price = parseFloat(product.price) * (product.quantity || 0);
             return sum + (isNaN(price) ? 0 : price);
         }, 0)

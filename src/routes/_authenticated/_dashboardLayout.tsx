@@ -232,8 +232,8 @@ function DashboardLayout() {
                             console.error('ErrorBoundary caught an error:', error, info);
                         }}
                     >
-                        <Outlet />
                     </ErrorBoundary>
+                    <Outlet />
                 </div>
             </div>
         </div>

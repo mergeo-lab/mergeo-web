@@ -230,7 +230,7 @@ export default function ProductsTable({ configCanceled }: Params) {
 
     if (configCanceled) {
         return (
-            <div className="w-full h-full flex flex-col gap-10 pt-10 items-center">
+            <div className="w-full h-full flex flex-col gap-10 pt-10 items-center justify-center">
                 <h1 className="text-md font-thin text-secondary text-wrap text-center">Para poder ver productos tienes que completar la configuración inicial</h1>
                 <div className="w-fit h-[350px]">
                     <img className="h-[350px]" src={cancelConfig} alt="config incomplete" />
@@ -262,8 +262,8 @@ export default function ProductsTable({ configCanceled }: Params) {
 
     return (
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-            <div className="relative w-full p-10">
-                <div className="h-[calc(100vh-220px)] overflow-y-auto px-2" ref={tableRef}>
+            <div className="relative w-full">
+                <div className="h-[calc(100vh-220px)] overflow-y-auto" ref={tableRef}>
                     <Table>
                         <TableHeader className="sticky top-0 bg-white z-10 shadow-sm">
                             <tr className="hover:bg-white">
@@ -321,6 +321,6 @@ export default function ProductsTable({ configCanceled }: Params) {
                 }
             </div>
         </ErrorBoundary>
-    )
+    );
 }
 

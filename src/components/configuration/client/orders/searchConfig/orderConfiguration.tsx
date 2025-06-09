@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { JSX, useEffect, useState } from "react";
+import { JSX, useEffect, useState, useCallback } from "react";
 import { DeliveryTimeSelector } from "@/components/configuration/client/orders/searchConfig/deliveryTimeSelector";
 import { DateRange } from "react-day-picker";
 import { BranchSlector } from "@/components/configuration/client/orders/searchConfig/branchsSelector";
@@ -30,7 +30,6 @@ type Props = {
 }
 
 export default function OrderConfig(props: Props) {
-    console.log('Rendering OrderConfig');
     const {
         title = 'Seleccione los parametros de su busqueda!',
         subTitle = '',
@@ -42,8 +41,7 @@ export default function OrderConfig(props: Props) {
         onCancel,
     } = props;
 
-    // All hooks at the top level
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState(openDialog);
     const [isLoading, setIsLoading] = useState(false);
     const {
         deliveryTime, setDeliveryTime, setBranch, branch, setTempBranch, setPickUp, pickUp, setPickUpDialog, setPickUpLocation, pickUpLocation, selectList, listId, setReplacementCriteria, replacementCriteria, resetConfig, shouldResetConfig, setShouldResetConfig, setConfigDataSubmitted
@@ -56,13 +54,11 @@ export default function OrderConfig(props: Props) {
     const [internalRc, setInternalRc] = useState<ReplacementCriteria | null>(null);
     const [internalPickUp, setInternalPickUp] = useState(false);
 
-    // when we open we load and reset the data
-    // this is to avoid a flicker in the main screen
+    // Reset config when dialog opens and shouldResetConfig is true
     useEffect(() => {
-        setIsLoading(true);
         if (open && shouldResetConfig) {
-            // this is resetting the config when the button in the left is clicked
-            setTimeout(() => {
+            setIsLoading(true);
+            const timer = setTimeout(() => {
                 setShouldResetConfig(false);
                 resetConfig();
                 setIsLoading(false);
@@ -72,45 +68,52 @@ export default function OrderConfig(props: Props) {
                 setInternalPickUp(false);
                 setTime(null);
                 setSelectedBranch(null);
-                setDeliveryTime(undefined)
+                setDeliveryTime(undefined);
                 reset();
-            }, 300)
-        } else {
+            }, 300);
+            return () => clearTimeout(timer);
+        }
+        if (!shouldResetConfig) {
             setIsLoading(false);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [open])
+    }, [open, shouldResetConfig, resetConfig, setShouldResetConfig, setPickUp, setDeliveryTime, reset]);
 
+    // Handle dialog open state
     useEffect(() => {
-        if (openDialog) {
-            setOpen(true);
-            setConfigDataSubmitted(false);
-        } else setOpen(false);
-    }, [openDialog, onCancel, setConfigDataSubmitted]);
+        if (openDialog !== open) {
+            setOpen(openDialog);
+            if (openDialog) {
+                setConfigDataSubmitted(false);
+            }
+        }
+    }, [openDialog, open, setConfigDataSubmitted]);
 
-    function onConfigSave() {
-        time && setDeliveryTime(time);
-        selcetedBranch && setBranch(selcetedBranch);
-        internalList && selectList(internalList);
-        internalRc && setReplacementCriteria(internalRc);
+    const onConfigSave = useCallback(() => {
+        if (time) setDeliveryTime(time);
+        if (selcetedBranch) setBranch(selcetedBranch);
+        if (internalList) selectList(internalList);
+        if (internalRc) setReplacementCriteria(internalRc);
 
-        onLoading && onLoading();
+        onLoading?.();
         setConfigDataSubmitted(true);
-        callback(internalList ? internalList : "");
-        handleOpenChange(false);
-    }
-    // we prevent the dialog from closing when clicking outside
-    const handleOpenChange = (open: boolean) => {
-        // Prevent closing the dialog when clicking outside
-        if (open === false) return;
-        setOpen(open);
-    };
+        callback(internalList || "");
+        setOpen(false);
+    }, [time, selcetedBranch, internalList, internalRc, setDeliveryTime, setBranch, selectList, setReplacementCriteria, onLoading, setConfigDataSubmitted, callback]);
+
+    const handleOpenChange = useCallback((newOpen: boolean) => {
+        if (!newOpen) {
+            onCancel();
+            return;
+        }
+        setOpen(newOpen);
+    }, [onCancel]);
 
     return (
-        <Dialog open={open}
-            onOpenChange={handleOpenChange}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger className="w-full flex mt-2" asChild>
-                {triggerButton}
+                <div className="w-full">
+                    {triggerButton}
+                </div>
             </DialogTrigger>
             <DialogContent className="w-full" showClose={false}>
                 <DialogHeader className="px-6 py-3 border bottom-1">

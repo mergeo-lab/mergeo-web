@@ -14,12 +14,6 @@ export default function AnimatedRow({ product, handleRemove }: { product: Produc
     const animations = {
         layout: true,
         initial: false,
-        style: {
-            position: isPresent ? "static" : "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-        },
         animate: "in",
         exit: "out",
         whileTap: "tapped",
@@ -35,7 +29,16 @@ export default function AnimatedRow({ product, handleRemove }: { product: Produc
     };
 
     return (
-        <motion.tr {...animations} className="origin-top" style={{ position: isPresent ? "static" : "absolute", top: 0, left: 0, right: 0 } as const}>
+        <motion.tr
+            {...animations}
+            className="origin-top"
+            style={{
+                position: isPresent ? "static" : "absolute",
+                top: 0,
+                left: 0,
+                right: 0
+            }}
+        >
             <TableCell className="p-0 m-0 py-2">
                 <div className="flex justify-start items-center w-full">
                     <div className={cn("rounded w-20 h-20 flex justify-center items-center", {
