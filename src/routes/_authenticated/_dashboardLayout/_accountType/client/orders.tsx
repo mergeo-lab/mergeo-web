@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import UseSearchConfigStore from '@/store/searchConfiguration.store';
@@ -12,9 +12,10 @@ import ProductsTable from '@/components/configuration/client/orders/productsTabl
 import ProductsList from '@/components/configuration/client/orders/tabs/productsList';
 import ProductsSearch from '@/components/configuration/client/orders/tabs/productsSearch';
 import PickUpSelectMap from '@/components/configuration/client/orders/searchConfig/pickUpSelectMap';
-import { LuClipboardList, LuFileCog, LuList, LuPackageSearch, LuShoppingBag } from 'react-icons/lu';
+import { LuClipboardList, LuFileCog, LuList, LuPackageSearch } from 'react-icons/lu';
 import { RxCross2 } from 'react-icons/rx';
 import { useAuth } from '@/context/AuthContext';
+import CartButton from '@/components/configuration/client/orders/cartButton';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/orders')({
     component: OrdersPage,
@@ -47,8 +48,9 @@ function OrdersPage() {
         deliveryTime,
         branch,
     } = UseSearchConfigStore();
-    const { getAllSavedProducts, reset } = UseSearchStore();
-    const savedProducts = getAllSavedProducts();
+    const savedProductsObj = UseSearchStore(state => state.savedProducts);
+    const reset = UseSearchStore(state => state.reset);
+    const savedProducts = useMemo(() => Object.values(savedProductsObj).flat(), [savedProductsObj]);
 
     // Initialize pickUpDialog as false when component mounts
     useEffect(() => {
@@ -98,17 +100,20 @@ function OrdersPage() {
 
     const handleCartClick = () => setOpenCart(true);
 
+    // Debug: log savedProducts before rendering
+    console.log('Sidebar savedProducts:', savedProducts);
+
     return (
-        <>
-            <div className="h-full flex">
-                <div className={cn('w-[22rem] border-2 border-r-border transition-all ease-out', {
+        <div className='h-full w-full'>
+            <div className="h-full flex z-0 w-full">
+                <div className={cn('w-[22rem] h-full border-2 border-r-border transition-all ease-out relative z-10 ', {
                     'w-16': !menuOpen
                 })}>
                     <Tabs value={tab} className="w-full h-full rounded relative" onValueChange={onTabChange}>
                         <div className='w-full h-full flex flex-col'>
                             {menuOpen ? (
                                 <>
-                                    <TabsList className='rounded-t rounded-b-none w-full h-fit bg-accent px-4 gap-2'>
+                                    <TabsList className='rounded-t rounded-b-none w-full h-16 bg-accent px-4 gap-2'>
                                         <TabsTrigger className={tabsTriggerClassName} value={TabsEnum.LISTA_DE_PRODUCTOS}>Lista</TabsTrigger>
                                         <TabsTrigger className={tabsTriggerClassName} value={TabsEnum.BUSCAR_PRODUCTOS}>Buscar</TabsTrigger>
                                         <Button variant="ghost" size="sm" onClick={() => toggleMenu()}>
@@ -136,19 +141,7 @@ function OrdersPage() {
                                             </motion.div>
                                             <LuFileCog size={20} />
                                         </Button>
-                                        <Button
-                                            className='w-full flex gap-4 disabled:bg-muted/80'
-                                            disabled={!savedProducts.length}
-                                            onClick={handleCartClick}>
-                                            <motion.div
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: menuOpen ? 1 : 0 }}
-                                                transition={{ duration: 1 }}
-                                            >
-                                                Ver Pedido
-                                            </motion.div>
-                                            <LuShoppingBag size={20} />
-                                        </Button>
+                                        <CartButton onClick={handleCartClick} menuOpen={menuOpen} />
                                     </div>
                                 </>
                             ) : (
@@ -170,9 +163,7 @@ function OrdersPage() {
                                         <Button onClick={handleConfigClick} variant='outline' className="p-0 px-3 overflow-hidden">
                                             <LuFileCog size={20} />
                                         </Button>
-                                        <Button disabled={!savedProducts.length} className='p-0 px-3 disabled:bg-muted/80 overflow-hidden' onClick={handleCartClick}>
-                                            <LuShoppingBag size={20} />
-                                        </Button>
+                                        <CartButton onClick={handleCartClick} menuOpen={menuOpen} />
                                     </div>
                                 </>
                             )}
@@ -196,6 +187,6 @@ function OrdersPage() {
                 title="Resumen de su pedido"
                 isOpen={cartOpen}
             />
-        </>
+        </div>
     );
 }

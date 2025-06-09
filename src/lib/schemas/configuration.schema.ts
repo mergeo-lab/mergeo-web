@@ -47,6 +47,7 @@ const ProductSchema = z.object({
   image: z.string().optional(),
   units: z.number(),
   providerId: z.string().optional(),
+  company: CompanySchema.optional(),
   manufacturer_name: z.string().optional(),
   manufacturer_id: z.string().optional(),
   manufacturer_country: z.string().optional(),

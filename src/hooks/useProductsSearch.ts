@@ -97,7 +97,10 @@ export function useProductSearch(searchParams: Partial<SearchParams>) {
             );
 
       return {
-        products: result.products,
+        products: result.products.map((product) => ({
+          ...product,
+          providerId: product.company?.id,
+        })),
         currentPage: result.currentPage || 1,
         total: result.total || 0,
         totalPages: result.totalPages,

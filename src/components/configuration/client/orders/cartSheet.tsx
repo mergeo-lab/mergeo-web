@@ -1,17 +1,18 @@
 import QuantitySelector from "@/components/configuration/client/orders/quantitySelector";
 import { Button } from "@/components/ui/button";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
-import { SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger, SheetWithConfirm } from "@/components/ui/sheet";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { cratePreOrder } from "@/lib/orders";
 import UseSearchStore, { CartProduct, ProductWithQuantity } from "@/store/search.store";
 import UseSearchConfigStore from "@/store/searchConfiguration.store";
 import UseUserStore from "@/store/user.store";
 import { useMutation } from "@tanstack/react-query";
-import { useCallback, useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useRouter } from '@tanstack/react-router'
 import { LuClipboardList } from "react-icons/lu";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { SheetWithConfirm } from "@/components/SheetWithConfirm";
+import { SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 type Props = {
     title?: string,
@@ -20,6 +21,7 @@ type Props = {
     callback: () => void
     triggerButton?: React.ReactNode
     isOpen?: boolean
+    onInteractOutside?: () => void
 }
 
 export function CartSheet({
@@ -28,13 +30,13 @@ export function CartSheet({
     icon = <LuClipboardList size={25} />,
     callback,
     isOpen,
-    triggerButton }: Props) {
+    triggerButton,
+    onInteractOutside }: Props) {
     console.log('Rendering CartSheet');
     const mutation = useMutation({ mutationFn: cratePreOrder })
-    const [open, setOpen] = useState(false);
     const { saveProduct, removeProduct } = UseSearchStore();
-    const getAllSavedProducts = UseSearchStore((state) => state.getAllSavedProducts);
-    const products = useMemo(() => getAllSavedProducts(), [getAllSavedProducts]);
+    const savedProductsObj = UseSearchStore(state => state.savedProducts);
+    const products = useMemo(() => Object.values(savedProductsObj).flat(), [savedProductsObj]);
     const getAllConfig = UseSearchConfigStore((state: { getAllConfig: () => any }) => state.getAllConfig);
     const user = UseUserStore(state => state.user);
     const router = useRouter();
@@ -47,21 +49,19 @@ export function CartSheet({
         .toFixed(2);
 
     useEffect(() => {
-        if (isOpen) {
-            setOpen(isOpen);
-        }
-    }, [isOpen]);
-
-    useEffect(() => {
         if (mutation.isSuccess) {
             router.navigate({ to: '/client/proOrders', search: { id: mutation.data.preOrderId } });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mutation.isSuccess]);
 
+    useEffect(() => {
+        if (products.length === 0 && isOpen) {
+            callback();
+        }
+    }, [products.length, isOpen, callback]);
+
     const closeModal = useCallback(() => {
-        // Close the modal
-        setOpen(false);
         callback();
     }, [callback]);
 
@@ -111,19 +111,16 @@ export function CartSheet({
         }
         checkProductsAmount();
     }
-
     return (
-        <SheetWithConfirm open={open} onOpenChange={(isOpen) => {
-            if (!isOpen) {
+        <SheetWithConfirm open={isOpen || false} onOpenChange={(open) => {
+            if (!open) {
                 closeModal();
-            } else {
-                setOpen(isOpen);
             }
         }}>
             <SheetTrigger>
                 {triggerButton}
             </SheetTrigger>
-            <SheetContent className="w-1/3 mx-w-1/3 sm:max-w-1/3">
+            <SheetContent className="w-1/3 mx-w-1/3 sm:max-w-1/3" {...(onInteractOutside && { onInteractOutside: onInteractOutside })}>
                 <SheetHeader>
                     <SheetTitle className="flex gap-2 items-center">
                         {icon}

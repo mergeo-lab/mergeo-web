@@ -1,4 +1,4 @@
-import { SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger, SheetWithConfirm } from "@/components/ui/sheet";
+import { SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
@@ -10,6 +10,7 @@ import sinSeleccion from '@/assets/empty-shelvs.png';
 import { saveMultipleProducts } from "@/lib/products";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { LuCloudUpload } from "react-icons/lu";
+import { SheetWithConfirm } from "@/components/SheetWithConfirm";
 
 type Props = {
     title?: string,

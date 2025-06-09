@@ -78,6 +78,7 @@ export default function ProductsTable({ configCanceled }: Params) {
                 )
             );
         } else {
+            console.log("SAVING PRODUCT before providerId", product, quantity);
             if (!product.providerId) return;
 
             // Create a basic search item if none exists
@@ -92,7 +93,7 @@ export default function ProductsTable({ configCanceled }: Params) {
             if (!activeSearchItem) {
                 setActiveSearchItem(searchItem);
             }
-
+            console.log("SAVING PRODUCT", product, quantity);
             saveProduct({ ...product, providerId: product.providerId, dropZoneId: product.dropZoneId || '' }, quantity);
 
             // Update filtered products without causing a full re-render

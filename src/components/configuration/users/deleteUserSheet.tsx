@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger, SheetWithConfirm } from "@/components/ui/sheet"
+import { SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { toast } from "@/components/ui/use-toast"
 import { DeleteUserSchemaType, DeleteUserSchema, NewUserSchema, NewUserSchemaType, UserSchemaType } from "@/lib/schemas"
 import { deleteUser } from "@/lib/configuration/users"
@@ -12,6 +12,7 @@ import { JSX, useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { LuTriangleAlert } from "react-icons/lu";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { SheetWithConfirm } from "@/components/SheetWithConfirm"
 
 type Props = {
     userId: string

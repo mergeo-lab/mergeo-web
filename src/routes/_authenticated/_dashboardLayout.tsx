@@ -213,7 +213,7 @@ function DashboardLayout() {
     }, [matchRoute, router]);
 
     return (
-        <div className='w-full h-full flex overflow-hidden'>
+        <div className='w-full h-full flex'>
             <ErrorBoundary fallback={<div className="p-4">Error loading sidebar</div>}>
                 <Suspense fallback={<div className="w-64 bg-secondary h-screen"></div>}>
                     <MemoizedSideBarMenu companyName={account?.company.name || ''} />
@@ -225,7 +225,7 @@ function DashboardLayout() {
                         <DashboardHeader title={currentTitle} />
                     </Suspense>
                 </ErrorBoundary>
-                <div className='w-[calc(100vw-300px)] h-screen mt-0 my-10 border rounded shadow overflow-hidden lg:max-h-[calc(100vh-110px)] bg-white'>
+                <div className='w-[calc(100vw-300px)] h-screen mt-0 my-10 border rounded shadow lg:max-h-[calc(100vh-110px)] bg-white'>
                     <ErrorBoundary
                         FallbackComponent={ErrorFallback}
                         onError={(error, info) => {

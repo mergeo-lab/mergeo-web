@@ -2,7 +2,7 @@ import { ManageRoles } from "@/components/configuration/users/roles/manageRoles"
 import { Button } from "@/components/ui/button";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger, SheetWithConfirm } from "@/components/ui/sheet";
+import { SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "@/components/ui/use-toast";
 import { NewUserSchemaType, NewUserSchema, UserSchemaType, RoleSchemaType } from "@/lib/schemas";
 import { editUser } from "@/lib/configuration/users";
@@ -14,6 +14,7 @@ import { LuUserRoundPlus } from "react-icons/lu";
 import { JSX, useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import React from "react"; // Import React to use React.memo
+import { SheetWithConfirm } from "@/components/SheetWithConfirm";
 
 type FormSchemaType = Omit<NewUserSchemaType, 'id' | 'companyId'>
 

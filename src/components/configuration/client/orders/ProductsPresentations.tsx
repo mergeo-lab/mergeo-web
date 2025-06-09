@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger, SheetWithConfirm } from "@/components/ui/sheet";
+import { SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { getMorePresentations } from "@/lib/products";
 import { ProductSchemaType } from '../../../../lib/schemas/configuration.schema';
 import { useQuery } from "@tanstack/react-query";
@@ -11,6 +11,7 @@ import QuantitySelector from "@/components/configuration/client/orders/quantityS
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import UseSearchStore from "@/store/search.store";
 import { LuClipboardList, LuImage } from "react-icons/lu";
+import { SheetWithConfirm } from "@/components/SheetWithConfirm";
 
 type Props = {
     title?: string,
@@ -29,28 +30,23 @@ export function ProductsPresentations({
     icon = <LuClipboardList size={25} />,
     callback,
 }: Props) {
-    const [open, setOpen] = useState(false);
     const { openProductId, toggleSheetOpen } = UseMorePresentations();
     const isOpen = openProductId === productId;
     const { saveProduct, removeProduct, saveMorePresentations, morePresentations: hasMore } = UseSearchStore();
-    const allSavedProducts = UseSearchStore(state => state.getAllSavedProducts());
+    const savedProducts = UseSearchStore(state => state.savedProducts);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const allSavedProducts = useMemo(() => UseSearchStore.getState().getAllSavedProducts(), [savedProducts]);
     const { data, isLoading } = useQuery({
         queryKey: ['more-presentations', productId],
         queryFn: () => productId ? getMorePresentations(productId) : Promise.reject(new Error('Product ID is undefined')),
         enabled: !!productId && isOpen,
     });
 
-    useEffect(() => {
-        if (isOpen) {
-            setOpen(isOpen);
-        }
-    }, [data, isOpen]);
-
     const closeModal = useCallback(() => {
-        // Close the modal
-        setOpen(false);
+        // Close the modal by toggling the global state
+        toggleSheetOpen(null);
         callback();
-    }, [callback]);
+    }, [callback, toggleSheetOpen]);
 
     function handleProductChange(product: ProductSchemaType, quantity: number) {
         if (quantity === 0) {
@@ -64,11 +60,11 @@ export function ProductsPresentations({
     }
 
     return (
-        <SheetWithConfirm open={open} onOpenChange={(isOpen) => {
-            if (!isOpen) {
+        <SheetWithConfirm open={isOpen} onOpenChange={(open) => {
+            if (!open) {
                 closeModal();
             } else {
-                setOpen(isOpen);
+                toggleSheetOpen(productId);
             }
         }}>
             <SheetTrigger>
