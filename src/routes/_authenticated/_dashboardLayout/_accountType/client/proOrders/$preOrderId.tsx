@@ -50,6 +50,7 @@ export function SellsDetail() {
             return {
                 id: item.id,
                 quantity: item.quantity,
+                price: item.price,
                 providerId: companyId,
                 dropZoneId: order.dropZoneId || '',
             };

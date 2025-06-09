@@ -122,6 +122,7 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                                                                     onSelect({
                                                                         id: item.id,
                                                                         quantity: item.quantity,
+                                                                        price: item.price,
                                                                         providerId: providerId || '',
                                                                         dropZoneId: dropZoneId || '',
                                                                     })
