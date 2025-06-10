@@ -107,7 +107,12 @@ export default function OrdenesDeCompra() {
                                     data.map((order: BuyOrderSchemaType) => (
                                         <TableRow className='hover:bg-white first:border-t-none' key={order.id}>
                                             <TableCell>{order.orderNumber}</TableCell>
-                                            <TableCell>{order.client.razonSocial}</TableCell>
+                                            <TableCell>
+                                                <div className="flex flex-col">
+                                                    <p>{order.client.name}</p>
+                                                    <p className='text-xs'>{order.client.razonSocial.toLocaleUpperCase()}</p>
+                                                </div>
+                                            </TableCell>
                                             <TableCell>
                                                 {order.branch?.address?.name || (
                                                     <span className='text-destructive/60'>La sucursal fue eliminada</span>

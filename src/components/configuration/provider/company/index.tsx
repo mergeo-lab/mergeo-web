@@ -25,6 +25,7 @@ export function Company() {
     const { company, saveCompany } = UseCompanyStore();
     const [isLoading, setIsLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [hasAddressChanged, setHasAddressChanged] = useState(false);
     const mutation = useMutation({ mutationFn: updateCompany })
     const [markerPosition, setMarkerPosition] = useState<LatLngLiteralType>({ latitude: 0, longitude: 0 });
 
@@ -47,6 +48,7 @@ export function Company() {
         defaultValues: defaultCompnay
     })
 
+    const isFormDirty = form.formState.isDirty;
 
     useEffect(() => {
         handleCancelEdit();
@@ -94,15 +96,17 @@ export function Company() {
                 },
                 name: address.displayName.text
             }
-        });
+        }, { shouldDirty: true });
 
         setMarkerPosition({ latitude: address.location.latitude, longitude: address.location.longitude });
+        setHasAddressChanged(true);
         form.trigger('branch');
     }
 
     function handleCancelEdit() {
         if (!companyMainBranch) return;
         form.reset(defaultCompnay);
+        setHasAddressChanged(false);
         addAddress({
             displayName: { text: companyMainBranch.address.name },
             location: {
@@ -305,7 +309,7 @@ export function Company() {
                                     </span>
                                 </Button>
                                 <Button onClick={form.handleSubmit(onSubmit)}
-                                    disabled={mutation.isPending || !form.getFieldState("branch.address.name").isDirty}
+                                    disabled={mutation.isPending || (!isFormDirty && !hasAddressChanged)}
                                     className='min-w-[200px] flex gap-2' type="submit">
                                     <span>
                                         Guardar
