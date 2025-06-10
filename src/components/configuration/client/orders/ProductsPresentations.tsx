@@ -67,7 +67,7 @@ export function ProductsPresentations({
                 toggleSheetOpen(productId);
             }
         }}>
-            <SheetTrigger>
+            <SheetTrigger asChild>
                 {
                     morePresentations && (
                         allSavedProducts && allSavedProducts.length > 0 && hasMore.includes(productId ?? '')
@@ -77,7 +77,7 @@ export function ProductsPresentations({
                                     <TooltipTrigger asChild>
                                         <Button size='xs' variant="outlineSecondary" className={cn("w-[6.8rem]", {
                                             "border-highlight text-highlight hover:bg-highlight/20": allSavedProducts.length > 0,
-                                        })} onClick={() => { toggleSheetOpen(productId) }}>
+                                        })}>
                                             + presentaciones
                                         </Button>
                                     </TooltipTrigger>
@@ -87,7 +87,7 @@ export function ProductsPresentations({
                                 </Tooltip>
                             </TooltipProvider>
                             :
-                            <Button size='xs' variant="outlineSecondary" className={cn("w-[6.8rem]")} onClick={() => { toggleSheetOpen(productId) }}>
+                            <Button size='xs' variant="outlineSecondary" className={cn("w-[6.8rem]")}>
                                 + presentaciones
                             </Button>
                     )

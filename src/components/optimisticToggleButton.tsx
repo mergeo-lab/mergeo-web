@@ -46,12 +46,7 @@ export function OptimisticToggleButton<T>({
                 queryClient.setQueryData(queryKey, context.previousState);
             }
         },
-        onSettled: () => {
-            queryClient.invalidateQueries({ queryKey });
-        },
     });
-
-
 
     // Get current state from cache or fallback to defaultState
     const optimisticState = queryClient.getQueryData<boolean>(['toggleState', itemId]) ?? defaultState;

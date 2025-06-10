@@ -30,7 +30,7 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
 
     return (
         <TableRow>
-            <TableCell className="p-0 m-0 ">
+            <TableCell className="p-0 m-0">
                 <div className="flex justify-center flex-col gap-1">
                     <OptimisticToggleButton
                         itemId={product.id}
@@ -49,7 +49,7 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
                                 console.error("Error adding to blacklist", error);
                             }
                         }}
-                        activeIcon={<TiThumbsDown strokeWidth={3} size={20} />}
+                        activeIcon={<TiThumbsDown size={20} />}
                         inactiveIcon={<TiThumbsDown size={20} />}
                         tooltip="Agregar a Lista Negra"
                         disabled={product.isFavorite}
@@ -76,14 +76,14 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
             </TableCell>
 
             <TableCell className={`text-center`}>{product.netContent}{" "}{product.measurementUnit}</TableCell>
-            <TableCell className={`text-center`}>{formatToArgentinianPesos(+product.pricePerBaseUnit)}</TableCell>
             <TableCell className={`text-center`}>{
                 product.netContent ? formatToArgentinianPesos(+product.price) : 1}
             </TableCell>
+            <TableCell className={`text-center`}>{formatToArgentinianPesos(+product.pricePerBaseUnit)}</TableCell>
             <TableCell className={`text-right`}>{
                 product.isPickUp && <PickUpIndicator />
             }</TableCell>
-            <TableCell className={`text-right`}>
+            <TableCell className='text-right pr-10'>
                 <div className="flex justify-end items-center gap-2 w-full">
                     <ProductsPresentations
                         callback={() => toggleSheetOpen(null)}

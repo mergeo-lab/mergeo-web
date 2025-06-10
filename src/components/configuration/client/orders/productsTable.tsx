@@ -182,11 +182,6 @@ export default function ProductsTable({ configCanceled }: Params) {
                 setFilteredProducts(context.previousProducts);
             }
         },
-        onSettled: () => {
-            queryClient.invalidateQueries({
-                queryKey: ['client-products'],
-            });
-        },
     });
 
     const handleToggleFavorite = async (productId: string, newState: boolean): Promise<void> => {
@@ -264,20 +259,20 @@ export default function ProductsTable({ configCanceled }: Params) {
     return (
         <ErrorBoundary FallbackComponent={ErrorFallback}>
             <div className="relative w-full">
-                <div className="h-[calc(100vh-220px)] overflow-y-auto" ref={tableRef}>
+                <div className="h-[calc(100vh-220px)] w-full overflow-y-auto" ref={tableRef}>
+                    <div className="w-full h-12 bg-white absolute top-0 left-0"></div>
                     <Table>
-                        <TableHeader className="sticky top-0 bg-white z-10 shadow-sm">
-                            <tr className="hover:bg-white">
+                        <TableHeader className="sticky right-0 left-0 top-0 w-full bg-white z-40 shadow-sm">
+                            <tr className="hover:bg-white w-full">
                                 <TableHead className="w-20"></TableHead>
-                                <TableHead className="w-96">Producto</TableHead>
-                                <TableHead className="text-center">Unidad</TableHead>
-                                <TableHead className="text-center">Unidad de Medida</TableHead>
-                                <TableHead className="text-center">Precio</TableHead>
-                                <TableHead className="text-center">Precio por Unidad de Medida</TableHead>
+                                <TableHead className="w-96">PRODUCTO</TableHead>
+                                <TableHead className="text-center">UNIDAD</TableHead>
+                                <TableHead className="text-center">PRECIO</TableHead>
+                                <TableHead className="text-center">PUM</TableHead>
                                 <TableHead className="text-right"></TableHead>
                             </tr>
                         </TableHeader>
-                        <TableBody className="[&>*]:hover:bg-white">
+                        <TableBody className="[&>*]:hover:bg-white z-10">
                             {isLoading || isFetching
                                 ? loadingIndicator()
                                 : (
