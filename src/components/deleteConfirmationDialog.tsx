@@ -56,7 +56,7 @@ function DeleteConfirmationDialogComponent<T extends object>({ id, title, questi
 
         } else {
             setOpen(false);
-            callback();
+            callback && callback();
         }
     }, [onLoading, mutation, id, otherMutationProp, callback]);
 
