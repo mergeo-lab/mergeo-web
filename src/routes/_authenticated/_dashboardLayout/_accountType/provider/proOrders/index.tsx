@@ -95,26 +95,26 @@ export default function Sells() {
                                     <Table className='hover:bg-white w-full'>
                                         <TableHeader className='bg-white sticky top-0 z-10 shadow-sm'>
                                             <TableRow className="hover:bg-white">
-                                                <TableHead>Número de Pedido</TableHead>
-                                                <TableHead>Fecha</TableHead>
-                                                <TableHead>Instancia</TableHead>
-                                                <TableHead>Estado</TableHead>
-                                                <TableHead>Acciones</TableHead>
-                                                <TableHead>Orden de Compra</TableHead>
+                                                <TableHead className="w-[150px]">Número de Pedido</TableHead>
+                                                <TableHead className="w-[150px]">Fecha</TableHead>
+                                                <TableHead className="w-[150px] text-center">Instancia</TableHead>
+                                                <TableHead className="w-[150px] text-center">Estado</TableHead>
+                                                <TableHead className="w-[150px] text-center">Acciones</TableHead>
+                                                <TableHead className="w-[200px] text-right pr-14">Orden de Compra</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             {data.map((order: PreOrderSchemaType) => (
                                                 <TableRow className="hover:bg-white first:border-t-none" key={order.id}>
-                                                    <TableCell>{order.preOrderNumber}</TableCell>
-                                                    <TableCell>{formatDate(order.created)}</TableCell>
-                                                    <TableCell>{order.instance}</TableCell>
-                                                    <TableCell className={`bg-border/20 w-fit`}>
-                                                        <div className='w-full flex justify-center'>
-                                                            <StatusBadge className='py-2 px-6 text-sm w-fit text-nowrap flex justify-center' status={order.status} />
+                                                    <TableCell className="w-[150px]">{order.preOrderNumber}</TableCell>
+                                                    <TableCell className="w-[150px]">{formatDate(order.created)}</TableCell>
+                                                    <TableCell className="w-[150px] text-center">{order.instance}</TableCell>
+                                                    <TableCell className="w-[150px] text-center">
+                                                        <div className="flex justify-center">
+                                                            <StatusBadge className='py-2 px-6 text-sm' status={order.status} />
                                                         </div>
                                                     </TableCell>
-                                                    <TableCell className='text-center'>
+                                                    <TableCell className="w-[150px] text-center">
                                                         <Link to={`/provider/proOrders/$preOrderId`} params={{ preOrderId: order.id }}>
                                                             <Button variant='ghost' className='space-x-2'>
                                                                 <LuEye className='cursor-pointer' size={20} />
@@ -122,7 +122,7 @@ export default function Sells() {
                                                             </Button>
                                                         </Link>
                                                     </TableCell>
-                                                    <TableCell className='text-right'>
+                                                    <TableCell className="w-[200px] text-right">
                                                         {order.buyOrder
                                                             ? (
                                                                 <Link to={`/buyOrder/$orderId`} params={{ orderId: order.buyOrder.id }} key={order.buyOrder.id}>

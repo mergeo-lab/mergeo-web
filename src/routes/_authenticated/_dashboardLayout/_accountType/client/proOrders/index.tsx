@@ -76,10 +76,10 @@ export default function PreOrders() {
     return (
         <div className='w-full flex flex-col gap-2 relative'>
             <>
-                <div className='w-full p-10 h-full flex flex-col -mt-5'>
+                <div className='w-full p-10 h-full flex flex-col items-center -mt-5'>
                     {
                         data?.preOrders && data?.preOrders.length === 0 ? (
-                            <div className='w-full h-full flex justify-center items-center absolute top-0 left-0 right-0 bottom-0'>
+                            <div className='w-full h-[calc(100vh-10rem)] flex justify-center items-center absolute top-0 left-0 right-0 bottom-0 '>
                                 <div className='py-10 px-20 flex flex-col justify-center items-center gap-4'>
                                     <img src={sinPedidos} alt="no tienes pedidos" />
                                     <div className='flex flex-col justify-center items-center mb-5'>
@@ -93,17 +93,17 @@ export default function PreOrders() {
                             </div>
                         )
                             :
-                            <div className='w-full'>
+                            <div className='w-full max-w-[1200px]'>
                                 <div className="relative max-h-[750px] w-full overflow-y-auto">
                                     <Table>
                                         <TableHeader className='bg-white sticky top-0 z-10 shadow-sm'>
                                             <TableRow className="hover:bg-transparent">
-                                                <TableHead>Número</TableHead>
-                                                <TableHead>Fecha</TableHead>
-                                                <TableHead>Instancia</TableHead>
-                                                <TableHead>Estado</TableHead>
-                                                <TableHead>Ver Pedido</TableHead>
-                                                <TableHead>Ver Orden de Compra</TableHead>
+                                                <TableHead className="w-[150px]">Número</TableHead>
+                                                <TableHead className="w-[150px]">Fecha</TableHead>
+                                                <TableHead className="w-[150px] text-center">Instancia</TableHead>
+                                                <TableHead className="w-[150px] text-center">Estado</TableHead>
+                                                <TableHead className="w-[150px] text-center">Ver Pedido</TableHead>
+                                                <TableHead className="w-[200px] text-right pr-14">Ver Orden de Compra</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody className="bg-white">
@@ -120,15 +120,15 @@ export default function PreOrders() {
                                                 :
                                                 data?.preOrders && data.preOrders.map((order: PreOrderSchemaType) => (
                                                     <TableRow className="hover:bg-white first:border-t-none" key={order.id}>
-                                                        <TableCell>{order.preOrderNumber}</TableCell>
-                                                        <TableCell >{formatDate(order.created)}</TableCell>
-                                                        <TableCell >{order.instance}</TableCell>
-                                                        <TableCell className={`bg-border/20`}>
-                                                            <div className='w-full flex justify-center'>
-                                                                <StatusBadge className='py-2 px-6 text-sm w-2/3 flex justify-center' status={order.status} />
+                                                        <TableCell className="w-[150px]">{order.preOrderNumber}</TableCell>
+                                                        <TableCell className="w-[150px]">{formatDate(order.created)}</TableCell>
+                                                        <TableCell className="w-[150px] text-center">{order.instance}</TableCell>
+                                                        <TableCell className="w-[150px] text-center">
+                                                            <div className="flex justify-center">
+                                                                <StatusBadge className='py-2 px-6 text-sm' status={order.status} />
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell className='text-center'>
+                                                        <TableCell className="w-[150px] text-center">
                                                             <Link to={`/provider/proOrders/$preOrderId`} params={{ preOrderId: order.id }}>
                                                                 <Button variant='ghost' className='space-x-2'>
                                                                     <LuEye className='cursor-pointer' size={20} />
@@ -136,7 +136,7 @@ export default function PreOrders() {
                                                                 </Button>
                                                             </Link>
                                                         </TableCell>
-                                                        <TableCell className='text-right'>
+                                                        <TableCell className="w-[200px] text-right">
                                                             {order.buyOrder
                                                                 ? (
                                                                     <Link to={`/buyOrder/$orderId`} params={{ orderId: order.buyOrder.id }} key={order.buyOrder.id}>

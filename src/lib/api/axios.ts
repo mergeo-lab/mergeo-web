@@ -251,15 +251,18 @@ axiosPrivate.interceptors.response.use(
       } catch (refreshError) {
         console.log('Token refresh failed:', refreshError);
         processQueue(refreshError);
-        // Clear the tokens if refresh fails
+        // Clear all user data
         localStorage.removeItem('sb-auth-token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('userData');
+        // Redirect to login
+        window.location.href = '/login';
         toast({
           variant: 'destructive',
           title: 'Sesión expirada',
           description:
             'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
         });
-        window.location.href = '/login?expired=1';
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
