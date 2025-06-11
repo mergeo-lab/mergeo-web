@@ -17,7 +17,7 @@ type Props<T> = {
     disabled?: boolean,
     onLoading?: () => void
     mutationFn: MutationFn<T>,
-    callback: () => void,
+    callback?: () => void,
     onClose?: () => void,
     otherMutationProp?: unknown,
 }

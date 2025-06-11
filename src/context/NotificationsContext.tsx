@@ -1,11 +1,14 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
+import { supabase } from './supabaseClient';
 
 interface Notification {
     id: string;
     message: string;
     read: boolean;
     createdAt: string;
+    type: string;
+    metadata: any;
 }
 
 interface NotificationsContextType {
@@ -13,6 +16,8 @@ interface NotificationsContextType {
     unreadCount: number;
     markAsRead: (id: string) => void;
     markAllAsRead: () => void;
+    removeNotification: (id: string) => void;
+    removeAllNotifications: () => void;
 }
 
 const NotificationsContext = createContext<NotificationsContextType | undefined>(undefined);
@@ -27,38 +32,73 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
         // Initial fetch of notifications
         fetchNotifications();
 
-        // Set up SSE connection
-        const eventSource = new EventSource('/api/notifications/stream');
+        // Set up Supabase real-time subscription
+        const channel = supabase
+            .channel('notifications-changes')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'notifications',
+                    filter: `user_id=eq.${account.user.id}`,
+                },
+                (payload) => {
+                    console.log('Received real-time notification:', payload);
 
-        eventSource.onmessage = (event) => {
-            const newNotification = JSON.parse(event.data);
-            setNotifications(prev => [newNotification, ...prev]);
-        };
-
-        eventSource.onerror = () => {
-            eventSource.close();
-            // Attempt to reconnect after 5 seconds
-            setTimeout(() => {
-                if (account?.user) {
-                    new EventSource('/api/notifications/stream');
-                    eventSource.onmessage = (event) => {
-                        const newNotification = JSON.parse(event.data);
-                        setNotifications(prev => [newNotification, ...prev]);
-                    };
+                    if (payload.eventType === 'INSERT') {
+                        const notification = payload.new as any;
+                        const formattedNotification = {
+                            ...notification,
+                            createdAt: new Date(notification.created_at).toISOString()
+                        };
+                        setNotifications(prev => [formattedNotification, ...prev]);
+                    } else if (payload.eventType === 'UPDATE') {
+                        const notification = payload.new as any;
+                        const formattedNotification = {
+                            ...notification,
+                            createdAt: new Date(notification.created_at).toISOString()
+                        };
+                        setNotifications(prev =>
+                            prev.map(n =>
+                                n.id === formattedNotification.id
+                                    ? formattedNotification
+                                    : n
+                            )
+                        );
+                    } else if (payload.eventType === 'DELETE') {
+                        setNotifications(prev =>
+                            prev.filter(n => n.id !== payload.old.id)
+                        );
+                    }
                 }
-            }, 5000);
-        };
+            )
+            .subscribe((status) => {
+                console.log('Subscription status:', status);
+            });
 
         return () => {
-            eventSource.close();
+            channel.unsubscribe();
         };
     }, [account?.user]);
 
     const fetchNotifications = async () => {
         try {
-            const response = await fetch('/api/notifications');
-            const data = await response.json();
-            setNotifications(data);
+            const { data, error } = await supabase
+                .from('notifications')
+                .select('*')
+                .eq('user_id', account?.user?.id)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            // Ensure all dates are properly formatted
+            const formattedNotifications = (data || []).map(notification => ({
+                ...notification,
+                createdAt: new Date(notification.created_at).toISOString()
+            }));
+
+            setNotifications(formattedNotifications);
         } catch (error) {
             console.error('Error fetching notifications:', error);
         }
@@ -66,7 +106,14 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
 
     const markAsRead = async (id: string) => {
         try {
-            await fetch(`/api/notifications/${id}/read`, { method: 'POST' });
+            const { error } = await supabase
+                .from('notifications')
+                .update({ read: true })
+                .eq('id', id)
+                .eq('user_id', account?.user?.id);
+
+            if (error) throw error;
+
             setNotifications(prev =>
                 prev.map(notification =>
                     notification.id === id
@@ -81,12 +128,52 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
 
     const markAllAsRead = async () => {
         try {
-            await fetch('/api/notifications/read-all', { method: 'POST' });
+            const { error } = await supabase
+                .from('notifications')
+                .update({ read: true })
+                .eq('user_id', account?.user?.id)
+                .eq('read', false);
+
+            if (error) throw error;
+
             setNotifications(prev =>
                 prev.map(notification => ({ ...notification, read: true }))
             );
         } catch (error) {
             console.error('Error marking all notifications as read:', error);
+        }
+    };
+
+    const removeNotification = async (id: string) => {
+        try {
+            const { error } = await supabase
+                .from('notifications')
+                .delete()
+                .eq('id', id)
+                .eq('user_id', account?.user?.id);
+
+            if (error) throw error;
+
+            setNotifications(prev =>
+                prev.filter(notification => notification.id !== id)
+            );
+        } catch (error) {
+            console.error('Error removing notification:', error);
+        }
+    };
+
+    const removeAllNotifications = async () => {
+        try {
+            const { error } = await supabase
+                .from('notifications')
+                .delete()
+                .eq('user_id', account?.user?.id);
+
+            if (error) throw error;
+
+            setNotifications([]);
+        } catch (error) {
+            console.error('Error removing all notifications:', error);
         }
     };
 
@@ -99,6 +186,8 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
                 unreadCount,
                 markAsRead,
                 markAllAsRead,
+                removeNotification,
+                removeAllNotifications,
             }}
         >
             {children}

@@ -1,18 +1,17 @@
-import QuantitySelector from "@/components/configuration/client/orders/quantitySelector";
 import { Button } from "@/components/ui/button";
-import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
+import { SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
+import { useCallback, useEffect, useMemo } from "react";
 import { cratePreOrder } from "@/lib/orders";
 import UseSearchStore, { CartProduct, ProductWithQuantity } from "@/store/search.store";
+import { LuClipboardList } from "react-icons/lu";
+import { SheetWithConfirm } from "@/components/SheetWithConfirm";
+import QuantitySelector from "@/components/configuration/client/orders/quantitySelector";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { useRouter } from '@tanstack/react-router'
+import { useAuth } from "@/context/AuthContext";
 import UseSearchConfigStore from "@/store/searchConfiguration.store";
 import { useMutation } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo } from "react";
-import { useRouter } from '@tanstack/react-router'
-import { LuClipboardList } from "react-icons/lu";
-import { FaRegTrashAlt } from "react-icons/fa";
-import { SheetWithConfirm } from "@/components/SheetWithConfirm";
-import { SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { useAuth } from "@/context/AuthContext";
 
 type Props = {
     title?: string,
@@ -129,55 +128,67 @@ export function CartSheet({
                         {subTitle}
                     </SheetDescription>
                 </SheetHeader>
-                <div className="h-[calc(100vh-210px)] overflow-y-auto mt-5">
-                    {
-                        mutation.isPending && <OverlayLoadingIndicator />
-                    }
-                    <Table>
-                        <TableHeader className="sticky top-0 bg-white shadow-sm">
-                            <TableRow className="hover:bg-white [&>*]:text-center">
-                                <TableHead className="!text-left">Producto</TableHead>
-                                <TableHead>Cantidad</TableHead>
-                                <TableHead>Precio Unitario</TableHead>
-                                <TableHead>Precio Total</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody className="[&>*]:hover:bg-white">
-                            {products.map((product) => (
-                                <TableRow key={product.id} className="[&>*]:text-center">
-                                    <TableCell className="!text-left">
-                                        <p className="text-sm text-muted-foreground">{product.name}, {product.brand} x {product.netContent}{product.measurementUnit}</p>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex justify-center items-center gap-2">
-                                            <QuantitySelector defaultValue={product.quantity || 0} onChange={(quantity) => handleProductChange(product, quantity)} />
-                                            <Button variant="ghost" className="[&>*]:hover:text-destructive" onClick={() => handleProductChange(product, 0)}>
-                                                <FaRegTrashAlt size={15} className="text-muted-foreground" />
-                                            </Button>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                        <p className="text-sm text-muted-foreground">${(+product.price).toFixed(2)}</p>
-                                    </TableCell>
-                                    <TableCell className="bg-muted/20 text-center">
-                                        <p className="text-sm text-muted-foreground">
-                                            ${(+product.price * (product.quantity || 0)).toFixed(2)}
-                                        </p>
-                                    </TableCell>
+                <div className="h-[calc(100vh-210px)] overflow-y-auto mt-5 pr-2">
+                    <div className="relative">
+                        <Table>
+                            <TableHeader className="sticky top-0 bg-white shadow-sm">
+                                <TableRow className="hover:bg-white [&>*]:text-center">
+                                    <TableHead className="!text-left">Producto</TableHead>
+                                    <TableHead>Contenido Neto</TableHead>
+                                    <TableHead>Precio Unitario</TableHead>
+                                    <TableHead>Precio</TableHead>
                                 </TableRow>
-                            ))}
-                            <TableRow className="[&>*]:text-center">
-                                <TableCell colSpan={3} className="bg-muted/20 !text-left">
-                                    <p className="text-muted-foreground font-bold">Total</p>
-                                </TableCell>
-                                <TableCell className="border border-muted/40">
-                                    <p className="text-muted-foreground font-bold">
-                                        ${totalPrice}
-                                    </p>
-                                </TableCell>
-                            </TableRow>
-                        </TableBody>
-                    </Table>
+                            </TableHeader>
+                            <TableBody className="[&>*]:hover:bg-white">
+                                {mutation.isPending && Array.from({ length: 5 }).map((_, index) => (
+                                    <TableRow key={index} className="[&>*]:text-center">
+                                        <TableCell colSpan={4}>
+                                            <p className="text-sm text-muted-foreground">Cargando...</p>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                                {products.map((product) => (
+                                    <TableRow key={product.id} className="[&>*]:text-center">
+                                        <TableCell className="!text-left">
+                                            <p className="text-sm text-muted-foreground">{product.name}, {product.brand} x {product.netContent}{product.measurementUnit}</p>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="flex justify-center items-center gap-2">
+                                                <QuantitySelector defaultValue={product.quantity || 0} onChange={(quantity) => handleProductChange(product, quantity)} />
+                                                <Button variant="ghost" className="[&>*]:hover:text-destructive" onClick={() => handleProductChange(product, 0)}>
+                                                    <FaRegTrashAlt size={15} className="text-muted-foreground" />
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                            <p className="text-sm text-muted-foreground">${(+product.price).toFixed(2)}</p>
+                                        </TableCell>
+                                        <TableCell className="bg-muted/20 text-center">
+                                            <p className="text-sm text-muted-foreground">
+                                                ${(+product.price * (product.quantity || 0)).toFixed(2)}
+                                            </p>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                        <div className="sticky bottom-0 bg-white border-t border-border">
+                            <Table>
+                                <TableBody className="bg-white">
+                                    <TableRow className="[&>*]:text-center hover:bg-white">
+                                        <TableCell className="bg-muted/20 border border-muted/40 text-center">
+                                            <p className="text-muted-foreground font-bold">TOTAL</p>
+                                        </TableCell>
+                                        <TableCell className="border border-muted/40">
+                                            <p className="text-muted-foreground font-bold">
+                                                ${totalPrice}
+                                            </p>
+                                        </TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </div>
                 </div>
                 <SheetFooter className="p-10 items-center">
                     <SheetClose className="w-full">

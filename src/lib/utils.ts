@@ -8,6 +8,20 @@ import { es } from 'date-fns/locale';
 
 const secretKey = import.meta.env.VITE_SEARCH_PARAMS_KEY;
 
+export enum NotificationType {
+  PRE_ORDER_CREATED = 'pre_order_created',
+  PRE_ORDER_UPDATED = 'pre_order_updated',
+  BUY_ORDER_CREATED = 'buy_order_created',
+  BUY_ORDER_UPDATED = 'buy_order_updated',
+  ORDER_STATUS_CHANGED = 'order_status_changed',
+  PAYMENT_RECEIVED = 'payment_received',
+  PAYMENT_FAILED = 'payment_failed',
+  DELIVERY_SCHEDULED = 'delivery_scheduled',
+  DELIVERY_COMPLETED = 'delivery_completed',
+  DELIVERY_FAILED = 'delivery_failed',
+  SYSTEM_NOTIFICATION = 'system_notification',
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

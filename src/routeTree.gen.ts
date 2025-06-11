@@ -28,8 +28,6 @@ import { Route as AuthLayoutRegistrationUserImport } from './routes/_authLayout/
 import { Route as AuthLayoutRegistrationCompanyImport } from './routes/_authLayout/registration/company'
 import { Route as AuthenticatedDashboardLayoutBuyOrderIndexImport } from './routes/_authenticated/_dashboardLayout/buyOrder/index'
 import { Route as AuthenticatedDashboardLayoutBuyOrderOrderIdImport } from './routes/_authenticated/_dashboardLayout/buyOrder/$orderId'
-import { Route as AuthenticatedDashboardLayoutAccountTypeProviderSellsImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/sells'
-import { Route as AuthenticatedDashboardLayoutAccountTypeProviderSellDetailImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/sellDetail'
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderDiscountsImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/discounts'
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderDashboardImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/dashboard'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientOrdersImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/orders'
@@ -159,20 +157,6 @@ const AuthenticatedDashboardLayoutBuyOrderOrderIdRoute =
     id: '/buyOrder/$orderId',
     path: '/buyOrder/$orderId',
     getParentRoute: () => AuthenticatedDashboardLayoutRoute,
-  } as any)
-
-const AuthenticatedDashboardLayoutAccountTypeProviderSellsRoute =
-  AuthenticatedDashboardLayoutAccountTypeProviderSellsImport.update({
-    id: '/provider/sells',
-    path: '/provider/sells',
-    getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
-  } as any)
-
-const AuthenticatedDashboardLayoutAccountTypeProviderSellDetailRoute =
-  AuthenticatedDashboardLayoutAccountTypeProviderSellDetailImport.update({
-    id: '/provider/sellDetail',
-    path: '/provider/sellDetail',
-    getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
   } as any)
 
 const AuthenticatedDashboardLayoutAccountTypeProviderDiscountsRoute =
@@ -441,20 +425,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderDiscountsImport
       parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
     }
-    '/_authenticated/_dashboardLayout/_accountType/provider/sellDetail': {
-      id: '/_authenticated/_dashboardLayout/_accountType/provider/sellDetail'
-      path: '/provider/sellDetail'
-      fullPath: '/provider/sellDetail'
-      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderSellDetailImport
-      parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
-    }
-    '/_authenticated/_dashboardLayout/_accountType/provider/sells': {
-      id: '/_authenticated/_dashboardLayout/_accountType/provider/sells'
-      path: '/provider/sells'
-      fullPath: '/provider/sells'
-      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderSellsImport
-      parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
-    }
     '/_authenticated/_dashboardLayout/_accountType/client/lists/blackList': {
       id: '/_authenticated/_dashboardLayout/_accountType/client/lists/blackList'
       path: '/client/lists/blackList'
@@ -587,8 +557,6 @@ interface AuthenticatedDashboardLayoutAccountTypeRouteChildren {
   AuthenticatedDashboardLayoutAccountTypeClientOrdersRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientOrdersRoute
   AuthenticatedDashboardLayoutAccountTypeProviderDashboardRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderDashboardRoute
   AuthenticatedDashboardLayoutAccountTypeProviderDiscountsRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderDiscountsRoute
-  AuthenticatedDashboardLayoutAccountTypeProviderSellDetailRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderSellDetailRoute
-  AuthenticatedDashboardLayoutAccountTypeProviderSellsRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderSellsRoute
   AuthenticatedDashboardLayoutAccountTypeClientListsBlackListRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientListsBlackListRoute
   AuthenticatedDashboardLayoutAccountTypeClientListsFavoritesRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientListsFavoritesRoute
   AuthenticatedDashboardLayoutAccountTypeClientProOrdersPreOrderIdRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientProOrdersPreOrderIdRoute
@@ -613,10 +581,6 @@ const AuthenticatedDashboardLayoutAccountTypeRouteChildren: AuthenticatedDashboa
       AuthenticatedDashboardLayoutAccountTypeProviderDashboardRoute,
     AuthenticatedDashboardLayoutAccountTypeProviderDiscountsRoute:
       AuthenticatedDashboardLayoutAccountTypeProviderDiscountsRoute,
-    AuthenticatedDashboardLayoutAccountTypeProviderSellDetailRoute:
-      AuthenticatedDashboardLayoutAccountTypeProviderSellDetailRoute,
-    AuthenticatedDashboardLayoutAccountTypeProviderSellsRoute:
-      AuthenticatedDashboardLayoutAccountTypeProviderSellsRoute,
     AuthenticatedDashboardLayoutAccountTypeClientListsBlackListRoute:
       AuthenticatedDashboardLayoutAccountTypeClientListsBlackListRoute,
     AuthenticatedDashboardLayoutAccountTypeClientListsFavoritesRoute:
@@ -703,8 +667,6 @@ export interface FileRoutesByFullPath {
   '/client/orders': typeof AuthenticatedDashboardLayoutAccountTypeClientOrdersRoute
   '/provider/dashboard': typeof AuthenticatedDashboardLayoutAccountTypeProviderDashboardRoute
   '/provider/discounts': typeof AuthenticatedDashboardLayoutAccountTypeProviderDiscountsRoute
-  '/provider/sellDetail': typeof AuthenticatedDashboardLayoutAccountTypeProviderSellDetailRoute
-  '/provider/sells': typeof AuthenticatedDashboardLayoutAccountTypeProviderSellsRoute
   '/client/lists/blackList': typeof AuthenticatedDashboardLayoutAccountTypeClientListsBlackListRoute
   '/client/lists/favorites': typeof AuthenticatedDashboardLayoutAccountTypeClientListsFavoritesRoute
   '/client/proOrders/$preOrderId': typeof AuthenticatedDashboardLayoutAccountTypeClientProOrdersPreOrderIdRoute
@@ -736,8 +698,6 @@ export interface FileRoutesByTo {
   '/client/orders': typeof AuthenticatedDashboardLayoutAccountTypeClientOrdersRoute
   '/provider/dashboard': typeof AuthenticatedDashboardLayoutAccountTypeProviderDashboardRoute
   '/provider/discounts': typeof AuthenticatedDashboardLayoutAccountTypeProviderDiscountsRoute
-  '/provider/sellDetail': typeof AuthenticatedDashboardLayoutAccountTypeProviderSellDetailRoute
-  '/provider/sells': typeof AuthenticatedDashboardLayoutAccountTypeProviderSellsRoute
   '/client/lists/blackList': typeof AuthenticatedDashboardLayoutAccountTypeClientListsBlackListRoute
   '/client/lists/favorites': typeof AuthenticatedDashboardLayoutAccountTypeClientListsFavoritesRoute
   '/client/proOrders/$preOrderId': typeof AuthenticatedDashboardLayoutAccountTypeClientProOrdersPreOrderIdRoute
@@ -774,8 +734,6 @@ export interface FileRoutesById {
   '/_authenticated/_dashboardLayout/_accountType/client/orders': typeof AuthenticatedDashboardLayoutAccountTypeClientOrdersRoute
   '/_authenticated/_dashboardLayout/_accountType/provider/dashboard': typeof AuthenticatedDashboardLayoutAccountTypeProviderDashboardRoute
   '/_authenticated/_dashboardLayout/_accountType/provider/discounts': typeof AuthenticatedDashboardLayoutAccountTypeProviderDiscountsRoute
-  '/_authenticated/_dashboardLayout/_accountType/provider/sellDetail': typeof AuthenticatedDashboardLayoutAccountTypeProviderSellDetailRoute
-  '/_authenticated/_dashboardLayout/_accountType/provider/sells': typeof AuthenticatedDashboardLayoutAccountTypeProviderSellsRoute
   '/_authenticated/_dashboardLayout/_accountType/client/lists/blackList': typeof AuthenticatedDashboardLayoutAccountTypeClientListsBlackListRoute
   '/_authenticated/_dashboardLayout/_accountType/client/lists/favorites': typeof AuthenticatedDashboardLayoutAccountTypeClientListsFavoritesRoute
   '/_authenticated/_dashboardLayout/_accountType/client/proOrders/$preOrderId': typeof AuthenticatedDashboardLayoutAccountTypeClientProOrdersPreOrderIdRoute
@@ -810,8 +768,6 @@ export interface FileRouteTypes {
     | '/client/orders'
     | '/provider/dashboard'
     | '/provider/discounts'
-    | '/provider/sellDetail'
-    | '/provider/sells'
     | '/client/lists/blackList'
     | '/client/lists/favorites'
     | '/client/proOrders/$preOrderId'
@@ -842,8 +798,6 @@ export interface FileRouteTypes {
     | '/client/orders'
     | '/provider/dashboard'
     | '/provider/discounts'
-    | '/provider/sellDetail'
-    | '/provider/sells'
     | '/client/lists/blackList'
     | '/client/lists/favorites'
     | '/client/proOrders/$preOrderId'
@@ -878,8 +832,6 @@ export interface FileRouteTypes {
     | '/_authenticated/_dashboardLayout/_accountType/client/orders'
     | '/_authenticated/_dashboardLayout/_accountType/provider/dashboard'
     | '/_authenticated/_dashboardLayout/_accountType/provider/discounts'
-    | '/_authenticated/_dashboardLayout/_accountType/provider/sellDetail'
-    | '/_authenticated/_dashboardLayout/_accountType/provider/sells'
     | '/_authenticated/_dashboardLayout/_accountType/client/lists/blackList'
     | '/_authenticated/_dashboardLayout/_accountType/client/lists/favorites'
     | '/_authenticated/_dashboardLayout/_accountType/client/proOrders/$preOrderId'
@@ -992,8 +944,6 @@ export const routeTree = rootRoute
         "/_authenticated/_dashboardLayout/_accountType/client/orders",
         "/_authenticated/_dashboardLayout/_accountType/provider/dashboard",
         "/_authenticated/_dashboardLayout/_accountType/provider/discounts",
-        "/_authenticated/_dashboardLayout/_accountType/provider/sellDetail",
-        "/_authenticated/_dashboardLayout/_accountType/provider/sells",
         "/_authenticated/_dashboardLayout/_accountType/client/lists/blackList",
         "/_authenticated/_dashboardLayout/_accountType/client/lists/favorites",
         "/_authenticated/_dashboardLayout/_accountType/client/proOrders/$preOrderId",
@@ -1038,14 +988,6 @@ export const routeTree = rootRoute
     },
     "/_authenticated/_dashboardLayout/_accountType/provider/discounts": {
       "filePath": "_authenticated/_dashboardLayout/_accountType/provider/discounts.tsx",
-      "parent": "/_authenticated/_dashboardLayout/_accountType"
-    },
-    "/_authenticated/_dashboardLayout/_accountType/provider/sellDetail": {
-      "filePath": "_authenticated/_dashboardLayout/_accountType/provider/sellDetail.tsx",
-      "parent": "/_authenticated/_dashboardLayout/_accountType"
-    },
-    "/_authenticated/_dashboardLayout/_accountType/provider/sells": {
-      "filePath": "_authenticated/_dashboardLayout/_accountType/provider/sells.tsx",
       "parent": "/_authenticated/_dashboardLayout/_accountType"
     },
     "/_authenticated/_dashboardLayout/_accountType/client/lists/blackList": {

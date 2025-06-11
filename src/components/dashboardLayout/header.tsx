@@ -61,7 +61,7 @@ export function DashboardHeader({ title }: Props) {
                     <Button variant="ghost" className='w-fit h-fit px-2 relative'>
                         <LuBell size={25} className="text-secondary-background" />
                         {unreadCount > 0 && (
-                            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">
+                            <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">
                                 {unreadCount}
                             </span>
                         )}

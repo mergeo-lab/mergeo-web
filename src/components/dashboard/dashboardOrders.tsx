@@ -2,13 +2,15 @@ import RemainingTime from "@/components/remainingTime";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn, formatToArgentinianPesos } from "@/lib/utils";
+import { cn, formatToArgentinianPesos, NotificationType } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { MdPendingActions } from "react-icons/md";
 import { StatusBadge } from '@/components/statusBadge';
 import { ACCOUNT, PRE_ORDER_STATUS } from "@/lib/constants";
 import { getPendingOrders, getLatestOrders } from "@/lib/dashboard";
+import { useEffect } from "react";
+import { useNotifications } from "@/context/NotificationsContext";
 
 type Props = {
     companyId: string;
@@ -18,11 +20,25 @@ type Props = {
 }
 
 export default function DashboardOrders({ companyId, accountType, queryKey, itemsCount }: Props) {
+    const { notifications } = useNotifications()
 
-    const { data, isLoading } = useQuery({
+    const { data, isLoading, refetch } = useQuery({
         queryKey: [queryKey, companyId, accountType],
         queryFn: () => accountType === ACCOUNT.provider ? getPendingOrders(companyId) : getLatestOrders(companyId),
     });
+
+    useEffect(() => {
+        const relevantNotifications = notifications.filter(
+            notification =>
+                notification.type === NotificationType.PRE_ORDER_CREATED ||
+                notification.type === NotificationType.PRE_ORDER_UPDATED
+        );
+
+        if (relevantNotifications.length > 0) {
+            // If we have any new or updated pre-order notifications, refetch the list
+            refetch();
+        }
+    }, [notifications, refetch]);
 
     if (isLoading) {
         const amount = itemsCount || 2;
@@ -76,8 +92,8 @@ export default function DashboardOrders({ companyId, accountType, queryKey, item
                                         <RemainingTime time={order.responseDeadline} />
                                     </div>
                                     :
-                                    <div className="flex flex-col justify-center">
-                                        <StatusBadge className='py-1 font-black text-sm' status={order?.status || ""} />
+                                    <div className="flex flex-col min-w-44 justify-center items-center gap-2">
+                                        <StatusBadge className='py-1 text-sm' status={order?.status || ""} />
                                         <RemainingTime time={order.responseDeadline} />
                                     </div>
                             }

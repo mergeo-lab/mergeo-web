@@ -1,86 +1,159 @@
-import { createLazyFileRoute } from '@tanstack/react-router'
+import { createLazyFileRoute, Link } from '@tanstack/react-router'
 import { useNotifications } from '@/context/NotificationsContext'
 import { Button } from '@/components/ui/button'
-import { format } from 'date-fns'
+import { format, isValid } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { NotificationType } from '@/lib/utils'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { LuTrash2 } from 'react-icons/lu'
+import { DeleteConfirmationDialog } from '@/components/deleteConfirmationDialog'
 
 export const Route = createLazyFileRoute('/_authenticated/_dashboardLayout/notifications')({
     component: NotificationsPage
 })
 
 function NotificationsPage() {
-    const { notifications, markAsRead, markAllAsRead } = useNotifications();
+    const { notifications, markAsRead, markAllAsRead, removeNotification, removeAllNotifications } = useNotifications()
+
+    const getNotificationTitle = (type: string) => {
+        switch (type) {
+            case NotificationType.PRE_ORDER_CREATED:
+                return 'Nuevo Pedido'
+            case NotificationType.PRE_ORDER_UPDATED:
+                return 'Pedido Actualizado'
+            case NotificationType.BUY_ORDER_CREATED:
+                return 'Nueva Orden de Compra'
+            default:
+                return 'Notificación'
+        }
+    }
+
+    const getNotificationLink = (notification: any) => {
+        if (notification.type === 'pre_order_created' || notification.type === 'pre_order_updated') {
+            return `/provider/proOrders/${notification.pre_order_id}`
+        }
+        if (notification.type === 'buy_order_created') {
+            return `/buyOrder/${notification.buy_order_id}`
+        }
+        return null
+    }
 
     return (
-        <div className="p-6">
+        <div className="p-10 mx-auto py-8">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-semibold">Notificaciones</h1>
-                {notifications.length > 0 && (
-                    <Button
-                        variant="outline"
-                        onClick={markAllAsRead}
-                        className="text-sm"
-                    >
-                        Marcar todas como leídas
-                    </Button>
-                )}
+                <h1 className="text-2xl font-bold">Notificaciones</h1>
+                <Button onClick={markAllAsRead} variant="outline" disabled={notifications.length === 0 || notifications.every(notification => notification.read)}>
+                    Marcar todas como leídas
+                </Button>
             </div>
 
-            {notifications.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                    No hay notificaciones
+            <div className="bg-white rounded-lg shadow">
+                <div className="relative">
+                    <div className="overflow-auto max-h-[calc(100vh-250px)]">
+                        <Table>
+                            <TableHeader className="sticky top-0 bg-white z-10 hover:bg-white">
+                                <TableRow className='hover:bg-white'>
+                                    <TableHead>Notificación</TableHead>
+                                    <TableHead>Fecha</TableHead>
+                                    <TableHead>Estado</TableHead>
+                                    <TableHead>Acciones</TableHead>
+                                    <TableHead>
+                                        <div className='flex items-center justify-center gap-2'>
+                                            {notifications.length > 0 && (
+                                                <DeleteConfirmationDialog
+                                                    id="all"
+                                                    title="Eliminar todas las notificaciones"
+                                                    question="¿Estás seguro que deseas eliminar todas las notificaciones?"
+                                                    triggerButton={
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="w-fit h-fit px-3 py-1 !m-0"
+                                                        >
+                                                            <div className='flex items-center gap-2'>
+                                                                Borrar todas
+                                                                <LuTrash2 className="h-4 w-4 text-destructive" />
+                                                            </div>
+                                                        </Button>
+                                                    }
+                                                    mutationFn={async () => {
+                                                        removeAllNotifications();
+                                                        return Promise.resolve();
+                                                    }}
+                                                />
+                                            )}
+                                        </div>
+                                    </TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {notifications.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="text-center text-muted-foreground">
+                                            No hay notificaciones
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    notifications.map((notification) => {
+                                        const date = new Date(notification.createdAt)
+                                        const formattedDate = isValid(date)
+                                            ? format(date, 'PPp', { locale: es })
+                                            : 'Fecha no disponible'
+                                        const link = getNotificationLink(notification)
+
+                                        return (
+                                            <TableRow key={notification.id} className='hover:bg-white'>
+                                                <TableCell>
+                                                    <div className="flex flex-col">
+                                                        <span className="font-medium">
+                                                            {getNotificationTitle(notification.type)}
+                                                        </span>
+
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="text-muted-foreground">
+                                                    {formattedDate}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {notification.read ? (
+                                                        <p>Leída</p>
+                                                    ) : (
+                                                        <p className='text-highlight font-semibold'>Nueva</p>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {link && (
+                                                        <Link
+                                                            to={link}
+                                                            className="text-primary hover:text-primary/80 mt-1"
+                                                            onClick={() => markAsRead(notification.id)}
+                                                        >
+                                                            Ver detalles
+                                                        </Link>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className='flex items-center justify-center gap-2'>
+
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8"
+                                                            onClick={() => removeNotification(notification.id)}
+                                                        >
+                                                            <LuTrash2 className="h-4 w-4 text-destructive" />
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        )
+                                    })
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
                 </div>
-            ) : (
-                <div className="bg-white rounded-lg shadow overflow-hidden">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Mensaje
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Fecha
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Estado
-                                </th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Acciones
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {notifications.map((notification) => (
-                                <tr
-                                    key={notification.id}
-                                    className={notification.read ? 'bg-white' : 'bg-blue-50'}
-                                >
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {notification.message}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {format(new Date(notification.createdAt), 'PPp', { locale: es })}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {notification.read ? 'Leída' : 'No leída'}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        {!notification.read && (
-                                            <Button
-                                                variant="ghost"
-                                                onClick={() => markAsRead(notification.id)}
-                                                className="text-primary hover:text-primary/80"
-                                            >
-                                                Marcar como leída
-                                            </Button>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
+            </div>
         </div>
     )
 }

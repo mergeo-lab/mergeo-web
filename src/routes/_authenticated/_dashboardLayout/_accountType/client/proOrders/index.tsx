@@ -1,12 +1,9 @@
 import { StatusBadge } from '@/components/statusBadge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { subscribeSSE, useSSE } from '@/hooks/server-events/useSse';
-import { SERVER_SENT_EVENTS } from '@/lib/constants';
 import { getAllPreOrders } from '@/lib/orders';
-import { ORDERS_EVENTS } from '@/lib/orders/endpoints';
 import { PreOrderSchemaType } from '@/lib/schemas';
-import { formatDate } from '@/lib/utils';
+import { formatDate, NotificationType } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect } from 'react';
@@ -15,6 +12,7 @@ import sinPedidos from '@/assets/sin-pedidos.png'
 import { ConfigTabs } from '@/lib/constants';
 import { LuEye, LuMinus } from 'react-icons/lu';
 import { useAuth } from '@/context/AuthContext';
+import { useNotifications } from '@/context/NotificationsContext';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/proOrders/')({
     component: () => <PreOrders />
@@ -22,55 +20,63 @@ export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountT
 
 export default function PreOrders() {
     const { account } = useAuth();
-    const userId = account?.user.id || '';
     const companyId = account?.company.id || '';
-    useSSE(`${ORDERS_EVENTS}${userId}`);
+    const { notifications } = useNotifications();
 
     const { data, isLoading, isError, refetch } = useQuery({
         queryKey: ['preorders', companyId],
         queryFn: ({ queryKey }) => {
             const companyId = queryKey[1];
             if (!companyId) {
-                // Return a rejected promise if companyId is undefined
                 return Promise.reject(new Error('Company ID is undefined'));
             }
             return getAllPreOrders(companyId);
         },
-        enabled: !!companyId, // Ensure the query runs only if company ID exists
-        refetchOnWindowFocus: true, // Refetch when tab becomes active
-        refetchOnMount: true, // Refetch when component mounts
+        enabled: !!companyId,
+        refetchOnWindowFocus: true,
+        refetchOnMount: true,
     });
 
+    // Listen for pre-order notifications
     useEffect(() => {
-        if (!companyId) return;
+        const relevantNotifications = notifications.filter(
+            notification =>
+                notification.type === NotificationType.PRE_ORDER_CREATED ||
+                notification.type === NotificationType.PRE_ORDER_UPDATED
+        );
 
-        const unsubscribe = subscribeSSE(SERVER_SENT_EVENTS.preOrderCreated, () => {
+        if (relevantNotifications.length > 0) {
+            // If we have any new or updated pre-order notifications, refetch the list
             refetch();
-        });
-        const unsubscribeOrder = subscribeSSE(SERVER_SENT_EVENTS.orderCreated, () => {
-            refetch();
-        });
-
-        return () => {
-            unsubscribe(); // cleanup
-            unsubscribeOrder(); // cleanup
-        };
-    }, [companyId, refetch]);
-
+        }
+    }, [notifications, refetch]);
 
     if (isError) {
         return (
-            <>
-                <p>Algo salio mal vuelve a intentarlo</p>
-                <Button onClick={() => refetch()}>Volver a intentat</Button>
-            </>
-        )
+            <div className="flex flex-col items-center justify-center h-full gap-4">
+                <p className="text-lg text-gray-600">Algo salió mal, vuelve a intentarlo</p>
+                <Button onClick={() => refetch()} variant="outline">
+                    Volver a intentar
+                </Button>
+            </div>
+        );
+    }
+
+    if (isLoading) {
+        return (
+            <div className="w-full p-10">
+                <div className="space-y-4">
+                    <Skeleton className="h-8 w-[250px]" />
+                    <Skeleton className="h-[400px] w-full" />
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div className='w-full h-[calc(100vh-10rem)] overflow-y-auto flex flex-col gap-2 relative'>
+        <div className='w-full flex flex-col gap-2 relative'>
             <>
-                <div className='w-full p-10 h-full flex flex-col'>
+                <div className='w-full p-10 h-full flex flex-col -mt-5'>
                     {
                         data?.preOrders && data?.preOrders.length === 0 ? (
                             <div className='w-full h-full flex justify-center items-center absolute top-0 left-0 right-0 bottom-0'>
@@ -87,67 +93,69 @@ export default function PreOrders() {
                             </div>
                         )
                             :
-                            <div className='w-full h-full overflow-y-auto'>
-                                <Table>
-                                    <TableHeader className="bg-white sticky top-0 shadow-sm">
-                                        <TableRow className="hover:bg-white">
-                                            <TableHead>Nº de Pedido</TableHead>
-                                            <TableHead >Fecha</TableHead>
-                                            <TableHead >Intento</TableHead>
-                                            <TableHead className='text-center'>Estado</TableHead>
-                                            <TableHead></TableHead>
-                                            <TableHead className='text-right pr-14'>Orden de Compra</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody className="bg-white">
-                                        {isLoading
-                                            ? (
-                                                Array.from({ length: 6 }).map((_, index) => (
-                                                    <TableRow key={"tr-" + index} className="hover:bg-transparent border-none">
-                                                        <TableCell colSpan={6} className="h-0 p-2 border-none hover:none ">
-                                                            <Skeleton key={index} className="h-14 w-full rounded-sm" />
+                            <div className='w-full'>
+                                <div className="relative max-h-[750px] w-full overflow-y-auto">
+                                    <Table>
+                                        <TableHeader className='bg-white sticky top-0 z-10 shadow-sm'>
+                                            <TableRow className="hover:bg-transparent">
+                                                <TableHead>Número</TableHead>
+                                                <TableHead>Fecha</TableHead>
+                                                <TableHead>Instancia</TableHead>
+                                                <TableHead>Estado</TableHead>
+                                                <TableHead>Ver Pedido</TableHead>
+                                                <TableHead>Ver Orden de Compra</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody className="bg-white">
+                                            {isLoading
+                                                ? (
+                                                    Array.from({ length: 6 }).map((_, index) => (
+                                                        <TableRow key={"tr-" + index} className="hover:bg-transparent border-none">
+                                                            <TableCell colSpan={6} className="h-0 p-2 border-none hover:none ">
+                                                                <Skeleton key={index} className="h-14 w-full rounded-sm" />
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ))
+                                                )
+                                                :
+                                                data?.preOrders && data.preOrders.map((order: PreOrderSchemaType) => (
+                                                    <TableRow className="hover:bg-white first:border-t-none" key={order.id}>
+                                                        <TableCell>{order.preOrderNumber}</TableCell>
+                                                        <TableCell >{formatDate(order.created)}</TableCell>
+                                                        <TableCell >{order.instance}</TableCell>
+                                                        <TableCell className={`bg-border/20`}>
+                                                            <div className='w-full flex justify-center'>
+                                                                <StatusBadge className='py-2 px-6 text-sm w-2/3 flex justify-center' status={order.status} />
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className='text-center'>
+                                                            <Link to={`/provider/proOrders/$preOrderId`} params={{ preOrderId: order.id }}>
+                                                                <Button variant='ghost' className='space-x-2'>
+                                                                    <LuEye className='cursor-pointer' size={20} />
+                                                                    <p>Ver Pedido</p>
+                                                                </Button>
+                                                            </Link>
+                                                        </TableCell>
+                                                        <TableCell className='text-right'>
+                                                            {order.buyOrder
+                                                                ? (
+                                                                    <Link to={`/buyOrder/$orderId`} params={{ orderId: order.buyOrder.id }} key={order.buyOrder.id}>
+                                                                        <Button variant='ghost' className='space-x-2'>
+                                                                            <LuEye className='cursor-pointer' size={20} />
+                                                                            <p>Ver Ordern de Compra</p>
+                                                                        </Button>
+                                                                    </Link>
+                                                                )
+                                                                : <div className='flex justify-end mr-20'>
+                                                                    <LuMinus size={15} strokeWidth={2} />
+                                                                </div>
+                                                            }
                                                         </TableCell>
                                                     </TableRow>
-                                                ))
-                                            )
-                                            :
-                                            data?.preOrders && data.preOrders.map((order: PreOrderSchemaType) => (
-                                                <TableRow className="hover:bg-white first:border-t-none" key={order.id}>
-                                                    <TableCell>{order.preOrderNumber}</TableCell>
-                                                    <TableCell >{formatDate(order.created)}</TableCell>
-                                                    <TableCell >{order.instance}</TableCell>
-                                                    <TableCell className={`bg-border/20`}>
-                                                        <div className='w-full flex justify-center'>
-                                                            <StatusBadge className='py-2 px-6 text-sm w-2/3 flex justify-center' status={order.status} />
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell className='text-center'>
-                                                        <Link to={`/provider/proOrders/$preOrderId`} params={{ preOrderId: order.id }}>
-                                                            <Button variant='ghost' className='space-x-2'>
-                                                                <LuEye className='cursor-pointer' size={20} />
-                                                                <p>Ver Pedido</p>
-                                                            </Button>
-                                                        </Link>
-                                                    </TableCell>
-                                                    <TableCell className='text-right'>
-                                                        {order.buyOrder
-                                                            ? (
-                                                                <Link to={`/buyOrder/$orderId`} params={{ orderId: order.buyOrder.id }} key={order.buyOrder.id}>
-                                                                    <Button variant='ghost' className='space-x-2'>
-                                                                        <LuEye className='cursor-pointer' size={20} />
-                                                                        <p>Ver Ordern de Compra</p>
-                                                                    </Button>
-                                                                </Link>
-                                                            )
-                                                            : <div className='flex justify-end mr-20'>
-                                                                <LuMinus size={15} strokeWidth={2} />
-                                                            </div>
-                                                        }
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                    </TableBody>
-                                </Table>
+                                                ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
                             </div>
                     }
                 </div>

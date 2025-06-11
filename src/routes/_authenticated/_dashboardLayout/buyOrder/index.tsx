@@ -6,17 +6,13 @@ import {
     TableBody,
     TableCell,
 } from '@/components/ui/table';
-import { SERVER_SENT_EVENTS, ACCOUNT } from '@/lib/constants';
-import { ORDERS_EVENTS_PROVIDER } from '@/lib/orders/endpoints';
+import { ACCOUNT } from '@/lib/constants';
 import { BuyOrderSchemaType } from '@/lib/schemas/orders.schema';
 import { formatDate, numberToTimeString } from '@/lib/utils';
-import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import noOrders from '@/assets/no-odc.png';
-import { subscribeSSE, useSSE } from '@/hooks/server-events/useSse';
 import { useBuyOrders } from '@/hooks/useBuyOrders';
 import { LuEye } from 'react-icons/lu';
 import { useAuth } from '@/context/AuthContext';
@@ -29,12 +25,7 @@ export const Route = createFileRoute('/_authenticated/_dashboardLayout/buyOrder/
 export default function OrdenesDeCompra() {
     const { account } = useAuth();
     const companyId = account?.company.id || '';
-    const userId = account?.user.id || '';
     const accountType = account?.user?.accountType;
-
-    const queryClient = useQueryClient();
-
-    useSSE(`${ORDERS_EVENTS_PROVIDER}${userId}`);
 
     const {
         data,
@@ -43,15 +34,6 @@ export default function OrdenesDeCompra() {
         refetch,
     } = useBuyOrders(companyId, accountType === ACCOUNT.client);
 
-    useEffect(() => {
-        if (!companyId) return;
-
-        const unsubscribe = subscribeSSE(SERVER_SENT_EVENTS.orderCreated, () => {
-            queryClient.invalidateQueries({ queryKey: ['buyOrders', companyId, accountType === ACCOUNT.client] });
-        });
-
-        return unsubscribe;
-    }, [companyId, accountType, queryClient]);
 
     if (isError) {
         return (

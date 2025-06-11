@@ -16,7 +16,7 @@ export function StatusBadge({ status, className }: { status: string, className?:
             selected = <Badge variant='destructive' className={cn('hover:bg-destructive', className)}>Rechazada</Badge>
             break;
         case PRE_ORDER_STATUS.partialyAccepted:
-            selected = <Badge variant='outline' className={cn('border-dashed border-primary text-primary', className)}>Parcialmente Aceptada</Badge>
+            selected = <Badge variant='outline' className={cn('border-dashed border-primary text-primary text-nowrap px-4', className)}>Parcialmente Aceptada</Badge>
             break;
         case PRE_ORDER_STATUS.timeout:
             selected = <Badge className={cn('bg-secondary-background hover:bg-secondary-background', className)}>Expirada</Badge>
@@ -29,5 +29,5 @@ export function StatusBadge({ status, className }: { status: string, className?:
             break;
     }
 
-    return <div className="w-32 [&>div]:multi-[w-full;flex;justify-center;]">{selected}</div>
+    return <div className="w-fit min-w-32 [&>div]:multi-[w-full;flex;justify-center;]">{selected}</div>
 }
