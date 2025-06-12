@@ -8,7 +8,7 @@ import { toast } from '@/components/ui/use-toast';
 import UseRegistrationStore from '@/store/registration.store';
 import UseCompanyStore from '@/store/company.store';
 import { Session } from '@supabase/supabase-js';
-import { useRouter } from '@tanstack/react-router';
+
 
 export interface AuthContextType {
     account: AuthType | null;
@@ -54,72 +54,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [account, setAccount] = useState<AuthType | null>(null);
     const [loading, setLoading] = useState(true);
     const [hasError, setError] = useState(false);
-    const router = useRouter();
 
     useEffect(() => {
-        const checkResetPassword = () => {
-            const hash = window.location.hash;
-            if (hash.includes('reset-password')) {
-                const params = new URLSearchParams(hash.split('?')[1]);
-                const token = params.get('token');
-                const type = params.get('type');
-
-                if (token && type === 'recovery') {
-                    // Clear any existing session
-                    supabase.auth.signOut();
-                    // Redirect to reset password page
-                    router.navigate({
-                        to: '/reset-password',
-                        search: { token }
-                    });
-                    return true;
-                }
-            }
-            return false;
-        };
-
-        const initializeAuth = async () => {
+        console.log('account', account);
+        // Check for existing session on mount
+        const getSession = async () => {
+            setLoading(true);
             try {
-                // Check for reset password URL first
-                if (checkResetPassword()) {
-                    setLoading(false);
-                    return;
-                }
-
-                const { data: { session }, error } = await supabase.auth.getSession();
-                if (error) throw error;
+                const { data: { session } } = await supabase.auth.getSession();
+                console.log('Current session:', session);
 
                 if (session) {
-                    const profile = await getProfile(session.user.id);
-                    if (profile) {
-                        setAccount(profile);
+                    saveSession(session);
+                    const { data: { user } } = await supabase.auth.getUser();
+                    if (user) {
+                        const profile = await getProfile(user.id);
+                        if (profile) {
+                            setAccount(profile);
+                            companyState.saveCompany(profile.company);
+                        }
                     }
+                } else {
+                    setAccount(null);
                 }
             } catch (error) {
-                console.error('Auth initialization error:', error);
+                console.error('Session check failed:', error);
                 setError(true);
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: "Error al verificar la sesión. Por favor, intenta nuevamente.",
+                });
             } finally {
                 setLoading(false);
             }
         };
-
-        initializeAuth();
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-            if (event === 'SIGNED_IN' && session) {
-                const profile = await getProfile(session.user.id);
-                if (profile) {
-                    setAccount(profile);
-                }
-            } else if (event === 'SIGNED_OUT') {
-                setAccount(null);
-            }
-        });
-
-        return () => {
-            subscription.unsubscribe();
-        };
-    }, [router]);
+        getSession();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const login = async (email: string, password: string) => {
         try {
@@ -151,7 +123,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             toast({
                 variant: "destructive",
                 title: "Error de inicio de sesión",
-                description: error instanceof Error ? error.message : "Error al iniciar sesión. Por favor, intenta nuevamente.",
+                description: error instanceof Error
+                    ? (error.message === "Invalid login credentials"
+                        ? "Credenciales inválidas. Por favor, verifica tu email y contraseña."
+                        : error.message)
+                    : "Error al iniciar sesión. Por favor, intenta nuevamente.",
             });
             throw error;
         } finally {

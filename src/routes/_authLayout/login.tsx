@@ -83,11 +83,12 @@ function Login() {
         const accountType = account?.user?.accountType;
         redirectTo = (accountType === ACCOUNT.provider ? "/provider" : "/client") + "/dashboard";
       }
-      router.history.replace(redirectTo);
+      console.log('Navigating to:', redirectTo);
+      router.navigate({ to: redirectTo });
     } else if (account && loading) {
       show();
     }
-  }, [account, loading, router.history, show, redirectParam]);
+  }, [account, loading, router, show, redirectParam]);
 
   return (
     <Form {...form}>
