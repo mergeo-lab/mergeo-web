@@ -11,14 +11,14 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     beforeLoad: async () => {
         // Check for recovery URL before any authentication
         const hash = window.location.hash;
-        if (hash.includes('#/reset-password') && hash.includes('type=recovery')) {
-            console.debug('Recovery URL detected, redirecting to reset-password...');
+        if (hash.includes('access_token') && hash.includes('type=recovery')) {
+            console.debug('Recovery URL detected, redirecting to /reset-password...')
             const url = new URL(window.location.href);
             const token = url.searchParams.get('token');
             if (token) {
                 throw redirect({
                     to: '/reset-password',
-                    search: { token },
+                    search: { token: hash.slice(1) },
                 });
             }
         }

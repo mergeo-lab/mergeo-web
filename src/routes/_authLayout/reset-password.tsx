@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router';
+import { createFileRoute, Link, useRouter } from '@tanstack/react-router';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, FormProvider } from 'react-hook-form';
 import { z } from 'zod';
@@ -122,7 +122,12 @@ function ResetPassword() {
                         />
                     </CardBody>
                     <CardFooter>
-                        <div className='flex justify-end w-full'>
+                        <div className='flex flex-col-reverse md:flex-row justify-between items-center min-h-20'>
+                            <Link to="/login" disabled={loading}>
+                                <Button className='-ml-3' variant="link" disabled={loading}>
+                                    Volver al Login
+                                </Button>
+                            </Link>
                             <Button disabled={loading} type="submit" className='min-w-[200px]'>
                                 {loading ? <LoadingIndicator className="w-4 h-4" /> : 'Actualizar Contraseña'}
                             </Button>
@@ -132,4 +137,4 @@ function ResetPassword() {
             </form>
         </FormProvider>
     );
-} 
+}
