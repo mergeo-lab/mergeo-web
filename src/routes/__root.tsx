@@ -9,12 +9,14 @@ interface MyRouterContext {
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
     beforeLoad: async () => {
-        // Check for recovery URL before any authentication
         const rawHash = window.location.hash.substring(1);
-        if (rawHash.includes('access_token') && rawHash.includes('type=recovery')) {
+        const isRecovery = rawHash.includes('access_token') && rawHash.includes('type=recovery');
+        const isOnResetPage = window.location.pathname.includes('/reset-password');
+
+        if (isRecovery && !isOnResetPage) {
             throw redirect({
                 to: '/reset-password',
-                hash: rawHash
+                search: { hash: rawHash }, // 👈 pasamos el hash como query param, no en el fragmento
             });
         }
     },

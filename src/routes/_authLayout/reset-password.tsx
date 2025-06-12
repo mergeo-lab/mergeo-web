@@ -14,6 +14,9 @@ import { supabase } from '@/context/supabaseClient';
 import { useGlobalLoading } from '../../store/globalLoading.store';
 
 export const Route = createFileRoute('/_authLayout/reset-password')({
+    validateSearch: (search: Record<string, unknown>) => ({
+        hash: (search?.hash as string) || '',
+    }),
     component: () => <ResetPassword />
 });
 
@@ -29,6 +32,7 @@ type Schema = z.infer<typeof ResetPasswordSchema>;
 
 function ResetPassword() {
     const { show, hide } = useGlobalLoading();
+    const { hash } = Route.useSearch();
     const router = useRouter();
     const { resetPassword, loading } = useAuth();
 
@@ -40,28 +44,44 @@ function ResetPassword() {
         }
     });
 
+    // Intercambia el token de la URL por una sesión válida
     useEffect(() => {
-        show('Verificando token...');
-
         const handleToken = async () => {
-            const url = window.location.href;
-            const { error } = await supabase.auth.exchangeCodeForSession(url);
+            if (!hash) return;
+            show('Verificando token...');
 
-            if (error) {
-                console.error('Session exchange error:', error.message);
-                toast({
-                    variant: 'destructive',
-                    title: 'Error',
-                    description: 'El enlace de recuperación es inválido o ha expirado.',
-                });
+            try {
+                const fullUrl = `${window.location.origin}/reset-password#${hash}`;
+                const params = new URLSearchParams(hash);
+                const access_token = params.get('access_token');
+
+                if (!access_token) return;
+
+                const { error } = await supabase.auth.exchangeCodeForSession(fullUrl);
+                if (error) {
+                    console.error('Session exchange error:', error.message);
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: 'El enlace de recuperación es inválido o ha expirado.',
+                    });
+                }
+            } finally {
+                hide();
             }
-
-            hide();
         };
 
         handleToken();
-    }, [hide, show]);
+    }, [hash, show, hide]);
 
+    // Limpia la URL después de usar el token
+    useEffect(() => {
+        if (window.location.search.includes('hash=')) {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('hash');
+            window.history.replaceState({}, '', url.pathname);
+        }
+    }, []);
 
     const onSubmit = async (data: Schema) => {
         try {
@@ -72,7 +92,7 @@ function ResetPassword() {
             });
             router.navigate({ to: '/login' });
         } catch (error) {
-            console.log("error reset password", error);
+            console.error("Error reset password:", error);
             toast({
                 variant: "destructive",
                 title: "Error",
