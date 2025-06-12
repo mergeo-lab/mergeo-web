@@ -16,7 +16,7 @@ import { useGlobalLoading } from '../../store/globalLoading.store';
 export const Route = createFileRoute('/_authLayout/reset-password')({
     validateSearch: (search: Record<string, unknown>) => {
         return {
-            token: (search?.token as string) || '',
+            hash: (search?.hash as string) || '',
         };
     },
     component: () => <ResetPassword />
@@ -34,7 +34,7 @@ type Schema = z.infer<typeof ResetPasswordSchema>;
 
 function ResetPassword() {
     const { show, hide } = useGlobalLoading();
-    const { token } = Route.useSearch();
+    const { hash } = Route.useSearch();
     const router = useRouter();
     const { resetPassword, loading } = useAuth();
 
@@ -47,25 +47,31 @@ function ResetPassword() {
     });
 
     useEffect(() => {
-        const url = window.location.href;
         show('Verificando token...');
         const handleToken = async () => {
-            const { error } = await supabase.auth.exchangeCodeForSession(url);
-            if (error) {
-                console.error("Token exchange failed:", error.message);
-                // Podés redirigir o mostrar un mensaje
-            } else {
-                console.log("Token accepted. User is now authenticated.");
+            const parsedHash = new URLSearchParams(hash);
+            const access_token = parsedHash.get('access_token');
+
+            if (access_token) {
+                const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+                if (error) {
+                    console.error('Session exchange error:', error.message);
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: 'El enlace de recuperación es inválido o ha expirado.',
+                    });
+                }
             }
             hide();
         };
 
         handleToken();
-    }, [hide, show]);
+    }, [hash, hide, show]);
 
     const onSubmit = async (data: Schema) => {
         try {
-            await resetPassword(token, data.password);
+            await resetPassword(data.password);
             toast({
                 title: "Contraseña actualizada",
                 description: "Tu contraseña ha sido actualizada correctamente. Serás redirigido al login.",

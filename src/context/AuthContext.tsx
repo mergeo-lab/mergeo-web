@@ -18,7 +18,7 @@ export interface AuthContextType {
     register: (userData: Omit<RegisterUserSchemaType, 'id'>) => Promise<boolean>;
     logout: () => void;
     forgotPassword: (email: string) => Promise<void>;
-    resetPassword: (token: string, newPassword: string) => Promise<void>;
+    resetPassword: (newPassword: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
