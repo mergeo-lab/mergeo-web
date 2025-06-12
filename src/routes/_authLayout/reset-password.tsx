@@ -14,11 +14,6 @@ import { supabase } from '@/context/supabaseClient';
 import { useGlobalLoading } from '../../store/globalLoading.store';
 
 export const Route = createFileRoute('/_authLayout/reset-password')({
-    validateSearch: (search: Record<string, unknown>) => {
-        return {
-            hash: (search?.hash as string) || '',
-        };
-    },
     component: () => <ResetPassword />
 });
 
@@ -34,7 +29,6 @@ type Schema = z.infer<typeof ResetPasswordSchema>;
 
 function ResetPassword() {
     const { show, hide } = useGlobalLoading();
-    const { hash } = Route.useSearch();
     const router = useRouter();
     const { resetPassword, loading } = useAuth();
 
@@ -48,26 +42,26 @@ function ResetPassword() {
 
     useEffect(() => {
         show('Verificando token...');
-        const handleToken = async () => {
-            const parsedHash = new URLSearchParams(hash);
-            const access_token = parsedHash.get('access_token');
 
-            if (access_token) {
-                const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
-                if (error) {
-                    console.error('Session exchange error:', error.message);
-                    toast({
-                        variant: 'destructive',
-                        title: 'Error',
-                        description: 'El enlace de recuperación es inválido o ha expirado.',
-                    });
-                }
+        const handleToken = async () => {
+            const url = window.location.href;
+            const { error } = await supabase.auth.exchangeCodeForSession(url);
+
+            if (error) {
+                console.error('Session exchange error:', error.message);
+                toast({
+                    variant: 'destructive',
+                    title: 'Error',
+                    description: 'El enlace de recuperación es inválido o ha expirado.',
+                });
             }
+
             hide();
         };
 
         handleToken();
-    }, [hash, hide, show]);
+    }, [hide, show]);
+
 
     const onSubmit = async (data: Schema) => {
         try {

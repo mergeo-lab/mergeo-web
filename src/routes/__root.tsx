@@ -10,11 +10,11 @@ interface MyRouterContext {
 export const Route = createRootRouteWithContext<MyRouterContext>()({
     beforeLoad: async () => {
         // Check for recovery URL before any authentication
-        const hash = window.location.hash;
-        if (hash.includes('access_token') && hash.includes('type=recovery')) {
+        const rawHash = window.location.hash.substring(1);
+        if (rawHash.includes('access_token') && rawHash.includes('type=recovery')) {
             throw redirect({
                 to: '/reset-password',
-                search: { hash: hash.slice(1) },
+                hash: rawHash
             });
         }
     },
