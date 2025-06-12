@@ -93,7 +93,7 @@ export default function PreOrders() {
                             </div>
                         )
                             :
-                            <div className='w-full max-w-[1200px]'>
+                            <div className='w-full'>
                                 <div className="relative max-h-[750px] w-full overflow-y-auto">
                                     <Table>
                                         <TableHeader className='bg-white sticky top-0 z-10 shadow-sm'>
