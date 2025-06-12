@@ -2,12 +2,13 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { AuthType } from '../types';
 import { supabase } from './supabaseClient';
-import { getProfile, passwordRecover, registerUser } from '@/lib/auth';
+import { getProfile, registerUser } from '@/lib/auth';
 import { RegisterUserSchemaType } from '@/lib/schemas';
 import { toast } from '@/components/ui/use-toast';
 import UseRegistrationStore from '@/store/registration.store';
 import UseCompanyStore from '@/store/company.store';
 import { Session } from '@supabase/supabase-js';
+import { useRouter } from '@tanstack/react-router';
 
 // Development credentials
 const DEV_CREDENTIALS = {
@@ -59,67 +60,72 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [account, setAccount] = useState<AuthType | null>(null);
     const [loading, setLoading] = useState(true);
     const [hasError, setError] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
-        console.log('account', account);
-        // Check for existing session on mount
-        const getSession = async () => {
-            setLoading(true);
+        const checkResetPassword = () => {
+            const hash = window.location.hash;
+            if (hash.includes('reset-password')) {
+                const params = new URLSearchParams(hash.split('?')[1]);
+                const token = params.get('token');
+                const type = params.get('type');
+
+                if (token && type === 'recovery') {
+                    // Clear any existing session
+                    supabase.auth.signOut();
+                    // Redirect to reset password page
+                    router.navigate({
+                        to: '/reset-password',
+                        search: { token }
+                    });
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        const initializeAuth = async () => {
             try {
-                const { data: { session } } = await supabase.auth.getSession();
-                console.log('Current session:', session);
+                // Check for reset password URL first
+                if (checkResetPassword()) {
+                    setLoading(false);
+                    return;
+                }
+
+                const { data: { session }, error } = await supabase.auth.getSession();
+                if (error) throw error;
 
                 if (session) {
-                    saveSession(session);
-                    const { data: { user } } = await supabase.auth.getUser();
-                    if (user) {
-                        const profile = await getProfile(user.id);
-                        if (profile) {
-                            setAccount(profile);
-                            companyState.saveCompany(profile.company);
-                        }
-                    }
-                } else {
-                    // In development mode, try to auto-login with dev credentials
-                    if (import.meta.env.DEV) {
-                        console.log('Development mode: Attempting auto-login');
-                        try {
-                            const { data, error } = await supabase.auth.signInWithPassword({
-                                email: DEV_CREDENTIALS.email,
-                                password: DEV_CREDENTIALS.password
-                            });
-                            if (error) throw error;
-                            if (data.session) {
-                                saveSession(data.session);
-                                const profile = await getProfile(data.user.id);
-                                if (profile) {
-                                    setAccount(profile);
-                                    companyState.saveCompany(profile.company);
-                                }
-                            }
-                        } catch (error) {
-                            console.error('Development auto-login failed:', error);
-                            setAccount(null);
-                        }
-                    } else {
-                        setAccount(null);
+                    const profile = await getProfile();
+                    if (profile) {
+                        setAccount(profile);
                     }
                 }
             } catch (error) {
-                console.error('Session check failed:', error);
+                console.error('Auth initialization error:', error);
                 setError(true);
-                toast({
-                    variant: "destructive",
-                    title: "Error",
-                    description: "Error al verificar la sesión. Por favor, intenta nuevamente.",
-                });
             } finally {
                 setLoading(false);
             }
         };
-        getSession();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+
+        initializeAuth();
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                const profile = await getProfile();
+                if (profile) {
+                    setAccount(profile);
+                }
+            } else if (event === 'SIGNED_OUT') {
+                setAccount(null);
+            }
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, [router]);
 
     const login = async (email: string, password: string) => {
         try {

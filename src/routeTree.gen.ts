@@ -17,8 +17,8 @@ import { Route as AuthenticatedImport } from './routes/_authenticated'
 import { Route as AuthLayoutImport } from './routes/_authLayout'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthenticatedDashboardLayoutImport } from './routes/_authenticated/_dashboardLayout'
+import { Route as AuthLayoutResetPasswordImport } from './routes/_authLayout/reset-password'
 import { Route as AuthLayoutRegistrationImport } from './routes/_authLayout/registration'
-import { Route as AuthLayoutPasswordResetImport } from './routes/_authLayout/passwordReset'
 import { Route as AuthLayoutLoginImport } from './routes/_authLayout/login'
 import { Route as AuthLayoutForgotPasswordImport } from './routes/_authLayout/forgotPassword'
 import { Route as AuthLayoutRegistrationIndexImport } from './routes/_authLayout/registration/index'
@@ -75,15 +75,15 @@ const AuthenticatedDashboardLayoutRoute =
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 
-const AuthLayoutRegistrationRoute = AuthLayoutRegistrationImport.update({
-  id: '/registration',
-  path: '/registration',
+const AuthLayoutResetPasswordRoute = AuthLayoutResetPasswordImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => AuthLayoutRoute,
 } as any)
 
-const AuthLayoutPasswordResetRoute = AuthLayoutPasswordResetImport.update({
-  id: '/passwordReset',
-  path: '/passwordReset',
+const AuthLayoutRegistrationRoute = AuthLayoutRegistrationImport.update({
+  id: '/registration',
+  path: '/registration',
   getParentRoute: () => AuthLayoutRoute,
 } as any)
 
@@ -320,18 +320,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLayoutLoginImport
       parentRoute: typeof AuthLayoutImport
     }
-    '/_authLayout/passwordReset': {
-      id: '/_authLayout/passwordReset'
-      path: '/passwordReset'
-      fullPath: '/passwordReset'
-      preLoaderRoute: typeof AuthLayoutPasswordResetImport
-      parentRoute: typeof AuthLayoutImport
-    }
     '/_authLayout/registration': {
       id: '/_authLayout/registration'
       path: '/registration'
       fullPath: '/registration'
       preLoaderRoute: typeof AuthLayoutRegistrationImport
+      parentRoute: typeof AuthLayoutImport
+    }
+    '/_authLayout/reset-password': {
+      id: '/_authLayout/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof AuthLayoutResetPasswordImport
       parentRoute: typeof AuthLayoutImport
     }
     '/_authenticated/_dashboardLayout': {
@@ -537,15 +537,15 @@ const AuthLayoutRegistrationRouteWithChildren =
 interface AuthLayoutRouteChildren {
   AuthLayoutForgotPasswordRoute: typeof AuthLayoutForgotPasswordRoute
   AuthLayoutLoginRoute: typeof AuthLayoutLoginRoute
-  AuthLayoutPasswordResetRoute: typeof AuthLayoutPasswordResetRoute
   AuthLayoutRegistrationRoute: typeof AuthLayoutRegistrationRouteWithChildren
+  AuthLayoutResetPasswordRoute: typeof AuthLayoutResetPasswordRoute
 }
 
 const AuthLayoutRouteChildren: AuthLayoutRouteChildren = {
   AuthLayoutForgotPasswordRoute: AuthLayoutForgotPasswordRoute,
   AuthLayoutLoginRoute: AuthLayoutLoginRoute,
-  AuthLayoutPasswordResetRoute: AuthLayoutPasswordResetRoute,
   AuthLayoutRegistrationRoute: AuthLayoutRegistrationRouteWithChildren,
+  AuthLayoutResetPasswordRoute: AuthLayoutResetPasswordRoute,
 }
 
 const AuthLayoutRouteWithChildren = AuthLayoutRoute._addFileChildren(
@@ -654,8 +654,8 @@ export interface FileRoutesByFullPath {
   '': typeof AuthenticatedDashboardLayoutAccountTypeRouteWithChildren
   '/forgotPassword': typeof AuthLayoutForgotPasswordRoute
   '/login': typeof AuthLayoutLoginRoute
-  '/passwordReset': typeof AuthLayoutPasswordResetRoute
   '/registration': typeof AuthLayoutRegistrationRouteWithChildren
+  '/reset-password': typeof AuthLayoutResetPasswordRoute
   '/registration/company': typeof AuthLayoutRegistrationCompanyRoute
   '/registration/user': typeof AuthLayoutRegistrationUserRoute
   '/registration/validate': typeof AuthLayoutRegistrationValidateRoute
@@ -686,7 +686,7 @@ export interface FileRoutesByTo {
   '': typeof AuthenticatedDashboardLayoutAccountTypeRouteWithChildren
   '/forgotPassword': typeof AuthLayoutForgotPasswordRoute
   '/login': typeof AuthLayoutLoginRoute
-  '/passwordReset': typeof AuthLayoutPasswordResetRoute
+  '/reset-password': typeof AuthLayoutResetPasswordRoute
   '/registration/company': typeof AuthLayoutRegistrationCompanyRoute
   '/registration/user': typeof AuthLayoutRegistrationUserRoute
   '/registration/validate': typeof AuthLayoutRegistrationValidateRoute
@@ -719,8 +719,8 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/_authLayout/forgotPassword': typeof AuthLayoutForgotPasswordRoute
   '/_authLayout/login': typeof AuthLayoutLoginRoute
-  '/_authLayout/passwordReset': typeof AuthLayoutPasswordResetRoute
   '/_authLayout/registration': typeof AuthLayoutRegistrationRouteWithChildren
+  '/_authLayout/reset-password': typeof AuthLayoutResetPasswordRoute
   '/_authenticated/_dashboardLayout': typeof AuthenticatedDashboardLayoutRouteWithChildren
   '/_authLayout/registration/company': typeof AuthLayoutRegistrationCompanyRoute
   '/_authLayout/registration/user': typeof AuthLayoutRegistrationUserRoute
@@ -755,8 +755,8 @@ export interface FileRouteTypes {
     | ''
     | '/forgotPassword'
     | '/login'
-    | '/passwordReset'
     | '/registration'
+    | '/reset-password'
     | '/registration/company'
     | '/registration/user'
     | '/registration/validate'
@@ -786,7 +786,7 @@ export interface FileRouteTypes {
     | ''
     | '/forgotPassword'
     | '/login'
-    | '/passwordReset'
+    | '/reset-password'
     | '/registration/company'
     | '/registration/user'
     | '/registration/validate'
@@ -817,8 +817,8 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/_authLayout/forgotPassword'
     | '/_authLayout/login'
-    | '/_authLayout/passwordReset'
     | '/_authLayout/registration'
+    | '/_authLayout/reset-password'
     | '/_authenticated/_dashboardLayout'
     | '/_authLayout/registration/company'
     | '/_authLayout/registration/user'
@@ -882,8 +882,8 @@ export const routeTree = rootRoute
       "children": [
         "/_authLayout/forgotPassword",
         "/_authLayout/login",
-        "/_authLayout/passwordReset",
-        "/_authLayout/registration"
+        "/_authLayout/registration",
+        "/_authLayout/reset-password"
       ]
     },
     "/_authenticated": {
@@ -900,10 +900,6 @@ export const routeTree = rootRoute
       "filePath": "_authLayout/login.tsx",
       "parent": "/_authLayout"
     },
-    "/_authLayout/passwordReset": {
-      "filePath": "_authLayout/passwordReset.tsx",
-      "parent": "/_authLayout"
-    },
     "/_authLayout/registration": {
       "filePath": "_authLayout/registration.tsx",
       "parent": "/_authLayout",
@@ -913,6 +909,10 @@ export const routeTree = rootRoute
         "/_authLayout/registration/validate",
         "/_authLayout/registration/"
       ]
+    },
+    "/_authLayout/reset-password": {
+      "filePath": "_authLayout/reset-password.tsx",
+      "parent": "/_authLayout"
     },
     "/_authenticated/_dashboardLayout": {
       "filePath": "_authenticated/_dashboardLayout.tsx",
