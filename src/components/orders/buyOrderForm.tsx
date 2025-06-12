@@ -160,9 +160,9 @@ const BuyOrderForm = forwardRef(function BuyOrderForm(
                                             <TableCell>{item.product.name}</TableCell>
                                             <TableCell>{item.product.units}</TableCell>
                                             <TableCell>{item.product.measurementUnit}</TableCell>
-                                            <TableCell>{formatToArgentinianPesos(+item.product.price)}</TableCell>
+                                            <TableCell>{Number(item.product.price).toFixed(2)}</TableCell>
                                             <TableCell>{item.quantity}</TableCell>
-                                            <TableCell className='text-center'>{formatToArgentinianPesos(+item.product.price * item.quantity)}</TableCell>
+                                            <TableCell className='text-center'>{Number(Number(item.product.price) * item.quantity).toFixed(2)}</TableCell>
                                         </TableRow>
                                     ))}
                                     <TableRow className='[&>td]:border-y [&>td]:border-border hover:bg-white [&>td]:bg-border/30 [&>td]:font-bold'>

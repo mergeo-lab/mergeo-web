@@ -12,6 +12,8 @@ import { useRouter } from '@tanstack/react-router'
 import { useAuth } from "@/context/AuthContext";
 import UseSearchConfigStore from "@/store/searchConfiguration.store";
 import { useMutation } from "@tanstack/react-query";
+import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
+import { formatToArgentinianPesos } from '../../../../lib/utils';
 
 type Props = {
     title?: string,
@@ -43,7 +45,7 @@ export function CartSheet({
 
     const totalPrice = products
         .reduce((sum: number, product: ProductWithQuantity) => {
-            const price = parseFloat(product.price) * (product.quantity || 0);
+            const price = Number(product.price) * (product.quantity || 0);
             return sum + (isNaN(price) ? 0 : price);
         }, 0)
         .toFixed(2);
@@ -91,7 +93,6 @@ export function CartSheet({
             reacteplacementCriteria: config.replacementCriteria,
             cartProducts: products
         })
-        callback();
     }
 
     function checkProductsAmount() {
@@ -118,7 +119,7 @@ export function CartSheet({
             <SheetTrigger>
                 {triggerButton}
             </SheetTrigger>
-            <SheetContent className="w-1/3 mx-w-1/3 sm:max-w-1/3" {...(onInteractOutside && { onInteractOutside: onInteractOutside })}>
+            <SheetContent className="w-1/2 mx-w-1/2 sm:max-w-1/2" {...(onInteractOutside && { onInteractOutside: onInteractOutside })}>
                 <SheetHeader>
                     <SheetTitle className="flex gap-2 items-center">
                         {icon}
@@ -128,7 +129,7 @@ export function CartSheet({
                         {subTitle}
                     </SheetDescription>
                 </SheetHeader>
-                <div className="h-[calc(100vh-210px)] overflow-y-auto mt-5 pr-2">
+                <div className="h-[calc(100vh-230px)] overflow-y-auto mt-5 pr-2">
                     <div className="relative">
                         <Table>
                             <TableHeader className="sticky top-0 bg-white shadow-sm">
@@ -140,13 +141,7 @@ export function CartSheet({
                                 </TableRow>
                             </TableHeader>
                             <TableBody className="[&>*]:hover:bg-white">
-                                {mutation.isPending && Array.from({ length: 5 }).map((_, index) => (
-                                    <TableRow key={index} className="[&>*]:text-center">
-                                        <TableCell colSpan={4}>
-                                            <p className="text-sm text-muted-foreground">Cargando...</p>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                {mutation.isPending && <OverlayLoadingIndicator />}
                                 {products.map((product) => (
                                     <TableRow key={product.id} className="[&>*]:text-center">
                                         <TableCell className="!text-left">
@@ -161,11 +156,11 @@ export function CartSheet({
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-center">
-                                            <p className="text-sm text-muted-foreground">${(+product.price).toFixed(2)}</p>
+                                            <p className="text-sm text-muted-foreground">${Number(product.price).toFixed(2)}</p>
                                         </TableCell>
                                         <TableCell className="bg-muted/20 text-center">
                                             <p className="text-sm text-muted-foreground">
-                                                ${(+product.price * (product.quantity || 0)).toFixed(2)}
+                                                {formatToArgentinianPesos(Number(product.price) * (product.quantity || 0))}
                                             </p>
                                         </TableCell>
                                     </TableRow>
@@ -181,7 +176,7 @@ export function CartSheet({
                                         </TableCell>
                                         <TableCell className="border border-muted/40">
                                             <p className="text-muted-foreground font-bold">
-                                                ${totalPrice}
+                                                {formatToArgentinianPesos(Number(totalPrice))}
                                             </p>
                                         </TableCell>
                                     </TableRow>

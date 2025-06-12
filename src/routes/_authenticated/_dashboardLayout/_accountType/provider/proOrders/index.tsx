@@ -77,7 +77,7 @@ export default function Sells() {
                 <div className='w-full p-10 h-full flex flex-col -mt-5'>
                     {
                         !data || data.length === 0 ? (
-                            <div className='w-full h-full flex justify-center items-center absolute top-0 left-0 right-0 bottom-0'>
+                            <div className='w-full h-[750px] flex justify-center items-center'>
                                 <div className='py-10 px-20 flex flex-col justify-center items-center gap-4'>
                                     <img src={sinPedidos} alt="no tienes pedidos" />
                                     <div className='flex flex-col justify-center items-center mb-5'>

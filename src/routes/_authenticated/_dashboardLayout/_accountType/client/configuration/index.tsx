@@ -3,7 +3,6 @@ import { createFileRoute, useNavigate, useRouter, useSearch } from '@tanstack/re
 import React, { Suspense, lazy } from 'react';
 import { tabs } from '@/lib/constants';
 import { ErrorBoundary } from 'react-error-boundary';
-import { Skeleton } from '@/components/ui/skeleton';
 import OverlayLoadingIndicator from '@/components/overlayLoadingIndicator';
 
 // Dynamic imports for configuration components

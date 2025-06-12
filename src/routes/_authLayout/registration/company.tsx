@@ -89,7 +89,7 @@ function RegisterCompany() {
     form.setValue('branch.address', {
       location: {
         type: "Point",
-        coordinates: [address.location.longitude, address.location.latitude]
+        coordinates: [address.location.latitude, address.location.longitude]
       },
       name: address.displayName.text
     });

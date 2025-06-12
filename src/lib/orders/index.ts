@@ -172,7 +172,7 @@ export async function getProducts(
     (product) => ({
       id: product.id,
       quantity: product.quantity ?? 1, // Use 0 as default if quantity is not defined
-      price: product.price,
+      price: product.price.toString(), // Ensure price is a string
       providerId: product.providerId,
       dropZoneId: product.dropZoneId,
     })

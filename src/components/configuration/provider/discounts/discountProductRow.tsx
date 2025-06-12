@@ -16,7 +16,7 @@ type Props = {
 }
 export default function DiscountProductRow({ className, discountPercent = 0, isAdded = false, isSearch = false, product, onAdd, onRemove }: Props) {
     const itemDiscount = useCallback(() => {
-        return +product.price - (discountPercent * +product.price / 100);
+        return Number(product.price) - (discountPercent * Number(product.price) / 100);
     }, [product.price, discountPercent]);
 
     return (
@@ -34,7 +34,7 @@ export default function DiscountProductRow({ className, discountPercent = 0, isA
                 <span className="w-16 truncate">{product.netContent + " " + product.measurementUnit}</span>
                 <div className="flex flex-col w-30">
                     <span className="text-black/80 font-thin">Precio original</span>
-                    <span className="w-24">{formatToArgentinianPesos(+product.price)}</span>
+                    <span className="w-24">{formatToArgentinianPesos(Number(product.price))}</span>
                 </div>
                 <div className="flex flex-col w-fit">
                     <span className="text-black/80 font-thin text-nowrap">Precio con descuento</span>
