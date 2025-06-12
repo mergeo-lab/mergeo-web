@@ -9,6 +9,9 @@ import PasswordInput from '@/components/passwordInput';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from '@/components/ui/use-toast';
 import LoadingIndicator from '@/components/loadingIndicator';
+import { useEffect } from 'react';
+import { supabase } from '@/context/supabaseClient';
+import { useGlobalLoading } from '../../store/globalLoading.store';
 
 export const Route = createFileRoute('/_authLayout/reset-password')({
     validateSearch: (search: Record<string, unknown>) => {
@@ -30,6 +33,7 @@ const ResetPasswordSchema = z.object({
 type Schema = z.infer<typeof ResetPasswordSchema>;
 
 function ResetPassword() {
+    const { show, hide } = useGlobalLoading();
     const { token } = Route.useSearch();
     const router = useRouter();
     const { resetPassword, loading } = useAuth();
@@ -41,6 +45,23 @@ function ResetPassword() {
             confirmPassword: ''
         }
     });
+
+    useEffect(() => {
+        const url = window.location.href;
+        show('Verificando token...');
+        const handleToken = async () => {
+            const { error } = await supabase.auth.exchangeCodeForSession(url);
+            if (error) {
+                console.error("Token exchange failed:", error.message);
+                // Podés redirigir o mostrar un mensaje
+            } else {
+                console.log("Token accepted. User is now authenticated.");
+            }
+            hide();
+        };
+
+        handleToken();
+    }, [hide, show]);
 
     const onSubmit = async (data: Schema) => {
         try {
