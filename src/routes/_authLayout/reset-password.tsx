@@ -14,9 +14,6 @@ import { supabase } from '@/context/supabaseClient';
 import { useGlobalLoading } from '../../store/globalLoading.store';
 
 export const Route = createFileRoute('/_authLayout/reset-password')({
-    validateSearch: (search: Record<string, unknown>) => ({
-        hash: (search?.hash as string) || '',
-    }),
     component: () => <ResetPassword />
 });
 
@@ -32,7 +29,6 @@ type Schema = z.infer<typeof ResetPasswordSchema>;
 
 function ResetPassword() {
     const { show, hide } = useGlobalLoading();
-    const { hash } = Route.useSearch();
     const router = useRouter();
     const { resetPassword, loading } = useAuth();
 
@@ -47,17 +43,10 @@ function ResetPassword() {
     // Intercambia el token de la URL por una sesión válida
     useEffect(() => {
         const handleToken = async () => {
-            if (!hash) return;
             show('Verificando token...');
 
             try {
-                const fullUrl = `${window.location.origin}/reset-password#${hash}`;
-                const params = new URLSearchParams(hash);
-                const access_token = params.get('access_token');
-
-                if (!access_token) return;
-
-                const { error } = await supabase.auth.exchangeCodeForSession(fullUrl);
+                const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
                 if (error) {
                     console.error('Session exchange error:', error.message);
                     toast({
@@ -72,7 +61,7 @@ function ResetPassword() {
         };
 
         handleToken();
-    }, [hash, show, hide]);
+    }, [show, hide]);
 
     // Limpia la URL después de usar el token
     useEffect(() => {
