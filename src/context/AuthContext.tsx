@@ -10,12 +10,6 @@ import UseCompanyStore from '@/store/company.store';
 import { Session } from '@supabase/supabase-js';
 import { useRouter } from '@tanstack/react-router';
 
-// Development credentials
-const DEV_CREDENTIALS = {
-    email: 'dev@mergeo.com',
-    password: 'dev123456'
-};
-
 export interface AuthContextType {
     account: AuthType | null;
     loading: boolean;
@@ -96,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 if (error) throw error;
 
                 if (session) {
-                    const profile = await getProfile();
+                    const profile = await getProfile(session.user.id);
                     if (profile) {
                         setAccount(profile);
                     }
@@ -113,7 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (event === 'SIGNED_IN' && session) {
-                const profile = await getProfile();
+                const profile = await getProfile(session.user.id);
                 if (profile) {
                     setAccount(profile);
                 }
