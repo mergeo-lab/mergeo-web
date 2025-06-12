@@ -243,7 +243,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
             setLoading(true);
             // Check if user exists
-            const { data: user } = await passwordRecover(email);
+            const user = await supabase.auth.getUser();
 
             if (!user) {
                 toast({

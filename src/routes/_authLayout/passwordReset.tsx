@@ -121,8 +121,8 @@ function PasswordRecover() {
                         <div className='flex flex-col-reverse md:flex-row justify-between items-center min-h-24'>
                             <p className='text-sm text-muted'>
                                 Me confundi, no quiero estar aqui!
-                                <Link to="/login">
-                                    <Button className='-ml-3' variant="link">
+                                <Link to="/login" disabled={mutation.isPending}>
+                                    <Button className='-ml-3' variant="link" disabled={mutation.isPending}>
                                         Volver al login
                                     </Button>
                                 </Link>

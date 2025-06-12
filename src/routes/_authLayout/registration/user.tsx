@@ -168,8 +168,8 @@ function RegisterUser() {
         <div className='flex flex-col-reverse md:flex-row justify-between items-center min-h-24'>
           <p className='text-sm text-muted'>
             ya tenes una cuenta?{' '}
-            <Link to="/login">
-              <Button className='-ml-3' variant="link">
+            <Link to="/login" disabled={loading}>
+              <Button className='-ml-3' variant="link" disabled={loading}>
                 Login
               </Button>
             </Link>

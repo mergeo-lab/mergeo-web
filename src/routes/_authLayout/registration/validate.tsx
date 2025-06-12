@@ -155,5 +155,5 @@ function RegistrationValidate() {
     )
   }
 
-  return <div className='w-full h-full flex justify-center items-center'>Se envió un email a tu casilla de correo haz clic en el link para validar tu cuenta!{verifyCode}</div>
+  return <div className='w-full h-full flex justify-center items-center'>Se envió un email a tu casilla de correo haz clic en el link para validar tu cuenta!</div>
 }

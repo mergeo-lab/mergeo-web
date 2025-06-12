@@ -151,8 +151,8 @@ function Login() {
             <div className='flex flex-col-reverse md:flex-row justify-between items-center min-h-24'>
               <p className='text-sm text-muted'>
                 No tenes una cuenta?{' '}
-                <Link to="/registration">
-                  <Button className='-ml-3' variant="link">
+                <Link to="/registration" disabled={loading}>
+                  <Button className='-ml-3' variant="link" disabled={loading}>
                     Registrate
                   </Button>
                 </Link>

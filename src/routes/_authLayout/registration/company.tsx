@@ -179,8 +179,8 @@ function RegisterCompany() {
         <div className='flex flex-col-reverse md:flex-row justify-between items-center min-h-20'>
           <p className='text-sm text-muted'>
             ya tenes una cuenta?{' '}
-            <Link to="/login">
-              <Button className='-ml-3' variant="link">
+            <Link to="/login" disabled={mutation.isPending}>
+              <Button className='-ml-3' variant="link" disabled={mutation.isPending}>
                 Login
               </Button>
             </Link>

@@ -1,5 +1,5 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { ACCOUNT, tabs } from "@/lib/constants";
 import NewOrderButton from "@/components/dashboardLayout/newOrderButton";
@@ -11,6 +11,16 @@ import { LuBuilding, LuChevronDown, LuUsersRound, LuWalletCards, LuArchive, LuPa
 import { FiPlusCircle } from "react-icons/fi";
 import { useAuth } from "@/context/AuthContext";
 
+interface MenuItem {
+    path: string;
+    label: string;
+}
+
+const menuItems: MenuItem[] = [
+    { path: '/client/configuration', label: 'Configuración' },
+    { path: '/provider/configuration', label: 'Configuración' }
+];
+
 type Props = {
     companyName: string
 }
@@ -19,11 +29,20 @@ const iconSize = 20;
 
 export function SideBarMenu({ companyName }: Props) {
     const { account } = useAuth();
+    const location = useLocation();
     const [collapsibleIsOpen, setCollapsibleIsOpen] = useState(false);
     const search = useSearch({ from: "/_authenticated/_dashboardLayout" }) as { tab?: tabs };
-    const location = useLocation();
 
-    // Use useCallback to memoize the onCollapsibleChange function
+    // Check if current path matches any of the menu items
+    const isPathActive = useMemo(() => {
+        return menuItems.some(item => location.pathname.includes(item.path));
+    }, [location.pathname]);
+
+    // Set initial state based on URL
+    useEffect(() => {
+        setCollapsibleIsOpen(isPathActive);
+    }, [isPathActive]);
+
     const onCollapsibleChange = useCallback((value: boolean) => {
         setCollapsibleIsOpen(value);
     }, []);
@@ -44,12 +63,16 @@ export function SideBarMenu({ companyName }: Props) {
     }
 
     return (
-        <div className="h-screen min-h-full w-[12%] min-w-52 bg-secondary-background">
+        <div className="h-screen min-h-full w-[12%] min-w-52 bg-secondary-background shadow">
             <div className="h-30 w-full flex justify-center items-center p-10">
                 <img className='w-auto' src="/mergeo-logo.svg" alt='logo' />
             </div>
 
-            <Collapsible open={!!collapsibleIsOpen} onOpenChange={onCollapsibleChange} className="bg-secondary-foreground py-4 px-4 transition-all">
+            <Collapsible
+                open={collapsibleIsOpen}
+                onOpenChange={onCollapsibleChange}
+                className="bg-secondary-foreground py-4 px-4 transition-all"
+            >
                 <div className="relative flex items-center">
                     <Link to='/client/configuration' search={{ tab: getConfigTab() as unknown as tabs }} className='w-full'>
                         <CollapsibleTrigger className="flex items-center text-secondary-backgroundfont-bold w-full gap-2">
