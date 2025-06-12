@@ -78,7 +78,7 @@ function ResetPassword() {
             await resetPassword(data.password);
             toast({
                 title: 'Contraseña actualizada',
-                description: 'Tu contraseña ha sido actualizada correctamente. Serás redirigido al login.',
+                description: 'Tu contraseña ha sido actualizada correctamente.',
             });
             router.navigate({ to: '/login' });
         } catch (error) {

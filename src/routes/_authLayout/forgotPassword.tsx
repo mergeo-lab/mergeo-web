@@ -1,5 +1,6 @@
 import Card, { CardHeader, CardBody, CardFooter } from '@/components/card';
 import LoadingIndicator from '@/components/loadingIndicator';
+import OverlayLoadingIndicator from '@/components/overlayLoadingIndicator';
 import { Button } from '@/components/ui/button';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -50,7 +51,10 @@ function ForgotPassword() {
                             <p className='text-muted text-sm md:text-base'>Ingresa tu mail y te enviaremos un link para poder rstablecer tu contraseña</p>
                         </div>
                     </CardHeader>
-                    <CardBody className={cn('space-y-8 m-auto h-auto w-1/2')}>
+                    <CardBody className={cn(' m-auto h-auto w-1/2 relative')}>
+                        {loading &&
+                            <OverlayLoadingIndicator />
+                        }
                         <FormField
                             control={form.control}
                             name="email"
@@ -69,8 +73,8 @@ function ForgotPassword() {
                         <div className='flex flex-col-reverse md:flex-row justify-between items-center min-h-24'>
                             <p className='text-sm text-muted'>
                                 Me confundi, no quiero estar aqui!
-                                <Link to="/login">
-                                    <Button className='-ml-3' variant="link">
+                                <Link to="/login" disabled={loading}>
+                                    <Button className='-ml-3' variant="link" disabled={loading}>
                                         Volver al login
                                     </Button>
                                 </Link>
