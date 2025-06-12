@@ -47,12 +47,12 @@ function NotificationsPage() {
                 </Button>
             </div>
 
-            <div className="bg-white rounded-lg shadow">
+            <div className="bg-white rounded-lg">
                 <div className="relative">
                     <div className="overflow-auto max-h-[calc(100vh-250px)]">
                         <Table>
-                            <TableHeader className="sticky top-0 bg-white z-10 hover:bg-white">
-                                <TableRow className='hover:bg-white'>
+                            <TableHeader className="sticky top-0 bg-white z-10 hover:bg-white shadow-sm">
+                                <TableRow className='hover:bg-white h-14'>
                                     <TableHead>Notificación</TableHead>
                                     <TableHead>Fecha</TableHead>
                                     <TableHead>Estado</TableHead>
