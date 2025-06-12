@@ -4,6 +4,7 @@ import React, { Suspense, lazy } from 'react';
 import { tabs } from '@/lib/constants';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Skeleton } from '@/components/ui/skeleton';
+import OverlayLoadingIndicator from '@/components/overlayLoadingIndicator';
 
 // Dynamic imports for configuration components
 const Company = lazy(() => import('@/components/configuration/client').then(mod => ({ default: mod.Company })));
@@ -42,14 +43,14 @@ function Configuration() {
       </TabsList>
       <TabsContent className='h-[calc(100%-50px)] m-0' value="company">
         <ErrorBoundary fallback={<div className="p-4">Error loading company component</div>}>
-          <Suspense fallback={<Skeleton className="w-full h-full rounded" />}>
+          <Suspense fallback={<OverlayLoadingIndicator />}>
             <MemoizedCompany />
           </Suspense>
         </ErrorBoundary>
       </TabsContent>
       <TabsContent className='h-[calc(100%-50px)]  m-0' value="users">
         <ErrorBoundary fallback={<div className="p-4">Error loading users component</div>}>
-          <Suspense fallback={<Skeleton className="w-full h-full rounded" />}>
+          <Suspense fallback={<OverlayLoadingIndicator />}>
             <Users />
           </Suspense>
         </ErrorBoundary>

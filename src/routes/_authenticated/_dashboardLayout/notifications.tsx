@@ -1,4 +1,4 @@
-import { createLazyFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useNotifications } from '@/context/NotificationsContext'
 import { Button } from '@/components/ui/button'
 import { format, isValid } from 'date-fns'
@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { LuTrash2 } from 'react-icons/lu'
 import { DeleteConfirmationDialog } from '@/components/deleteConfirmationDialog'
 
-export const Route = createLazyFileRoute('/_authenticated/_dashboardLayout/notifications')({
+export const Route = createFileRoute('/_authenticated/_dashboardLayout/notifications')({
     component: NotificationsPage
 })
 

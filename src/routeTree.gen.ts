@@ -8,8 +8,6 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
-
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
@@ -22,6 +20,7 @@ import { Route as AuthLayoutRegistrationImport } from './routes/_authLayout/regi
 import { Route as AuthLayoutLoginImport } from './routes/_authLayout/login'
 import { Route as AuthLayoutForgotPasswordImport } from './routes/_authLayout/forgotPassword'
 import { Route as AuthLayoutRegistrationIndexImport } from './routes/_authLayout/registration/index'
+import { Route as AuthenticatedDashboardLayoutNotificationsImport } from './routes/_authenticated/_dashboardLayout/notifications'
 import { Route as AuthenticatedDashboardLayoutAccountTypeImport } from './routes/_authenticated/_dashboardLayout/_accountType'
 import { Route as AuthLayoutRegistrationValidateImport } from './routes/_authLayout/registration/validate'
 import { Route as AuthLayoutRegistrationUserImport } from './routes/_authLayout/registration/user'
@@ -44,12 +43,6 @@ import { Route as AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrd
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientProOrdersPreOrderIdImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/proOrders/$preOrderId'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientListsFavoritesImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/lists/favorites'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientListsBlackListImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/lists/blackList'
-
-// Create Virtual Routes
-
-const AuthenticatedDashboardLayoutNotificationsLazyImport = createFileRoute(
-  '/_authenticated/_dashboardLayout/notifications',
-)()
 
 // Create/Update Routes
 
@@ -106,16 +99,12 @@ const AuthLayoutRegistrationIndexRoute =
     getParentRoute: () => AuthLayoutRegistrationRoute,
   } as any)
 
-const AuthenticatedDashboardLayoutNotificationsLazyRoute =
-  AuthenticatedDashboardLayoutNotificationsLazyImport.update({
+const AuthenticatedDashboardLayoutNotificationsRoute =
+  AuthenticatedDashboardLayoutNotificationsImport.update({
     id: '/notifications',
     path: '/notifications',
     getParentRoute: () => AuthenticatedDashboardLayoutRoute,
-  } as any).lazy(() =>
-    import('./routes/_authenticated/_dashboardLayout/notifications.lazy').then(
-      (d) => d.Route,
-    ),
-  )
+  } as any)
 
 const AuthenticatedDashboardLayoutAccountTypeRoute =
   AuthenticatedDashboardLayoutAccountTypeImport.update({
@@ -373,7 +362,7 @@ declare module '@tanstack/react-router' {
       id: '/_authenticated/_dashboardLayout/notifications'
       path: '/notifications'
       fullPath: '/notifications'
-      preLoaderRoute: typeof AuthenticatedDashboardLayoutNotificationsLazyImport
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutNotificationsImport
       parentRoute: typeof AuthenticatedDashboardLayoutImport
     }
     '/_authLayout/registration/': {
@@ -614,7 +603,7 @@ const AuthenticatedDashboardLayoutAccountTypeRouteWithChildren =
 
 interface AuthenticatedDashboardLayoutRouteChildren {
   AuthenticatedDashboardLayoutAccountTypeRoute: typeof AuthenticatedDashboardLayoutAccountTypeRouteWithChildren
-  AuthenticatedDashboardLayoutNotificationsLazyRoute: typeof AuthenticatedDashboardLayoutNotificationsLazyRoute
+  AuthenticatedDashboardLayoutNotificationsRoute: typeof AuthenticatedDashboardLayoutNotificationsRoute
   AuthenticatedDashboardLayoutBuyOrderOrderIdRoute: typeof AuthenticatedDashboardLayoutBuyOrderOrderIdRoute
   AuthenticatedDashboardLayoutBuyOrderIndexRoute: typeof AuthenticatedDashboardLayoutBuyOrderIndexRoute
 }
@@ -623,8 +612,8 @@ const AuthenticatedDashboardLayoutRouteChildren: AuthenticatedDashboardLayoutRou
   {
     AuthenticatedDashboardLayoutAccountTypeRoute:
       AuthenticatedDashboardLayoutAccountTypeRouteWithChildren,
-    AuthenticatedDashboardLayoutNotificationsLazyRoute:
-      AuthenticatedDashboardLayoutNotificationsLazyRoute,
+    AuthenticatedDashboardLayoutNotificationsRoute:
+      AuthenticatedDashboardLayoutNotificationsRoute,
     AuthenticatedDashboardLayoutBuyOrderOrderIdRoute:
       AuthenticatedDashboardLayoutBuyOrderOrderIdRoute,
     AuthenticatedDashboardLayoutBuyOrderIndexRoute:
@@ -659,7 +648,7 @@ export interface FileRoutesByFullPath {
   '/registration/company': typeof AuthLayoutRegistrationCompanyRoute
   '/registration/user': typeof AuthLayoutRegistrationUserRoute
   '/registration/validate': typeof AuthLayoutRegistrationValidateRoute
-  '/notifications': typeof AuthenticatedDashboardLayoutNotificationsLazyRoute
+  '/notifications': typeof AuthenticatedDashboardLayoutNotificationsRoute
   '/registration/': typeof AuthLayoutRegistrationIndexRoute
   '/buyOrder/$orderId': typeof AuthenticatedDashboardLayoutBuyOrderOrderIdRoute
   '/buyOrder': typeof AuthenticatedDashboardLayoutBuyOrderIndexRoute
@@ -690,7 +679,7 @@ export interface FileRoutesByTo {
   '/registration/company': typeof AuthLayoutRegistrationCompanyRoute
   '/registration/user': typeof AuthLayoutRegistrationUserRoute
   '/registration/validate': typeof AuthLayoutRegistrationValidateRoute
-  '/notifications': typeof AuthenticatedDashboardLayoutNotificationsLazyRoute
+  '/notifications': typeof AuthenticatedDashboardLayoutNotificationsRoute
   '/registration': typeof AuthLayoutRegistrationIndexRoute
   '/buyOrder/$orderId': typeof AuthenticatedDashboardLayoutBuyOrderOrderIdRoute
   '/buyOrder': typeof AuthenticatedDashboardLayoutBuyOrderIndexRoute
@@ -726,7 +715,7 @@ export interface FileRoutesById {
   '/_authLayout/registration/user': typeof AuthLayoutRegistrationUserRoute
   '/_authLayout/registration/validate': typeof AuthLayoutRegistrationValidateRoute
   '/_authenticated/_dashboardLayout/_accountType': typeof AuthenticatedDashboardLayoutAccountTypeRouteWithChildren
-  '/_authenticated/_dashboardLayout/notifications': typeof AuthenticatedDashboardLayoutNotificationsLazyRoute
+  '/_authenticated/_dashboardLayout/notifications': typeof AuthenticatedDashboardLayoutNotificationsRoute
   '/_authLayout/registration/': typeof AuthLayoutRegistrationIndexRoute
   '/_authenticated/_dashboardLayout/buyOrder/$orderId': typeof AuthenticatedDashboardLayoutBuyOrderOrderIdRoute
   '/_authenticated/_dashboardLayout/buyOrder/': typeof AuthenticatedDashboardLayoutBuyOrderIndexRoute
@@ -959,7 +948,7 @@ export const routeTree = rootRoute
       ]
     },
     "/_authenticated/_dashboardLayout/notifications": {
-      "filePath": "_authenticated/_dashboardLayout/notifications.lazy.tsx",
+      "filePath": "_authenticated/_dashboardLayout/notifications.tsx",
       "parent": "/_authenticated/_dashboardLayout"
     },
     "/_authLayout/registration/": {
