@@ -13,8 +13,8 @@ type UsePaginatedSearchProps<TParams, TData> = {
 export function usePaginatedSearch<TParams, TData>({
   queryKeyPrefix,
   queryFn,
-  defaultSort = PaginationSort.ASC,
-  defaultOrderBy = 'created',
+  defaultSort = PaginationSort.DESC,
+  defaultOrderBy = 'updated',
   getEnabled = (params) => !!params,
 }: UsePaginatedSearchProps<TParams, TData>) {
   const [params, setParams] = useState<TParams | null>(null);

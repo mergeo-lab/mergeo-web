@@ -32,6 +32,7 @@ const listOfDays: Day[] = [
   { name: 'Jueves', value: 'jueves', disabled: false },
   { name: 'Viernes', value: 'viernes', disabled: false },
   { name: 'Sabado', value: 'sabado', disabled: false },
+  { name: 'Domingo', value: 'domingo', disabled: false },
 ];
 
 const useDaysPickerStore = create<DaysPickerState>((set) => ({

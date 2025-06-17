@@ -112,9 +112,14 @@ export default function ProviderProductsTable({ products, currentPage, tableRef,
                             '[&>td]:opacity-45': !(optimisticStatus[product.id] ?? product.isActive),
                         })}>
                             <TableCell className="font-semibold">
-                                <p className="pl-5">
-                                    {product.name}
-                                </p>
+                                <div className="pl-5 flex flex-col">
+                                    <p>
+                                        {product.name}
+                                    </p>
+                                    <span className="text-[10px] text-muted-foreground/70">
+                                        {product.variety}
+                                    </span>
+                                </div>
                             </TableCell>
                             <TableCell>{product.brand}</TableCell>
                             <TableCell>{formatToArgentinianPesos(+product.price)}</TableCell>
@@ -133,7 +138,7 @@ export default function ProviderProductsTable({ products, currentPage, tableRef,
                                     />
                                 </div>
                             </TableCell>
-                            <TableCell className="flex justify-end space-x-2 [&>a>button]:h-8 [&>button]:h-8 -mt-2 mr-5">
+                            <TableCell className="flex justify-end space-x-2 [&>a>button]:h-8 [&>button]:h-8 mr-5">
                                 <Link to="/provider/products/$productId" params={{ productId: product.id }} search={{ edit: false, currentPage }}>
                                     <Button
                                         className="hover:multi-[bg-info;text-white;border-info;] text-info"

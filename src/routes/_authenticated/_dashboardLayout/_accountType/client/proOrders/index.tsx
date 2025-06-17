@@ -142,7 +142,7 @@ export default function PreOrders() {
                                                                     <Link to={`/buyOrder/$orderId`} params={{ orderId: order.buyOrder.id }} key={order.buyOrder.id}>
                                                                         <Button variant='ghost' className='space-x-2'>
                                                                             <LuEye className='cursor-pointer' size={20} />
-                                                                            <p>Ver Ordern de Compra</p>
+                                                                            <p>Ver Orden de Compra</p>
                                                                         </Button>
                                                                     </Link>
                                                                 )

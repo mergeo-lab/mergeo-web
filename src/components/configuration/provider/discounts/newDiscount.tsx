@@ -132,30 +132,32 @@ export default function NewDiscount({ openit, isEdit = false, onClose, data, ite
                                                     </FormItem>
                                                 )}
                                             />
-                                            <div className="border border-border rounded-md p-4">
-                                                <FormField
-                                                    control={form.control}
-                                                    name="discount"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel id="discount">Descuento</FormLabel>
-                                                            <FormControl>
-                                                                <div className="flex items-center space-x-4">
-                                                                    <Slider
-                                                                        max={100}
-                                                                        min={0}
-                                                                        step={1}
-                                                                        value={[field.value || 0]}
-                                                                        onValueChange={(val) => field.onChange(val[0])}
-                                                                    />
-                                                                    <span className="text-right w-10">{field.value ?? 0}%</span>
-                                                                </div>
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            </div>
+                                            <FormField
+                                                control={form.control}
+                                                name="discount"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel id="discount">Descuento</FormLabel>
+                                                        <FormControl>
+                                                            <div className="flex items-center space-x-4">
+                                                                <Input
+                                                                    type="number"
+                                                                    value={field.value || ""}
+                                                                    onChange={(e) => {
+                                                                        const val = e.target.value;
+                                                                        if (val.length <= 3 && Number(val) <= 100) {
+                                                                            field.onChange(Number(val));
+                                                                        }
+                                                                    }}
+                                                                    maxLength={3}
+                                                                />
+                                                                <span className="text-right w-10">{field.value ?? 0}%</span>
+                                                            </div>
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
                                             <FormField
                                                 control={form.control}
                                                 name="description"

@@ -3,12 +3,14 @@ import { Button } from '@/components/ui/button';
 import { useDrawingManager } from '@/components/map/use-drawing-manager';
 import { FaRegHandRock } from "react-icons/fa";
 import { LuPentagon } from "react-icons/lu";
+import { cn } from '@/lib/utils';
 
 type CustomDrawingControlsProps = {
     onPolygonComplete: (coordinates: google.maps.LatLngLiteral[]) => void;
+    className?: string;
 };
 
-const CustomDrawingControls = ({ onPolygonComplete }: CustomDrawingControlsProps) => {
+const CustomDrawingControls = ({ onPolygonComplete, className }: CustomDrawingControlsProps) => {
     const [polygonDrawn, setPolygonDrawn] = useState(false);
     const polygonRef = useRef<google.maps.Polygon | null>(null);
     const previousCoordinatesRef = useRef<google.maps.LatLngLiteral[] | null>(null);
@@ -63,8 +65,8 @@ const CustomDrawingControls = ({ onPolygonComplete }: CustomDrawingControlsProps
     const { startDrawing } = useDrawingManager(null, handleOverlayComplete);
 
     return (
-        <div className="absolute top-24 left-2 flex flex-col gap-2">
-            <div className="flex flex-col-reverse items-center rounded shadow bg-white">
+        <div className={cn("absolute top-24 flex flex-col gap-2", className)}>
+            <div className="flex flex-reverse items-center rounded shadow bg-white">
                 <Button
                     variant="ghost"
                     onClick={() => startDrawing(google.maps.drawing.OverlayType.POLYGON)}

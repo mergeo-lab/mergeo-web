@@ -28,13 +28,15 @@ export const CustomMapControl = ({ controlPosition, onPlaceSelect }: CustomAutoc
     };
 
     return (
-        <>
+        <div className='w-full h-fit'>
             <MapControl position={controlPosition}>
-                <div className="w-96 mt-1">
-                    <AutocompleteCustom onPlaceSelect={onPlaceSelect} />
+                <div className='w-full mt-2 rounded h-20 bg-black/20 z-30 flex gap-3 items-center p-5'>
+                    <div className="w-96">
+                        <AutocompleteCustom onPlaceSelect={onPlaceSelect} />
+                    </div>
+                    <CustomDrawingControls onPolygonComplete={handlePolygonComplete} className='right-0 top-0 relative' />
                 </div>
             </MapControl>
-            <CustomDrawingControls onPolygonComplete={handlePolygonComplete} />
-        </>
+        </div>
     );
 };

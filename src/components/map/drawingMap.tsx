@@ -93,7 +93,7 @@ const DrawingMap = ({ zone = [], hideControls = false }: Props) => {
         <>
             <Map
                 className="w-full h-full m-0 p-0"
-                defaultZoom={3}
+                defaultZoom={5}
                 defaultCenter={centerArgentina}
                 gestureHandling="greedy"
                 disableDefaultUI={true}
