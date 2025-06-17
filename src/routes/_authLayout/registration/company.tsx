@@ -3,15 +3,15 @@ import { CardBody, CardFooter } from '@/components/card'
 import { Button } from '@/components/ui/button'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { GoogleLocationSchemaType, RegisterCompanySchema, RegisterCompanySchemaType } from '@/lib/schemas'
+import { GoogleLocationSchemaType, LocationSchemaType, RegisterCompanySchema, RegisterCompanySchemaType } from '@/lib/schemas'
 import { FormProvider, Resolver, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { registerCompany } from '@/lib/auth'
 import UseRegistrationStore from '@/store/registration.store'
 import { useToast } from '@/components/ui/use-toast'
-import { GoogleAutoComplete } from '@/components/googleAutoComplete'
 import OverlayLoadingIndicator from '@/components/overlayLoadingIndicator'
+import { AddressMapSelector } from '@/components/map/AddressMapSelector'
 
 export const Route = createFileRoute('/_authLayout/registration/company')({
   component: () => <RegisterCompany />
@@ -85,14 +85,9 @@ function RegisterCompany() {
     }
   }
 
-  const addBranch = (address: GoogleLocationSchemaType) => {
-    form.setValue('branch.address', {
-      location: {
-        type: "Point",
-        coordinates: [address.location.latitude, address.location.longitude]
-      },
-      name: address.displayName.text
-    });
+  const addBranch = (address: LocationSchemaType) => {
+    console.log("ADDRESS :: ", address)
+    form.setValue('branch.address', address);
   }
 
   return (
@@ -163,12 +158,12 @@ function RegisterCompany() {
               <FormField
                 control={form.control}
                 name="branch.address"
-                render={() => (
-                  <FormItem>
-                    <FormLabel id='branch.address'>Dirección de la Sucursal</FormLabel>
-                    <GoogleAutoComplete selectedAddress={addBranch} disabled={false} />
-                    <FormMessage />
-                  </FormItem>
+                render={({ field }) => (
+                  <AddressMapSelector
+                    value={field.value}
+                    onChange={(address) => addBranch(address)}
+                    label="Dirección de la Sucursal"
+                  />
                 )}
               />
             </div>
