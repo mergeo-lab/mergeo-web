@@ -258,38 +258,40 @@ export default function ProductsTable({ configCanceled }: Params) {
 
     return (
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-            <div className="relative w-full">
-                <div className="h-[calc(100vh-220px)] w-full overflow-y-auto" ref={tableRef}>
+            <div className="relative w-full overflow-x-auto">
+                <div className="h-[calc(100vh-220px)] w-full overflow-y-auto overflow-x-auto" ref={tableRef}>
                     <div className="w-full h-12 bg-white absolute top-0 left-0"></div>
-                    <Table>
-                        <TableHeader className="sticky right-0 left-0 top-0 w-full bg-white z-40 shadow-sm">
-                            <tr className="hover:bg-white w-full">
-                                <TableHead className="w-20"></TableHead>
-                                <TableHead className="w-96">PRODUCTO</TableHead>
-                                <TableHead className="text-center">UNIDAD</TableHead>
-                                <TableHead className="text-center">PRECIO</TableHead>
-                                <TableHead className="text-center">PUM</TableHead>
-                                <TableHead className="text-right"></TableHead>
-                            </tr>
-                        </TableHeader>
-                        <TableBody className="[&>*]:hover:bg-white z-10">
-                            {isLoading || isFetching
-                                ? loadingIndicator()
-                                : (
-                                    filteredProducts && filteredProducts.map((product: ProductSchemaType) => (
-                                        <ProductRow
-                                            key={product.id}
-                                            product={product}
-                                            onQuantityChange={handleProductChange}
-                                            savedProducts={getAllSavedProducts()}
-                                            handleToggleFavorite={handleToggleFavorite}
-                                            addProductToBlackList={handleAddProductToBlackList}
-                                        />
-                                    ))
-                                )
-                            }
-                        </TableBody>
-                    </Table>
+                    <div className="min-w-[800px]">
+                        <Table>
+                            <TableHeader className="sticky right-0 left-0 top-0 w-full bg-white z-40 shadow-sm">
+                                <tr className="hover:bg-white w-full">
+                                    <TableHead className="w-fit hidden 2xl:table-cell"></TableHead>
+                                    <TableHead className="w-auto">PRODUCTO</TableHead>
+                                    <TableHead className="text-center">UNIDAD</TableHead>
+                                    <TableHead className="text-center">PRECIO</TableHead>
+                                    <TableHead className="text-center">PUM</TableHead>
+                                    <TableHead className="text-right"></TableHead>
+                                </tr>
+                            </TableHeader>
+                            <TableBody className="[&>*]:hover:bg-white z-10">
+                                {isLoading || isFetching
+                                    ? loadingIndicator()
+                                    : (
+                                        filteredProducts && filteredProducts.map((product: ProductSchemaType) => (
+                                            <ProductRow
+                                                key={product.id}
+                                                product={product}
+                                                onQuantityChange={handleProductChange}
+                                                savedProducts={getAllSavedProducts()}
+                                                handleToggleFavorite={handleToggleFavorite}
+                                                addProductToBlackList={handleAddProductToBlackList}
+                                            />
+                                        ))
+                                    )
+                                }
+                            </TableBody>
+                        </Table>
+                    </div>
                 </div>
                 {data && data.totalPages > 1 &&
                     <PaginationCustom

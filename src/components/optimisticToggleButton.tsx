@@ -12,6 +12,7 @@ interface OptimisticToggleButtonProps<T> {
     inactiveIcon: React.ReactNode;
     disabled?: boolean;
     tooltip?: string;
+    className?: string;
 }
 
 interface ToggleContext {
@@ -26,6 +27,7 @@ export function OptimisticToggleButton<T>({
     inactiveIcon,
     disabled,
     tooltip,
+    className,
 }: OptimisticToggleButtonProps<T>) {
     const queryClient = useQueryClient();
     const queryKey: QueryKey = ['toggleState', itemId]; // itemId must be serializable (string, number, etc.)
@@ -66,7 +68,7 @@ export function OptimisticToggleButton<T>({
                         onClick={handleClick}
                         className={cn("p-0 m-0 w-12", {
                             "text-muted/50": disabled || mutation.isPending,
-                        })}
+                        }, className)}
                     >
                         {optimisticState ? activeIcon : inactiveIcon}
                     </Button>
