@@ -71,6 +71,8 @@ export function AddSearchList({
     useEffect(() => {
         if (mutation.isPending || addProductsMutation.isPending || fileLoadMutation.isPending) {
             setIsLoading(true);
+        } else {
+            setIsLoading(false);
         }
     }, [mutation.isPending, addProductsMutation.isPending, fileLoadMutation.isPending]);
 
@@ -117,11 +119,13 @@ export function AddSearchList({
                 callback();
                 handleCancel();
                 removeAllProducts();
+                setIsLoading(false);
                 setOpen(false);
             }
 
         } else if (fields.file && fields.file.length > 0) {
             uploadFile(id, fields.file[0]);
+            setIsLoading(false);
         }
     }
 
