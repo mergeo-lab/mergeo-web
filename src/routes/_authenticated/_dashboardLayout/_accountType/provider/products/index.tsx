@@ -100,10 +100,15 @@ export default function Products() {
 
     return (
         <div className="grid grid-rows-[auto_1fr] h-full w-full">
-            <div className="bg-accent h-20 px-10 shadow z-20 flex justify-between items-center">
+            <div className="bg-accent h-20 w-full px-5 shadow z-20 flex justify-between items-center">
 
-                <div className='w-full flex gap-5'>
-                    <ProductFormFinder onChange={onSearchChange} disabled={isLoading || !data?.products || data && data.products.length === 0} defaults={search} />
+                <div className='w-full flex gap-2'>
+                    <ProductFormFinder
+                        onChange={onSearchChange}
+                        disabled={isLoading || !data?.products || data && data.products.length === 0}
+                        defaults={search}
+                        inputWidth='60px'
+                    />
                     <div className='flex items-center gap-2 [&>p]:text-nowrap'>
                         <p>Ordenar por</p>
                         <Select onValueChange={sortBySelection} value={sort.id} disabled={!data?.products || data && data.products.length === 0}>
@@ -124,7 +129,7 @@ export default function Products() {
                 <div className='flex justify-center items-center w-fit'>
                     <Link to="/provider/products/newProducts">
                         <Button className='flex gap-2'>
-                            <FaPlus size={20} strokeWidth={3} />
+                            <FaPlus size={12} />
                             <p>Agregar Productos</p>
                         </Button>
                     </Link>
@@ -183,7 +188,7 @@ export default function Products() {
                                 <p className='font-light mb-5'>Puedes hacerlo manualmete o subir una lista</p>
                                 <Link to="/provider/products/newProducts">
                                     <Button className='flex gap-2'>
-                                        <FaPlus size={20} strokeWidth={3} />
+                                        <FaPlus size={12} />
                                         <p>Agregar Productos</p>
                                     </Button>
                                 </Link>

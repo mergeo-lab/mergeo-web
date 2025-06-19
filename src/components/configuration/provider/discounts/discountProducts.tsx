@@ -69,7 +69,7 @@ export default function DiscountProducts({ selectedDiscountId, discount }: Props
     }
 
     if (isLoading) {
-        return (<div className='h-full w-full relative '>
+        return (<div className='h-[380px] 2xl:h-[630px] w-full relative '>
             <OverlayLoadingIndicator label='Buscando Productos' />
         </div>)
     }
@@ -82,14 +82,15 @@ export default function DiscountProducts({ selectedDiscountId, discount }: Props
     );
 
     return (
-        <div className="relative">
-            <div className="w-full px-5">
-                <div className="p-2 pl-5 border border-border rounded-md font-thin mb-4">
-                    Descuento aplicado: <span className="text-highlight font-black">{discount}%</span>
+        <div className="relative h-full">
+            <div className="w-full h-full px-2">
+                <div className="w-full flex justify-center items-center px-3">
+                    <div className="w-full py-1 pl-5 border border-border rounded-md font-thin mb-4 bg-muted/10">
+                        Descuento aplicado: <span className="text-highlight font-black">{discount}%</span>
+                    </div>
                 </div>
                 {removeProductMutation.isPending && <OverlayLoadingIndicator />}
-                <div className="px-4 overflow-auto h-[650px] pb-5">
-
+                <div className="px-4 overflow-y-auto h-[calc(100vh-18%)] pb-10">
                     {data && data.products.map((p: ProductSchemaType) => (
                         <div key={p.id} className={cn("transition-all overflow-hidden duration-300", {
                             "opacity-0 max-h-0": removingIds.includes(p.id),
@@ -102,12 +103,11 @@ export default function DiscountProducts({ selectedDiscountId, discount }: Props
                             />
                         </div>
                     ))}
-
                 </div>
             </div>
 
             {data && data.totalPages > 1 && (
-                <div className='sticky bottom-0 bg-white py-5 shadow-[0_-4px_6px_-1px_rgb(0_0_0_/0.1)]'>
+                <div className='sticky bottom-0 bg-white py-3 shadow-[0_-4px_6px_-1px_rgb(0_0_0_/0.1)]'>
                     <PaginationCustom
                         currentPage={page}
                         prev={page > 1}

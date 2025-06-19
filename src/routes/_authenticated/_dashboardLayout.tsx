@@ -219,13 +219,13 @@ function DashboardLayout() {
                     <MemoizedSideBarMenu companyName={account?.company.name || ''} />
                 </Suspense>
             </ErrorBoundary>
-            <div className='w-full md:px-12 flex flex-col justify-center'>
+            <div className='w-full px-5 2xl:px-12 flex flex-col justify-center'>
                 <ErrorBoundary fallback={<div className="h-16 px-4 flex items-center border-b">Dashboard</div>}>
                     <Suspense fallback={<div className="h-16 bg-white shadow animate-pulse"></div>}>
                         <DashboardHeader title={currentTitle} />
                     </Suspense>
                 </ErrorBoundary>
-                <div className='w-[calc(100vw-300px)] h-screen mt-0 my-10 border rounded shadow lg:max-h-[calc(100vh-110px)] bg-white'>
+                <div className='w-[calc(100vw-250px)] 2xl:w-[calc(100vw-300px)] h-screen mt-0 my-10 border rounded shadow lg:max-h-[calc(100vh-110px)] bg-white'>
                     <ErrorBoundary
                         FallbackComponent={ErrorFallback}
                         onError={(error, info) => {

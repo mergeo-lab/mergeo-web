@@ -112,7 +112,7 @@ export default function ProviderProductsTable({ products, currentPage, tableRef,
                             '[&>td]:opacity-45': !(optimisticStatus[product.id] ?? product.isActive),
                         })}>
                             <TableCell className="font-semibold">
-                                <div className="pl-5 flex flex-col">
+                                <div className="flex flex-col">
                                     <p>
                                         {product.name}
                                     </p>

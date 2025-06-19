@@ -11,10 +11,11 @@ import { RxCross2 } from "react-icons/rx";
 type Props = {
     disabled: boolean,
     defaults: ProductsFormFinderType,
+    inputWidth?: string,
     onChange(fields: ProductsFormFinderType): void,
 }
 
-export default function ProductFormFinder({ disabled, defaults, onChange }: Props) {
+export default function ProductFormFinder({ disabled, defaults, inputWidth = "100px", onChange }: Props) {
     const form = useForm<ProductsFormFinderType>({
         resolver: zodResolver(ProductsFormFinder),
         disabled: disabled,
@@ -44,7 +45,7 @@ export default function ProductFormFinder({ disabled, defaults, onChange }: Prop
     return (
         <FormProvider {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}
-                className="p-2 flex justify-start gap-5 [&>div]:multi-[flex;flex-row;gap-2;text-nowrap;items-center;] [&>div>input]:w-[100px]">
+                className="p-2 flex justify-start gap-2" >
                 <FormField
                     control={form.control}
                     name="name"
@@ -54,7 +55,7 @@ export default function ProductFormFinder({ disabled, defaults, onChange }: Prop
                                 <FormLabel id='name'>Nombre</FormLabel>
                                 <div className="relative">
                                     <FormControl>
-                                        <Input {...field} className="w-56" />
+                                        <Input {...field} className={`w-[${inputWidth}]`} />
                                     </FormControl>
                                     {field.value && field.value?.length > 0 &&
                                         <Button
@@ -63,7 +64,7 @@ export default function ProductFormFinder({ disabled, defaults, onChange }: Prop
                                             className="absolute right-0 top-[50%] -translate-y-[50%]"
                                             onClick={() => resetField(field.name)}
                                         >
-                                            <RxCross2 size={20} strokeWidth={3} />
+                                            <RxCross2 size={18} />
                                         </Button>
                                     }
                                 </div>
@@ -82,7 +83,7 @@ export default function ProductFormFinder({ disabled, defaults, onChange }: Prop
                                 <FormLabel id='brand'>Marca</FormLabel>
                                 <div className="relative">
                                     <FormControl>
-                                        <Input {...field} className="w-56 pr-14" />
+                                        <Input {...field} className={`w-[${inputWidth}]`} />
                                     </FormControl>
                                     {field.value && field.value?.length > 0 &&
                                         <Button
@@ -91,7 +92,7 @@ export default function ProductFormFinder({ disabled, defaults, onChange }: Prop
                                             className="absolute right-0 top-[50%] -translate-y-[50%]"
                                             onClick={() => resetField(field.name)}
                                         >
-                                            <RxCross2 size={20} strokeWidth={3} />
+                                            <RxCross2 size={18} />
                                         </Button>
                                     }
                                 </div>
@@ -103,13 +104,13 @@ export default function ProductFormFinder({ disabled, defaults, onChange }: Prop
 
                 <Button
                     type="submit"
-                    className="flex gap-3 px-10"
+                    className="flex gap-1 px-5 !w-fit"
                     disabled={isDisabled}
                 >
-                    <FiSearch />
+                    <FiSearch size={20} />
                     Buscar
                 </Button>
             </form>
-        </FormProvider>
+        </FormProvider >
     )
 }

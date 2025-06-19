@@ -96,12 +96,6 @@ export default function DiscountAddProducts({ companyId, discountListId, discoun
                 </SearchProducts>
                 <div className="w-full flex justify-between items-center h-20 gap-2 border-b-[1px] border-border text-sm bg-muted/20 px-3">
 
-                    {/* <Button
-                        variant="outlineSecondary"
-                        onClick={() => { }}
-                    >
-                        Agregar todos los productos del inventario
-                    </Button> */}
                     <Button
                         className="flex gap-2"
                         variant="outlineSecondary"
@@ -139,7 +133,7 @@ export default function DiscountAddProducts({ companyId, discountListId, discoun
 
             {
                 !isLoading && !data && (
-                    <div className="w-full h-full flex justify-center items-center">
+                    <div className="w-full h-[380px] 2xl:h-[630px] flex justify-center items-center">
                         <div className="w-fit h-fit bg-white shadow rounded p-10 flex gap-5 items-center">
                             <div>Aun no tienes productos en esta lista, usa el buscador para agregar</div>
                         </div>
@@ -149,7 +143,7 @@ export default function DiscountAddProducts({ companyId, discountListId, discoun
 
             {
                 !isLoading && data && data?.products.length <= 0 && (
-                    <div className="w-full h-full flex justify-center items-center">
+                    <div className="w-full h-[380px] 2xl:h-[630px] flex justify-center items-center">
                         <div className="w-fit h-fit bg-white shadow rounded p-10 flex gap-5 items-center">
                             <div>No se encontraron productos para esa busqueda!</div>
                         </div>
@@ -157,7 +151,7 @@ export default function DiscountAddProducts({ companyId, discountListId, discoun
                 )
             }
 
-            <div className="mt-2 overflow-y-auto pl-2 h-[650px]">
+            <div className="mt-2 overflow-y-auto pl-2 h-[380px] 2xl:h-[630px]">
                 {
                     data && data.products.map(p => (
                         <DiscountProductRow

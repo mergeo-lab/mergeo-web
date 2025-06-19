@@ -22,15 +22,15 @@ export default function DiscountProductRow({ className, discountPercent = 0, isA
     return (
         <div className={cn("w-full pr-6 py-2 border-b-[1px] border-border bg-white flex justify-between items-center gap-10 text-sm", className)}>
             <div className="flex gap-10 items-start">
-                <div className="flex flex-col w-36" title={`${product.name} ${product.brand}`}>
+                <div className="flex flex-col w-52" title={`${product.name} ${product.brand}`}>
                     <span className="w-full truncate">
                         {product.name}
+                        <span className="w-32 line-clamp-3 text-[0.6rem] text-muted">{product.variety || "-"}</span>
                     </span>
                     <span className="text-[0.688rem] text-info/80">
                         {product.brand}
                     </span>
                 </div>
-                <span className="w-32 line-clamp-3 text-[0.7rem]">{product.variety || "-"}</span>
                 <span className="w-16 truncate">{product.netContent + " " + product.measurementUnit}</span>
                 <div className="flex flex-col w-30">
                     <span className="text-black/80 font-thin">Precio original</span>

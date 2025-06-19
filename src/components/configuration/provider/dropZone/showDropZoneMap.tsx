@@ -39,7 +39,7 @@ export function ShowDropZoneMap(
                         {subTitle}
                     </DialogDescription>
                 </DialogHeader>
-                <div className="w-full h-[650px] overflow-hidden p-0 m-0">
+                <div className="w-full h-[calc(100vh-230px)] overflow-hidden p-0 m-0">
                     <DrawingMap zone={zone} hideControls />
                 </div>
 

@@ -64,10 +64,10 @@ export default function UploadManualProducts() {
                     />
                 </div>
                 <SearchProducts companyId={companyId} className="flex items-center gap-4">
-                    <CustomSearchField name="name" label="Nombre" companyId={companyId} className="w-72" />
-                    <CustomSearchField name="brand" label="Marca" companyId={companyId} className="w-72" />
+                    <CustomSearchField name="name" label="Nombre" companyId={companyId} className="w-52 2xl:w-72" />
+                    <CustomSearchField name="brand" label="Marca" companyId={companyId} className="w-52 2xl:w-72" />
                     <span className="mr-5">o</span>
-                    <CustomSearchField name="ean" label="Código Ean" companyId={companyId} className="w-72" />
+                    <CustomSearchField name="ean" label="Código Ean" companyId={companyId} className="w-52 2xl:w-72" />
                 </SearchProducts>
 
             </div >

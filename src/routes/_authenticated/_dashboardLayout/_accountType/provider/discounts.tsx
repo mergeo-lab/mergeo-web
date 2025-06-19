@@ -16,6 +16,8 @@ import DiscountTabs from '@/components/configuration/provider/discounts/discount
 import { GoPencil } from 'react-icons/go';
 import ClientCuitList from '@/components/configuration/provider/discounts/clientsCuitList';
 import { MdAddBusiness } from "react-icons/md";
+import { BiSolidUpArrow } from "react-icons/bi";
+import { cn } from '@/lib/utils';
 
 export const Route = createFileRoute(
     '/_authenticated/_dashboardLayout/_accountType/provider/discounts',
@@ -29,6 +31,7 @@ export function Discounts() {
     const [selectedDiscount, setSelectedDiscount] = useState<string | null>(null)
     const [showNewDiscountModal, setShowNewDiscountModal] = useState({ open: false, isEdit: false });
     const [prevListLength, setPrevListLength] = useState(0);
+    const [showClients, setShowClients] = useState(false);
 
     const { data: lists, isLoading: searchListsLoading, isError, refetch } = useQuery({
         queryKey: ['discount-lists', companyId],
@@ -103,10 +106,10 @@ export function Discounts() {
     } else {
         return (
             <>
-                <div className='flex h-full'>
-                    <div className='w-[25rem] max-w-[25rem] relative bg-white shadow pb-2 flex flex-col items-center z-30'>
+                <div className='flex h-full w-full overflow-hidden'>
+                    <div className='relative bg-white shadow pb-2 flex flex-col items-center z-30'>
                         <div className='w-full shadow flex justify-center items-center py-4 mb-2'>
-                            <h3 className='text-bold text-[1.2rem]'>Listas de descuentos</h3>
+                            <h3 className='text-bold text-nowrap px-4 text-[1.2rem]'>Listas de descuentos</h3>
                         </div>
                         <div className='w-full h-[80%] overflow-y-auto'>
                             {lists && lists.map((list: DiscountSchemaType) => (
@@ -119,7 +122,7 @@ export function Discounts() {
                                     <Button
                                         type='button'
                                         variant="ghost"
-                                        className="h-8 w-8! flex justify-center items-center hover:bg-white"
+                                        className="h-6 w-6! px-2 mr-2 flex justify-center items-center hover:bg-white"
                                         onClick={() => setShowNewDiscountModal({ open: true, isEdit: true })}
                                     >
                                         <GoPencil size={16} />
@@ -128,8 +131,8 @@ export function Discounts() {
                                 </DiscountListItem>
                             ))}
                         </div>
-                        <div className='w-full flex justify-center items-center gap-4 bg-white'>
-                            <Button className='mt-5 w-60 flex items-center gap-2'
+                        <div className='w-full px-3 flex justify-center items-center bg-white'>
+                            <Button className='mt-5 flex items-center gap-2 w-full'
                                 onClick={handleCreateDiscountList}
                             >
                                 <CgPlayListAdd size={22} className='-ml-2' />
@@ -137,34 +140,52 @@ export function Discounts() {
                             </Button>
                         </div>
                     </div>
-                    <div className='w-full flex h-full bg-white'>
-                        <div className='h-full w-3/4 py-5 z-20 shadow'>
-                            <DiscountTabs
-                                selectedDiscountId={selectedDiscount}
-                                companyId={companyId}
-                                discount={selectedDiscount ? lists.find((item: DiscountSchemaType) => item.id === selectedDiscount)?.discount : 0}
-                            />
-                        </div>
-                        <div className='h-full w-2/6 z-10 relative'>
-                            <div className='w-full border-b-[1px] border-border flex justify-center items-center py-4 mb-2'>
-                                <h3 className='text-bold text-[1.2rem]'>Clientes</h3>
-                            </div>
-                            <div className='px-5'>
-                                {selectedDiscount &&
-                                    <ClientCuitList companies={lists.find((item: DiscountSchemaType) => item.id === selectedDiscount)?.companies} />
-                                }
-                            </div>
-                            <div className='absolute bottom-10 w-full flex justify-center'>
+                    <div className='w-full m-auto flex h-full bg-white flex-col items-start justify-start overflow-y-hidden'>
+                        {/* CLIENTES */}
+                        <div className={cn('h-fit w-full z-10 transition-all duration-300')}>
+                            <div className='w-full border-b-[1px] border-border flex justify-between items-center py-3 pl-6 mb-1'>
+                                <h3 className='text-bold'>Clientes</h3>
                                 <Button
-                                    variant="outline"
+                                    variant="link"
                                     disabled={!selectedDiscount}
                                     onClick={() => setShowNewDiscountModal({ open: true, isEdit: true })}
-                                    className='space-x-2'
+                                    className='space-x-2 h-5 text-primary'
                                 >
                                     <MdAddBusiness size={24} />
                                     <span>Agregar o sacar cliente</span>
                                 </Button>
                             </div>
+                            <div className={cn('px-5 h-[40px] transition-all duration-300', {
+                                'h-[400px] overflow-y-auto': showClients,
+                            })}>
+                                {selectedDiscount &&
+                                    <ClientCuitList companies={lists.find((item: DiscountSchemaType) => item.id === selectedDiscount)?.companies} />
+                                }
+                            </div>
+                        </div>
+                        <div className='w-full h-[40px min-h-[40px] z-20 max-h-28 bg-gradient-to-t from-stone-900/30 from-0% flex justify-center items-end'>
+                            <div className=''>
+                                <Button
+                                    variant='ghost'
+                                    className='h-6 mt-2 bg-white hover:bg-white hover:text-primary w-16 rounded-b-none flex justify-center items-center'
+                                    onClick={() => setShowClients(!showClients)}
+                                >
+                                    <BiSolidUpArrow size={15} className={cn('rotate-180 transition-all duration-300', {
+                                        'rotate-0': showClients,
+                                    })} />
+                                </Button>
+                            </div>
+                        </div>
+                        {/* PRODUCTOS */}
+                        <div className={cn(' w-full py-3 z-20 relative')}>
+                            {showClients &&
+                                <div className='absolute inset-0 bg-white/30 backdrop-blur-[2px] h-full z-30 '></div>
+                            }
+                            <DiscountTabs
+                                selectedDiscountId={selectedDiscount}
+                                companyId={companyId}
+                                discount={selectedDiscount ? lists.find((item: DiscountSchemaType) => item.id === selectedDiscount)?.discount : 0}
+                            />
                         </div>
                     </div>
                 </div>

@@ -121,15 +121,10 @@ export function Company() {
         <div className="flex w-full h-full">
             {isLoading && <OverlayLoadingIndicator />}
             <div className="flex flex-col justify-between w-4/6 h-full overflow-y-auto">
-                <div className="flex gap-20 m-10">
-                    {/* <div>
-                        <div className="w-80 h-80 bg-muted rounded overflow-hidden">
-                            <img src='/empresa-default.jpeg' alt="logo" className="w-full h-full object-cover" />
-                        </div>
-                    </div> */}
+                <div className="flex gap-20 m-10 mt-5">
                     <FormProvider {...form}>
                         <form className='w-full pr-10'>
-                            <div className="border border-border rounded-sm mb-4">
+                            <div className="border border-border rounded-sm mb-2">
                                 <div className="relative">
                                     <div className="border-b border-border w-full flex gap-2 items-center p-2 px-4 mb-2">
                                         <BsFillBuildingsFill className="text-info" />
@@ -140,14 +135,14 @@ export function Company() {
                                             <GoPencil size={20} className="text-white" />
                                         </div>}
                                 </div>
-                                <div className="space-y-3 p-5 py-2 pb-4">
-                                    <div className='grid grid-cols-2 gap-10'>
+                                <div className="space-y-2 p-5 py-2 pb-4">
+                                    <div className='grid grid-cols-2 gap-x-10'>
                                         <FormField
                                             name="name"
                                             disabled={!isEditing}
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel id='name'>Nombre</FormLabel>
+                                                    <FormLabel className="p-0 m-0" id='name'>Nombre</FormLabel>
                                                     <FormControl>
                                                         <Input className={cn("", {
                                                             'disabledStyle': !isEditing
