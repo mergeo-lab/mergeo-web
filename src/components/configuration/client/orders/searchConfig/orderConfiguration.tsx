@@ -95,6 +95,18 @@ export default function OrderConfig(props: Props) {
         }
     }, [openDialog, open, setConfigDataSubmitted]);
 
+    // Initialize internal states when dialog opens
+    useEffect(() => {
+        if (open && !showSavedConfigDialog) {
+            // Initialize internal states with current values
+            setTime(deliveryTime || null);
+            setSelectedBranch(branch || null);
+            setInternalList(listId || "");
+            setInternalRc(replacementCriteria || null);
+            setInternalPickUp(pickUp || false);
+        }
+    }, [open, showSavedConfigDialog, deliveryTime, branch, listId, replacementCriteria, pickUp]);
+
     const handleUseSavedConfig = useCallback(() => {
         const savedConfig = getSavedConfig();
         setShowSavedConfigDialog(false);
@@ -166,7 +178,8 @@ export default function OrderConfig(props: Props) {
         if (selcetedBranch) setBranch(selcetedBranch);
         if (internalList) selectList(internalList);
         if (internalRc) setReplacementCriteria(internalRc);
-        if (internalPickUp !== undefined) setPickUp(internalPickUp);
+        // Always apply internalPickUp value (can be true or false)
+        setPickUp(internalPickUp);
 
         // Save configuration to localStorage (this will update the existing saved config)
         const configToSave = {
@@ -174,7 +187,7 @@ export default function OrderConfig(props: Props) {
             branch: selcetedBranch || branch,
             listId: internalList || listId,
             replacementCriteria: internalRc || replacementCriteria,
-            pickUp: internalPickUp || pickUp,
+            pickUp: internalPickUp,
             pickUpLocation: pickUpLocation,
             listName: listName,
         };
@@ -187,7 +200,7 @@ export default function OrderConfig(props: Props) {
         setConfigDataSubmitted(true);
         callback(internalList || "");
         setOpen(false);
-    }, [time, selcetedBranch, internalList, internalRc, internalPickUp, setDeliveryTime, setBranch, selectList, setReplacementCriteria, setPickUp, deliveryTime, branch, listId, replacementCriteria, pickUp, pickUpLocation, listName, setConfig, setShowOnlyFavorites, onLoading, setConfigDataSubmitted, callback]);
+    }, [time, selcetedBranch, internalList, internalRc, internalPickUp, setDeliveryTime, setBranch, selectList, setReplacementCriteria, setPickUp, deliveryTime, branch, listId, replacementCriteria, pickUpLocation, listName, setConfig, setShowOnlyFavorites, onLoading, setConfigDataSubmitted, callback]);
 
     const handleOpenChange = useCallback((newOpen: boolean) => {
         if (!newOpen) {
@@ -307,13 +320,13 @@ export default function OrderConfig(props: Props) {
                                         })}></div>
                                         <div onClick={() => {
                                             // Only open dialog if pickup is enabled
-                                            if (internalPickUp || pickUp) {
+                                            if (internalPickUp) {
                                                 setPickUpDialog(true);
                                             }
                                         }}
                                             className={cn("bg-border rounded p-2 w-14 flex justify-center items-center",
                                                 {
-                                                    "shadow-sm shadow-primary bg-primary/10 cursor-pointer": internalPickUp || pickUp
+                                                    "shadow-sm shadow-primary bg-primary/10 cursor-pointer": internalPickUp
                                                 }
                                             )}>
                                             <img src={mapIcon} alt="map" />
@@ -321,24 +334,28 @@ export default function OrderConfig(props: Props) {
                                         <div className="flex flex-col justify-center ">
                                             <div className="flex items-center space-x-2">
                                                 <Switch
-                                                    checked={internalPickUp || pickUp}
-                                                    defaultChecked={internalPickUp == true || pickUp == true}
+                                                    checked={internalPickUp}
                                                     disabled={selcetedBranch === null}
                                                     onClick={() => {
                                                         if (selcetedBranch === null) return
-                                                        // we set the location of the selected branch on the map to select the pikup radius
-                                                        setPickUpLocation({
-                                                            location: {
-                                                                // GeoJSON format: [longitude, latitude]
-                                                                latitude: selcetedBranch?.address?.location?.coordinates[1] ?? 0,
-                                                                longitude: selcetedBranch?.address?.location?.coordinates[0] ?? 0
-                                                            },
-                                                            radius: pickUpLocation.radius || 1
-                                                        })
-                                                        setPickUp(true);
-                                                        setInternalPickUp(true)
-                                                        // Open pickup map dialog when switch is turned on
-                                                        setPickUpDialog(true);
+
+                                                        if (internalPickUp) {
+                                                            // Turn off pickup (internal state only)
+                                                            setInternalPickUp(false);
+                                                        } else {
+                                                            // Turn on pickup (internal state only) and open dialog
+                                                            setPickUpLocation({
+                                                                location: {
+                                                                    // GeoJSON format: [longitude, latitude]
+                                                                    latitude: selcetedBranch?.address?.location?.coordinates[1] ?? 0,
+                                                                    longitude: selcetedBranch?.address?.location?.coordinates[0] ?? 0
+                                                                },
+                                                                radius: pickUpLocation.radius || 1
+                                                            })
+                                                            setInternalPickUp(true)
+                                                            // Open pickup map dialog when switch is turned on
+                                                            setPickUpDialog(true);
+                                                        }
                                                     }} />
                                                 <Label htmlFor="airplane-mode">Estoy dispuesto a hacer pick up</Label>
                                             </div>
@@ -480,13 +497,13 @@ export default function OrderConfig(props: Props) {
                                     })}></div>
                                     <div onClick={() => {
                                         // Only open dialog if pickup is enabled
-                                        if (internalPickUp || pickUp) {
+                                        if (internalPickUp) {
                                             setPickUpDialog(true);
                                         }
                                     }}
                                         className={cn("bg-border rounded p-2 w-14 flex justify-center items-center",
                                             {
-                                                "shadow-sm shadow-primary bg-primary/10 cursor-pointer": internalPickUp || pickUp
+                                                "shadow-sm shadow-primary bg-primary/10 cursor-pointer": internalPickUp
                                             }
                                         )}>
                                         <img src={mapIcon} alt="map" />
@@ -494,24 +511,28 @@ export default function OrderConfig(props: Props) {
                                     <div className="flex flex-col justify-center ">
                                         <div className="flex items-center space-x-2">
                                             <Switch
-                                                checked={internalPickUp || pickUp}
-                                                defaultChecked={internalPickUp == true || pickUp == true}
+                                                checked={internalPickUp}
                                                 disabled={selcetedBranch === null}
                                                 onClick={() => {
                                                     if (selcetedBranch === null) return
-                                                    // we set the location of the selected branch on the map to select the pikup radius
-                                                    setPickUpLocation({
-                                                        location: {
-                                                            // GeoJSON format: [longitude, latitude]
-                                                            latitude: selcetedBranch?.address?.location?.coordinates[1] ?? 0,
-                                                            longitude: selcetedBranch?.address?.location?.coordinates[0] ?? 0
-                                                        },
-                                                        radius: pickUpLocation.radius || 1
-                                                    })
-                                                    setPickUp(true);
-                                                    setInternalPickUp(true)
-                                                    // Open pickup map dialog when switch is turned on
-                                                    setPickUpDialog(true);
+
+                                                    if (internalPickUp) {
+                                                        // Turn off pickup (internal state only)
+                                                        setInternalPickUp(false);
+                                                    } else {
+                                                        // Turn on pickup (internal state only) and open dialog
+                                                        setPickUpLocation({
+                                                            location: {
+                                                                // GeoJSON format: [longitude, latitude]
+                                                                latitude: selcetedBranch?.address?.location?.coordinates[1] ?? 0,
+                                                                longitude: selcetedBranch?.address?.location?.coordinates[0] ?? 0
+                                                            },
+                                                            radius: pickUpLocation.radius || 1
+                                                        })
+                                                        setInternalPickUp(true)
+                                                        // Open pickup map dialog when switch is turned on
+                                                        setPickUpDialog(true);
+                                                    }
                                                 }} />
                                             <Label htmlFor="airplane-mode">Estoy dispuesto a hacer pick up</Label>
                                         </div>

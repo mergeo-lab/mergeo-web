@@ -143,6 +143,9 @@ export default function ProductsTable({ configCanceled }: Params) {
         }
     }, [data]);
 
+    // Track if we have data to determine if this is a pagination change
+    const hasExistingData = data && data.products && data.products.length > 0;
+
     const { mutate: toggleFavoriteMutation } = useMutation({
         mutationFn: async ({ productId, newState }: { productId: string, newState: boolean }) => {
             if (!companyId) {
@@ -274,7 +277,7 @@ export default function ProductsTable({ configCanceled }: Params) {
                                 </tr>
                             </TableHeader>
                             <TableBody className="[&>*]:hover:bg-white z-10">
-                                {isLoading || isFetching
+                                {isLoading || (isFetching && hasExistingData)
                                     ? loadingIndicator()
                                     : (
                                         filteredProducts && filteredProducts.map((product: ProductSchemaType) => (
