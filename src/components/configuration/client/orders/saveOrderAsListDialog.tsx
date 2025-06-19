@@ -23,8 +23,6 @@ export function SaveOrderAsListDialog({
     onClose,
     onSaveList,
     onSkipList,
-    _products,
-    _userName,
     isProcessing
 }: Props) {
     const [listName, setListName] = useState('');

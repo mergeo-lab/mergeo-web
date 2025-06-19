@@ -16,6 +16,7 @@ import { formatToArgentinianPesos } from '../../../../lib/utils';
 import { SaveOrderAsListDialog } from "./saveOrderAsListDialog";
 import { toast } from "@/components/ui/use-toast";
 import LoadingIndicator from "@/components/loadingIndicator";
+import { GiShoppingCart } from "react-icons/gi";
 
 type Props = {
     title?: string,
@@ -71,6 +72,9 @@ export function CartSheet({
         const timeout = setTimeout(() => {
             // Clear cart when order is successfully created
             reset();
+            // Clear saved configuration
+            const { clearConfig } = UseSearchConfigStore.getState();
+            clearConfig();
             router.navigate({ to: '/client/proOrders', search: { id: mutation.data?.preOrderId } });
             setIsProcessing(false);
             clearTimeout(timeout);
@@ -185,9 +189,20 @@ export function CartSheet({
                 </SheetTrigger>
                 <SheetContent className="w-1/2 mx-w-1/2 sm:max-w-1/2" {...(onInteractOutside && { onInteractOutside: onInteractOutside })}>
                     <SheetHeader>
-                        <SheetTitle className="flex gap-2 items-center">
-                            {icon}
-                            {title}
+                        <SheetTitle className="relative">
+                            <div className="flex gap-2 items-center">
+                                {icon}
+                                {title}
+                            </div>
+                            <Button
+                                variant="outline"
+                                className="text-destructive gap-2 border-destructive hover:bg-destructive/20 absolute right-5 top-5"
+                                onClick={() => reset()}
+                                disabled={products.length === 0}
+                            >
+                                <FaRegTrashAlt size={15} className="text-destructive" />
+                                Vaciar carrito
+                            </Button>
                         </SheetTitle>
                         <SheetDescription>
                             {subTitle}
@@ -201,62 +216,71 @@ export function CartSheet({
                                     <p className="text-sm text-muted-foreground mb-5">Redirigiendo a la página de pedidos...</p>
                                     <LoadingIndicator />
                                 </div>
-                                : (
-                                    <div className="relative">
-                                        <Table>
-                                            <TableHeader className="sticky top-0 bg-white shadow-sm">
-                                                <TableRow className="hover:bg-white [&>*]:text-center">
-                                                    <TableHead className="!text-left">Producto</TableHead>
-                                                    <TableHead>Contenido Neto</TableHead>
-                                                    <TableHead>Precio Unitario</TableHead>
-                                                    <TableHead>Precio</TableHead>
-                                                </TableRow>
-                                            </TableHeader>
-                                            <TableBody className="[&>*]:hover:bg-white">
-                                                {(mutation.isPending) && <OverlayLoadingIndicator />}
-                                                {products.map((product) => (
-                                                    <TableRow key={product.id} className="[&>*]:text-center">
-                                                        <TableCell className="!text-left">
-                                                            <p className="text-sm text-muted-foreground">{product.name}, {product.brand} x {product.netContent}{product.measurementUnit}</p>
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <div className="flex justify-center items-center gap-2">
-                                                                <QuantitySelector defaultValue={product.quantity || 0} onChange={(quantity) => handleProductChange(product, quantity)} />
-                                                                <Button variant="ghost" className="[&>*]:hover:text-destructive" onClick={() => handleProductChange(product, 0)}>
-                                                                    <FaRegTrashAlt size={15} className="text-muted-foreground" />
-                                                                </Button>
-                                                            </div>
-                                                        </TableCell>
-                                                        <TableCell className="text-center">
-                                                            <p className="text-sm text-muted-foreground">${Number(product.price).toFixed(2)}</p>
-                                                        </TableCell>
-                                                        <TableCell className="bg-muted/20 text-center">
-                                                            <p className="text-sm text-muted-foreground">
-                                                                {formatToArgentinianPesos(Number(product.price) * (product.quantity || 0))}
-                                                            </p>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))}
-                                            </TableBody>
-                                        </Table>
-                                        <div className="sticky bottom-0 bg-white border-t border-border">
-                                            <Table>
-                                                <TableBody className="bg-white">
-                                                    <TableRow className="[&>*]:text-center hover:bg-white">
-                                                        <TableCell className="bg-muted/20 border border-muted/40 text-center">
-                                                            <p className="text-muted-foreground font-bold">TOTAL</p>
-                                                        </TableCell>
-                                                        <TableCell className="border border-muted/40">
-                                                            <p className="text-muted-foreground font-bold">
-                                                                {formatToArgentinianPesos(Number(totalPrice))}
-                                                            </p>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                </TableBody>
-                                            </Table>
+                                : products.length === 0
+                                    ? <div className="h-full flex flex-col justify-center items-center relative pb-24">
+                                        <GiShoppingCart size={300} className="text-muted-foreground/10" />
+                                        <div className="absolute w-full h-full flex flex-col justify-center items-center">
+                                            <p className="text-lg font-bold text-muted-foreground">No tenes productos en el carrito!</p>
+                                            <p className="text-sm text-info">Agrega productos para continuar</p>
                                         </div>
                                     </div>
-                                )}
+                                    : (
+                                        <div className="relative">
+                                            <Table>
+                                                <TableHeader className="sticky top-0 bg-white shadow-sm">
+                                                    <TableRow className="hover:bg-white [&>*]:text-center">
+                                                        <TableHead className="!text-left">Producto</TableHead>
+                                                        <TableHead>Contenido Neto</TableHead>
+                                                        <TableHead>Precio Unitario</TableHead>
+                                                        <TableHead>Precio</TableHead>
+                                                    </TableRow>
+                                                </TableHeader>
+                                                <TableBody className="[&>*]:hover:bg-white">
+                                                    {(mutation.isPending) && <OverlayLoadingIndicator />}
+                                                    {products.map((product) => (
+                                                        <TableRow key={product.id} className="[&>*]:text-center">
+                                                            <TableCell className="!text-left">
+                                                                <p className="text-sm text-muted-foreground">{product.name}, {product.brand} x {product.netContent}{product.measurementUnit}</p>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div className="flex justify-center items-center gap-2">
+                                                                    <QuantitySelector defaultValue={product.quantity || 0} onChange={(quantity) => handleProductChange(product, quantity)} />
+                                                                    <Button variant="ghost" className="[&>*]:hover:text-destructive" onClick={() => handleProductChange(product, 0)}>
+                                                                        <FaRegTrashAlt size={15} className="text-muted-foreground" />
+                                                                    </Button>
+                                                                </div>
+                                                            </TableCell>
+                                                            <TableCell className="text-center">
+                                                                <p className="text-sm text-muted-foreground">${Number(product.price).toFixed(2)}</p>
+                                                            </TableCell>
+                                                            <TableCell className="bg-muted/20 text-center">
+                                                                <p className="text-sm text-muted-foreground">
+                                                                    {formatToArgentinianPesos(Number(product.price) * (product.quantity || 0))}
+                                                                </p>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            </Table>
+                                            <div className="sticky bottom-0 bg-white border-t border-border">
+                                                <Table>
+                                                    <TableBody className="bg-white">
+                                                        <TableRow className="[&>*]:text-center hover:bg-white">
+                                                            <TableCell className="bg-muted/20 border border-muted/40 text-center">
+                                                                <p className="text-muted-foreground font-bold">TOTAL</p>
+                                                            </TableCell>
+                                                            <TableCell className="border border-muted/40">
+                                                                <p className="text-muted-foreground font-bold">
+                                                                    {formatToArgentinianPesos(Number(totalPrice))}
+                                                                </p>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    </TableBody>
+                                                </Table>
+                                            </div>
+                                        </div>
+                                    )
+                        }
                     </div>
                     <SheetFooter className="p-10 items-center">
                         <SheetClose className="w-full" disabled={showCountdown}>
@@ -266,7 +290,7 @@ export function CartSheet({
                             onClick={() => onSubmit()}
                             type="submit"
                             className="w-full"
-                            disabled={mutation.isPending || isProcessing || showCountdown}
+                            disabled={mutation.isPending || isProcessing || showCountdown || products.length === 0}
                         >
                             {mutation.isPending || isProcessing ? 'Procesando...' : 'Realizar Pedido'}
                         </Button>

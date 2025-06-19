@@ -171,7 +171,6 @@ export function SearchLists() {
                         setIsLoading(false);
                         refetch()
                     }}
-                    onLoading={() => setIsLoading(true)}
                     triggerButton={createListButton}
                 />
                 <div className='flex items-center w-2/4 gap-6 p-4 shadow rounded'>
@@ -195,7 +194,7 @@ export function SearchLists() {
                         callback={() => {
                             setIsLoading(false);
                             refetch()
-                        }} onLoading={() => setIsLoading(true)}
+                        }}
                         triggerButton={
                             <div className='mt-5 w-60 flex items-center gap-4 absolute bottom-10'>
                                 {createListButton}

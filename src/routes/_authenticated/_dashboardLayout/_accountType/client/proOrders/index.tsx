@@ -137,9 +137,9 @@ export default function PreOrders() {
                                                             </Link>
                                                         </TableCell>
                                                         <TableCell className="w-[200px] text-right">
-                                                            {order.buyOrder
+                                                            {order?.orderId
                                                                 ? (
-                                                                    <Link to={`/buyOrder/$orderId`} params={{ orderId: order.buyOrder.id }} key={order.buyOrder.id}>
+                                                                    <Link to={`/buyOrder/$orderId`} params={{ orderId: order?.orderId }} key={order?.orderId}>
                                                                         <Button variant='ghost' className='space-x-2'>
                                                                             <LuEye className='cursor-pointer' size={20} />
                                                                             <p>Ver Orden de Compra</p>

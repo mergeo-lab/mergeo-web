@@ -212,7 +212,7 @@ export function AddSearchList({
                             {subTitle}
                         </SheetDescription>
                     </SheetHeader>
-                    <div className="h-4/5 p-10 pt-6">
+                    <div className="h-4/5 pt-6">
                         <div className="flex items-center gap-2">
                             <FormField
                                 control={form.control}

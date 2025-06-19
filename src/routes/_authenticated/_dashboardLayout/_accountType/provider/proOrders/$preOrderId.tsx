@@ -3,7 +3,7 @@ import { StatusBadge } from '@/components/statusBadge';
 import { getSellPreOrdersById, preOrderProviderResponse } from '@/lib/orders';
 import { cn, formatDate } from '@/lib/utils';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { createFileRoute, useParams } from '@tanstack/react-router'
+import { createFileRoute, Link, useParams } from '@tanstack/react-router'
 import { useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import UseProviderSellStore from '@/store/providerSell';
@@ -13,10 +13,22 @@ import { PRE_ORDER_STATUS } from '@/lib/constants';
 import LoadingIndicator from '@/components/loadingIndicator';
 import BackLink from '@/components/backLink';
 import { useAuth } from '@/context/AuthContext';
+import { BsBoxArrowInRight } from 'react-icons/bs';
+import { isPast, parseISO } from 'date-fns';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId')({
     component: () => <SellsDetail />,
 })
+
+// Utility function to check if response deadline has passed
+function isResponseDeadlineExpired(deadline: string): boolean {
+    try {
+        const deadlineDate = parseISO(deadline);
+        return isPast(deadlineDate);
+    } catch {
+        return false;
+    }
+}
 
 export function SellsDetail() {
     const { preOrderId } = useParams({ from: '/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId' });
@@ -47,8 +59,11 @@ export function SellsDetail() {
 
     const mutation = useMutation({ mutationFn: preOrderProviderResponse });
 
+    // Check if response deadline has passed
+    const isDeadlineExpired = order?.responseDeadline ? isResponseDeadlineExpired(order.responseDeadline) : false;
+
     async function handleProviderResponse() {
-        if (!order || mutation.isPending) return;
+        if (!order || mutation.isPending || isDeadlineExpired) return;
         mutation.mutateAsync({
             orderId: order.id,
             acceptedProducts,
@@ -59,7 +74,7 @@ export function SellsDetail() {
     }
 
     async function handleReceptedResponse() {
-        if (!order || mutation.isPending) return;
+        if (!order || mutation.isPending || isDeadlineExpired) return;
 
         mutation.mutateAsync({
             orderId: order.id,
@@ -114,6 +129,14 @@ export function SellsDetail() {
                             <span className='font-semibold bg-muted/20 px-2 py-1 rounded-r ml-2'>{order?.preOrderNumber}</span>
                         </div>
                         <StatusBadge className='py-1 font-black text-sm' status={order?.status || ""} />
+                        {order?.status === PRE_ORDER_STATUS.accepted || order?.status === PRE_ORDER_STATUS.partialyAccepted &&
+                            <Link to={`/buyOrder/$orderId`} params={{ orderId: order?.orderId || '' }}>
+                                <Button variant='link' className='space-x-2'>
+                                    <BsBoxArrowInRight size={20} />
+                                    <p>Ir a Orden de Compra</p>
+                                </Button>
+                            </Link>
+                        }
                     </div>
                     <div className='font-thin text-secondary/80 mr-4 mt-2'>{order?.created && formatDate(order?.created)}</div>
                 </div>
@@ -136,7 +159,8 @@ export function SellsDetail() {
                         acceptedProducts={acceptedProducts}
                         onSelect={(item) => toggleProductAcceptance(item)}
                         toggleAllProducts={() => toggleAllProducts(sellProduct())}
-                        isProvider={true} />
+                        isProvider={true}
+                        disabled={isDeadlineExpired} />
 
                 </div>
                 {
@@ -144,7 +168,7 @@ export function SellsDetail() {
                     <div className='flex justify-end gap-2 pr-10 border-t-2 border-border pt-6'>
                         <Button
                             onClick={handleReceptedResponse}
-                            disabled={mutation.isPending}
+                            disabled={mutation.isPending || isDeadlineExpired}
                             variant="ghost"
                             className='text-destructive hover:text-destructive'>
                             Rechazar Pedido
@@ -154,7 +178,7 @@ export function SellsDetail() {
                             className={cn('w-48', {
                                 'cursor-wait': mutation.isPending
                             })}
-                            disabled={acceptedProducts.length === 0}>
+                            disabled={acceptedProducts.length === 0 || isDeadlineExpired}>
                             {mutation.isPending ? <LoadingIndicator className='text-white w-4 h-4' /> : "Aceptar Pedido"}
                         </Button>
                     </div>

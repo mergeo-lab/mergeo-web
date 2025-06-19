@@ -100,7 +100,7 @@ export const PreOrderSchema = z.object({
   created: z.string(),
   updated: z.string(),
   id: z.string(),
-  buyOrder: BuyOrderSchema,
+  orderId: z.string().optional(),
   preOrderNumber: z.number(),
   buyerId: z.string(),
   status: z.string(),

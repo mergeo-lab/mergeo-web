@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { createDiscountList, updateDiscountList } from "@/lib/discounts";
 import { CompanySchemaType } from "@/lib/schemas";

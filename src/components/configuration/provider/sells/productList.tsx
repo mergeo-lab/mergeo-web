@@ -17,9 +17,10 @@ type Props = {
     isProvider: boolean,
     toggleAllProducts: () => void
     onSelect: (product: SellProductSchemaType) => void
+    disabled?: boolean
 }
 
-export default function ProductList({ orderStatus, data, providerId, dropZoneId, acceptedProducts, isProvider = true, isLoading, onSelect, toggleAllProducts }: Props) {
+export default function ProductList({ orderStatus, data, providerId, dropZoneId, acceptedProducts, isProvider = true, isLoading, onSelect, toggleAllProducts, disabled = false }: Props) {
 
     const total = data && data.reduce((acc, item) => {
         // Check if the item is in the acceptedProducts array
@@ -55,25 +56,31 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                         <TableHead>Unidad de Medida</TableHead>
                         <TableHead>Cantidad</TableHead>
                         <TableHead>Precio Unitario</TableHead>
+                        {orderStatus !== PRE_ORDER_STATUS.pending && <TableHead>Estado</TableHead>}
                         <TableHead className={cn({ 'text-right pr-14': !isProvider })}>Precio Total</TableHead>
 
-                        {isProvider &&
+                        {isProvider && orderStatus === PRE_ORDER_STATUS.pending &&
                             <TableHead className='text-right w-72'>
-                                {orderStatus === PRE_ORDER_STATUS.pending &&
-                                    <div
-                                        className='m-0 h-8 space-x-2 flex justify-end mr-20 items-center cursor-pointer'
-                                        onClick={toggleAllProducts}
-                                    >
-                                        <Label className='text-sm font-thin cursor-pointer'>{
+                                <div
+                                    className={cn('m-0 h-8 space-x-2 flex justify-end mr-20 items-center', {
+                                        'cursor-pointer': !disabled,
+                                        'cursor-not-allowed opacity-50': disabled
+                                    })}
+                                    onClick={disabled ? undefined : toggleAllProducts}
+                                >
+                                    <Label className={cn('text-sm font-thin', {
+                                        'cursor-pointer': !disabled,
+                                        'cursor-not-allowed': disabled
+                                    })}>{
                                             acceptedProducts.length !== data?.length ? 'Seleccionar todos' : 'Deseleccionar todos'}</Label>
-                                        <Checkbox
-                                            checked={acceptedProducts.length !== data?.length}
-                                            disabled={
-                                                orderStatus !== PRE_ORDER_STATUS.pending && acceptedProducts.length !== data?.length}
-                                        />
-                                    </div >
-                                }
-                            </TableHead>}
+                                    <Checkbox
+                                        checked={acceptedProducts.length !== data?.length}
+                                        disabled={
+                                            orderStatus !== PRE_ORDER_STATUS.pending && acceptedProducts.length !== data?.length || disabled}
+                                    />
+                                </div >
+                            </TableHead>
+                        }
                     </TableRow>
                 </TableHeader>
                 {isLoading ?
@@ -95,8 +102,13 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                             {
                                 data && data.map((item) => {
                                     const product = item.product
+                                    const isAccepted = orderStatus === PRE_ORDER_STATUS.accepted || orderStatus === PRE_ORDER_STATUS.partialyAccepted ? item.accepted : acceptedProducts.some((p) => p.id === item.id)
                                     return (
-                                        <TableRow key={product.id} className="hover:bg-white first:border-t-none">
+                                        <TableRow key={product.id} className={cn("hover:bg-white first:border-t-none", {
+                                            'bg-green-50 hover:bg-green-50': isAccepted,
+                                            'bg-red-50 hover:bg-red-50': !isAccepted,
+                                            'bg-white hover:bg-white': orderStatus === PRE_ORDER_STATUS.pending || orderStatus === PRE_ORDER_STATUS.rejected
+                                        })}>
                                             <TableCell>
                                                 <div> {product?.name}</div>
                                                 <div className='text-muted font-thin'>{product?.brand}</div>
@@ -104,35 +116,35 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                                             <TableCell>{product?.netContent}{product?.measurementUnit}</TableCell>
                                             <TableCell>{item.quantity}</TableCell>
                                             <TableCell>{formatToArgentinianPesos(+product?.price)}</TableCell>
+                                            {orderStatus !== PRE_ORDER_STATUS.pending &&
+                                                <TableCell>{isAccepted
+                                                    ? <p className='text-primary'>Aceptado</p>
+                                                    : <p className='text-destructive font-thin'>Rechazado</p>}
+                                                </TableCell>
+                                            }
                                             <TableCell className={cn({ 'text-right pr-14': !isProvider })}>{formatToArgentinianPesos(item.quantity * +product?.price)}</TableCell>
 
-                                            {isProvider &&
+                                            {isProvider && orderStatus === PRE_ORDER_STATUS.pending &&
                                                 <TableCell className='text-right w-72'>
                                                     <div className='flex justify-end mr-20'>
-                                                        {orderStatus === PRE_ORDER_STATUS.pending
-                                                            ? <Checkbox
-                                                                disabled={
-                                                                    orderStatus !== PRE_ORDER_STATUS.pending && !product.accepted}
-                                                                checked={
-                                                                    orderStatus === PRE_ORDER_STATUS.pending
-                                                                        ? !(acceptedProducts || []).find((p) => p.id === item.id)
-                                                                        : product.accepted
-                                                                }
-                                                                onClick={() => {
-                                                                    onSelect({
-                                                                        id: item.id,
-                                                                        quantity: item.quantity,
-                                                                        price: product.price,
-                                                                        providerId: providerId || '',
-                                                                        dropZoneId: dropZoneId || '',
-                                                                    })
-                                                                }} />
-                                                            : (
-                                                                item.accepted
-                                                                    ? <Label className='text-sm font-thin text-primary'>Aceptado</Label>
-                                                                    : <Label className='text-sm font-thin text-destructive'>Rechazado</Label>
-                                                            )
-                                                        }
+                                                        <Checkbox
+                                                            disabled={
+                                                                orderStatus !== PRE_ORDER_STATUS.pending && !product.accepted || disabled}
+                                                            checked={
+                                                                orderStatus === PRE_ORDER_STATUS.pending
+                                                                    ? !(acceptedProducts || []).find((p) => p.id === item.id)
+                                                                    : product.accepted
+                                                            }
+                                                            onClick={disabled ? undefined : () => {
+                                                                onSelect({
+                                                                    id: item.id,
+                                                                    quantity: item.quantity,
+                                                                    price: product.price,
+                                                                    providerId: providerId || '',
+                                                                    dropZoneId: dropZoneId || '',
+                                                                })
+                                                            }} />
+
                                                     </div>
                                                 </TableCell>}
                                         </TableRow>

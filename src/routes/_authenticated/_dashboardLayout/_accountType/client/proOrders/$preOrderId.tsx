@@ -3,7 +3,7 @@ import { StatusBadge } from '@/components/statusBadge';
 import { getSellPreOrdersById, preOrderProviderResponse } from '@/lib/orders';
 import { cn, formatDate } from '@/lib/utils';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { createFileRoute, useParams } from '@tanstack/react-router'
+import { createFileRoute, Link, useParams } from '@tanstack/react-router'
 import { useCallback, useEffect } from 'react';
 import UseProviderSellStore from '@/store/providerSell';
 import { SellProductSchemaType } from '@/lib/schemas/sell.schema';
@@ -11,6 +11,8 @@ import { PreOrderProductSchemaType } from '@/lib/schemas';
 import { PRE_ORDER_STATUS } from '@/lib/constants';
 import UseCompanyStore from '@/store/company.store';
 import BackLink from '@/components/backLink';
+import { Button } from '@/components/ui/button';
+import { BsBoxArrowInRight } from "react-icons/bs";
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/proOrders/$preOrderId')({
     component: () => <SellsDetail />,
@@ -80,6 +82,14 @@ export function SellsDetail() {
                             <span className='font-semibold bg-muted/20 px-2 py-1 rounded-r ml-2'>{order?.preOrderNumber}</span>
                         </div>
                         <StatusBadge className='py-1 font-black text-sm' status={order?.status || ""} />
+                        {order?.status === PRE_ORDER_STATUS.accepted || order?.status === PRE_ORDER_STATUS.partialyAccepted &&
+                            <Link to={`/buyOrder/$orderId`} params={{ orderId: order?.orderId || '' }}>
+                                <Button variant='link' className='space-x-2'>
+                                    <BsBoxArrowInRight size={20} />
+                                    <p>Ir a Orden de Compra</p>
+                                </Button>
+                            </Link>
+                        }
                     </div>
                     <div className='font-thin text-secondary/80 mr-4 mt-2'>{order?.created && formatDate(order?.created)}</div>
                 </div>
