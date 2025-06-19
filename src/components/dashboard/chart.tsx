@@ -73,12 +73,13 @@ export default function Chart({ companyId, accountType, queryKey }: Props) {
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
                                 data={chartData}
-                                margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
+                                margin={{ top: 20, right: 20, left: 40, bottom: 20 }}
                                 barCategoryGap={30}
                             >
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                 <XAxis dataKey="monthLabel" axisLine={false} tickLine={false} />
                                 <YAxis
+                                    className="text-sm"
                                     axisLine={false}
                                     tickLine={false}
                                     tickFormatter={(value) => `$${value.toLocaleString()}`}

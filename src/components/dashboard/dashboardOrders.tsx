@@ -94,7 +94,10 @@ export default function DashboardOrders({ companyId, accountType, queryKey, item
                                     :
                                     <div className="flex flex-col min-w-44 justify-center items-center gap-2">
                                         <StatusBadge className='py-1 text-sm' status={order?.status || ""} />
-                                        <RemainingTime time={order.responseDeadline} />
+                                        {
+                                            order.responseDeadline && order.status === PRE_ORDER_STATUS.pending &&
+                                            <RemainingTime time={order.responseDeadline} />
+                                        }
                                     </div>
                             }
                             <div className="flex items-center justify-end space-x-4 w-60">
