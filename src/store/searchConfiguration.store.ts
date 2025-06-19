@@ -4,6 +4,17 @@ import { addDays } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { create } from 'zustand';
 
+const LOCAL_STORAGE_KEY = 'searchConfig';
+
+const getInitialConfig = () => {
+  try {
+    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : {};
+  } catch {
+    return {};
+  }
+};
+
 export type PickUpLocationArea = {
   radius: number;
   location: LatLngLiteralType;
@@ -20,6 +31,7 @@ type SearchConfigState = {
   pickUpLocation: PickUpLocationArea;
   replacementCriteria: ReplacementCriteria;
   listId: string;
+  listName: string;
   compulsa: boolean;
   requiredFields: Array<keyof SearchConfigState>;
   isValid: boolean;
@@ -37,6 +49,7 @@ type SearchConfigState = {
   setConfigDataSubmitted: (value: boolean) => void;
   setConfigDialogOpen: (open: boolean) => void;
   selectList: (listId: string) => void;
+  setListName: (name: string) => void;
   removeList: () => void;
   setDeliveryTime: (date: DateRange | undefined) => void;
   setBranch: (branch: BranchesSchemaType) => void;
@@ -57,13 +70,19 @@ type SearchConfigState = {
     | 'pickUpLocation'
     | 'replacementCriteria'
     | 'listId'
+    | 'listName'
     | 'compulsa'
   >;
 
   resetConfig: () => void; // New reset function
+  setConfig: (config: Partial<SearchConfigState>) => void;
+  clearConfig: () => void;
+  hasSavedConfig: () => boolean;
+  getSavedConfig: () => SearchConfigState;
 };
 
 const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
+  ...getInitialConfig(),
   searchParams: { name: '', brand: '', branchId: '' },
   configDialogOpen: false,
   deliveryTime: { from: new Date(), to: addDays(new Date(), 1) },
@@ -87,7 +106,7 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
   configDataSubmitted: false,
   shouldResetConfig: false,
   showOnlyFavorites: false,
-
+  listName: '',
   setSearchParams: (params: {
     name?: string;
     brand?: string;
@@ -117,6 +136,10 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
   selectList: (listId) => {
     set({ listId });
     get().validateFields();
+  },
+
+  setListName: (name: string) => {
+    set({ listName: name });
   },
 
   removeList: () => {
@@ -192,6 +215,7 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
       pickUpLocation,
       replacementCriteria,
       listId,
+      listName,
       compulsa,
     } = get();
     return {
@@ -201,6 +225,7 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
       pickUpLocation,
       replacementCriteria,
       listId,
+      listName,
       compulsa,
     };
   },
@@ -222,10 +247,28 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
       },
       replacementCriteria: ReplacementCriteria.BEST_PRICE_SAME_UNIT,
       listId: '',
+      listName: '',
       compulsa: false,
       isValid: false,
       configDataSubmitted: false,
     }),
+
+  setConfig: (config) => {
+    set(config);
+    localStorage.setItem(
+      LOCAL_STORAGE_KEY,
+      JSON.stringify({ ...get(), ...config })
+    );
+  },
+
+  clearConfig: () => {
+    set({}); // Reset to empty or your default state
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+  },
+
+  hasSavedConfig: () => !!localStorage.getItem(LOCAL_STORAGE_KEY),
+
+  getSavedConfig: () => getInitialConfig(),
 }));
 
 export default UseSearchConfigStore;

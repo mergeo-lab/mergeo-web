@@ -30,7 +30,6 @@ type Props = {
         id: string | null,
         name: string | null,
     }
-    onLoading: () => void
     callback: () => void
     triggerButton?: React.ReactNode
 }
@@ -41,7 +40,6 @@ export function AddSearchList({
     buttonText = "Crear Lista",
     icon = <LuScrollText size={20} />,
     list,
-    onLoading,
     callback,
     triggerButton }: Props) {
     const { removeAllProducts, products, removeProduct } = UseSearchProductStore();
@@ -53,6 +51,7 @@ export function AddSearchList({
     const [open, setOpen] = useState(false);
     const [canSubmit, setCanSubmit] = useState(true);
     const [isFormValid, setIsFormValid] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const form = useForm<FormSchemaType>({
@@ -70,8 +69,10 @@ export function AddSearchList({
     }, [form, products]);
 
     useEffect(() => {
-        if (mutation.isPending || addProductsMutation.isPending || fileLoadMutation.isPending) onLoading();
-    }, [onLoading, mutation.isPending, addProductsMutation.isPending, fileLoadMutation.isPending]);
+        if (mutation.isPending || addProductsMutation.isPending || fileLoadMutation.isPending) {
+            setIsLoading(true);
+        }
+    }, [mutation.isPending, addProductsMutation.isPending, fileLoadMutation.isPending]);
 
     useEffect(() => {
         let isFormValid = false;
@@ -200,7 +201,7 @@ export function AddSearchList({
                 {triggerButton}
             </SheetTrigger>
             <SheetContent className="w-1/3 mx-w-1/3 sm:max-w-1/3">
-                {mutation.isPending && <OverlayLoadingIndicator />}
+                {isLoading && <OverlayLoadingIndicator />}
                 <FormProvider {...form}>
                     <SheetHeader>
                         <SheetTitle className="flex gap-2 items-center">
@@ -245,7 +246,12 @@ export function AddSearchList({
                                     name="file"
                                     render={({ field }) => (
                                         <FormItem className="w-full">
-                                            <FormLabel id='file'>Subir un archivo excel</FormLabel>
+                                            <FormLabel id='file' className="flex flex-col gap-2">
+                                                Subir un archivo excel
+                                                <span className="text-sm text-secondary">
+                                                    Puedes bajar un template haciendo click <a href="/downloads/template_lista_de_compras.xlsx" target="_blank" className="text-info">aquí</a>
+                                                </span>
+                                            </FormLabel>
                                             <FormControl>
                                                 <div className="flex items-center justify-between relative">
                                                     <LuFileUp className="absolute left-3 pointer-events-none" />

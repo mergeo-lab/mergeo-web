@@ -78,14 +78,16 @@ const MapRadiusSelection = ({ hideControls = false, initialCenter = centerArgent
             };
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [map, radius, center, setPickUpLocation, hideControls]);
+    }, [map, radius, center]);
 
     // Update radius state based on slider input
     const handleRadiusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newRadius = Math.ceil(parseInt(e.target.value) * 1000); // Convert km to meters
+        const newRadiusKm = Math.ceil(parseInt(e.target.value));
+
         setPickUpLocation({
             ...pickUpLocation,
-            radius: Math.ceil(parseInt(e.target.value)),
+            radius: newRadiusKm,
         });
         setRadius(newRadius);
     };

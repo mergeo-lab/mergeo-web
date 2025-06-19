@@ -7,7 +7,7 @@ type SavedProducts = {
 
 export type CartProductQuantity = Pick<
   ProductWithQuantity,
-  'id' | 'providerId' | 'quantity' | 'price'
+  'id' | 'providerId' | 'quantity' | 'price' | 'segment'
 >;
 
 export type CartProduct = ProductSchemaType & {

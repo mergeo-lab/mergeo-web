@@ -186,7 +186,7 @@ export function SearchLists() {
         )
     } else {
         return (
-            <div className='flex h-ful'>
+            <div className='flex h-full relative'>
                 <div className='w-96 relative bg-white shadow py-5 px-10 overflow-auto flex flex-col gap-1'>
                     {getAllListsNames().map((list: { name: string; id: string }) =>
                         <SearchListButton active={selectedList?.id === list.id} key={list.id} id={list.id} name={list.name} onClick={handleSelectedList} />
@@ -268,7 +268,6 @@ export function SearchLists() {
                                 buttonText='Agregar'
                                 icon={<LuPackagePlus size={16} />}
                                 list={{ name: selectedList && selectedList?.name, id: selectedList && selectedList?.id }} callback={handleAddSearchListCallback}
-                                onLoading={handleIsLoading}
                                 triggerButton={
                                     <Button
                                         variant="outline"

@@ -12,7 +12,7 @@ export default function PickUpIndicator() {
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent className="bg-popover text-popover-foreground rounded-md px-3 py-1.5 text-sm shadow-md">
-                    Este producto solo tiene PickUp
+                    Este producto tiene PickUp
                 </TooltipContent>
             </Tooltip>
         </TooltipProvider>

@@ -79,21 +79,24 @@ export default function ProductsSearch() {
                                     <FormItem>
                                         {/* <FormLabel className="text-sm m-2" id='search'>Buscar Producto</FormLabel> */}
                                         <FormControl>
-                                            <Input className="w-full" placeholder="Nombre del producto" {...field} />
+                                            <div className="relative">
+                                                <Input className="w-full" placeholder="Nombre del producto" {...field} />
+                                                {
+                                                    field.value && (
+                                                        <RxCross2 onClick={cancelSearch}
+                                                            className="w-6 h-6 absolute right-2 top-1/2 -translate-y-1/2" />
+                                                    )
+                                                }
+                                            </div>
                                         </FormControl>
                                     </FormItem>
                                 )}
                             />
                         </div>
                         {/* <Input value={productName} placeholder="Buscar" className="w-full" onChange={(e) => setProductName(e.target.value)} /> */}
-                        {searchParams.name === ""
-                            ? <Button type="submit" className="w-20">
-                                <FiSearch className="w-5 h-5" />
-                            </Button>
-                            : <Button onClick={cancelSearch} className="w-20 bg-destructive hover:bg-destructive/80">
-                                <RxCross2 className="w-6 h-6" />
-                            </Button>
-                        }
+                        <Button type="submit" className="w-20">
+                            <FiSearch className="w-5 h-5" />
+                        </Button>
                     </div>
                 </form>
             </FormProvider>
@@ -102,7 +105,7 @@ export default function ProductsSearch() {
                     <FaRegHeart className="w-5 h-5" />
                     <span>Solo mostrar Favoritos</span>
                 </DropdownLabel>
-                <Switch id="favorites-switch" onClick={handleFavorites} defaultChecked={showOnlyFavorites} />
+                <Switch id="favorites-switch" onClick={handleFavorites} checked={showOnlyFavorites} />
             </div>
             <div className={cn("flex gap-2 items-center justify-center mt-4 border border-border p-2 rounded-md", {
                 'opacity-80': !pickUp,

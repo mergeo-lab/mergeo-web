@@ -88,7 +88,10 @@ export default function ProductsList({ configCanceled, isVisible = false }: Prop
             'opacity-100': isVisible
         }
         )}>
-            <div className="w-full h-full text-nowrap mt-5">
+            <div className="w-full h-full text-nowrap mt-2">
+                <div className="text-sm w-full text-foreground/70 text-center text-nowrap bg-border/50 p-2">
+                    Estas usando la lista: <span className="text-highlight font-black tracking-wide">{data && data?.name}</span>
+                </div>
                 <ul className=" mt-2 ml-5 overflow-y-auto h-[495px]">
                     {data && data?.products?.map((product, index) => (
                         <li className={cn("border-b border-border py-3 pl-4 flex items-center justify-between relative overflow-hidden cursor-pointer text-secondary/60",
@@ -118,9 +121,6 @@ export default function ProductsList({ configCanceled, isVisible = false }: Prop
 
                     ))}
                 </ul>
-            </div>
-            <div className="text-sm w-full text-foreground/70 text-center text-nowrap bg-border/50 p-2">
-                Estas usando la lista: <span className="text-highlight font-black tracking-wide">{data && data?.name}</span>
             </div>
         </div >
     )

@@ -33,7 +33,6 @@ export default function PickUpSelectMap(
         }
     }, [showDialog])
 
-
     useEffect(() => {
         if (!open) onClose();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -41,7 +40,7 @@ export default function PickUpSelectMap(
 
     return (
         <Dialog
-            modal={false}
+            modal={true}
             open={open}
             onOpenChange={(isOpen) => {
                 if (!isOpen) {
@@ -50,7 +49,7 @@ export default function PickUpSelectMap(
                     setOpen(true);
                 }
             }}>
-            <DialogContent className="w-full m-0 p-0">
+            <DialogContent className="w-full m-0 p-0" showClose={false}>
                 <DialogHeader className="px-6 py-3 absolute top-0 left-0 shadow-md z-10 w-full bg-white">
                     <DialogTitle className="flex items-center gap-2 ">
                         {icon}

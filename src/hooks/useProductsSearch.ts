@@ -65,6 +65,16 @@ export function useProductSearch(searchParams: Partial<SearchParams>) {
       const companyId = company?.id;
       const branchId = config.branch?.id;
 
+      // Helper function to safely convert to date string
+      const getDateString = (dateValue: any) => {
+        if (!dateValue) return undefined;
+        const date =
+          dateValue instanceof Date ? dateValue : new Date(dateValue);
+        return isNaN(date.getTime())
+          ? undefined
+          : date.toISOString().split('T')[0];
+      };
+
       const result =
         !searchParams || !companyId
           ? {
@@ -77,12 +87,10 @@ export function useProductSearch(searchParams: Partial<SearchParams>) {
               companyId,
               {
                 branchId: branchId,
-                expectedDeliveryStartDay:
-                  config.deliveryTime &&
-                  config.deliveryTime?.from?.toISOString().split('T')[0],
-                expectedDeliveryEndDay:
-                  config.deliveryTime.to &&
-                  config?.deliveryTime?.to.toISOString().split('T')[0],
+                expectedDeliveryStartDay: getDateString(
+                  config.deliveryTime?.from
+                ),
+                expectedDeliveryEndDay: getDateString(config.deliveryTime?.to),
                 startHour: '00',
                 endHour: '2400',
                 name: searchParams.name ?? '',

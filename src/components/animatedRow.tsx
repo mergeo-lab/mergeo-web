@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { TableCell } from "@/components/ui/table";
 import { ProductSchemaType } from "@/lib/schemas";
-import { cn } from "@/lib/utils";
+import { cn, formatToArgentinianPesos } from "@/lib/utils";
 import { motion, usePresence } from "framer-motion";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { LuImage } from "react-icons/lu";
@@ -58,9 +58,8 @@ export default function AnimatedRow({ product, handleRemove }: { product: Produc
             </TableCell>
             <TableCell className="text-center">{product.netContent}</TableCell>
             <TableCell className="text-center">{product.measurementUnit}</TableCell>
-            <TableCell className="text-center">{product.price}</TableCell>
-            <TableCell className="text-center">
-                {product.netContent ? +product.price * product.netContent : 1}
+            <TableCell className="text-center">{formatToArgentinianPesos(+product.price)}</TableCell>
+            <TableCell className="text-center">{formatToArgentinianPesos(+product.pricePerBaseUnit)}
             </TableCell>
             <TableCell>
                 <Button

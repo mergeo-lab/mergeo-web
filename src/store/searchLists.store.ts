@@ -90,9 +90,13 @@ const UseSearchListsStore = create<SearchListsState>((set, get) => ({
   getListById: (id) => get().lists.find((list) => list.id === id),
 
   getAllListsNames: () =>
-    get().lists.map((list) => {
-      return { name: list.name, id: list.id };
-    }),
+    get()
+      .lists.sort(
+        (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
+      )
+      .map((list) => {
+        return { name: list.name, id: list.id };
+      }),
 
   searchProductById: (productId) =>
     get()

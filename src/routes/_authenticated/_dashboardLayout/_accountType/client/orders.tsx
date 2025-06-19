@@ -1,11 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import UseSearchConfigStore from '@/store/searchConfiguration.store';
 import { CartSheet } from '@/components/configuration/client/orders/cartSheet';
-import UseSearchStore from '@/store/search.store';
 import { motion } from "framer-motion";
 import OrderConfig from '@/components/configuration/client/orders/searchConfig/orderConfiguration';
 import ProductsTable from '@/components/configuration/client/orders/productsTable';
@@ -16,6 +15,7 @@ import { LuClipboardList, LuFileCog, LuList, LuPackageSearch } from 'react-icons
 import { RxCross2 } from 'react-icons/rx';
 import { useAuth } from '@/context/AuthContext';
 import CartButton from '@/components/configuration/client/orders/cartButton';
+import OrderInfo from '@/components/configuration/client/orders/tabs/orderInfo';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/orders')({
     component: OrdersPage,
@@ -39,7 +39,6 @@ function OrdersPage() {
     const {
         pickUpDialog,
         setPickUpDialog,
-        resetConfig,
         configDialogOpen,
         setConfigDialogOpen,
         configDataSubmitted,
@@ -47,16 +46,27 @@ function OrdersPage() {
         setShouldResetConfig,
         deliveryTime,
         branch,
+        hasSavedConfig,
+        getSavedConfig,
     } = UseSearchConfigStore();
-    const savedProductsObj = UseSearchStore(state => state.savedProducts);
-    const reset = UseSearchStore(state => state.reset);
-    const savedProducts = useMemo(() => Object.values(savedProductsObj).flat(), [savedProductsObj]);
 
     // Initialize pickUpDialog as false when component mounts
     useEffect(() => {
         setPickUpDialog(false);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    // Check for saved configuration on page load
+    useEffect(() => {
+        if (hasSavedConfig()) {
+            const savedConfig = getSavedConfig();
+            // If we have a saved configuration and no current configuration, 
+            // we can optionally auto-load it or just keep it available
+            if (!deliveryTime && !branch && savedConfig.deliveryTime && savedConfig.branch) {
+                // Don't auto-load, let user choose when they click config
+            }
+        }
+    }, [hasSavedConfig, getSavedConfig, deliveryTime, branch]);
 
     const onTabChange = (value: string) => {
         setTab(value as TabsEnum);
@@ -66,15 +76,6 @@ function OrdersPage() {
         if (tab) setTab(tab);
         setMenuStatus((prev) => !prev);
     };
-
-    useEffect(() => {
-        return () => {
-            reset();
-            resetConfig();
-            setShouldResetConfig(true);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [reset, resetConfig]);
 
     const handleSelectList = () => {
         setConfigDataSubmitted(false);
@@ -100,8 +101,6 @@ function OrdersPage() {
 
     const handleCartClick = () => setOpenCart(true);
 
-    // Debug: log savedProducts before rendering
-    console.log('Sidebar savedProducts:', savedProducts);
 
     return (
         <div className='h-full w-full'>
@@ -130,6 +129,9 @@ function OrdersPage() {
                                     <TabsContent className='w-full overflow-x-hidden h-[calc(100%-50px)] m-0 p-4' value={TabsEnum.BUSCAR_PRODUCTOS}>
                                         <ProductsSearch />
                                     </TabsContent>
+                                    <div className='absolute bottom-[130px] left-0 right-0'>
+                                        <OrderInfo />
+                                    </div>
                                     <div className='w-full p-5 border-t-2 border-t-border flex flex-col gap-2'>
                                         <Button onClick={handleConfigClick} variant='outline' className="w-full flex gap-2">
                                             <motion.div
@@ -159,6 +161,9 @@ function OrdersPage() {
                                             Buscar
                                         </Button>
                                     </TabsList>
+                                    <div className='bg-accent flex justify-center pb-2'>
+                                        <OrderInfo tooltipFormat />
+                                    </div>
                                     <div className='flex flex-col justify-center items-center border-t-2 border-t-border gap-2 p-5'>
                                         <Button onClick={handleConfigClick} variant='outline' className="p-0 px-3 overflow-hidden">
                                             <LuFileCog size={20} />

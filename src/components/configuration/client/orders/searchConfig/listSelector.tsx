@@ -9,7 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 
 type Props = {
     selectedListId?: string;
-    onChange: (listId: string) => void;
+    onChange: (list: { id: string, name: string }) => void;
     removeSelection: () => void
 }
 
@@ -63,7 +63,7 @@ export default function ListSelector({ selectedListId, onChange, removeSelection
                     key={item.id}
                     onClick={() => {
                         if (item.id == selectedListId) removeSelection();
-                        else onChange(item.id)
+                        else onChange({ id: item.id, name: item.name })
                     }
                     }>
                     {item.name}
