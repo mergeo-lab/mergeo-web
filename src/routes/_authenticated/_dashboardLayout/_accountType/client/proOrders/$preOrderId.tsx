@@ -48,13 +48,24 @@ export function SellsDetail() {
 
     const sellProduct = useCallback(() => {
         if (!companyId || !order) return;
+
+        // Debug: Check dropZoneId and prices
+        console.log('Order dropZoneId in client sellProduct:', order.dropZoneId);
+        console.log('Client product prices:', order.preOrderProducts.map(item => ({ id: item.id, price: item.price, priceType: typeof item.price })));
+
+        // Validate that we have a valid dropZoneId
+        if (!order.dropZoneId) {
+            console.error('Missing dropZoneId in order:', order);
+            return [];
+        }
+
         return order?.preOrderProducts.map((item: PreOrderProductSchemaType): SellProductSchemaType => {
             return {
                 id: item.id,
                 quantity: item.quantity,
-                price: item.price,
+                price: String(item.price), // Ensure it's a string
                 providerId: companyId,
-                dropZoneId: order.dropZoneId || '',
+                dropZoneId: order.dropZoneId,
             };
         });
     }, [order, companyId]);
@@ -113,6 +124,7 @@ export function SellsDetail() {
                         acceptedProducts={acceptedProducts}
                         onSelect={(item) => toggleProductAcceptance(item)}
                         toggleAllProducts={() => toggleAllProducts(sellProduct())}
+                        totalPrice={order?.totalPrice}
                     />
 
                 </div>

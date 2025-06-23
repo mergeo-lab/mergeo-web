@@ -18,9 +18,13 @@ type Props = {
     toggleAllProducts: () => void
     onSelect: (product: SellProductSchemaType) => void
     disabled?: boolean
+    totalPrice?: number
 }
 
-export default function ProductList({ orderStatus, data, providerId, dropZoneId, acceptedProducts, isProvider = true, isLoading, onSelect, toggleAllProducts, disabled = false }: Props) {
+export default function ProductList({ orderStatus, data, providerId, dropZoneId, acceptedProducts, isProvider = true, isLoading, onSelect, toggleAllProducts, disabled = false, totalPrice }: Props) {
+
+    // Debug: Check dropZoneId
+    console.log('ProductList dropZoneId:', dropZoneId);
 
     const total = data && data.reduce((acc, item) => {
         // Check if the item is in the acceptedProducts array
@@ -34,8 +38,7 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
         }
 
         if (isAccepted) {
-            const product = item.product;
-            const itemTotal = item.quantity * +product?.price || 0; // Ensure price is treated as a number
+            const itemTotal = item.quantity * +item?.price || 0; // Ensure price is treated as a number
             return acc + itemTotal;
         }
 
@@ -115,14 +118,14 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                                             </TableCell>
                                             <TableCell>{product?.netContent}{product?.measurementUnit}</TableCell>
                                             <TableCell>{item.quantity}</TableCell>
-                                            <TableCell>{formatToArgentinianPesos(+product?.price)}</TableCell>
+                                            <TableCell>{formatToArgentinianPesos(+item?.price)}</TableCell>
                                             {orderStatus !== PRE_ORDER_STATUS.pending &&
                                                 <TableCell>{isAccepted
                                                     ? <p className='text-primary'>Aceptado</p>
                                                     : <p className='text-destructive font-thin'>Rechazado</p>}
                                                 </TableCell>
                                             }
-                                            <TableCell className={cn({ 'text-right pr-14': !isProvider })}>{formatToArgentinianPesos(item.quantity * +product?.price)}</TableCell>
+                                            <TableCell className={cn({ 'text-right pr-14': !isProvider })}>{formatToArgentinianPesos(item.quantity * +item?.price)}</TableCell>
 
                                             {isProvider && orderStatus === PRE_ORDER_STATUS.pending &&
                                                 <TableCell className='text-right w-72'>
@@ -136,12 +139,21 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                                                                     : product.accepted
                                                             }
                                                             onClick={disabled ? undefined : () => {
+                                                                // Validate dropZoneId before using it
+                                                                if (!dropZoneId) {
+                                                                    console.error('Missing dropZoneId in ProductList');
+                                                                    return;
+                                                                }
+
+                                                                // Debug: Check price type
+                                                                console.log('ProductList selecting product:', { id: item.id, price: item.price, priceType: typeof item.price });
+
                                                                 onSelect({
                                                                     id: item.id,
                                                                     quantity: item.quantity,
-                                                                    price: product.price,
+                                                                    price: String(item.price), // Ensure it's a string
                                                                     providerId: providerId || '',
-                                                                    dropZoneId: dropZoneId || '',
+                                                                    dropZoneId: dropZoneId,
                                                                 })
                                                             }} />
 
@@ -161,12 +173,9 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                                 <TableCell colSpan={2} className={cn("h-[2px] p-2 pl-4 font-bold", {
                                     'text-right pr-14': !isProvider
                                 })}>
-                                    {orderStatus === PRE_ORDER_STATUS.pending ||
-                                        orderStatus === PRE_ORDER_STATUS.partialyAccepted ||
-                                        orderStatus === PRE_ORDER_STATUS.accepted
-                                        ?
-                                        formattedTotal
-                                        : "-"}
+                                    {!isProvider && orderStatus === PRE_ORDER_STATUS.pending
+                                        ? <p>{formatToArgentinianPesos(totalPrice || 0)}</p>
+                                        : formattedTotal}
                                 </TableCell>
                             </TableRow>
                         </TableBody>

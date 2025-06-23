@@ -111,6 +111,7 @@ export const PreOrderSchema = z.object({
   criteria: CriteriaSchema,
   client: CompanySchema.optional(),
   dropZoneId: z.string(),
+  totalPrice: z.number(),
 });
 
 const User = z.object({

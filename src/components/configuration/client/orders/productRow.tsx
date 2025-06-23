@@ -17,6 +17,7 @@ type Params = {
     savedProducts: ProductSchemaType[],
     handleToggleFavorite: (itemId: string, newState: boolean) => Promise<void>,
     addProductToBlackList: (productId: string) => Promise<void>,
+    dropZoneId?: string
 }
 
 // Helper function to compare saved products arrays
@@ -25,7 +26,7 @@ const areSavedProductsEqual = (prev: ProductSchemaType[], next: ProductSchemaTyp
     return prev.every((p, i) => p.id === next[i].id && p.quantity === next[i].quantity);
 };
 
-const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavorite, addProductToBlackList }: Params) => {
+const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavorite, addProductToBlackList, dropZoneId }: Params) => {
     const { toggleSheetOpen } = UseMorePresentations();
 
     return (
@@ -120,6 +121,7 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
                         title="Mas Presentaciones"
                         subTitle='Puedes seleccionar otras presentaciones del mismo producto'
                         morePresentations={product.morePresentations || false}
+                        dropZoneId={dropZoneId}
                     />
                     <div>
                         <QuantitySelector

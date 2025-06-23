@@ -15,6 +15,19 @@ export const Route = createFileRoute('/_authenticated/_dashboardLayout/notificat
 function NotificationsPage() {
     const { notifications, markAsRead, markAllAsRead, removeNotification, removeAllNotifications } = useNotifications()
 
+    // Filter out notifications for rejected pre-orders
+    const filteredNotifications = notifications.filter(notification => {
+        // Only filter pre-order related notifications
+        if (notification.type === NotificationType.PRE_ORDER_CREATED ||
+            notification.type === NotificationType.PRE_ORDER_UPDATED) {
+            // If the notification has a pre_order_id, we should check its status
+            // For now, we'll show all notifications since we can't easily fetch the status
+            // The proper solution would be to filter at the database level or include status in notification metadata
+            return true;
+        }
+        return true;
+    });
+
     const getNotificationTitle = (type: string) => {
         switch (type) {
             case NotificationType.PRE_ORDER_CREATED:
@@ -42,7 +55,7 @@ function NotificationsPage() {
         <div className="p-10 mx-auto py-8">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold">Notificaciones</h1>
-                <Button onClick={markAllAsRead} variant="outline" disabled={notifications.length === 0 || notifications.every(notification => notification.read)}>
+                <Button onClick={markAllAsRead} variant="outline" disabled={filteredNotifications.length === 0 || filteredNotifications.every(notification => notification.read)}>
                     Marcar todas como leídas
                 </Button>
             </div>
@@ -59,7 +72,7 @@ function NotificationsPage() {
                                     <TableHead>Acciones</TableHead>
                                     <TableHead>
                                         <div className='flex items-center justify-center gap-2'>
-                                            {notifications.length > 0 && (
+                                            {filteredNotifications.length > 0 && (
                                                 <DeleteConfirmationDialog
                                                     id="all"
                                                     title="Eliminar todas las notificaciones"
@@ -87,14 +100,14 @@ function NotificationsPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {notifications.length === 0 ? (
+                                {filteredNotifications.length === 0 ? (
                                     <TableRow>
                                         <TableCell colSpan={5} className="text-center text-muted-foreground">
                                             No hay notificaciones
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    notifications.map((notification) => {
+                                    filteredNotifications.map((notification) => {
                                         const date = new Date(notification.createdAt)
                                         const formattedDate = isValid(date)
                                             ? format(date, 'PPp', { locale: es })

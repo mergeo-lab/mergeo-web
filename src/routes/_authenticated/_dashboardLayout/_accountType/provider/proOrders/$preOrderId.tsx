@@ -64,10 +64,35 @@ export function SellsDetail() {
 
     async function handleProviderResponse() {
         if (!order || mutation.isPending || isDeadlineExpired) return;
+
+        // Debug: Check dropZoneId and prices
+        console.log('Order dropZoneId:', order.dropZoneId);
+        console.log('Accepted products:', acceptedProducts);
+        console.log('Accepted products prices:', acceptedProducts.map(p => ({ id: p.id, price: p.price, priceType: typeof p.price })));
+        console.log('Rejected products:', rejectedProducts);
+        console.log('Rejected products prices:', rejectedProducts.map(p => ({ id: p.id, price: p.price, priceType: typeof p.price })));
+
+        // Validate that we have a valid dropZoneId
+        if (!order.dropZoneId) {
+            console.error('Missing dropZoneId in order:', order);
+            return;
+        }
+
+        // Ensure all prices are strings
+        const acceptedProductsWithStringPrices = acceptedProducts.map(product => ({
+            ...product,
+            price: String(product.price)
+        }));
+
+        const rejectedProductsWithStringPrices = rejectedProducts.map(product => ({
+            ...product,
+            price: String(product.price)
+        }));
+
         mutation.mutateAsync({
             orderId: order.id,
-            acceptedProducts,
-            rejectedProducts,
+            acceptedProducts: acceptedProductsWithStringPrices,
+            rejectedProducts: rejectedProductsWithStringPrices,
         }).finally(() => {
             refetch();
         })
@@ -76,6 +101,16 @@ export function SellsDetail() {
     async function handleReceptedResponse() {
         if (!order || mutation.isPending || isDeadlineExpired) return;
 
+        // Debug: Check dropZoneId and prices
+        console.log('Order dropZoneId:', order.dropZoneId);
+        console.log('Rejected products prices:', order.preOrderProducts.map(item => ({ id: item.id, price: item.price, priceType: typeof item.price })));
+
+        // Validate that we have a valid dropZoneId
+        if (!order.dropZoneId) {
+            console.error('Missing dropZoneId in order:', order);
+            return;
+        }
+
         mutation.mutateAsync({
             orderId: order.id,
             acceptedProducts: [],
@@ -83,9 +118,9 @@ export function SellsDetail() {
                 return {
                     id: item.id,
                     quantity: item.quantity,
-                    price: item.price,
+                    price: String(item.price), // Ensure it's a string
                     providerId: companyId || '',
-                    dropZoneId: order.dropZoneId || '',
+                    dropZoneId: order.dropZoneId,
                 }
             })
         }).finally(() => {
@@ -95,13 +130,24 @@ export function SellsDetail() {
 
     const sellProduct = useCallback(() => {
         if (!companyId || !order) return;
+
+        // Debug: Check dropZoneId and prices
+        console.log('Order dropZoneId in sellProduct:', order.dropZoneId);
+        console.log('Product prices:', order.preOrderProducts.map(item => ({ id: item.id, price: item.price, priceType: typeof item.price })));
+
+        // Validate that we have a valid dropZoneId
+        if (!order.dropZoneId) {
+            console.error('Missing dropZoneId in order:', order);
+            return [];
+        }
+
         return order?.preOrderProducts.map((item: PreOrderProductSchemaType): SellProductSchemaType => {
             return {
                 id: item.id,
                 quantity: item.quantity,
-                price: item.product.price,
+                price: String(item.price), // Ensure it's a string
                 providerId: companyId,
-                dropZoneId: order.dropZoneId || '',
+                dropZoneId: order.dropZoneId,
             };
         });
     }, [order, companyId]);
@@ -151,6 +197,7 @@ export function SellsDetail() {
                         </div>
                     }
                     <ProductList
+                        isProvider={true}
                         isLoading={isLoading}
                         orderStatus={order?.status as PRE_ORDER_STATUS}
                         providerId={order?.buyerId}
@@ -159,7 +206,6 @@ export function SellsDetail() {
                         acceptedProducts={acceptedProducts}
                         onSelect={(item) => toggleProductAcceptance(item)}
                         toggleAllProducts={() => toggleAllProducts(sellProduct())}
-                        isProvider={true}
                         disabled={isDeadlineExpired} />
 
                 </div>

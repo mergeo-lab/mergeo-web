@@ -288,6 +288,7 @@ export default function ProductsTable({ configCanceled }: Params) {
                                                 savedProducts={getAllSavedProducts()}
                                                 handleToggleFavorite={handleToggleFavorite}
                                                 addProductToBlackList={handleAddProductToBlackList}
+                                                dropZoneId={product.dropZoneId || getAllSavedProducts().find(p => p.dropZoneId)?.dropZoneId}
                                             />
                                         ))
                                     )

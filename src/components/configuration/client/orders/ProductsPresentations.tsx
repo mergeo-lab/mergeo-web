@@ -12,6 +12,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import UseSearchStore from "@/store/search.store";
 import { LuClipboardList, LuImage } from "react-icons/lu";
 import { SheetWithConfirm } from "@/components/SheetWithConfirm";
+import { useAuth } from "@/context/AuthContext";
 
 type Props = {
     title?: string,
@@ -19,7 +20,8 @@ type Props = {
     productId: string | null,
     morePresentations: boolean,
     icon?: React.ReactNode,
-    callback: () => void
+    callback: () => void,
+    dropZoneId?: string
 }
 
 export function ProductsPresentations({
@@ -29,6 +31,7 @@ export function ProductsPresentations({
     morePresentations = false,
     icon = <LuClipboardList size={25} />,
     callback,
+    dropZoneId,
 }: Props) {
     const { openProductId, toggleSheetOpen } = UseMorePresentations();
     const isOpen = openProductId === productId;
@@ -36,6 +39,11 @@ export function ProductsPresentations({
     const savedProducts = UseSearchStore(state => state.savedProducts);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const allSavedProducts = useMemo(() => UseSearchStore.getState().getAllSavedProducts(), [savedProducts]);
+
+    // Get providerId from auth context and dropZoneId from search config
+    const { account } = useAuth();
+    const providerId = account?.company?.id || '';
+
     const { data, isLoading } = useQuery({
         queryKey: ['more-presentations', productId],
         queryFn: () => productId ? getMorePresentations(productId) : Promise.reject(new Error('Product ID is undefined')),
@@ -53,8 +61,33 @@ export function ProductsPresentations({
             removeProduct(product.id);
             saveMorePresentations(hasMore.filter((id) => id !== productId))
         } else {
-            if (!product.providerId) return;
-            saveProduct({ ...product, providerId: product.providerId, dropZoneId: product.dropZoneId || '' }, quantity);
+            // Use providerId from auth context
+            const productProviderId = providerId;
+
+            // Try to get dropZoneId from props, search config, or existing saved products
+            let productDropZoneId = dropZoneId || '';
+
+            if (!productDropZoneId) {
+                // Try to get it from any existing saved product (they should all have the same dropZoneId)
+                const existingProduct = allSavedProducts.find(p => p.dropZoneId);
+                if (existingProduct) {
+                    productDropZoneId = existingProduct.dropZoneId;
+                }
+            }
+
+            if (!productProviderId) {
+                console.error('Missing providerId. User company ID not found.');
+                return;
+            }
+
+            if (!productDropZoneId) {
+                console.error('Missing dropZoneId. Please ensure search configuration has a branch with dropZoneId or provide dropZoneId as a prop.');
+                return;
+            }
+
+            console.log('Saving product with providerId:', productProviderId, 'dropZoneId:', productDropZoneId);
+
+            saveProduct({ ...product, providerId: productProviderId, dropZoneId: productDropZoneId }, quantity);
             saveMorePresentations(productId ? [productId] : [])
         }
     }
@@ -67,32 +100,31 @@ export function ProductsPresentations({
                 toggleSheetOpen(productId);
             }
         }}>
-            <SheetTrigger asChild>
-                {
-                    morePresentations && (
-                        allSavedProducts && allSavedProducts.length > 0 && hasMore.includes(productId ?? '')
-                            ?
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button size='xs' variant="outlineSecondary" className={cn("w-[6.8rem]", {
-                                            "border-highlight text-highlight hover:bg-highlight/20": allSavedProducts.length > 0,
-                                        })}>
-                                            + presentaciones
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        Seleccionaste otra presentacion de este producto
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                            :
-                            <Button size='xs' variant="outlineSecondary" className={cn("w-[6.8rem]")}>
-                                + presentaciones
-                            </Button>
-                    )
-                }
-            </SheetTrigger>
+            {morePresentations && (
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <SheetTrigger asChild>
+                                <Button
+                                    size='xs'
+                                    variant="outlineSecondary"
+                                    className={cn("w-[6.8rem]", {
+                                        "border-highlight text-highlight hover:bg-highlight/20": allSavedProducts && allSavedProducts.length > 0 && hasMore.includes(productId ?? ''),
+                                    })}
+                                >
+                                    + presentaciones
+                                </Button>
+                            </SheetTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            {allSavedProducts && allSavedProducts.length > 0 && hasMore.includes(productId ?? '')
+                                ? "Seleccionaste otra presentacion de este producto"
+                                : "Ver otras presentaciones de este producto"
+                            }
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+            )}
             <SheetContent className="w-1/2 mx-w-1/2 sm:max-w-1/2">
                 <SheetHeader>
                     <SheetTitle className="flex gap-2 items-center">

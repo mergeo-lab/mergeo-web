@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Map, Marker } from '@vis.gl/react-google-maps';
 import { AutocompleteCustom } from './autoComplete';
 import { FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -24,6 +24,8 @@ export const AddressMapSelector = ({ value, onChange, label = "Dirección", disa
     const [selectedPlace, setSelectedPlace] = useState<google.maps.places.PlaceResult | null>(null);
     const [mapCenter, setMapCenter] = useState(centerArgentina);
     const [zoom, setZoom] = useState(4); // Initial zoom to show all Argentina
+    const [shouldPreventFocus, setShouldPreventFocus] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const handlePlaceSelect = (place: google.maps.places.PlaceResult | null) => {
         if (place && place.geometry?.location) {
@@ -54,17 +56,43 @@ export const AddressMapSelector = ({ value, onChange, label = "Dirección", disa
 
     const handleConfirm = () => {
         if (selectedPlace) {
-            setIsOpen(false);
+            handleOpenChange(false);
+        }
+    };
+
+    const handleCancel = () => {
+        handleOpenChange(false);
+    };
+
+    const handleFocus = () => {
+        if (!shouldPreventFocus) {
+            setIsOpen(true);
+        }
+        setShouldPreventFocus(false);
+    };
+
+    const handleOpenChange = (open: boolean) => {
+        setIsOpen(open);
+        if (!open) {
+            // Set flag to prevent reopening and blur the input
+            setShouldPreventFocus(true);
+            setTimeout(() => {
+                if (inputRef.current) {
+                    inputRef.current.blur();
+                }
+            }, 0);
         }
     };
 
     return (
         <FormItem>
             <FormLabel>{label}</FormLabel>
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <Dialog open={isOpen} onOpenChange={handleOpenChange}>
                 <DialogTitle className='hidden'></DialogTitle>
                 <DialogTrigger asChild>
                     <Input
+                        ref={inputRef}
+                        onFocusCapture={handleFocus}
                         value={value?.name || ""}
                         readOnly
                         disabled={disabled}
@@ -90,7 +118,7 @@ export const AddressMapSelector = ({ value, onChange, label = "Dirección", disa
                             </Map>
                         </div>
                         <div className="flex justify-end gap-2 p-5 pt-0">
-                            <Button variant="secondary" onClick={() => setIsOpen(false)}>
+                            <Button variant="secondary" onClick={handleCancel}>
                                 Cancelar
                             </Button>
                             <Button onClick={handleConfirm} disabled={!selectedPlace}>

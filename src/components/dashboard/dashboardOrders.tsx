@@ -71,54 +71,56 @@ export default function DashboardOrders({ companyId, accountType, queryKey, item
                 "h-64 overflow-y-auto": accountType === ACCOUNT.provider
             })}>
                 <div className="divide-y">
-                    {data && data.map((order) => (
-                        <div key={order.id} className="p-4 flex justify-between items-center hover:bg-gray-50">
-                            <div className="font-medium w-32">Order #{order.preOrderNumber}</div>
-                            <div className="flex items-center w-56">
-                                <span className="mr-1 text-gray-500 font-thin">
-                                    Cantidad de Productos:
-                                </span>
-                                {order.productsCount}
-                            </div>
-                            {
-                                accountType === ACCOUNT.provider && order.dropZoneName ?
-                                    <div className="flex flex-col justify-center">
-                                        <div>
-                                            <span className="mr-1 text-gray-500 font-thin">
-                                                Zona:
-                                            </span>
-                                            {order.dropZoneName}
-                                        </div>
-                                        <RemainingTime time={order.responseDeadline} />
-                                    </div>
-                                    :
-                                    <div className="flex flex-col min-w-44 justify-center items-center gap-2">
-                                        <StatusBadge className='py-1 text-sm' status={order?.status || ""} />
-                                        {
-                                            order.responseDeadline && order.status === PRE_ORDER_STATUS.pending &&
-                                            <RemainingTime time={order.responseDeadline} />
-                                        }
-                                    </div>
-                            }
-                            <div className="flex items-center justify-end space-x-4 w-60">
-                                <div className="flex flex-col justify-end items-end">
-                                    <div className="font-medium">{formatToArgentinianPesos(order.totalPrice)}</div>
+                    {data && data
+                        .filter(order => order.status !== PRE_ORDER_STATUS.rejected)
+                        .map((order) => (
+                            <div key={order.id} className="p-4 flex justify-between items-center hover:bg-gray-50">
+                                <div className="font-medium w-32">Order #{order.preOrderNumber}</div>
+                                <div className="flex items-center w-56">
+                                    <span className="mr-1 text-gray-500 font-thin">
+                                        Cantidad de Productos:
+                                    </span>
+                                    {order.productsCount}
                                 </div>
-                                <Button variant='outline'>
-                                    <Link to={'/provider/proOrders/$preOrderId'} params={{ preOrderId: order.id || "" }}>
-                                        Ver Pedido
-                                    </Link>
-                                </Button>
-                                {order?.status === PRE_ORDER_STATUS.accepted &&
+                                {
+                                    accountType === ACCOUNT.provider && order.dropZoneName ?
+                                        <div className="flex flex-col justify-center">
+                                            <div>
+                                                <span className="mr-1 text-gray-500 font-thin">
+                                                    Zona:
+                                                </span>
+                                                {order.dropZoneName}
+                                            </div>
+                                            <RemainingTime time={order.responseDeadline} />
+                                        </div>
+                                        :
+                                        <div className="flex flex-col min-w-44 justify-center items-center gap-2">
+                                            <StatusBadge className='py-1 text-sm' status={order?.status || ""} />
+                                            {
+                                                order.responseDeadline && order.status === PRE_ORDER_STATUS.pending &&
+                                                <RemainingTime time={order.responseDeadline} />
+                                            }
+                                        </div>
+                                }
+                                <div className="flex items-center justify-end space-x-4 w-60">
+                                    <div className="flex flex-col justify-end items-end">
+                                        <div className="font-medium">{formatToArgentinianPesos(order.totalPrice)}</div>
+                                    </div>
                                     <Button variant='outline'>
-                                        <Link to={`/buyOrder/$orderId`} params={{ orderId: order?.buyOrderId || "" }}>
-                                            Ver Orden de compra
+                                        <Link to={'/provider/proOrders/$preOrderId'} params={{ preOrderId: order.id || "" }}>
+                                            Ver Pedido
                                         </Link>
                                     </Button>
-                                }
+                                    {order?.status === PRE_ORDER_STATUS.accepted &&
+                                        <Button variant='outline'>
+                                            <Link to={`/buyOrder/$orderId`} params={{ orderId: order?.buyOrderId || "" }}>
+                                                Ver Orden de compra
+                                            </Link>
+                                        </Button>
+                                    }
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
                 </div>
             </CardContent>
         </Card>
