@@ -104,41 +104,51 @@ export default function Sells() {
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {data.map((order: PreOrderSchemaType) => (
-                                                <TableRow className="hover:bg-white first:border-t-none" key={order.id}>
-                                                    <TableCell className="w-[150px]">{order.preOrderNumber}</TableCell>
-                                                    <TableCell className="w-[150px]">{formatDate(order.created)}</TableCell>
-                                                    <TableCell className="w-[150px] text-center">{order.instance}</TableCell>
-                                                    <TableCell className="w-[150px] text-center">
-                                                        <div className="flex justify-center">
-                                                            <StatusBadge className='py-2 px-6 text-sm' status={order.status} />
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell className="w-[150px] text-center">
-                                                        <Link to={`/provider/proOrders/$preOrderId`} params={{ preOrderId: order.id }}>
-                                                            <Button variant='ghost' className='space-x-2'>
-                                                                <LuEye className='cursor-pointer' size={20} />
-                                                                <p>Ver Pedido</p>
-                                                            </Button>
-                                                        </Link>
-                                                    </TableCell>
-                                                    <TableCell className="w-[200px] text-right">
-                                                        {order.orderId
-                                                            ? (
-                                                                <Link to={`/buyOrder/$orderId`} params={{ orderId: order.orderId }} key={order.orderId}>
-                                                                    <Button variant='ghost' className='space-x-2'>
-                                                                        <LuEye className='cursor-pointer' size={20} />
-                                                                        <p>Ver Orden de Compra</p>
-                                                                    </Button>
-                                                                </Link>
-                                                            )
-                                                            : <div className='flex justify-end mr-20'>
-                                                                <LuMinus size={15} strokeWidth={2} />
+                                            {data
+                                                .sort((a, b) => {
+                                                    // First sort by preOrderNumber (high to low)
+                                                    const orderNumberComparison = b.preOrderNumber - a.preOrderNumber;
+                                                    if (orderNumberComparison !== 0) {
+                                                        return orderNumberComparison;
+                                                    }
+                                                    // If order numbers are equal, sort by date (oldest to newest)
+                                                    return new Date(a.created).getTime() - new Date(b.created).getTime();
+                                                })
+                                                .map((order: PreOrderSchemaType) => (
+                                                    <TableRow className="hover:bg-white first:border-t-none" key={order.id}>
+                                                        <TableCell className="w-[150px]">{order.preOrderNumber}</TableCell>
+                                                        <TableCell className="w-[150px]">{formatDate(order.created)}</TableCell>
+                                                        <TableCell className="w-[150px] text-center">{order.instance}</TableCell>
+                                                        <TableCell className="w-[150px] text-center">
+                                                            <div className="flex justify-center">
+                                                                <StatusBadge className='py-2 px-6 text-sm' status={order.status} />
                                                             </div>
-                                                        }
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
+                                                        </TableCell>
+                                                        <TableCell className="w-[150px] text-center">
+                                                            <Link to={`/provider/proOrders/$preOrderId`} params={{ preOrderId: order.id }}>
+                                                                <Button variant='ghost' className='space-x-2'>
+                                                                    <LuEye className='cursor-pointer' size={20} />
+                                                                    <p>Ver Pedido</p>
+                                                                </Button>
+                                                            </Link>
+                                                        </TableCell>
+                                                        <TableCell className="w-[200px] text-right">
+                                                            {order.orderId
+                                                                ? (
+                                                                    <Link to={`/buyOrder/$orderId`} params={{ orderId: order.orderId }} key={order.orderId}>
+                                                                        <Button variant='ghost' className='space-x-2'>
+                                                                            <LuEye className='cursor-pointer' size={20} />
+                                                                            <p>Ver Orden de Compra</p>
+                                                                        </Button>
+                                                                    </Link>
+                                                                )
+                                                                : <div className='flex justify-end mr-20'>
+                                                                    <LuMinus size={15} strokeWidth={2} />
+                                                                </div>
+                                                            }
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
                                         </TableBody>
                                     </Table>
                                 </div>

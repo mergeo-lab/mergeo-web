@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { cratePreOrder } from "@/lib/orders";
-import UseSearchStore, { CartProduct, ProductWithQuantity } from "@/store/search.store";
+import UseSearchStore, { CartProduct } from "@/store/search.store";
 import { LuClipboardList } from "react-icons/lu";
 import QuantitySelector from "@/components/configuration/client/orders/quantitySelector";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -17,6 +17,10 @@ import { SaveOrderAsListDialog } from "./saveOrderAsListDialog";
 import { toast } from "@/components/ui/use-toast";
 import LoadingIndicator from "@/components/loadingIndicator";
 import { GiShoppingCart } from "react-icons/gi";
+import { TbCalendarTime } from "react-icons/tb";
+import { DeliveryDateDialog } from "./deliveryDateDialog";
+import { cn } from "@/lib/utils";
+import { RxCross2 } from "react-icons/rx";
 
 type Props = {
     title?: string,
@@ -38,34 +42,33 @@ export function CartSheet({
     onInteractOutside }: Props) {
     console.log('Rendering CartSheet');
     const mutation = useMutation({ mutationFn: cratePreOrder })
-    const { saveProduct, removeProduct, reset } = UseSearchStore();
-    const savedProductsObj = UseSearchStore(state => state.savedProducts);
-    const products = useMemo(() => Object.values(savedProductsObj).flat(), [savedProductsObj]);
-    const getAllConfig = UseSearchConfigStore((state: { getAllConfig: () => any }) => state.getAllConfig);
-    const [showCountdown, setShowCountdown] = useState(false);
+    const { getAllSavedProducts, removeProduct, saveProduct, updateProductDeliveryDate } = UseSearchStore();
+    const { getAllConfig } = UseSearchConfigStore();
     const { account } = useAuth();
     const user = account?.user;
     const router = useRouter();
-
-    // State for save list dialog and processing
     const [showSaveListDialog, setShowSaveListDialog] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [showCountdown, setShowCountdown] = useState(false);
+    const [deliveryDateDialogOpen, setDeliveryDateDialogOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState<CartProduct | null>(null);
 
-    const totalPrice = products
-        .reduce((sum: number, product: ProductWithQuantity) => {
-            const price = Number(product.price) * (product.quantity || 0);
-            return sum + (isNaN(price) ? 0 : price);
-        }, 0)
-        .toFixed(2);
+    const config = getAllConfig();
 
-    // Debug effect for processing state
-    useEffect(() => {
-        console.log('Processing state changed:', { isProcessing });
-    }, [isProcessing]);
+    const products = getAllSavedProducts();
+    const totalPrice = products.reduce((total, product) => {
+        return total + (Number(product.price) * (product.quantity || 0));
+    }, 0);
 
-    const closeModal = useCallback(() => {
+    const closeModal = () => {
         callback();
-    }, [callback]);
+    };
+
+    const reset = () => {
+        products.forEach(product => {
+            removeProduct(product.id);
+        });
+    };
 
     const navigateToPedidos = () => {
         setShowCountdown(true);
@@ -82,6 +85,18 @@ export function CartSheet({
         }, 3000);
     };
 
+    // Helper function to safely convert to date string
+    const getDateString = (dateValue: any) => {
+        if (!dateValue) return undefined;
+        const date = dateValue instanceof Date ? dateValue : new Date(dateValue);
+        return isNaN(date.getTime()) ? undefined : date.toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: '2-digit'
+        });
+    };
+
+
     const handleOrderSubmission = async (saveList: boolean, listName?: string) => {
         console.log('handleOrderSubmission called with:', { saveList, listName });
         if (!user) return;
@@ -90,19 +105,10 @@ export function CartSheet({
         setShowSaveListDialog(false);
         setIsProcessing(true);
 
-        const config = getAllConfig();
-        console.log('Config:', config);
-
-        // Helper function to safely convert to date string
-        const getDateString = (dateValue: any) => {
-            if (!dateValue) return undefined;
-            const date = dateValue instanceof Date ? dateValue : new Date(dateValue);
-            return isNaN(date.getTime()) ? undefined : date.toISOString().split('T')[0];
-        };
-
         try {
             console.log('Starting order creation...');
-            // Create order
+
+            // Create order with products (individual delivery dates are stored locally for now)
             const orderPromise = mutation.mutateAsync({
                 userId: user?.id,
                 searchParams: {
@@ -177,6 +183,19 @@ export function CartSheet({
         }
     }
 
+    const handleDeliveryDateChange = (productId: string, deliveryDate: Date) => {
+        updateProductDeliveryDate(productId, deliveryDate);
+    };
+
+    const removeDeliveryDate = (productId: string) => {
+        updateProductDeliveryDate(productId, null as any);
+    };
+
+    const openDeliveryDateDialog = (product: CartProduct) => {
+        setSelectedProduct(product);
+        setDeliveryDateDialogOpen(true);
+    };
+
     return (
         <>
             <Sheet open={isOpen || false} onOpenChange={(open) => {
@@ -198,9 +217,11 @@ export function CartSheet({
                                 variant="outline"
                                 className="text-destructive gap-2 border-destructive hover:bg-destructive/20 absolute right-5 top-5"
                                 onClick={() => reset()}
-                                disabled={products.length === 0}
+                                disabled={products.length === 0 || mutation.isPending || isProcessing || showCountdown}
                             >
-                                <FaRegTrashAlt size={15} className="text-destructive" />
+                                <FaRegTrashAlt size={15} className={cn("text-destructive", {
+                                    "text-muted-foreground": products.length === 0 || mutation.isPending || isProcessing || showCountdown
+                                })} />
                                 Vaciar carrito
                             </Button>
                         </SheetTitle>
@@ -231,6 +252,7 @@ export function CartSheet({
                                                     <TableRow className="hover:bg-white [&>*]:text-center">
                                                         <TableHead className="!text-left">Producto</TableHead>
                                                         <TableHead>Contenido Neto</TableHead>
+                                                        <TableHead>Fecha de Entrega</TableHead>
                                                         <TableHead>Precio Unitario</TableHead>
                                                         <TableHead>Precio</TableHead>
                                                     </TableRow>
@@ -248,6 +270,46 @@ export function CartSheet({
                                                                     <Button variant="ghost" className="[&>*]:hover:text-destructive" onClick={() => handleProductChange(product, 0)}>
                                                                         <FaRegTrashAlt size={15} className="text-muted-foreground" />
                                                                     </Button>
+                                                                </div>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div className="flex gap-1 text-[0.7rem] items-center">
+                                                                    {product?.deliveryDate && (
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            size="sm"
+                                                                            onClick={() => removeDeliveryDate(product.id)}
+                                                                            className="text-xs w-6 h-6 p-0"
+                                                                            title="Eliminar fecha de entrega"
+                                                                        >
+                                                                            <RxCross2 size={16} className="text-destructive" />
+                                                                        </Button>
+                                                                    )}
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        onClick={() => openDeliveryDateDialog(product)}
+                                                                        className={cn("text-xs w-6 h-6 p-0", {
+                                                                            "text-info": product?.deliveryDate,
+                                                                            "text-muted-foreground": !product.deliveryDate
+                                                                        })}
+                                                                        title={product?.deliveryDate ? "Cambiar fecha de entrega" : "Establecer fecha de entrega"}
+                                                                    >
+                                                                        <TbCalendarTime size={16} />
+                                                                    </Button>
+                                                                    {product?.deliveryDate ? (
+                                                                        <span className="text-info text-[0.75rem]">
+                                                                            {product?.deliveryDate.toLocaleDateString('es-ES', {
+                                                                                day: '2-digit',
+                                                                                month: '2-digit',
+                                                                                year: 'numeric'
+                                                                            })}
+                                                                        </span>
+                                                                    ) : (
+                                                                        <span className="text-muted-foreground text-[0.75rem]">
+                                                                            {getDateString(config?.deliveryTime?.from)} - {getDateString(config?.deliveryTime?.to)}
+                                                                        </span>
+                                                                    )}
                                                                 </div>
                                                             </TableCell>
                                                             <TableCell className="text-center">
@@ -308,6 +370,20 @@ export function CartSheet({
                 _userName={user?.name || ''}
                 isProcessing={isProcessing}
             />
+
+            {/* Delivery Date Dialog */}
+            {selectedProduct && (
+                <DeliveryDateDialog
+                    isOpen={deliveryDateDialogOpen}
+                    onClose={() => {
+                        setDeliveryDateDialogOpen(false);
+                        setSelectedProduct(null);
+                    }}
+                    product={selectedProduct}
+                    onDateChange={handleDeliveryDateChange}
+                    currentDeliveryDate={selectedProduct?.deliveryDate || undefined}
+                />
+            )}
         </>
     )
 }

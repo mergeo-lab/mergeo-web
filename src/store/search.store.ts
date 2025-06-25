@@ -13,10 +13,12 @@ export type CartProductQuantity = Pick<
 export type CartProduct = ProductSchemaType & {
   providerId: string;
   dropZoneId: string;
+  deliveryDate?: Date;
 };
 
 export type ProductWithQuantity = CartProduct & {
   quantity: number;
+  deliveryDate?: Date;
 };
 
 type SearchState = {
@@ -29,6 +31,7 @@ type SearchState = {
   removeProduct: (productId: string) => void;
   getSavedProductById: (id: string) => ProductWithQuantity | undefined;
   getAllSavedProducts: () => ProductWithQuantity[];
+  updateProductDeliveryDate: (productId: string, deliveryDate: Date) => void;
   reset: () => void;
 };
 const UseSearchStore = create<SearchState>((set, get) => ({
@@ -89,6 +92,23 @@ const UseSearchStore = create<SearchState>((set, get) => ({
       (p) => !(p.id === productId)
     );
     console.log('[removeProduct] Updated productsArray:', updatedProductsArray);
+    set({
+      savedProducts: {
+        ...savedProducts,
+        [activeSearchId]: updatedProductsArray,
+      },
+    });
+  },
+
+  updateProductDeliveryDate: (productId: string, deliveryDate: Date) => {
+    const { activeSearchItem, savedProducts } = get();
+    const activeSearchId = activeSearchItem?.id || 'default';
+    const productsArray = savedProducts[activeSearchId] || [];
+
+    const updatedProductsArray = productsArray.map((product) =>
+      product.id === productId ? { ...product, deliveryDate } : product
+    );
+
     set({
       savedProducts: {
         ...savedProducts,

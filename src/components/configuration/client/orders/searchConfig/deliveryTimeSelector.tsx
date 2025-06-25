@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { TbCalendarTime } from "react-icons/tb";
+import { es } from "date-fns/locale";
 
 interface DatePickerWithRangeProps {
   className?: string;
@@ -84,6 +85,7 @@ export function DeliveryTimeSelector({
         </PopoverTrigger>
         <PopoverContent className="w-auto p-1" align="start">
           <Calendar
+            locale={es}
             defaultMonth={today}
             disabled={(date) => date < today}
             mode="range"
