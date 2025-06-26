@@ -163,6 +163,8 @@ export function SellsDetail() {
         }
     }, [order, toggleAllAcceptedProducts]);
 
+    console.log('order', order);
+
     return (
         <>
             <div className='p-4 shadow'>
@@ -175,7 +177,7 @@ export function SellsDetail() {
                             <span className='font-semibold bg-muted/20 px-2 py-1 rounded-r ml-2'>{order?.preOrderNumber}</span>
                         </div>
                         <StatusBadge className='py-1 font-black text-sm' status={order?.status || ""} />
-                        {order?.status === PRE_ORDER_STATUS.accepted || order?.status === PRE_ORDER_STATUS.partialyAccepted &&
+                        {order?.orderId &&
                             <Link to={`/buyOrder/$orderId`} params={{ orderId: order?.orderId || '' }}>
                                 <Button variant='link' className='space-x-2'>
                                     <BsBoxArrowInRight size={20} />

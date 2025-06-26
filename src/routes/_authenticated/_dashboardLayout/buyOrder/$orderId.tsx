@@ -33,6 +33,9 @@ export default function OdcDetail() {
     enabled: !!orderId, // Ensure the query runs only if company ID exists
   });
 
+  console.log('buy order orderId', orderId);
+  console.log('buy order', order);
+
   const buyOrderFormRef = useRef<{ exportClick: () => void, printClick: () => void } | null>(null);
 
   const handlePrint = () => {
