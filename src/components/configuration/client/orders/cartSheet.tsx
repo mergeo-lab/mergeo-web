@@ -12,7 +12,7 @@ import { useAuth } from "@/context/AuthContext";
 import UseSearchConfigStore from "@/store/searchConfiguration.store";
 import { useMutation } from "@tanstack/react-query";
 import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
-import { formatToArgentinianPesos } from '../../../../lib/utils';
+import { formatToArgentinianPesos, getDateString } from '../../../../lib/utils';
 import { SaveOrderAsListDialog } from "./saveOrderAsListDialog";
 import { toast } from "@/components/ui/use-toast";
 import LoadingIndicator from "@/components/loadingIndicator";
@@ -40,7 +40,6 @@ export function CartSheet({
     isOpen,
     triggerButton,
     onInteractOutside }: Props) {
-    console.log('Rendering CartSheet');
     const mutation = useMutation({ mutationFn: cratePreOrder })
     const { getAllSavedProducts, removeProduct, saveProduct, updateProductDeliveryDate } = UseSearchStore();
     const { getAllConfig } = UseSearchConfigStore();
@@ -85,18 +84,6 @@ export function CartSheet({
         }, 3000);
     };
 
-    // Helper function to safely convert to date string
-    const getDateString = (dateValue: any) => {
-        if (!dateValue) return undefined;
-        const date = dateValue instanceof Date ? dateValue : new Date(dateValue);
-        return isNaN(date.getTime()) ? undefined : date.toLocaleDateString('es-ES', {
-            day: '2-digit',
-            month: '2-digit',
-            year: '2-digit'
-        });
-    };
-
-
     const handleOrderSubmission = async (saveList: boolean, listName?: string) => {
         console.log('handleOrderSubmission called with:', { saveList, listName });
         if (!user) return;
@@ -114,8 +101,8 @@ export function CartSheet({
                 searchParams: {
                     branchId:
                         config.branch && config.branch !== null ? config.branch.id : '',
-                    expectedDeliveryStartDay: getDateString(config.deliveryTime?.from),
-                    expectedDeliveryEndDay: getDateString(config.deliveryTime?.to),
+                    expectedDeliveryStartDay: getDateString(config.deliveryTime?.from, 'iso'),
+                    expectedDeliveryEndDay: getDateString(config.deliveryTime?.to, 'iso'),
                     startHour: '2400',
                     endHour: '0000',
                     isPickUp: config.pickUp,
@@ -160,7 +147,7 @@ export function CartSheet({
             // Navigate immediately after operations complete
             navigateToPedidos();
 
-        } catch (error: any) {
+        } catch (error) {
             console.error('Error processing order:', error);
             setIsProcessing(false);
             toast({
@@ -178,6 +165,8 @@ export function CartSheet({
     function handleProductChange(product: CartProduct, quantity: number) {
         if (quantity === 0) {
             removeProduct(product.id);
+            // Also remove delivery date when product is removed
+            removeDeliveryDate(product.id);
         } else {
             saveProduct(product, quantity);
         }
@@ -188,7 +177,8 @@ export function CartSheet({
     };
 
     const removeDeliveryDate = (productId: string) => {
-        updateProductDeliveryDate(productId, null as any);
+        console.log('[removeDeliveryDate] called with productId:', productId);
+        updateProductDeliveryDate(productId, null);
     };
 
     const openDeliveryDateDialog = (product: CartProduct) => {
@@ -250,11 +240,11 @@ export function CartSheet({
                                             <Table>
                                                 <TableHeader className="sticky top-0 bg-white shadow-sm">
                                                     <TableRow className="hover:bg-white [&>*]:text-center">
-                                                        <TableHead className="!text-left">Producto</TableHead>
-                                                        <TableHead>Contenido Neto</TableHead>
-                                                        <TableHead>Fecha de Entrega</TableHead>
-                                                        <TableHead>Precio Unitario</TableHead>
-                                                        <TableHead>Precio</TableHead>
+                                                        <TableHead className="!text-left">PRODUCTO</TableHead>
+                                                        <TableHead>CONTENIDO NETO</TableHead>
+                                                        <TableHead>FECHA DE ENTREGA</TableHead>
+                                                        <TableHead>PUM</TableHead>
+                                                        <TableHead>PRECIO</TableHead>
                                                     </TableRow>
                                                 </TableHeader>
                                                 <TableBody className="[&>*]:hover:bg-white">
@@ -307,7 +297,7 @@ export function CartSheet({
                                                                         </span>
                                                                     ) : (
                                                                         <span className="text-muted-foreground text-[0.75rem]">
-                                                                            {getDateString(config?.deliveryTime?.from)} - {getDateString(config?.deliveryTime?.to)}
+                                                                            {getDateString(config?.deliveryTime?.from, 'locale')} - {getDateString(config?.deliveryTime?.to, 'locale')}
                                                                         </span>
                                                                     )}
                                                                 </div>
@@ -381,6 +371,7 @@ export function CartSheet({
                     }}
                     product={selectedProduct}
                     onDateChange={handleDeliveryDateChange}
+                    onRemoveDate={removeDeliveryDate}
                     currentDeliveryDate={selectedProduct?.deliveryDate || undefined}
                 />
             )}

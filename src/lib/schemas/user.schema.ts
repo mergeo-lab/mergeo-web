@@ -6,7 +6,7 @@ export const UserSchema = z.object({
   name: z.string(),
   email: z.string(),
   roles: z.array(RoleSchema),
-  isActive: z.boolean(),
+  email_verified: z.boolean(),
   created: z.string(),
   updated: z.string(),
 });
@@ -28,6 +28,15 @@ export const NewUserSchema = z.object({
     .optional(),
 });
 
+export const InviteUserSchema = z.object({
+  firstName: z.string().min(3, { message: 'El nombre no es valido!' }),
+  lastName: z.string().min(3, { message: 'Ingresa tu apellido' }),
+  email: z
+    .string()
+    .min(3, { message: 'Tienes que completar este campo!' })
+    .email('Ingresa un email valido!'),
+});
+
 export const DeleteUserSchema = z.object({
   email: z.string().email('Ingresa un email valido!'),
 });
@@ -35,4 +44,5 @@ export const DeleteUserSchema = z.object({
 export type UserSchemaType = z.infer<typeof UserSchema>;
 export type UserSchemaResponseType = z.infer<typeof UserSchemaResponse>;
 export type NewUserSchemaType = z.infer<typeof NewUserSchema>;
+export type InviteUserSchemaType = z.infer<typeof InviteUserSchema>;
 export type DeleteUserSchemaType = z.infer<typeof DeleteUserSchema>;

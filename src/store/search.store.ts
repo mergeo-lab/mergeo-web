@@ -31,7 +31,10 @@ type SearchState = {
   removeProduct: (productId: string) => void;
   getSavedProductById: (id: string) => ProductWithQuantity | undefined;
   getAllSavedProducts: () => ProductWithQuantity[];
-  updateProductDeliveryDate: (productId: string, deliveryDate: Date) => void;
+  updateProductDeliveryDate: (
+    productId: string,
+    deliveryDate: Date | null
+  ) => void;
   reset: () => void;
 };
 const UseSearchStore = create<SearchState>((set, get) => ({
@@ -100,13 +103,27 @@ const UseSearchStore = create<SearchState>((set, get) => ({
     });
   },
 
-  updateProductDeliveryDate: (productId: string, deliveryDate: Date) => {
+  updateProductDeliveryDate: (productId: string, deliveryDate: Date | null) => {
     const { activeSearchItem, savedProducts } = get();
+    console.log('[updateProductDeliveryDate] called with:', {
+      productId,
+      deliveryDate,
+    });
     const activeSearchId = activeSearchItem?.id || 'default';
     const productsArray = savedProducts[activeSearchId] || [];
+    console.log(
+      '[updateProductDeliveryDate] Current productsArray:',
+      productsArray
+    );
 
     const updatedProductsArray = productsArray.map((product) =>
-      product.id === productId ? { ...product, deliveryDate } : product
+      product.id === productId
+        ? { ...product, deliveryDate: deliveryDate || undefined }
+        : product
+    );
+    console.log(
+      '[updateProductDeliveryDate] Updated productsArray:',
+      updatedProductsArray
     );
 
     set({

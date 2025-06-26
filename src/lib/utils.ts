@@ -174,3 +174,23 @@ export function getTimeRemaining(isoDate: string): string {
   const targetDate = parseISO(isoDate);
   return formatDistanceToNowStrict(targetDate, { addSuffix: true, locale: es }); // e.g., "in 3 days", "in 5 hours"
 }
+
+// Helper function to safely convert to date string
+export const getDateString = (
+  dateValue: Date | undefined,
+  format: 'iso' | 'locale' = 'locale'
+) => {
+  if (!dateValue) return undefined;
+  const date = dateValue instanceof Date ? dateValue : new Date(dateValue);
+  if (isNaN(date.getTime())) return undefined;
+
+  if (format === 'iso') {
+    return date.toISOString().split('T')[0];
+  } else {
+    return date.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit',
+    });
+  }
+};

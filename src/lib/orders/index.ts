@@ -175,6 +175,7 @@ export async function getProducts(
       price: product.price.toString(), // Ensure price is a string
       providerId: product.providerId,
       dropZoneId: product.dropZoneId,
+      delivery_date: product.deliveryDate || null,
     })
   );
 

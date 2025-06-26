@@ -146,12 +146,12 @@ const BuyOrderForm = forwardRef(function BuyOrderForm(
                             <Table>
                                 <TableHeader>
                                     <TableRow className='[&>th]:border [&>th]:border-border [&>th]:bg-border/30 hover:bg-white'>
-                                        <TableHead>Producto</TableHead>
-                                        <TableHead>Unidad</TableHead>
-                                        <TableHead>Unidad de Medida</TableHead>
-                                        <TableHead>Precio Unitario</TableHead>
-                                        <TableHead>Cantidad</TableHead>
-                                        <TableHead className='text-center'>Total</TableHead>
+                                        <TableHead>PRODUCTO</TableHead>
+                                        <TableHead>UNIDAD</TableHead>
+                                        <TableHead>UNIDAD DE MEDIDA</TableHead>
+                                        <TableHead>PRECIO</TableHead>
+                                        <TableHead>CANTIDAD</TableHead>
+                                        <TableHead className='text-center'>TOTAL</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>

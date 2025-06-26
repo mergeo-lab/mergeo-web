@@ -22,7 +22,6 @@ import { useAuth } from "@/context/AuthContext"
 export function Users() {
     const { account } = useAuth();
     const companyId = account?.company.id || '';
-    const emailVerified = account?.user.user_metadata?.email_verified || false;
 
     const { data: usersData, isLoading, isError, refetch } = useQuery({
         queryKey: ['users', companyId],
@@ -39,8 +38,8 @@ export function Users() {
     const usersArray: UserSchemaType[] = Array.isArray(usersData?.data?.data) ? usersData.data.data : [];
 
     const sortedUsers = usersArray.sort((a, b) => {
-        if (a.isActive !== b.isActive) {
-            return a.isActive ? -1 : 1;
+        if (a.email_verified !== b.email_verified) {
+            return a.email_verified ? -1 : 1;
         }
         // Then sort by created date
         return new Date(a.created).getTime() - new Date(b.created).getTime();
@@ -98,10 +97,10 @@ export function Users() {
                                         </TableCell>
                                         <TableCell className="">{user.email}</TableCell>
                                         <TableCell className={cn('text-primary', {
-                                            'text-highlight': !user.isActive
+                                            'text-highlight': !user.email_verified
                                         })}>
                                             {
-                                                emailVerified
+                                                user.email_verified
                                                     ? "ACTIVO"
                                                     : "INACTIVO"}
                                         </TableCell>

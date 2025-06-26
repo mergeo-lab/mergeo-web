@@ -55,12 +55,12 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
             <Table>
                 <TableHeader className='sticky top-0 shadow-sm'>
                     <TableRow className="bg-white hover:bg-white [&>th]:text-secondary/90 [&>th]:font-thin">
-                        <TableHead>Producto</TableHead>
-                        <TableHead>Unidad de Medida</TableHead>
-                        <TableHead>Cantidad</TableHead>
-                        <TableHead>Precio Unitario</TableHead>
-                        {orderStatus !== PRE_ORDER_STATUS.pending && <TableHead>Estado</TableHead>}
-                        <TableHead className={cn({ 'text-right pr-14': !isProvider })}>Precio Total</TableHead>
+                        <TableHead>PRODCUTO</TableHead>
+                        <TableHead>UNIDAD DE MEDIDA</TableHead>
+                        <TableHead>CANTIDAD</TableHead>
+                        <TableHead>PRECIO</TableHead>
+                        {orderStatus !== PRE_ORDER_STATUS.pending && <TableHead>ESTADO</TableHead>}
+                        <TableHead className={cn({ 'text-right pr-14': !isProvider })}>PRECIO TOTAL</TableHead>
 
                         {isProvider && orderStatus === PRE_ORDER_STATUS.pending &&
                             <TableHead className='text-right w-72'>

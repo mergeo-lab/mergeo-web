@@ -62,12 +62,12 @@ export function PreOrderProductsSheet({
                     <Table>
                         <TableHeader className="sticky top-0 bg-white shadow-sm">
                             <TableRow className="hover:bg-white [&>*]:text-center">
-                                <TableHead className="!text-left">Producto</TableHead>
-                                <TableHead>Unidad de Medida</TableHead>
-                                <TableHead>Precio Unitario</TableHead>
-                                <TableHead>Cantidad</TableHead>
-                                <TableHead>Estado</TableHead>
-                                <TableHead>Precio Total</TableHead>
+                                <TableHead className="!text-left">PRODUCTO</TableHead>
+                                <TableHead>UNIDAD DE MEDIDA</TableHead>
+                                <TableHead>PRECIO</TableHead>
+                                <TableHead>CANTIDAD</TableHead>
+                                <TableHead>ESTADO</TableHead>
+                                <TableHead>PRECIO TOTAL</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody className="[&>*]:hover:bg-white">

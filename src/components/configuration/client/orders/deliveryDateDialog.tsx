@@ -4,7 +4,7 @@ import { format, isBefore, startOfToday } from "date-fns";
 import { es } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { TbCalendarTime } from "react-icons/tb";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ProductSchemaType } from "@/lib/schemas";
 
 interface DeliveryDateDialogProps {
@@ -12,6 +12,7 @@ interface DeliveryDateDialogProps {
     onClose: () => void;
     product: ProductSchemaType;
     onDateChange: (productId: string, deliveryDate: Date) => void;
+    onRemoveDate?: (productId: string) => void;
     currentDeliveryDate?: Date;
 }
 
@@ -20,12 +21,18 @@ export function DeliveryDateDialog({
     onClose,
     product,
     onDateChange,
+    onRemoveDate,
     currentDeliveryDate
 }: DeliveryDateDialogProps) {
     const today = startOfToday();
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(
         currentDeliveryDate || undefined
     );
+
+    // Reset selectedDate when dialog opens or currentDeliveryDate changes
+    useEffect(() => {
+        setSelectedDate(currentDeliveryDate || undefined);
+    }, [isOpen, currentDeliveryDate]);
 
     const handleApply = () => {
         if (selectedDate) {
@@ -36,6 +43,17 @@ export function DeliveryDateDialog({
 
     const handleCancel = () => {
         setSelectedDate(currentDeliveryDate || undefined);
+        onClose();
+    };
+
+    const handleUseConfigDate = () => {
+        console.log('[handleUseConfigDate] called for product:', product.id);
+        if (onRemoveDate) {
+            console.log('[handleUseConfigDate] calling onRemoveDate');
+            onRemoveDate(product.id);
+        } else {
+            console.log('[handleUseConfigDate] onRemoveDate is not provided');
+        }
         onClose();
     };
 
@@ -74,6 +92,13 @@ export function DeliveryDateDialog({
                     )}
                 </div>
 
+                {
+                    currentDeliveryDate && (
+                        <Button variant="link" onClick={handleUseConfigDate}>
+                            Usar las fechas de la configuracion
+                        </Button>
+                    )
+                }
                 <DialogFooter>
                     <Button variant="outline" onClick={handleCancel}>
                         Cancelar

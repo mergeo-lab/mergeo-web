@@ -9,6 +9,7 @@ import {
 import { axiosInstance, axiosPrivate } from '@/lib/api/axios';
 import { HelpersData } from '@/types/authHelpers.type';
 import axios, { AxiosResponse, isAxiosError } from 'axios';
+import { supabase } from '@/context/supabaseClient';
 
 export async function registerUser(
   fields: Omit<RegisterUserSchemaType, 'password' | 'confirmPassword'>

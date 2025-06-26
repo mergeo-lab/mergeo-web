@@ -14,6 +14,8 @@ import { TbCalendarTime } from "react-icons/tb";
 import { Button } from "@/components/ui/button";
 import { DeliveryDateDialog } from "./deliveryDateDialog";
 import UseSearchStore from "@/store/search.store";
+import { Tooltip, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { TooltipContent } from "@/components/ui/tooltip";
 
 type Params = {
     product: ProductSchemaType,
@@ -40,6 +42,10 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
 
     const handleDeliveryDateChange = (productId: string, deliveryDate: Date) => {
         updateProductDeliveryDate(productId, deliveryDate);
+    };
+
+    const removeDeliveryDate = (productId: string) => {
+        updateProductDeliveryDate(productId, null);
     };
 
     return (
@@ -122,18 +128,7 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
                                 disabled={product.isFavorite}
                                 className="w-8 h-8"
                             />
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setDeliveryDateDialogOpen(true)}
-                                className={cn("w-8 h-8 p-0", {
-                                    "text-info": hasCustomDeliveryDate,
-                                    "text-muted-foreground": !hasCustomDeliveryDate
-                                })}
-                                title={hasCustomDeliveryDate ? "Cambiar fecha de entrega" : "Establecer fecha de entrega"}
-                            >
-                                <TbCalendarTime size={16} />
-                            </Button>
+
                         </div>
                     </div>
                 </TableCell>
@@ -149,7 +144,7 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
                 <TableCell className="text-right">{
                     product.isPickUp && <PickUpIndicator />
                 }</TableCell>
-                <TableCell className='text-right w-20 pr-6 '>
+                <TableCell className='text-right w-20 '>
                     <div className="flex items-end gap-2 w-fit flex-col-reverse">
                         <ProductsPresentations
                             callback={() => toggleSheetOpen(null)}
@@ -164,19 +159,29 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
                                 defaultValue={savedProducts.find((item) => item.id === product.id)?.quantity}
                                 onChange={(quantity: number) => onQuantityChange(product, quantity)}
                             />
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setDeliveryDateDialogOpen(true)}
-                                className={cn("w-6 h-6 p-0 opacity-0 pointer-events-none transition-opacity duration-200", {
-                                    "text-info": hasCustomDeliveryDate,
-                                    "text-muted-foreground": !hasCustomDeliveryDate,
-                                    "opacity-100 pointer-events-auto": savedProducts.some(item => item.id === product.id && item.quantity && item.quantity >= 1)
-                                })}
-                                title={hasCustomDeliveryDate ? "Cambiar fecha de entrega" : "Establecer fecha de entrega"}
-                            >
-                                <TbCalendarTime size={16} />
-                            </Button>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setDeliveryDateDialogOpen(true)}
+                                            className={cn("w-6 h-6 p-0 opacity-0 pointer-events-none transition-opacity duration-200", {
+                                                "text-info": hasCustomDeliveryDate,
+                                                "text-muted-foreground": !hasCustomDeliveryDate,
+                                                "opacity-100 pointer-events-auto": savedProducts.some(item => item.id === product.id && item.quantity && item.quantity >= 1)
+                                            })}
+                                            title={hasCustomDeliveryDate ? "Cambiar fecha de entrega" : "Establecer fecha de entrega"}
+                                        >
+                                            <TbCalendarTime size={16} />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        Seleccionaste otra fecha de entrega
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+
                         </div>
                     </div>
                 </TableCell>
@@ -188,6 +193,7 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
                 product={product}
                 onDateChange={handleDeliveryDateChange}
                 currentDeliveryDate={savedProduct?.deliveryDate}
+                onRemoveDate={removeDeliveryDate}
             />
         </>
     );

@@ -2,12 +2,13 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { AuthType } from '../types';
 import { supabase } from './supabaseClient';
-import { getProfile, registerUser } from '@/lib/auth';
-import { RegisterUserSchemaType } from '@/lib/schemas';
+import { getProfile, registerUser, inviteUser as inviteUserAuth } from '@/lib/auth';
+import { RegisterUserSchemaType, RoleSchemaType } from '@/lib/schemas';
 import { toast } from '@/components/ui/use-toast';
 import UseRegistrationStore from '@/store/registration.store';
 import UseCompanyStore from '@/store/company.store';
 import { Session } from '@supabase/supabase-js';
+import { addUser } from '@/lib/configuration/users';
 
 
 export interface AuthContextType {
@@ -19,6 +20,7 @@ export interface AuthContextType {
     logout: () => void;
     forgotPassword: (email: string) => Promise<void>;
     resetPassword: (newPassword: string) => Promise<void>;
+    inviteUser: (userData: { email: string; firstName: string; lastName: string; companyId: string; roles: any[] }) => Promise<{ error?: string; data?: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -273,15 +275,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    const inviteUser = async (userData: { email: string; firstName: string; lastName: string; companyId: string; roles: RoleSchemaType[] }) => {
+        try {
+            setLoading(true);
+
+            const response = await addUser({
+                id: account?.user?.id || '',
+                companyId: userData.companyId,
+                fields: userData
+            })
+
+            if (response.error) {
+                const errorMessage = Array.isArray(response.error) ? response.error[0] : response.error;
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: errorMessage,
+                });
+                return { error: errorMessage };
+            }
+            toast({
+                title: "Invitación enviada",
+                description: "La invitación ha sido enviada correctamente.",
+            });
+            return { data: response.data };
+        } catch (error) {
+            setError(true);
+            console.error('Invite user failed:', error);
+            const errorMessage = error instanceof Error ? error.message : "Error al enviar la invitación. Por favor, intenta nuevamente.";
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: errorMessage,
+            });
+            return { error: errorMessage };
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ account, loading, hasError, login, register, logout, forgotPassword, resetPassword }}>
+        <AuthContext.Provider value={{ account, loading, hasError, login, register, logout, forgotPassword, resetPassword, inviteUser }}>
             {children}
         </AuthContext.Provider>
     );
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-export function useAuth() {
+export function useAuth(): AuthContextType {
     const context = useContext(AuthContext);
     if (context === undefined) {
         throw new Error('useAuth must be used within an AuthProvider');

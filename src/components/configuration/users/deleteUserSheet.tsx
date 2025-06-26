@@ -13,6 +13,7 @@ import { FormProvider, useForm } from "react-hook-form"
 import { LuTriangleAlert } from "react-icons/lu";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { SheetWithConfirm } from "@/components/SheetWithConfirm"
+import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator"
 
 type Props = {
     userId: string
@@ -78,6 +79,7 @@ export function DeleteUserSheet({ userId, userData, title, subTitle, triggerButt
                 {triggerButton}
             </SheetTrigger>
             <SheetContent className="w-1/3 mx-w-1/3 sm:max-w-1/3">
+                {mutation.isPending && <OverlayLoadingIndicator />}
                 <FormProvider {...form}>
                     <SheetHeader>
                         <SheetTitle className="flex gap-2 items-center">
@@ -132,8 +134,8 @@ export function DeleteUserSheet({ userId, userData, title, subTitle, triggerButt
 
                         </form>
                         <div className="flex flex-col gap-2 mt-5 border border-destructive rounded p-10 space-y-3">
-                            <div className="flex gap-3">
-                                <LuTriangleAlert className="text-destructive" />
+                            <div className="flex items-center gap-3">
+                                <LuTriangleAlert className="text-destructive" size={28} />
                                 <h2 className="text-lg font-black">CUIDADO!</h2>
                             </div>
                             <p>Una vez que se haya confirmado esta acción, no podra deshacerse</p>
@@ -144,7 +146,7 @@ export function DeleteUserSheet({ userId, userData, title, subTitle, triggerButt
                                     name="email"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel id='email'>Escribe el mail del usuario para confirmar</FormLabel>
+                                            <FormLabel id='email'>Escribe el mail <span className="text-info font-bold">{userData?.email}</span> para confirmar</FormLabel>
                                             <FormControl>
                                                 <Input {...field} onChange={(e) => {
                                                     field.onChange(e);
