@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { AuthType } from '../types';
 import { supabase } from './supabaseClient';
-import { getProfile, registerUser, inviteUser as inviteUserAuth } from '@/lib/auth';
+import { getProfile, registerUser } from '@/lib/auth';
 import { RegisterUserSchemaType, RoleSchemaType } from '@/lib/schemas';
 import { toast } from '@/components/ui/use-toast';
 import UseRegistrationStore from '@/store/registration.store';
