@@ -105,12 +105,11 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                             {
                                 data && data.map((item) => {
                                     const product = item.product
-                                    const isAccepted = orderStatus === PRE_ORDER_STATUS.accepted || orderStatus === PRE_ORDER_STATUS.partialyAccepted ? item.accepted : acceptedProducts.some((p) => p.id === item.id)
                                     return (
                                         <TableRow key={product.id} className={cn("hover:bg-white first:border-t-none", {
-                                            'bg-green-50 hover:bg-green-50': isAccepted,
-                                            'bg-red-50 hover:bg-red-50': !isAccepted,
-                                            'bg-white hover:bg-white': orderStatus === PRE_ORDER_STATUS.pending || orderStatus === PRE_ORDER_STATUS.rejected
+                                            'bg-green-50 hover:bg-green-50': item.accepted && (orderStatus === PRE_ORDER_STATUS.accepted || orderStatus === PRE_ORDER_STATUS.partialyAccepted),
+                                            'bg-red-50 hover:bg-red-50': !item.accepted && (orderStatus === PRE_ORDER_STATUS.rejected || orderStatus === PRE_ORDER_STATUS.partialyAccepted),
+                                            'hover:bg-white': orderStatus === PRE_ORDER_STATUS.pending || orderStatus !== PRE_ORDER_STATUS.rejected
                                         })}>
                                             <TableCell>
                                                 <div> {product?.name}</div>
@@ -120,7 +119,7 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                                             <TableCell>{item.quantity}</TableCell>
                                             <TableCell>{formatToArgentinianPesos(+item?.price)}</TableCell>
                                             {orderStatus !== PRE_ORDER_STATUS.pending &&
-                                                <TableCell>{isAccepted
+                                                <TableCell>{item.accepted
                                                     ? <p className='text-primary'>Aceptado</p>
                                                     : <p className='text-destructive font-thin'>Rechazado</p>}
                                                 </TableCell>
