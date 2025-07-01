@@ -72,7 +72,14 @@ export default function DashboardOrders({ companyId, accountType, queryKey, item
             })}>
                 <div className="divide-y">
                     {data && data
-                        .filter(order => order.status !== PRE_ORDER_STATUS.rejected)
+                        .filter(order => {
+                            // For clients, hide rejected orders
+                            // For providers, show all orders including rejected ones
+                            if (accountType === ACCOUNT.client && order.status === PRE_ORDER_STATUS.rejected) {
+                                return false;
+                            }
+                            return true;
+                        })
                         .map((order) => (
                             <div key={order.id} className="p-4 flex justify-between items-center hover:bg-gray-50">
                                 <div className="font-medium w-32">Order #{order.preOrderNumber}</div>

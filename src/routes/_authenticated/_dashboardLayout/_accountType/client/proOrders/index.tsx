@@ -9,7 +9,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useState, Fragment, useRef } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import sinPedidos from '@/assets/sin-pedidos.png'
-import { ConfigTabs, PRE_ORDER_STATUS } from '@/lib/constants';
+import { ConfigTabs, PRE_ORDER_STATUS, ACCOUNT } from '@/lib/constants';
 import { LuChevronDown, LuChevronUp, LuEye } from 'react-icons/lu';
 import { useAuth } from '@/context/AuthContext';
 import { useNotifications } from '@/context/NotificationsContext';
@@ -53,16 +53,26 @@ export default function PreOrders() {
         }
     }, [notifications, refetch]);
 
-    // First filter out rejected orders
-    const nonRejectedOrders = (data?.preOrders || []).filter(order =>
-        order.status !== PRE_ORDER_STATUS.rejected
-    );
+    // Filter orders based on account type
+    // Providers see all orders including rejected ones
+    // Clients don't see rejected orders as they are no longer actionable
+    const filteredOrders = (data?.preOrders || []).filter(order => {
+        const accountType = account?.user?.accountType;
+
+        // For clients, filter out rejected orders
+        if (accountType === ACCOUNT.client && order.status === PRE_ORDER_STATUS.rejected) {
+            return false;
+        }
+
+        // For providers, show all orders including rejected ones
+        return true;
+    });
 
     // Group only orders with a valid groupId, show others as individual rows
     const groupedOrders: Record<string, PreOrderSchemaType[]> = {};
     const ungroupedOrders: PreOrderSchemaType[] = [];
 
-    nonRejectedOrders.forEach(order => {
+    filteredOrders.forEach(order => {
         // @ts-expect-error: orderGroupId may not exist on legacy orders
         const groupKey = order?.orderGroupId;
         if (groupKey && groupKey !== 'null' && groupKey !== null && groupKey !== undefined && groupKey !== '') {

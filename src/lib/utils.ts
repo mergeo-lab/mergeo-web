@@ -5,6 +5,7 @@ import { HourSlot } from '@/types';
 import { ZoneSchemaPostGisType } from '@/lib/schemas';
 import { formatDistanceToNowStrict, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { ReplacementCriteria, ReplacementCriteriaValues } from './constants';
 
 const secretKey = import.meta.env.VITE_SEARCH_PARAMS_KEY;
 
@@ -194,3 +195,38 @@ export const getDateString = (
     });
   }
 };
+
+/**
+ * Get the display label for a replacement criteria
+ */
+export function getReplacementCriteriaLabel(
+  criteria: ReplacementCriteria
+): string {
+  const key = Object.keys(ReplacementCriteriaValues).find(
+    (k) =>
+      ReplacementCriteriaValues[k as keyof typeof ReplacementCriteriaValues]
+        .value === criteria
+  );
+  return key
+    ? ReplacementCriteriaValues[key as keyof typeof ReplacementCriteriaValues]
+        .label
+    : 'Criterio no válido';
+}
+
+/**
+ * Check if a replacement criteria is a custom one (not the default)
+ */
+export function isCustomReplacementCriteria(
+  criteria: ReplacementCriteria | undefined
+): boolean {
+  return (
+    criteria !== undefined && criteria !== ReplacementCriteria.NO_REPLACEMENT
+  );
+}
+
+/**
+ * Get the default replacement criteria
+ */
+export function getDefaultReplacementCriteria(): ReplacementCriteria {
+  return ReplacementCriteria.BEST_PRICE_FOR_UNIT;
+}

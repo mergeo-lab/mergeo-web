@@ -1,4 +1,5 @@
 import { ProductSchemaType, SearchListProductType } from '@/lib/schemas';
+import { ReplacementCriteria } from '@/lib/constants';
 import { create } from 'zustand';
 
 type SavedProducts = {
@@ -19,6 +20,7 @@ export type CartProduct = ProductSchemaType & {
 export type ProductWithQuantity = CartProduct & {
   quantity: number;
   deliveryDate?: Date;
+  replacementCriteria?: ReplacementCriteria;
 };
 
 type SearchState = {
@@ -34,6 +36,10 @@ type SearchState = {
   updateProductDeliveryDate: (
     productId: string,
     deliveryDate: Date | null
+  ) => void;
+  updateProductReplacementCriteria: (
+    productId: string,
+    replacementCriteria: ReplacementCriteria | null
   ) => void;
   reset: () => void;
 };
@@ -134,11 +140,49 @@ const UseSearchStore = create<SearchState>((set, get) => ({
     });
   },
 
+  updateProductReplacementCriteria: (
+    productId: string,
+    replacementCriteria: ReplacementCriteria | null
+  ) => {
+    const { activeSearchItem, savedProducts } = get();
+    console.log('[updateProductReplacementCriteria] called with:', {
+      productId,
+      replacementCriteria,
+    });
+    const activeSearchId = activeSearchItem?.id || 'default';
+    const productsArray = savedProducts[activeSearchId] || [];
+    console.log(
+      '[updateProductReplacementCriteria] Current productsArray:',
+      productsArray
+    );
+
+    const updatedProductsArray = productsArray.map((product) =>
+      product.id === productId
+        ? { ...product, replacementCriteria: replacementCriteria || undefined }
+        : product
+    );
+    console.log(
+      '[updateProductReplacementCriteria] Updated productsArray:',
+      updatedProductsArray
+    );
+
+    set({
+      savedProducts: {
+        ...savedProducts,
+        [activeSearchId]: updatedProductsArray,
+      },
+    });
+  },
+
   getSavedProductById: (id: string): ProductWithQuantity | undefined => {
     const { savedProducts } = get();
-    return Object.values(savedProducts)
+    console.log('[getSavedProductById] looking for product:', id);
+    console.log('[getSavedProductById] savedProducts:', savedProducts);
+    const product = Object.values(savedProducts)
       .flat()
       .find((p) => p.id === id);
+    console.log('[getSavedProductById] found product:', product);
+    return product;
   },
 
   getAllSavedProducts: () => {

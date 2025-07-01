@@ -176,6 +176,7 @@ export async function getProducts(
       providerId: product.providerId,
       dropZoneId: product.dropZoneId,
       delivery_date: product.deliveryDate || null,
+      replacementCriteria: product.replacementCriteria || null,
     })
   );
 

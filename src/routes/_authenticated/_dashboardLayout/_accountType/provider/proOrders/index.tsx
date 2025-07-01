@@ -40,7 +40,7 @@ export default function Sells() {
     // Listen for pre-order created notifications
     useEffect(() => {
         const preOrderCreatedNotifications = notifications.filter(
-            notification => notification.type === NotificationType.PRE_ORDER_CREATED
+            notification => notification.type === NotificationType.PRE_ORDER_CREATED || notification.type === NotificationType.PRE_ORDER_UPDATED
         );
 
         if (preOrderCreatedNotifications.length > 0) {

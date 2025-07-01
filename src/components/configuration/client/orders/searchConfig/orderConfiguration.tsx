@@ -9,8 +9,8 @@ import mapIcon from '@/assets/map.svg';
 import { Switch } from "@/components/ui/switch";
 import { BranchesSchemaType } from "@/lib/schemas";
 import { cn } from "@/lib/utils";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ReplacementCriteria, ReplacementCriteriaValues } from "@/lib/constants";
+import { ReplacementCriteria } from "@/lib/constants";
+import { ReplacementCriteriaSelector } from "../ReplacementCriteriaSelector";
 import ListSelector from "@/components/configuration/client/orders/searchConfig/listSelector";
 import LoadingIndicator from "@/components/loadingIndicator";
 import { HiOutlineCog } from "react-icons/hi";
@@ -370,20 +370,12 @@ export default function OrderConfig(props: Props) {
                                 <div>
                                     <Label id='name'>Criterio de reemplazo</Label>
                                     <div className="border rounded border-border h-48">
-                                        <RadioGroup
+                                        <ReplacementCriteriaSelector
                                             value={internalRc || replacementCriteria}
-                                            className="flex flex-col gap-3 p-5"
-                                        >
-                                            {Object.entries(ReplacementCriteriaValues).map(([key, item]) => (
-                                                <div key={item.value} className="flex items-center space-x-2" onClick={() => setInternalRc(item.value)}>
-                                                    <RadioGroupItem value={item.value} id={key} />
-                                                    <Label htmlFor={key}>{item.label}</Label>
-                                                </div>
-                                            ))}
-                                        </RadioGroup>
-                                        <div className="border-t border-border p-5 text-sm text-muted font-thin">
-                                            En el caso que el producto seleccionado no se encuentre en stock o el proveedor no acepte la orden de compra.
-                                        </div>
+                                            onValueChange={(value) => setInternalRc(value)}
+                                            className="p-5"
+                                            showDescription={true}
+                                        />
                                     </div>
                                 </div>
                                 <div>
@@ -547,20 +539,12 @@ export default function OrderConfig(props: Props) {
                             <div>
                                 <Label id='name'>Criterio de reemplazo</Label>
                                 <div className="border rounded border-border h-48">
-                                    <RadioGroup
+                                    <ReplacementCriteriaSelector
                                         value={internalRc || replacementCriteria}
-                                        className="flex flex-col gap-3 p-5"
-                                    >
-                                        {Object.entries(ReplacementCriteriaValues).map(([key, item]) => (
-                                            <div key={item.value} className="flex items-center space-x-2" onClick={() => setInternalRc(item.value)}>
-                                                <RadioGroupItem value={item.value} id={key} />
-                                                <Label htmlFor={key}>{item.label}</Label>
-                                            </div>
-                                        ))}
-                                    </RadioGroup>
-                                    <div className="border-t border-border p-5 text-sm text-muted font-thin">
-                                        En el caso que el producto seleccionado no se encuentre en stock o el proveedor no acepte la orden de compra.
-                                    </div>
+                                        onValueChange={(value) => setInternalRc(value)}
+                                        className="p-5"
+                                        showDescription={true}
+                                    />
                                 </div>
                             </div>
                             <div>

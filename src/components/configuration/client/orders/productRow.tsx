@@ -10,35 +10,47 @@ import { memo, useState } from "react";
 import { FaRegHeart } from "react-icons/fa";
 import { LuImage } from "react-icons/lu";
 import { TiThumbsDown } from "react-icons/ti";
-import { TbCalendarTime } from "react-icons/tb";
-import { Button } from "@/components/ui/button";
 import { DeliveryDateDialog } from "./deliveryDateDialog";
 import UseSearchStore from "@/store/search.store";
-import { Tooltip, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { TooltipContent } from "@/components/ui/tooltip";
+import ProductOptions from "@/components/configuration/client/orders/prductOptions";
+import { ReplacementDialog } from "@/components/configuration/client/orders/replacementDialog";
+import { ReplacementCriteria } from "@/lib/constants";
+import { ReplacementCriteriaBadge, ReplacementCriteriaLabel } from "./ReplacementCriteriaBadge";
+import { ProductWithQuantity } from "@/store/search.store";
 
 type Params = {
     product: ProductSchemaType,
     onQuantityChange: (product: ProductSchemaType, quantity: number) => void,
-    savedProducts: ProductSchemaType[],
+    savedProducts: ProductWithQuantity[],
     handleToggleFavorite: (itemId: string, newState: boolean) => Promise<void>,
     addProductToBlackList: (productId: string) => Promise<void>,
     dropZoneId?: string
 }
 
 // Helper function to compare saved products arrays
-const areSavedProductsEqual = (prev: ProductSchemaType[], next: ProductSchemaType[]) => {
+const areSavedProductsEqual = (prev: ProductWithQuantity[], next: ProductWithQuantity[]) => {
     if (prev.length !== next.length) return false;
-    return prev.every((p, i) => p.id === next[i].id && p.quantity === next[i].quantity);
+    return prev.every((p, i) => {
+        const nextProduct = next[i];
+        return p.id === nextProduct.id &&
+            p.quantity === nextProduct.quantity &&
+            p.replacementCriteria === nextProduct.replacementCriteria &&
+            p.deliveryDate?.getTime() === nextProduct.deliveryDate?.getTime();
+    });
 };
 
 const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavorite, addProductToBlackList, dropZoneId }: Params) => {
     const { toggleSheetOpen } = UseMorePresentations();
-    const { updateProductDeliveryDate, getSavedProductById } = UseSearchStore();
+    const { updateProductDeliveryDate, updateProductReplacementCriteria, getSavedProductById } = UseSearchStore();
     const [deliveryDateDialogOpen, setDeliveryDateDialogOpen] = useState(false);
+    const [replacementDialogOpen, setReplacementDialogOpen] = useState(false);
 
     const savedProduct = getSavedProductById(product.id);
     const hasCustomDeliveryDate = savedProduct?.deliveryDate;
+    const hasCustomReplacementCriteria = savedProduct?.replacementCriteria;
+
+    // Debug logging
+    console.log(`[ProductRow] Product ${product.id} - replacementCriteria:`, savedProduct?.replacementCriteria);
 
     const handleDeliveryDateChange = (productId: string, deliveryDate: Date) => {
         updateProductDeliveryDate(productId, deliveryDate);
@@ -46,6 +58,16 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
 
     const removeDeliveryDate = (productId: string) => {
         updateProductDeliveryDate(productId, null);
+    };
+
+    const handleReplacementCriteriaChange = (productId: string, replacementCriteria: ReplacementCriteria) => {
+        console.log(`[ProductRow] Updating replacement criteria for ${productId} to:`, replacementCriteria);
+        updateProductReplacementCriteria(productId, replacementCriteria);
+    };
+
+    const removeReplacementCriteria = (productId: string) => {
+        console.log(`[ProductRow] Removing replacement criteria for ${productId}`);
+        updateProductReplacementCriteria(productId, null);
     };
 
     return (
@@ -93,15 +115,23 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
                             <p title={product.name.toUpperCase()} className="font-semibold truncate">{product.name.toUpperCase()}</p>
                             <p title={product.variety?.toUpperCase()} className="font-base truncate">{product.variety?.toUpperCase()}</p>
                             <p className="text-info font-thin text-sm">{product.brand}</p>
-                            {hasCustomDeliveryDate && (
-                                <p className="text-xs text-info font-medium mt-1">
-                                    Entrega: {savedProduct.deliveryDate?.toLocaleDateString('es-ES', {
-                                        day: '2-digit',
-                                        month: '2-digit',
-                                        year: 'numeric'
-                                    })}
-                                </p>
-                            )}
+                            <div className="flex items-center gap-1">
+                                {hasCustomDeliveryDate && (
+                                    <p className="text-[10px] text-info font-medium mt-1 mr-2">
+                                        Entrega: {savedProduct.deliveryDate?.toLocaleDateString('es-ES', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: 'numeric'
+                                        })}
+                                    </p>
+                                )}
+                                {hasCustomReplacementCriteria && (
+                                    <ReplacementCriteriaLabel
+                                        criteria={savedProduct.replacementCriteria}
+                                        className="mt-1"
+                                    />
+                                )}
+                            </div>
                         </div>
                         <div className="flex justify-center 2xl:hidden visible absolute top-2 right-2">
                             <OptimisticToggleButton
@@ -159,28 +189,15 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
                                 defaultValue={savedProducts.find((item) => item.id === product.id)?.quantity}
                                 onChange={(quantity: number) => onQuantityChange(product, quantity)}
                             />
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => setDeliveryDateDialogOpen(true)}
-                                            className={cn("w-6 h-6 p-0 opacity-0 pointer-events-none transition-opacity duration-200", {
-                                                "text-info": hasCustomDeliveryDate,
-                                                "text-muted-foreground": !hasCustomDeliveryDate,
-                                                "opacity-100 pointer-events-auto": savedProducts.some(item => item.id === product.id && item.quantity && item.quantity >= 1)
-                                            })}
-                                            title={hasCustomDeliveryDate ? "Cambiar fecha de entrega" : "Establecer fecha de entrega"}
-                                        >
-                                            <TbCalendarTime size={16} />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        Seleccionaste otra fecha de entrega
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
+                            {/* CHANGE DELIVERY DATE and REPLACEMENT CRITERIA */}
+                            <ProductOptions
+                                hasCustomDeliveryDate={!!hasCustomDeliveryDate}
+                                hasCustomDeliveryReplacement={!!hasCustomReplacementCriteria}
+                                savedProducts={savedProducts}
+                                product={product}
+                                setDeliveryDateDialogOpen={setDeliveryDateDialogOpen}
+                                setDeliveryReplacementDialogOpen={setReplacementDialogOpen}
+                            />
 
                         </div>
                     </div>
@@ -194,6 +211,14 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
                 onDateChange={handleDeliveryDateChange}
                 currentDeliveryDate={savedProduct?.deliveryDate}
                 onRemoveDate={removeDeliveryDate}
+            />
+            <ReplacementDialog
+                isOpen={replacementDialogOpen}
+                onClose={() => setReplacementDialogOpen(false)}
+                product={product}
+                onChange={handleReplacementCriteriaChange}
+                currentReplacement={savedProduct?.replacementCriteria}
+                onRemoveReplacement={removeReplacementCriteria}
             />
         </>
     );

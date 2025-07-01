@@ -42,23 +42,28 @@ export const ActivityType: Record<string, { type: string; classname: string }> =
   };
 
 export enum ReplacementCriteria {
-  BEST_PRICE_SAME_UNIT = 'best_price_same_unit',
+  BEST_PRICE_FOR_UNIT = 'best_price_for_unit',
   SAME_PRICE_SAME_UNIT = 'same_price_same_unit',
   SAME_PRODUCT_ANOTHER_UNIT = 'same_product_another_unit',
+  NO_REPLACEMENT = 'no_replacement',
 }
 
 export const ReplacementCriteriaValues = {
-  BEST_PRICE_SAME_UNIT: {
-    value: ReplacementCriteria.BEST_PRICE_SAME_UNIT,
+  BEST_PRICE_FOR_UNIT: {
+    value: ReplacementCriteria.BEST_PRICE_FOR_UNIT,
     label: 'Mejor precio por unidad de medida',
   },
   SAME_PRICE_SAME_UNIT: {
     value: ReplacementCriteria.SAME_PRICE_SAME_UNIT,
-    label: 'Mismo precio y misma presentación',
+    label: 'Mejor precio y misma presentación',
   },
   SAME_PRODUCT_ANOTHER_UNIT: {
     value: ReplacementCriteria.SAME_PRODUCT_ANOTHER_UNIT,
     label: 'Mismo producto, distinta presentación',
+  },
+  NO_REPLACEMENT: {
+    value: ReplacementCriteria.NO_REPLACEMENT,
+    label: 'No quiero reemplazo',
   },
 };
 
