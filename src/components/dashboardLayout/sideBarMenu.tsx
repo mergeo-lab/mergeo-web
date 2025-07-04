@@ -176,7 +176,7 @@ export function SideBarMenu({ companyName }: Props) {
                                             activepathName: 'favorites'
                                         },
                                         {
-                                            label: "Lista Negra",
+                                            label: "No Deseados",
                                             icon: <LuThumbsDown size={iconSize} />,
                                             to: "/client/lists/blackList",
                                             activepathName: 'blackList'
@@ -210,7 +210,7 @@ export function SideBarMenu({ companyName }: Props) {
                                     }}
                                     links={[
                                         {
-                                            label: "Inventario",
+                                            label: "Lista",
                                             icon: <LuList size={iconSize} />,
                                             to: "/provider/products",
                                             activepathName: 'products',

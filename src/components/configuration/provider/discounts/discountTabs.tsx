@@ -32,12 +32,23 @@ export default function DiscountTabs({ className, companyId, selectedDiscountId,
     }
 
     return (
-        <div className={cn("w-full h-full", className)}>
+        <div className={cn("w-full h-full px-4", className)}>
             <Tabs value={tab} onValueChange={setTab} className="w-full h-full">
-                <div className="w-full px-5">
-                    <TabsList className="grid w-full grid-cols-2 bg-muted/20 ">
-                        <TabsTrigger value="products">Productos</TabsTrigger>
-                        <TabsTrigger value="add">Agregar Productos</TabsTrigger>
+                <div className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 gap-2 bg-muted/20 h-fit p-2">
+                        <TabsTrigger className={cn("!text-white",
+                            {
+                                "!bg-info": tab === "products",
+                                "bg-info/50": tab !== "products"
+                            }
+                        )}
+                            value="products">Productos</TabsTrigger>
+                        <TabsTrigger className={cn("!text-white",
+                            {
+                                "!bg-info": tab === "add",
+                                "bg-info/50": tab !== "add"
+                            }
+                        )} value="add">Agregar Productos</TabsTrigger>
                     </TabsList>
                 </div>
 

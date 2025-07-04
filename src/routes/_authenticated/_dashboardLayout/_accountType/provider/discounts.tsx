@@ -29,7 +29,7 @@ export function Discounts() {
     const { getCompanyId } = UseCompanyStore();
     const companyId = getCompanyId();
     const [selectedDiscount, setSelectedDiscount] = useState<string | null>(null)
-    const [showNewDiscountModal, setShowNewDiscountModal] = useState({ open: false, isEdit: false });
+    const [showNewDiscountModal, setShowNewDiscountModal] = useState({ open: false, isEdit: false, showOnyClients: false });
     const [prevListLength, setPrevListLength] = useState(0);
     const [showClients, setShowClients] = useState(false);
 
@@ -49,7 +49,7 @@ export function Discounts() {
     function handleCreateDiscountList() {
         console.log('handleCreateDiscountList');
         setSelectedDiscount(null);
-        setShowNewDiscountModal({ open: true, isEdit: false })
+        setShowNewDiscountModal({ open: true, isEdit: false, showOnyClients: false })
     }
 
     useEffect(() => {
@@ -98,7 +98,7 @@ export function Discounts() {
                     isEdit={showNewDiscountModal.isEdit}
                     openit={showNewDiscountModal.open}
                     callback={refetch}
-                    onClose={() => setShowNewDiscountModal({ open: false, isEdit: false })}
+                    onClose={() => setShowNewDiscountModal({ open: false, isEdit: false, showOnyClients: false })}
                     data={selectedDiscount ? lists.find((item: DiscountSchemaType) => item.id === selectedDiscount) : null}
                 />
             </>
@@ -123,7 +123,7 @@ export function Discounts() {
                                         type='button'
                                         variant="ghost"
                                         className="h-6 w-6! px-2 mr-2 flex justify-center items-center hover:bg-white"
-                                        onClick={() => setShowNewDiscountModal({ open: true, isEdit: true })}
+                                        onClick={() => setShowNewDiscountModal({ open: true, isEdit: true, showOnyClients: false })}
                                     >
                                         <GoPencil size={16} />
                                     </Button>
@@ -148,7 +148,7 @@ export function Discounts() {
                                 <Button
                                     variant="link"
                                     disabled={!selectedDiscount}
-                                    onClick={() => setShowNewDiscountModal({ open: true, isEdit: true })}
+                                    onClick={() => setShowNewDiscountModal({ open: true, isEdit: true, showOnyClients: true })}
                                     className='space-x-2 h-5 text-primary'
                                 >
                                     <MdAddBusiness size={24} />
@@ -156,14 +156,14 @@ export function Discounts() {
                                 </Button>
                             </div>
                             <div className={cn('px-5 h-[40px] transition-all duration-300', {
-                                'h-[400px] overflow-y-auto': showClients,
+                                'h-[calc(100vh-350px)] overflow-y-auto': showClients,
                             })}>
                                 {selectedDiscount &&
                                     <ClientCuitList companies={lists.find((item: DiscountSchemaType) => item.id === selectedDiscount)?.companies} />
                                 }
                             </div>
                         </div>
-                        <div className='w-full h-[40px min-h-[40px] z-20 max-h-28 bg-gradient-to-t from-stone-900/30 from-0% flex justify-center items-end'>
+                        <div className='w-full h-[40px min-h-[40px] z-20 max-h-28 bg-gradient-to-t from-stone-400/30 from-0% flex justify-center items-end'>
                             <div className=''>
                                 <Button
                                     variant='ghost'
@@ -177,7 +177,7 @@ export function Discounts() {
                             </div>
                         </div>
                         {/* PRODUCTOS */}
-                        <div className={cn(' w-full py-3 z-20 relative')}>
+                        <div className={cn('w-full py-3 z-20 relative')}>
                             {showClients &&
                                 <div className='absolute inset-0 bg-white/30 backdrop-blur-[2px] h-full z-30 '></div>
                             }
@@ -193,8 +193,9 @@ export function Discounts() {
                     itemId={selectedDiscount ? selectedDiscount : null}
                     isEdit={showNewDiscountModal.isEdit}
                     openit={showNewDiscountModal.open}
+                    showOnyClients={showNewDiscountModal.showOnyClients}
                     callback={refetch}
-                    onClose={() => setShowNewDiscountModal({ open: false, isEdit: false })}
+                    onClose={() => setShowNewDiscountModal({ open: false, isEdit: false, showOnyClients: false })}
                     data={selectedDiscount ? lists.find((item: DiscountSchemaType) => item.id === selectedDiscount) : null}
                 />
             </>

@@ -13,14 +13,19 @@ export const GoogleLocationSchema = z.object({
   }),
 });
 
+export const GoogleAddressSchema = z.object({
+  id: z.string().optional(),
+  location: LatLngLiteral,
+  name: z.string(),
+  phoneNumber: z.string().optional(),
+  email: z.string().optional(),
+});
+
 export const LocationSchema = z.object({
   id: z.string().optional(),
   location: z.object({
     type: z.string(),
-    coordinates: z.tuple([
-      LatLngLiteral.shape.longitude,
-      LatLngLiteral.shape.latitude,
-    ]),
+    coordinates: z.tuple([z.number(), z.number()]),
   }),
   name: z.string(),
   phoneNumber: z.string().optional(),

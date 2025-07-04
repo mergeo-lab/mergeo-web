@@ -1,7 +1,7 @@
 import BuyOrderFormField from '@/components/orders/formField';
 import { PreOrderProductSchemaType, ProviderType, ClientType } from '../../lib/schemas/configuration.schema';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { formatToArgentinianPesos } from '@/lib/utils';
+import { cn, formatToArgentinianPesos } from '@/lib/utils';
 import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
 import { toJpeg } from 'html-to-image';
 const { useReactToPrint } = await import('react-to-print');
@@ -147,8 +147,8 @@ const BuyOrderForm = forwardRef(function BuyOrderForm(
                                 <TableHeader>
                                     <TableRow className='[&>th]:border [&>th]:border-border [&>th]:bg-border/30 hover:bg-white'>
                                         <TableHead>PRODUCTO</TableHead>
+                                        <TableHead>DESCRIPCION</TableHead>
                                         <TableHead>UNIDAD</TableHead>
-                                        <TableHead>UNIDAD DE MEDIDA</TableHead>
                                         <TableHead>PRECIO</TableHead>
                                         <TableHead>CANTIDAD</TableHead>
                                         <TableHead className='text-center'>TOTAL</TableHead>
@@ -157,9 +157,9 @@ const BuyOrderForm = forwardRef(function BuyOrderForm(
                                 <TableBody>
                                     {products && products.map((item, index) => (
                                         <TableRow key={index} className='[&>td]:border [&>td]:border-border hover:bg-white'>
-                                            <TableCell>{item.product.name}</TableCell>
-                                            <TableCell>{item.product.units}</TableCell>
-                                            <TableCell>{item.product.measurementUnit}</TableCell>
+                                            <TableCell>{item.product.name} {item.product.brand}</TableCell>
+                                            <TableCell className={cn({ 'text-center': !item.product.variety })}>{item.product.variety || '-'}</TableCell>
+                                            <TableCell>{item.product.units} {item.product.measurementUnit}</TableCell>
                                             <TableCell>{Number(item.product.price).toFixed(2)}</TableCell>
                                             <TableCell>{item.quantity}</TableCell>
                                             <TableCell className='text-center'>{Number(Number(item.product.price) * item.quantity).toFixed(2)}</TableCell>

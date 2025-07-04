@@ -64,7 +64,7 @@ export function NewBranch(
         form.setValue('address', {
             location: {
                 type: "Point",
-                coordinates: [address.location.latitude, address.location.longitude]
+                coordinates: [address.location.longitude, address.location.latitude]
             },
             name: address.displayName.text
         });

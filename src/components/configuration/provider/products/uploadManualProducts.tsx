@@ -6,15 +6,17 @@ import ErrorMessage from "@/components/errorMessage";
 import LoadingIndicator from "@/components/loadingIndicator";
 import { UseNewProductSearch } from "@/hooks/useNewProductSearch";
 import { ProductSchemaType } from "@/lib/schemas";
+import { cn } from "@/lib/utils";
 import { useProductStore } from "@/store/addProductItem.store";
 import UseCompanyStore from "@/store/company.store";
 import { useProviderProductSearchStore } from "@/store/providerProductSearch.store";
 import { useEffect, useState } from "react";
 import { LuSearchX } from "react-icons/lu";
+import { BiSolidRightArrowSquare } from "react-icons/bi";
 
 
 export default function UploadManualProducts() {
-    const { getAllProducts, addProduct, removeProduct, removeAllProducts } = useProductStore();
+    const { getAllProducts, products, addProduct, removeProduct, removeAllProducts } = useProductStore();
     const allProducts = getAllProducts();
     const { getCompanyId } = UseCompanyStore();
     const { data, isLoading, isError } = UseNewProductSearch();
@@ -40,8 +42,9 @@ export default function UploadManualProducts() {
     useEffect(() => {
         return () => {
             removeAllProducts();
+            resetParams();
         }
-    }, [removeAllProducts])
+    }, [removeAllProducts, resetParams])
 
     return (
         <div className="grid grid-rows-[auto,1fr] h-[calc(100vh-250px)]">
@@ -52,11 +55,24 @@ export default function UploadManualProducts() {
                         companyId={companyId}
                         products={allProducts}
                         triggerButton={
-                            <div className="h-10 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 space-x-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground">
-                                {allProducts.length > 0 &&
-                                    <div className="w-3 h-3 rounded bg-info animate-pulse duration-700"></div>
+                            // allProducts.length > 0 &&
+                            // <div className={cn("w-20 h-72 absolute top-1/2 rounded-l-lg -translate-y-1/2 bg-gradient-to-r from-info to-blue-500 border-white border-2 shadow-lg transition-all duration-300 animate-bouncing animate-duration-1000 animate-delay-1000 animate-iteration-count-infinite",
+                            //     { "-right-12": products.length > 0, "-right-[130px]": products.length == 0 }
+                            // )}>
+                            //     <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-90 font-black text-white whitespace-nowrap">
+                            //         Ver productos seleccionados
+                            //     </p>
+                            // </div>
+                            <div className={cn("w-80 h-16 flex items-center justify-center absolute bottom-[5%] rounded-l-lg -translate-y-1/2 bg-gradient-to-r from-info to-blue-500 border-white border-2 shadow-lg transition-all duration-500 gap-3",
+                                {
+                                    "-right-12 animate-bouncing animate-duration-1000 animate-delay-1000 animate-iteration-count-infinite ": products.length > 0,
+                                    "-right-[370px]": products.length == 0
                                 }
-                                <p>Ver productos seleccionados</p>
+                            )}>
+                                <BiSolidRightArrowSquare size={30} className="text-white" />
+                                <p className="font-black text-white whitespace-nowrap">
+                                    Ver productos seleccionados
+                                </p>
                             </div>
                         }
                         removeProduct={removeProduct}

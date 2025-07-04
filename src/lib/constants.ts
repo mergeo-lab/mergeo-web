@@ -74,6 +74,7 @@ export enum PRE_ORDER_STATUS {
   partialyAccepted = 'partialy-accepted',
   timeout = 'timeout',
   fail = 'fail',
+  processed = 'processed',
 }
 
 export enum SERVER_SENT_EVENTS {

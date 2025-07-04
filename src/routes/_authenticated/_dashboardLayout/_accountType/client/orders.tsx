@@ -109,7 +109,7 @@ function OrdersPage() {
                     'w-16': !menuOpen
                 })}>
                     <Tabs value={tab} className="w-full h-full rounded relative" onValueChange={onTabChange}>
-                        <div className='w-full h-full flex flex-col'>
+                        <div className='w-full h-full flex flex-col bg-gray-50/20 overflow-hidden'>
                             {menuOpen ? (
                                 <>
                                     <TabsList className='rounded-t rounded-b-none w-full h-16 bg-accent px-4 gap-2'>
@@ -176,7 +176,7 @@ function OrdersPage() {
                     </Tabs>
                 </div>
                 {/* Products table */}
-                <div className='w-full flex items-center justify-center'>
+                <div className='w-full flex '>
                     <ProductsTable configCanceled={!branch || !deliveryTime} />
                 </div>
             </div>

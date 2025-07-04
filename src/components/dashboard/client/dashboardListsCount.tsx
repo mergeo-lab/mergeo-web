@@ -56,7 +56,7 @@ export default function DashboardListsCount({ companyId }: { companyId: string }
                             }
                             {
                                 list.type === LIST_TYPES.BLACKLIST &&
-                                <Link to='/client/lists/blackList'>Ver Lista Negra</Link>
+                                <Link to='/client/lists/blackList'>Ver No Deseados</Link>
                             }
                         </Button>
                     </div>

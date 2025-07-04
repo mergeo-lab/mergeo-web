@@ -23,7 +23,7 @@ function OverlayLoadingIndicator({ className, label }: Props) {
                 )}
             >
             </motion.div>
-            <div className="z-50 flex flex-col items-center justify-center">
+            <div className="z-50 flex flex-col items-center justify-center w-20 h-20">
                 <MemoizedLoadingIndicator />
                 {label && <p className="mt-4 text-sm text-gray-700">{label}</p>}
             </div>

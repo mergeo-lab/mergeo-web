@@ -3,7 +3,8 @@ import { CardBody, CardFooter } from '@/components/card'
 import { Button } from '@/components/ui/button'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { LocationSchemaType, RegisterCompanySchema, RegisterCompanySchemaType } from '@/lib/schemas'
+import { GoogleLocationSchemaType, RegisterCompanySchema, RegisterCompanySchemaType } from '@/lib/schemas'
+import { googleLocationToLocation } from '@/lib/utils'
 import { FormProvider, Resolver, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
@@ -85,9 +86,11 @@ function RegisterCompany() {
     }
   }
 
-  const addBranch = (address: LocationSchemaType) => {
+  const addBranch = (address: GoogleLocationSchemaType) => {
     console.log("ADDRESS :: ", address)
-    form.setValue('branch.address', address);
+    // Convert GoogleLocationSchemaType to the address format expected by the form
+    const addressData = googleLocationToLocation(address);
+    form.setValue('branch.address', addressData);
   }
 
   return (

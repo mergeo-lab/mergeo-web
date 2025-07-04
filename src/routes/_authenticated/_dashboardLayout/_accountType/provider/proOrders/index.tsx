@@ -10,7 +10,7 @@ import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import sinPedidos from '@/assets/sin-pedidos.png'
 import { ConfigTabs } from '@/lib/constants';
-import { LuEye, LuMinus } from 'react-icons/lu';
+import { LuEye, LuFileCheck, LuMinus } from 'react-icons/lu';
 import { useAuth } from '@/context/AuthContext';
 import { useNotifications } from '@/context/NotificationsContext';
 
@@ -97,6 +97,7 @@ export default function Sells() {
                                             <TableRow className="hover:bg-white">
                                                 <TableHead className="w-[150px]">Número de Pedido</TableHead>
                                                 <TableHead className="w-[150px]">Fecha</TableHead>
+                                                <TableHead className="w-[150px]">Zona</TableHead>
                                                 <TableHead className="w-[150px] text-center">Instancia</TableHead>
                                                 <TableHead className="w-[150px] text-center">Estado</TableHead>
                                                 <TableHead className="w-[150px] text-center">Acciones</TableHead>
@@ -120,6 +121,7 @@ export default function Sells() {
                                                         <TableRow className="hover:bg-white first:border-t-none" key={order.id}>
                                                             <TableCell className="w-[150px]">{order.preOrderNumber}</TableCell>
                                                             <TableCell className="w-[150px]">{formatDate(order.created)}</TableCell>
+                                                            <TableCell className="w-[150px]">{order.dropZoneName}</TableCell>
                                                             <TableCell className="w-[150px] text-center">{order.instance}</TableCell>
                                                             <TableCell className="w-[150px] text-center">
                                                                 <div className="flex justify-center">
@@ -139,7 +141,7 @@ export default function Sells() {
                                                                     ? (
                                                                         <Link to={`/buyOrder/$orderId`} params={{ orderId: order.buyOrder.id }} key={order.buyOrder.id}>
                                                                             <Button variant='ghost' className='space-x-2'>
-                                                                                <LuEye className='cursor-pointer' size={20} />
+                                                                                <LuFileCheck className='cursor-pointer' size={20} />
                                                                                 <p>Ver Orden de Compra</p>
                                                                             </Button>
                                                                         </Link>

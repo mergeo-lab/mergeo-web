@@ -92,17 +92,18 @@ export default function ProviderProductsTable({ products, currentPage, tableRef,
             <Table className="w-full h-fit">
                 <TableHeader className="sticky top-0 bg-white z-10 shadow-sm">
                     <TableRow className="hover:bg-white">
-                        <TableHead>Nombre</TableHead>
-                        <TableHead>Marca</TableHead>
-                        <TableHead>Precio</TableHead>
-                        <TableHead>Contenido</TableHead>
-                        <TableHead>Modificado</TableHead>
+                        <TableHead>NOMBRE</TableHead>
+                        <TableHead>MARCA</TableHead>
+                        <TableHead>PRECIO</TableHead>
+                        <TableHead>PUM</TableHead>
+                        <TableHead>CONTENIDO</TableHead>
+                        <TableHead>MODIFICADO</TableHead>
                         <TableHead>
                             <div className="w-full flex justify-center items-center">
-                                Producto Activo
+                                PRODUCTO ACTIVO
                             </div>
                         </TableHead>
-                        <TableHead className="w-60 text-center">Acciones</TableHead>
+                        <TableHead className="w-60 text-center">ACCIONES</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -123,6 +124,7 @@ export default function ProviderProductsTable({ products, currentPage, tableRef,
                             </TableCell>
                             <TableCell>{product.brand}</TableCell>
                             <TableCell>{formatToArgentinianPesos(+product.price)}</TableCell>
+                            <TableCell>{formatToArgentinianPesos(+product.pricePerBaseUnit)}</TableCell>
                             <TableCell>
                                 {`${product.netContent} ${product.measurementUnit}`}
                             </TableCell>

@@ -17,7 +17,7 @@ type Props = {
 
 export default function CustomSearchField({ name, label, inputType = "text", className, companyId }: Props) {
     const form = useFormContext();
-    const { resetParams, setParams } = useProviderProductSearchStore();
+    const { setParams } = useProviderProductSearchStore();
     const value = form.watch(name);
 
     const handleReset = () => {
@@ -27,7 +27,8 @@ export default function CustomSearchField({ name, label, inputType = "text", cla
         setTimeout(() => {
             const { name: n, brand, ean } = form.getValues();
             if (!n && !brand && !ean) {
-                resetParams();
+                // When all fields are cleared, fetch all products for the company
+                setParams({ companyId });
             } else {
                 setParams({ name: n, brand, ean, companyId });
             }

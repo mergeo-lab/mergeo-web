@@ -113,6 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     // Ensure user metadata is set from the session
                     profile.user.user_metadata = data.session.user.user_metadata;
                     setAccount(profile);
+                    console.log('profile COMPANY', profile.company);
                     companyState.saveCompany(profile.company);
                 }
             } else {

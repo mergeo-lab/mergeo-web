@@ -24,6 +24,9 @@ export function StatusBadge({ status, className }: { status: string, className?:
         case PRE_ORDER_STATUS.fail:
             selected = <Badge variant='outline' className={cn('border-destructive text-destructive', className)}>Fallida</Badge>
             break;
+        case PRE_ORDER_STATUS.processed:
+            selected = <Badge className={cn('bg-info hover:bg-info text-white', className)}>Procesada</Badge>
+            break;
         default:
             selected = <div className="bg-gray-500"></div>
             break;

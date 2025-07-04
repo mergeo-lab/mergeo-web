@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import noOrders from '@/assets/no-odc.png';
 import { useBuyOrders } from '@/hooks/useBuyOrders';
-import { LuEye } from 'react-icons/lu';
+import { LuFileCheck } from 'react-icons/lu';
 import { useAuth } from '@/context/AuthContext';
 
 
@@ -109,7 +109,7 @@ export default function OrdenesDeCompra() {
                                             <TableCell className='text-center'>
                                                 <Link to='/buyOrder/$orderId' params={{ orderId: order.id }}>
                                                     <Button variant='ghost' className='space-x-2'>
-                                                        <LuEye className='cursor-pointer' size={20} />
+                                                        <LuFileCheck className='cursor-pointer' size={20} />
                                                         <p>Ver Orden de Compra</p>
                                                     </Button>
                                                 </Link>

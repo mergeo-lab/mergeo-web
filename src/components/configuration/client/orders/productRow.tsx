@@ -15,7 +15,7 @@ import UseSearchStore from "@/store/search.store";
 import ProductOptions from "@/components/configuration/client/orders/prductOptions";
 import { ReplacementDialog } from "@/components/configuration/client/orders/replacementDialog";
 import { ReplacementCriteria } from "@/lib/constants";
-import { ReplacementCriteriaBadge, ReplacementCriteriaLabel } from "./ReplacementCriteriaBadge";
+import { ReplacementCriteriaLabel } from "./ReplacementCriteriaBadge";
 import { ProductWithQuantity } from "@/store/search.store";
 
 type Params = {
@@ -94,7 +94,7 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
                             }}
                             activeIcon={<TiThumbsDown size={20} />}
                             inactiveIcon={<TiThumbsDown size={20} />}
-                            tooltip="Agregar a Lista Negra"
+                            tooltip="Agregar a Lista de no deseados"
                             disabled={product.isFavorite}
                         />
 
@@ -154,7 +154,7 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
                                 }}
                                 activeIcon={<TiThumbsDown size={20} />}
                                 inactiveIcon={<TiThumbsDown size={20} />}
-                                tooltip="Agregar a Lista Negra"
+                                tooltip="Agregar a Lista de no deseados"
                                 disabled={product.isFavorite}
                                 className="w-8 h-8"
                             />
@@ -175,15 +175,8 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
                     product.isPickUp && <PickUpIndicator />
                 }</TableCell>
                 <TableCell className='text-right w-20 '>
-                    <div className="flex items-end gap-2 w-fit flex-col-reverse">
-                        <ProductsPresentations
-                            callback={() => toggleSheetOpen(null)}
-                            productId={product.id}
-                            title="Mas Presentaciones"
-                            subTitle='Puedes seleccionar otras presentaciones del mismo producto'
-                            morePresentations={product.morePresentations || false}
-                            dropZoneId={dropZoneId}
-                        />
+                    <div className="flex items-start  gap-2 w-fit flex-col">
+
                         <div className="flex items-center gap-1">
                             <QuantitySelector
                                 defaultValue={savedProducts.find((item) => item.id === product.id)?.quantity}
@@ -198,7 +191,16 @@ const ProductRow = ({ product, onQuantityChange, savedProducts, handleToggleFavo
                                 setDeliveryDateDialogOpen={setDeliveryDateDialogOpen}
                                 setDeliveryReplacementDialogOpen={setReplacementDialogOpen}
                             />
-
+                        </div>
+                        <div>
+                            <ProductsPresentations
+                                callback={() => toggleSheetOpen(null)}
+                                productId={product.id}
+                                title="Mas Presentaciones"
+                                subTitle='Puedes seleccionar otras presentaciones del mismo producto'
+                                morePresentations={product.morePresentations || false}
+                                dropZoneId={dropZoneId}
+                            />
                         </div>
                     </div>
                 </TableCell>

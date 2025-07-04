@@ -9,8 +9,8 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useState, Fragment, useRef } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import sinPedidos from '@/assets/sin-pedidos.png'
-import { ConfigTabs, PRE_ORDER_STATUS, ACCOUNT } from '@/lib/constants';
-import { LuChevronDown, LuChevronUp, LuEye } from 'react-icons/lu';
+import { ConfigTabs, PRE_ORDER_STATUS } from '@/lib/constants';
+import { LuChevronDown, LuChevronUp, LuEye, LuFileCheck } from 'react-icons/lu';
 import { useAuth } from '@/context/AuthContext';
 import { useNotifications } from '@/context/NotificationsContext';
 
@@ -53,26 +53,12 @@ export default function PreOrders() {
         }
     }, [notifications, refetch]);
 
-    // Filter orders based on account type
-    // Providers see all orders including rejected ones
-    // Clients don't see rejected orders as they are no longer actionable
-    const filteredOrders = (data?.preOrders || []).filter(order => {
-        const accountType = account?.user?.accountType;
-
-        // For clients, filter out rejected orders
-        if (accountType === ACCOUNT.client && order.status === PRE_ORDER_STATUS.rejected) {
-            return false;
-        }
-
-        // For providers, show all orders including rejected ones
-        return true;
-    });
 
     // Group only orders with a valid groupId, show others as individual rows
     const groupedOrders: Record<string, PreOrderSchemaType[]> = {};
     const ungroupedOrders: PreOrderSchemaType[] = [];
 
-    filteredOrders.forEach(order => {
+    data?.preOrders.forEach(order => {
         // @ts-expect-error: orderGroupId may not exist on legacy orders
         const groupKey = order?.orderGroupId;
         if (groupKey && groupKey !== 'null' && groupKey !== null && groupKey !== undefined && groupKey !== '') {
@@ -131,8 +117,33 @@ export default function PreOrders() {
 
     // Helper to get group state
     function getGroupState(orders: PreOrderSchemaType[]) {
-        // If all are accepted, return 'Aceptada', else 'Pendiente'
-        return orders.every(o => o.status === PRE_ORDER_STATUS.accepted) ? PRE_ORDER_STATUS.accepted : PRE_ORDER_STATUS.pending;
+        // Check if all internal orders are finished (rejected, accepted, or partially accepted)
+        const allFinished = orders.every(order =>
+            order.status === PRE_ORDER_STATUS.rejected ||
+            order.status === PRE_ORDER_STATUS.accepted ||
+            order.status === PRE_ORDER_STATUS.partialyAccepted ||
+            order.status === PRE_ORDER_STATUS.processed
+        );
+
+        // Check if any internal orders are pending
+        const hasPending = orders.some(order =>
+            order.status === PRE_ORDER_STATUS.pending
+        );
+
+        // If all orders are finished, return 'Procesada'
+        if (allFinished) {
+            return PRE_ORDER_STATUS.processed;
+        }
+
+        // If any order is pending, return 'Pendiente'
+        if (hasPending) {
+            return PRE_ORDER_STATUS.pending;
+        }
+
+        // Default fallback - if all are accepted, return 'Aceptada', else 'Pendiente'
+        return orders.every(o => o.status === PRE_ORDER_STATUS.accepted)
+            ? PRE_ORDER_STATUS.accepted
+            : PRE_ORDER_STATUS.pending;
     }
 
     // Prepare a unified list for rendering, each with a type and highestOrderNumber
@@ -202,9 +213,9 @@ export default function PreOrders() {
                                         <TableRow className="hover:bg-transparent">
                                             <TableHead className="w-[150px]">Numero de Orden</TableHead>
                                             <TableHead className="w-[150px]">Creada</TableHead>
-                                            <TableHead className="w-[150px] text-center">Ordenes</TableHead>
+                                            <TableHead className="w-[100px] text-center">Ordenes</TableHead>
                                             <TableHead className="w-[150px] text-center">Estado</TableHead>
-                                            <TableHead className="w-[150px] text-center"></TableHead>
+                                            <TableHead className="w-[200px] text-right"></TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody className="bg-white">
@@ -223,13 +234,13 @@ export default function PreOrders() {
                                                                 }
                                                             </TableCell>
                                                             <TableCell className="w-[150px]">{formatDate(row.orders[0].created)}</TableCell>
-                                                            <TableCell className="w-[150px] text-center">{row.orders.length}</TableCell>
+                                                            <TableCell className="w-[100px] text-center">{row.orders.length}</TableCell>
                                                             <TableCell className="w-[150px] text-center">
                                                                 <div className="flex justify-center">
                                                                     <StatusBadge className='py-2 px-6 text-sm' status={getGroupState(row.orders)} />
                                                                 </div>
                                                             </TableCell>
-                                                            <TableCell className="w-[150px] text-center">
+                                                            <TableCell className="w-[200px] text-center">
                                                                 <Button variant='ghost' className='space-x-2' onClick={() => toggleGroup(row.groupId)}>
                                                                     {expandedGroups.has(row.groupId)
                                                                         ? <div className='flex justify-center items-center'>
@@ -262,7 +273,7 @@ export default function PreOrders() {
                                                                         <Table className="w-full">
                                                                             <TableBody className="bg-white">
                                                                                 {row.orders.map(order => (
-                                                                                    <TableRow key={order.id} className='bg-gray-300/15 hover:bg-gray-300/15 h-14'>
+                                                                                    <TableRow key={order.id} className='bg-gray-300/25 hover:bg-gray-300/15 h-14'>
                                                                                         <TableCell className="w-[138px] pl-5">{order.preOrderNumber}</TableCell>
                                                                                         <TableCell className="w-[150px]">{formatDate(order.created)}</TableCell>
                                                                                         <TableCell className="w-[135px]"></TableCell>
@@ -271,13 +282,21 @@ export default function PreOrders() {
                                                                                                 <StatusBadge className='py-2 px-6 text-sm' status={order.status} />
                                                                                             </div>
                                                                                         </TableCell>
-                                                                                        <TableCell className="w-[135px] text-center">
+                                                                                        <TableCell className="w-[210px] text-center p-0">
                                                                                             <Link to="/client/proOrders/$preOrderId" params={{ preOrderId: order.id }}>
                                                                                                 <Button variant='ghost' className='space-x-2 hover:bg-gray-300/45'>
                                                                                                     <LuEye className='cursor-pointer' size={20} />
                                                                                                     <p>Ver Pedido</p>
                                                                                                 </Button>
                                                                                             </Link>
+                                                                                            {order.buyOrder && (
+                                                                                                <Link to="/buyOrder/$orderId" params={{ orderId: order.buyOrder?.id || '' }}>
+                                                                                                    <Button variant='ghost' className='space-x-2'>
+                                                                                                        <LuFileCheck className='cursor-pointer' size={20} />
+                                                                                                        <p>Ver Orden de Compra</p>
+                                                                                                    </Button>
+                                                                                                </Link>
+                                                                                            )}
                                                                                         </TableCell>
                                                                                     </TableRow>
                                                                                 ))}
@@ -305,6 +324,14 @@ export default function PreOrders() {
                                                                     <p>Ver Pedido</p>
                                                                 </Button>
                                                             </Link>
+                                                            {row.order.buyOrder && (
+                                                                <Link to="/buyOrder/$orderId" params={{ orderId: row.order.buyOrder?.id || '' }}>
+                                                                    <Button variant='ghost' className='space-x-2'>
+                                                                        <LuEye className='cursor-pointer' size={20} />
+                                                                        <p>Ver Pedido</p>
+                                                                    </Button>
+                                                                </Link>
+                                                            )}
                                                         </TableCell>
                                                     </TableRow>
                                                 )}

@@ -16,6 +16,7 @@ import { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { MdOutlineDiscount } from "react-icons/md";
 import { useAuth } from "@/context/AuthContext";
+import { cn } from "@/lib/utils";
 
 type Props = {
     openit?: boolean,
@@ -23,10 +24,11 @@ type Props = {
     data?: DiscountSchemaType | null,
     isEdit?: boolean,
     itemId?: string | null,
+    showOnyClients?: boolean,
     callback?: () => void,
 }
 
-export default function NewDiscount({ openit, isEdit = false, onClose, data, itemId, callback }: Props) {
+export default function NewDiscount({ openit, isEdit = false, onClose, data, itemId, callback, showOnyClients = false }: Props) {
     const { account } = useAuth();
     const companyId = account?.company.id || '';
     const [selectedCompanies, setSelectedCompanies] = useState<CompanySchemaType[]>([]);
@@ -103,19 +105,19 @@ export default function NewDiscount({ openit, isEdit = false, onClose, data, ite
     return (
         <Dialog open={openit} onOpenChange={(open) => !open && onClose?.()}>
             {openit && (
-                <DialogContent showClose={false} onInteractOutside={(e) => e.preventDefault()}>
+                <DialogContent showClose={false} onInteractOutside={(e) => e.preventDefault()} className={cn({ "w-[600px]": showOnyClients })}>
                     {mutation.isPending && <OverlayLoadingIndicator />}
                     <DialogHeader className="border-b-[1px] border-border">
                         <DialogTitle className="text-md flex items-center gap-2 p-4">
                             <MdOutlineDiscount size={30} />
-                            {data ? 'Editar lista de descuentos' : "Nueva lista de descuentos"}
+                            {showOnyClients ? 'Agregar o sacar clientes' : data ? 'Editar lista de descuentos' : "Nueva lista de descuentos"}
                         </DialogTitle>
                     </DialogHeader>
                     <div className="flex flex-col">
                         <FormProvider {...form}>
                             <form>
-                                <div className="flex gap-6 p-10 pt-2">
-                                    <div className="flex flex-col gap-4 pb-5 w-1/2">
+                                <div className={cn("flex gap-6 p-10 pt-2")} >
+                                    <div className={cn("flex flex-col gap-4 pb-5 w-1/2", { "hidden": showOnyClients })}>
 
                                         <div className="h-fit space-y-4 ">
                                             <FormField
@@ -174,7 +176,7 @@ export default function NewDiscount({ openit, isEdit = false, onClose, data, ite
 
 
                                     </div>
-                                    <div className="border border-border rounded-md p-4 w-1/2">
+                                    <div className={cn("border border-border rounded-md p-4 w-1/2", { "w-full min-h-[300px]": showOnyClients })}>
                                         <ClientFinder onCompanyAdded={(company) => addCompany(company)} />
                                         <div className="px-4">
                                             <ClientCuitList companies={selectedCompanies} onClickRemove={removeClient} />
@@ -199,7 +201,8 @@ export default function NewDiscount({ openit, isEdit = false, onClose, data, ite
                     </div>
 
                 </DialogContent>
-            )}
-        </Dialog>
+            )
+            }
+        </Dialog >
     );
 }

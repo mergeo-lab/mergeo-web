@@ -108,7 +108,7 @@ const getRoutTitles = (currentPage: number) => {
             icon: <LuHeart {...iconProps} />
         },
         '/client/lists/blackList': {
-            text: <SubLink texts={['Mis Listas', 'Lista Negra']} />,
+            text: <SubLink texts={['Mis Listas', 'No Deseados']} />,
             icon: <LuThumbsDown {...iconProps} />
         },
 

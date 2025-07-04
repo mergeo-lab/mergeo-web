@@ -105,7 +105,7 @@ export default function BlackList() {
   if (!data?.length) return (
     <div className="flex flex-col gap-4 items-center justify-center h-full">
       <MdOutlinePlaylistRemove size={100} className="text-destructive" />
-      <p className="text-base font-bold">No hay productos en la lista Negra</p>
+      <p className="text-base font-bold">No hay productos en la lista de no deseados</p>
     </div>
   )
 

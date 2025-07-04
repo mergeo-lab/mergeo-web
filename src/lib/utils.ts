@@ -6,6 +6,7 @@ import { ZoneSchemaPostGisType } from '@/lib/schemas';
 import { formatDistanceToNowStrict, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ReplacementCriteria, ReplacementCriteriaValues } from './constants';
+import { GoogleLocationSchemaType, LocationSchemaType } from '@/lib/schemas';
 
 const secretKey = import.meta.env.VITE_SEARCH_PARAMS_KEY;
 
@@ -229,4 +230,34 @@ export function isCustomReplacementCriteria(
  */
 export function getDefaultReplacementCriteria(): ReplacementCriteria {
   return ReplacementCriteria.BEST_PRICE_FOR_UNIT;
+}
+
+// Location conversion utilities
+export function googleLocationToLocation(
+  googleLocation: GoogleLocationSchemaType
+): LocationSchemaType {
+  return {
+    location: {
+      type: 'Point',
+      coordinates: [
+        googleLocation.location.longitude,
+        googleLocation.location.latitude,
+      ],
+    },
+    name: googleLocation.displayName.text,
+  };
+}
+
+export function locationToGoogleLocation(
+  location: LocationSchemaType
+): GoogleLocationSchemaType {
+  return {
+    location: {
+      latitude: location.location.coordinates[1],
+      longitude: location.location.coordinates[0],
+    },
+    displayName: {
+      text: location.name,
+    },
+  };
 }

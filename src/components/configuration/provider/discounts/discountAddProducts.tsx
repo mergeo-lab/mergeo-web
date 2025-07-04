@@ -22,10 +22,15 @@ type Props = {
 }
 export default function DiscountAddProducts({ companyId, discountListId, discount }: Props) {
     const { addProduct, removeProduct, toggleAllProducts, removeAllProducts, products: savedProducts } = UseDiscountProductsStore();
-    const { resetParams } = useProviderProductSearchStore();
+    const { resetParams, setParams } = useProviderProductSearchStore();
     const [showSearch, setShowSearch] = useState<boolean>(false);
     const { data, isLoading, isError, refetch } = UseNewProductSearch();
     const saveProductsMutation = useMutation({ mutationFn: saveDiscountProducts });
+
+    useEffect(() => {
+        // Set search parameters to load all products for the company
+        setParams({ companyId });
+    }, [companyId, setParams]);
 
     useEffect(() => {
         return () => {
@@ -97,9 +102,10 @@ export default function DiscountAddProducts({ companyId, discountListId, discoun
                 <div className="w-full flex justify-between items-center h-20 gap-2 border-b-[1px] border-border text-sm bg-muted/20 px-3">
 
                     <Button
-                        className="flex gap-2"
+                        className="flex gap-2 bg-info hover:bg-info/70 hover:text-white text-white"
                         variant="outlineSecondary"
                         onClick={handleSaveProducts}
+                        disabled={savedProducts.length === 0}
                     >
                         <MdFactCheck size={20} />
                         Agregar Seleccionados

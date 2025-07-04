@@ -93,20 +93,24 @@ export default function OdcDetail() {
             className='w-26 px-5'
             onClick={handleExport}>
             <p className='mr-2 font-bold '>Descargar Orden</p>
-            {fileDowloadLoading
-              ? <LoadingIndicator />
-              : <LuFileDown />
-            }
+            <div className='flex items-center justify-center w-5'>
+              {fileDowloadLoading
+                ? <LoadingIndicator size={4} />
+                : <LuFileDown size={20} />
+              }
+            </div>
           </Button>
           <Button
             variant='outline'
             className='w-26 px-5'
             onClick={handlePrint}>
             <p className='mr-2 font-bold '>Imprimir Orden</p>
-            {filePrintLoading
-              ? <LoadingIndicator />
-              : <LuPrinter />
-            }
+            <div className='flex items-center justify-center w-5'>
+              {filePrintLoading
+                ? <LoadingIndicator size={4} />
+                : <LuPrinter size={20} />
+              }
+            </div>
           </Button>
         </div>
 

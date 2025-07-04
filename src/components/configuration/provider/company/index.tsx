@@ -20,6 +20,7 @@ import { BsFillBuildingsFill } from "react-icons/bs";
 import { RiRoadMapFill } from "react-icons/ri";
 import { GoPencil } from "react-icons/go";
 import { LuMapPin } from "react-icons/lu";
+import { FaRegMap } from "react-icons/fa";
 
 export function Company() {
     const { company, saveCompany } = UseCompanyStore();
@@ -36,8 +37,11 @@ export function Company() {
         name: company?.name || "",
         branch: {
             address: {
-                name: companyMainBranch?.name || "",
-                location: { coordinates: companyMainBranch?.address?.location.coordinates || [0, 0], type: companyMainBranch?.address?.location.type || "Point" },
+                name: companyMainBranch?.address?.name || "",
+                location: {
+                    coordinates: companyMainBranch?.address?.location?.coordinates || [0, 0],
+                    type: companyMainBranch?.address?.location?.type || "Point"
+                },
             }
         },
         activity: company?.activity || "",
@@ -92,7 +96,7 @@ export function Company() {
             address: {
                 location: {
                     type: "Point",
-                    coordinates: [address.location.latitude, address.location.longitude]
+                    coordinates: [address.location.longitude, address.location.latitude]
                 },
                 name: address.displayName.text
             }
@@ -110,8 +114,8 @@ export function Company() {
         addAddress({
             displayName: { text: companyMainBranch.address.name },
             location: {
-                latitude: companyMainBranch.address.location.coordinates[0],
-                longitude: companyMainBranch.address.location.coordinates[1]
+                latitude: companyMainBranch.address.location.coordinates[1],
+                longitude: companyMainBranch.address.location.coordinates[0]
             },
         });
         setIsEditing(false);
@@ -322,9 +326,9 @@ export function Company() {
                     </div>
                 </CardFooter>
             </div>
-            <div className="overflow-hidden h-full w-4/12 bg-accent z-10 flex-justify-center items-center">
-                {markerPosition.latitude !== 0 && markerPosition.longitude !== 0
-                    ? <Map
+            <div className="overflow-hidden h-full w-4/12 bg-accent">
+                {markerPosition.latitude !== 0 && markerPosition.longitude !== 0 ? (
+                    <Map
                         style={{ width: '100%', height: '100%' }}
                         center={{ lat: markerPosition.latitude, lng: markerPosition.longitude }}
                         defaultZoom={16}
@@ -334,11 +338,12 @@ export function Company() {
                     >
                         <Marker position={{ lat: markerPosition.latitude, lng: markerPosition.longitude }} />
                     </Map>
-                    : <div className="flex flex-col justify-center items-center gap-2 h-full">
-                        <LuMapPin size={40} />
+                ) : (
+                    <div className="flex flex-col justify-center items-center gap-2 h-full">
+                        <FaRegMap size={40} />
                         <p>No has seleccionado una ubicación</p>
                     </div>
-                }
+                )}
             </div>
         </div >
     )

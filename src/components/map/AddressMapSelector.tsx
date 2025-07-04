@@ -6,11 +6,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTrigger } from '@/components
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DialogTitle } from '@radix-ui/react-dialog';
-import { LocationSchemaType } from '@/lib/schemas';
+import { GoogleLocationSchemaType, LocationSchemaType } from '@/lib/schemas';
 
 interface AddressMapSelectorProps {
     value?: LocationSchemaType;
-    onChange: (address: LocationSchemaType) => void;
+    onChange: (address: GoogleLocationSchemaType) => void;
     label?: string;
     disabled?: boolean;
 }
@@ -31,16 +31,16 @@ export const AddressMapSelector = ({ value, onChange, label = "Dirección", disa
         if (place && place.geometry?.location) {
             setSelectedPlace(place);
 
-            // Transform Google Places result to LocationSchemaType
-            const locationData: LocationSchemaType = {
+            // Transform Google Places result to GoogleLocationSchemaType
+            // Note: This component converts GoogleLocationSchemaType to LocationSchemaType internally
+            const locationData: GoogleLocationSchemaType = {
                 location: {
-                    type: "Point",
-                    coordinates: [
-                        place.geometry.location.lng(),
-                        place.geometry.location.lat()
-                    ]
+                    latitude: place.geometry.location.lat(),
+                    longitude: place.geometry.location.lng()
                 },
-                name: place.formatted_address || ''
+                displayName: {
+                    text: place.formatted_address || ''
+                }
             };
 
             onChange(locationData);

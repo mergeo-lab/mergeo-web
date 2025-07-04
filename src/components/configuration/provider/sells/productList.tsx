@@ -24,7 +24,7 @@ type Props = {
 export default function ProductList({ orderStatus, data, providerId, dropZoneId, acceptedProducts, isProvider = true, isLoading, onSelect, toggleAllProducts, disabled = false, totalPrice }: Props) {
 
     // Debug: Check dropZoneId
-    console.log('ProductList dropZoneId:', dropZoneId);
+    console.log('ProductList dropZoneId:', data);
 
     const total = data && data.reduce((acc, item) => {
         // Check if the item is in the acceptedProducts array
@@ -112,10 +112,10 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                                             'hover:bg-white': orderStatus === PRE_ORDER_STATUS.pending || orderStatus !== PRE_ORDER_STATUS.rejected
                                         })}>
                                             <TableCell>
-                                                <div> {product?.name}</div>
+                                                <div> {product?.name} {product?.variety}</div>
                                                 <div className='text-muted font-thin'>{product?.brand}</div>
                                             </TableCell>
-                                            <TableCell>{product?.netContent}{product?.measurementUnit}</TableCell>
+                                            <TableCell>{product?.netContent} {product?.measurementUnit}</TableCell>
                                             <TableCell>{item.quantity}</TableCell>
                                             <TableCell>{formatToArgentinianPesos(+item?.price)}</TableCell>
                                             {orderStatus !== PRE_ORDER_STATUS.pending &&

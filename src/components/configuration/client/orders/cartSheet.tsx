@@ -3,7 +3,7 @@ import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHe
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { useState } from "react";
 import { cratePreOrder } from "@/lib/orders";
-import UseSearchStore, { CartProduct } from "@/store/search.store";
+import UseSearchStore, { ProductWithQuantity } from "@/store/search.store";
 import { LuClipboardList } from "react-icons/lu";
 import QuantitySelector from "@/components/configuration/client/orders/quantitySelector";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -17,10 +17,13 @@ import { SaveOrderAsListDialog } from "./saveOrderAsListDialog";
 import { toast } from "@/components/ui/use-toast";
 import LoadingIndicator from "@/components/loadingIndicator";
 import { GiShoppingCart } from "react-icons/gi";
-import { TbCalendarTime } from "react-icons/tb";
+import { TbCalendarTime, TbReplace } from "react-icons/tb";
 import { DeliveryDateDialog } from "./deliveryDateDialog";
 import { cn } from "@/lib/utils";
 import { RxCross2 } from "react-icons/rx";
+import { ReplacementDialog } from "./replacementDialog";
+import { ReplacementCriteriaLabel } from "./ReplacementCriteriaBadge";
+import { ReplacementCriteria } from "@/lib/constants";
 
 type Props = {
     title?: string,
@@ -41,7 +44,7 @@ export function CartSheet({
     triggerButton,
     onInteractOutside }: Props) {
     const mutation = useMutation({ mutationFn: cratePreOrder })
-    const { getAllSavedProducts, removeProduct, saveProduct, updateProductDeliveryDate } = UseSearchStore();
+    const { getAllSavedProducts, removeProduct, saveProduct, updateProductDeliveryDate, updateProductReplacementCriteria } = UseSearchStore();
     const { getAllConfig } = UseSearchConfigStore();
     const { account } = useAuth();
     const user = account?.user;
@@ -50,7 +53,9 @@ export function CartSheet({
     const [isProcessing, setIsProcessing] = useState(false);
     const [showCountdown, setShowCountdown] = useState(false);
     const [deliveryDateDialogOpen, setDeliveryDateDialogOpen] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState<CartProduct | null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<ProductWithQuantity | null>(null);
+    const [replacementDialogOpen, setReplacementDialogOpen] = useState(false);
+    const [selectedProductForReplacement, setSelectedProductForReplacement] = useState<ProductWithQuantity | null>(null);
 
     const config = getAllConfig();
 
@@ -162,7 +167,7 @@ export function CartSheet({
         setShowSaveListDialog(true);
     }
 
-    function handleProductChange(product: CartProduct, quantity: number) {
+    function handleProductChange(product: ProductWithQuantity, quantity: number) {
         if (quantity === 0) {
             removeProduct(product.id);
             // Also remove delivery date when product is removed
@@ -181,9 +186,24 @@ export function CartSheet({
         updateProductDeliveryDate(productId, null);
     };
 
-    const openDeliveryDateDialog = (product: CartProduct) => {
+    const openDeliveryDateDialog = (product: ProductWithQuantity) => {
         setSelectedProduct(product);
         setDeliveryDateDialogOpen(true);
+    };
+
+    const handleReplacementCriteriaChange = (productId: string, replacementCriteria: ReplacementCriteria) => {
+        console.log(`[CartSheet] Updating replacement criteria for ${productId} to:`, replacementCriteria);
+        updateProductReplacementCriteria(productId, replacementCriteria);
+    };
+
+    const removeReplacementCriteria = (productId: string) => {
+        console.log(`[CartSheet] Removing replacement criteria for ${productId}`);
+        updateProductReplacementCriteria(productId, null);
+    };
+
+    const openReplacementDialog = (product: ProductWithQuantity) => {
+        setSelectedProductForReplacement(product);
+        setReplacementDialogOpen(true);
     };
 
     return (
@@ -252,7 +272,43 @@ export function CartSheet({
                                                     {products.map((product) => (
                                                         <TableRow key={product.id} className="[&>*]:text-center">
                                                             <TableCell className="!text-left">
-                                                                <p className="text-sm text-muted-foreground">{product.name}, {product.brand} x {product.netContent}{product.measurementUnit}</p>
+                                                                <div className="flex flex-col gap-1">
+                                                                    <p className="text-sm text-muted-foreground">{product.name}, {product.brand} x {product.netContent}{product.measurementUnit}</p>
+                                                                    <div className="flex items-center gap-1">
+                                                                        {product?.replacementCriteria && (
+                                                                            <Button
+                                                                                variant="ghost"
+                                                                                size="sm"
+                                                                                onClick={() => removeReplacementCriteria(product.id)}
+                                                                                className="text-xs w-6 h-6 p-0"
+                                                                                title="Eliminar criterio de reemplazo"
+                                                                            >
+                                                                                <RxCross2 size={16} className="text-destructive" />
+                                                                            </Button>
+                                                                        )}
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            onClick={() => openReplacementDialog(product)}
+                                                                            className={cn("text-xs w-auto h-6 p-0 flex items-center gap-1 px-2", {
+                                                                                "text-info": product?.replacementCriteria,
+                                                                                "text-muted-foreground": !product.replacementCriteria
+                                                                            })}
+                                                                            title={product?.replacementCriteria ? "Cambiar criterio de reemplazo" : "Establecer criterio de reemplazo"}
+                                                                        >
+                                                                            <TbReplace size={16} />
+                                                                            {product?.replacementCriteria ? (
+                                                                                <ReplacementCriteriaLabel
+                                                                                    criteria={product.replacementCriteria}
+                                                                                    className="text-[0.75rem]"
+                                                                                />
+                                                                            ) : (
+                                                                                <span className="text-muted-foreground text-[0.75rem]">
+                                                                                    cambiar criterio de reemplso
+                                                                                </span>
+                                                                            )}
+                                                                        </Button>
+                                                                    </div>
+                                                                </div>
                                                             </TableCell>
                                                             <TableCell>
                                                                 <div className="flex justify-center items-center gap-2">
@@ -373,6 +429,21 @@ export function CartSheet({
                     onDateChange={handleDeliveryDateChange}
                     onRemoveDate={removeDeliveryDate}
                     currentDeliveryDate={selectedProduct?.deliveryDate || undefined}
+                />
+            )}
+
+            {/* Replacement Criteria Dialog */}
+            {selectedProductForReplacement && (
+                <ReplacementDialog
+                    isOpen={replacementDialogOpen}
+                    onClose={() => {
+                        setReplacementDialogOpen(false);
+                        setSelectedProductForReplacement(null);
+                    }}
+                    product={selectedProductForReplacement}
+                    onChange={handleReplacementCriteriaChange}
+                    currentReplacement={selectedProductForReplacement?.replacementCriteria}
+                    onRemoveReplacement={removeReplacementCriteria}
                 />
             )}
         </>

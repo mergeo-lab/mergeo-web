@@ -16,7 +16,7 @@ type Props = {
 
 export default function SearchProducts({ companyId, className, children }: Props) {
     const { isLoading } = UseNewProductSearch();
-    const { setParams, resetParams } = useProviderProductSearchStore();
+    const { setParams } = useProviderProductSearchStore();
 
     const form = useForm<ProviderProductSearchType>({
         resolver: zodResolver(ProviderProductSearch) as Resolver<ProviderProductSearchType>,
@@ -35,7 +35,8 @@ export default function SearchProducts({ companyId, className, children }: Props
         const { name, brand, ean } = fields;
 
         if (!name && !brand && !ean) {
-            resetParams();
+            // When all fields are empty, fetch all products for the company
+            setParams({ companyId });
         } else {
             try {
                 await setParams({ name, brand, ean, companyId });
