@@ -125,18 +125,18 @@ export default function OrdenesDeCompra() {
                                                 </Link>
                                             </TableCell>
                                             <TableCell className='text-center'>
-                                                <Button
-                                                    variant='ghost'
-                                                    onClick={() => handleMarkAsViewed(order.id)}
-                                                    disabled={markAsViewedMutation.isPending}
-                                                    className='w-fit h-fit'
-                                                >
-                                                    {order.markedAsViewd === true ? (
-                                                        <AnimatedCheck />
-                                                    ) : (
+                                                {order.markedAsViewd === true ? (
+                                                    <AnimatedCheck />
+                                                ) : (
+                                                    <Button
+                                                        variant='ghost'
+                                                        onClick={() => handleMarkAsViewed(order.id)}
+                                                        disabled={markAsViewedMutation.isPending}
+                                                        className='w-fit h-fit'
+                                                    >
                                                         <RiCheckboxMultipleBlankLine className='text-gray-400' size={20} />
-                                                    )}
-                                                </Button>
+                                                    </Button>
+                                                )}
                                             </TableCell>
                                         </TableRow>
                                     ))}
