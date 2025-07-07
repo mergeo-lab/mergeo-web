@@ -42,7 +42,7 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: 'src/assets/*.{jpg,png,svg,webp}',
+          src: 'src/assets/*.{jpg,png,svg,webp,riv}',
           dest: 'assets',
         },
       ],
@@ -67,6 +67,10 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+  },
+  assetsInclude: ['**/*.riv'],
+  optimizeDeps: {
+    include: ['@rive-app/react-canvas-lite'],
   },
   build: {
     target: 'esnext',

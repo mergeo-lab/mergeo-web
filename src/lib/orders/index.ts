@@ -334,6 +334,30 @@ export async function getOrderById(orderId: string): Promise<OrderSchemaType> {
   }
 }
 
+export async function markBuyOrderAsViewed(orderId: string): Promise<void> {
+  try {
+    await axiosPrivate.post(
+      `${BUY_ORDER}/${orderId}/mark-as-viewed`,
+      {},
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
 export async function preOrderEvents(
   companyId: string
 ): Promise<{ count: number; preOrders: PreOrderSchemaType[] }> {

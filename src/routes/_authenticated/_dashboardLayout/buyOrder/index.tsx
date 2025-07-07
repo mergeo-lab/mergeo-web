@@ -15,8 +15,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import noOrders from '@/assets/no-odc.png';
 import { useBuyOrders } from '@/hooks/useBuyOrders';
 import { LuFileCheck } from 'react-icons/lu';
+import { RiCheckboxMultipleBlankLine } from 'react-icons/ri';
 import { useAuth } from '@/context/AuthContext';
-
+import { useMarkBuyOrderAsViewed } from '@/hooks/useMarkBuyOrderAsViewed';
+import AnimatedCheck from '@/components/animatedCheck';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/buyOrder/')({
     component: () => <OrdenesDeCompra />,
@@ -33,6 +35,12 @@ export default function OrdenesDeCompra() {
         isError,
         refetch,
     } = useBuyOrders(companyId, accountType === ACCOUNT.client);
+
+    const markAsViewedMutation = useMarkBuyOrderAsViewed();
+
+    const handleMarkAsViewed = (orderId: string) => {
+        markAsViewedMutation.mutate(orderId);
+    };
 
 
     if (isError) {
@@ -69,18 +77,19 @@ export default function OrdenesDeCompra() {
                                 <TableRow className='hover:bg-white'>
                                     <TableHead>Nº de Orden</TableHead>
                                     <TableHead>Cliente</TableHead>
-                                    <TableHead>Sucursal</TableHead>
+                                    <TableHead className='w-[20%]'>Sucursal</TableHead>
                                     <TableHead>Creada</TableHead>
                                     <TableHead>Ultimo dia de entrega</TableHead>
                                     <TableHead>Rango horario de entrega</TableHead>
-                                    <TableHead className='text-center'>Orden de Compra</TableHead>
+                                    <TableHead className='text-center'>Detalle</TableHead>
+                                    <TableHead className='text-center'>Vista</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody className='bg-white'>
                                 {isLoading
                                     ? Array.from({ length: 6 }).map((_, index) => (
                                         <TableRow className='hover:bg-transparent border-none' key={index}>
-                                            <TableCell colSpan={7} className='h-0 p-2 border-none hover:none'>
+                                            <TableCell colSpan={8} className='h-0 p-2 border-none hover:none'>
                                                 <Skeleton key={index} className='h-14 w-full rounded-sm' />
                                             </TableCell>
                                         </TableRow>
@@ -106,6 +115,7 @@ export default function OrdenesDeCompra() {
                                                 {numberToTimeString(order.schedule.startHour)} -{' '}
                                                 {numberToTimeString(order.schedule.endHour)}
                                             </TableCell>
+
                                             <TableCell className='text-center'>
                                                 <Link to='/buyOrder/$orderId' params={{ orderId: order.id }}>
                                                     <Button variant='ghost' className='space-x-2'>
@@ -113,6 +123,20 @@ export default function OrdenesDeCompra() {
                                                         <p>Ver Orden de Compra</p>
                                                     </Button>
                                                 </Link>
+                                            </TableCell>
+                                            <TableCell className='text-center'>
+                                                <Button
+                                                    variant='ghost'
+                                                    onClick={() => handleMarkAsViewed(order.id)}
+                                                    disabled={markAsViewedMutation.isPending}
+                                                    className='w-fit h-fit'
+                                                >
+                                                    {order.markedAsViewd === true ? (
+                                                        <AnimatedCheck />
+                                                    ) : (
+                                                        <RiCheckboxMultipleBlankLine className='text-gray-400' size={20} />
+                                                    )}
+                                                </Button>
                                             </TableCell>
                                         </TableRow>
                                     ))}

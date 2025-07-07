@@ -79,6 +79,7 @@ export const BuyOrderSchema = z.object({
   buyOrderProducts: z.array(BuyOrderProductSchema),
   branch: BranchSchema,
   schedule: ScheduleSchema,
+  markedAsViewd: z.boolean().optional(),
 });
 
 // Infer TypeScript type from the schema
