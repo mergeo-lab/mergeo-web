@@ -7,6 +7,7 @@ import { NotificationType } from '@/lib/utils'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { LuTrash2 } from 'react-icons/lu'
 import { DeleteConfirmationDialog } from '@/components/deleteConfirmationDialog'
+import { Notification as NotificationCtx } from '@/context/NotificationsContext'
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/notifications')({
     component: NotificationsPage
@@ -41,9 +42,9 @@ function NotificationsPage() {
         }
     }
 
-    const getNotificationLink = (notification: any) => {
+    const getNotificationLink = (notification: NotificationCtx) => {
         if (notification.type === 'pre_order_created' || notification.type === 'pre_order_updated') {
-            return `/provider/proOrders/${notification.pre_order_id}`
+            return `/provider/preOrders/${notification.pre_order_id}`
         }
         if (notification.type === 'buy_order_created') {
             return `/buyOrder/${notification.buy_order_id}`

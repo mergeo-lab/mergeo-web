@@ -16,7 +16,7 @@ import { useAuth } from '@/context/AuthContext';
 import { BsBoxArrowInRight } from 'react-icons/bs';
 import { isPast, parseISO } from 'date-fns';
 
-export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId')({
+export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/preOrders/$preOrderId')({
     component: () => <SellsDetail />,
 })
 
@@ -33,7 +33,7 @@ function isResponseDeadlineExpired(deadline: string): boolean {
 }
 
 export function SellsDetail() {
-    const { preOrderId } = useParams({ from: '/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId' });
+    const { preOrderId } = useParams({ from: '/_authenticated/_dashboardLayout/_accountType/provider/preOrders/$preOrderId' });
 
     const {
         acceptedProducts,

@@ -6,7 +6,7 @@ export type UserType = {
   name: string;
   accountType: string;
   password?: string;
-  user_metadata?: Record<string, any>;
+  user_metadata?: Record<string, unknown>;
 };
 
 export interface AuthType {

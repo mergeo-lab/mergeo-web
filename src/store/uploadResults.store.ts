@@ -6,7 +6,7 @@ export type UploadResult = {
   timestamp: number;
   successGtins?: string[];
   failedGtins?: string[];
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 type UploadResultsStore = {

@@ -14,12 +14,12 @@ import BackLink from '@/components/backLink';
 import { Button } from '@/components/ui/button';
 import { BsBoxArrowInRight } from "react-icons/bs";
 
-export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/proOrders/$preOrderId')({
+export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/preOrders/$preOrderId')({
     component: () => <SellsDetail />,
 })
 
 export function SellsDetail() {
-    const { preOrderId } = useParams({ from: '/_authenticated/_dashboardLayout/_accountType/client/proOrders/$preOrderId' });
+    const { preOrderId } = useParams({ from: '/_authenticated/_dashboardLayout/_accountType/client/preOrders/$preOrderId' });
 
     const {
         acceptedProducts,

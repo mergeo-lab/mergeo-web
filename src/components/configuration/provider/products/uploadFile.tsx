@@ -27,6 +27,7 @@ export default function UploadFile() {
     useEffect(() => {
         return () => {
             if (dropzoneRef.current) {
+                // eslint-disable-next-line react-hooks/exhaustive-deps
                 dropzoneRef.current.reset();
             }
             removeFinishedFromQueue();

@@ -8,7 +8,7 @@ type Props = {
     id: string;
     userId: string;
     fileName: string;
-    onFinish: (id: string) => void;
+    onFinish?: (id: string) => void;
 };
 
 export function UploadEvents({ id, userId, fileName, onFinish }: Props) {
@@ -29,7 +29,7 @@ export function UploadEvents({ id, userId, fileName, onFinish }: Props) {
                 fileName,
                 timestamp: Date.now(),
             });
-            onFinish(id);
+            onFinish && onFinish(id);
         }
     }, [currentUpload, fileName, addResult, onFinish, id]);
 

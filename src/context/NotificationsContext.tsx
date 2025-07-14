@@ -2,13 +2,21 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { useAuth } from './AuthContext';
 import { supabase } from './supabaseClient';
 
-interface Notification {
+export interface Notification {
     id: string;
     message: string;
     read: boolean;
     createdAt: string;
     type: string;
-    metadata: any;
+    metadata: unknown;
+    created_at: string;
+    pre_order_id?: string;
+    buy_order_id?: string;
+    order_id?: string;
+    payment_id?: string;
+    delivery_id?: string;
+    product_id?: string;
+    product_name?: string;
 }
 
 interface NotificationsContextType {
@@ -47,14 +55,14 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
                     console.log('Received real-time notification:', payload);
 
                     if (payload.eventType === 'INSERT') {
-                        const notification = payload.new as any;
+                        const notification = payload.new as Notification;
                         const formattedNotification = {
                             ...notification,
                             createdAt: new Date(notification.created_at).toISOString()
                         };
                         setNotifications(prev => [formattedNotification, ...prev]);
                     } else if (payload.eventType === 'UPDATE') {
-                        const notification = payload.new as any;
+                        const notification = payload.new as unknown as Notification;
                         const formattedNotification = {
                             ...notification,
                             createdAt: new Date(notification.created_at).toISOString()
@@ -80,6 +88,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
         return () => {
             channel.unsubscribe();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [account?.user]);
 
     const fetchNotifications = async () => {

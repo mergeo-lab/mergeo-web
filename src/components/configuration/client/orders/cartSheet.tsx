@@ -82,7 +82,7 @@ export function CartSheet({
             // Clear saved configuration
             const { clearConfig } = UseSearchConfigStore.getState();
             clearConfig();
-            router.navigate({ to: '/client/proOrders', search: { id: mutation.data?.preOrderId } });
+            router.navigate({ to: '/client/preOrders', search: { id: mutation.data?.preOrderId } });
             setIsProcessing(false);
             clearTimeout(timeout);
             setShowCountdown(false);

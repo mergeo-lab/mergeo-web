@@ -231,6 +231,59 @@ export async function getAllPreOrders(
   }
 }
 
+export async function getAllPreOrdersPaginated(
+  companyId: string,
+  pagination: {
+    page?: number;
+    take?: number;
+  },
+  filters?: {
+    status?: string;
+    sortByCreated?: boolean;
+    sortOrder?: 'ASC' | 'DESC';
+  }
+): Promise<{
+  preOrders: PreOrderSchemaType[];
+  currentPage: number;
+  total: number;
+  totalPages: number;
+}> {
+  try {
+    const params: Record<string, unknown> = {};
+
+    // pagination
+    params.page = pagination.page || 1;
+    params.take = pagination.take || 30;
+
+    // filters
+    if (filters?.status) params.status = filters.status;
+    if (filters?.sortByCreated !== undefined)
+      params.sortByCreated = filters.sortByCreated;
+    if (filters?.sortOrder) params.sortOrder = filters.sortOrder;
+
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${PRE_ORDER}/${companyId}/client`,
+      {
+        params,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
 export async function getSellPreOrders(
   companyId: string
 ): Promise<PreOrderSchemaType[]> {
@@ -242,6 +295,65 @@ export async function getSellPreOrders(
           'Content-Type': 'application/json',
         },
       }
+    );
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+export async function getSellPreOrdersPaginated(
+  companyId: string,
+  pagination: {
+    page?: number;
+    take?: number;
+  },
+  filters?: {
+    status?: string;
+    sortByCreated?: boolean;
+    sortOrder?: 'ASC' | 'DESC';
+  }
+): Promise<{
+  preOrders: PreOrderSchemaType[];
+  currentPage: number;
+  total: number;
+  totalPages: number;
+}> {
+  try {
+    const params: Record<string, unknown> = {};
+
+    // pagination
+    params.page = pagination.page || 1;
+    params.take = pagination.take || 30;
+
+    // filters
+    if (filters?.status) params.status = filters.status;
+    if (filters?.sortByCreated !== undefined)
+      params.sortByCreated = filters.sortByCreated;
+    if (filters?.sortOrder) params.sortOrder = filters.sortOrder;
+
+    console.log('getSellPreOrdersPaginated - sending params:', params);
+
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${PRE_ORDER}/${companyId}/provider`,
+      {
+        params,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    console.log(
+      'getSellPreOrdersPaginated - response received:',
+      response.data
     );
     return response.data;
   } catch (error) {
@@ -291,6 +403,62 @@ export async function getAllBuyOrders(
     const { data: response }: AxiosResponse = await axiosPrivate.get(
       `${BUY_ORDER}/${companyId}/${isClient ? 'client' : 'provider'}`,
       {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+export async function getAllBuyOrdersPaginated(
+  companyId: string,
+  isClient: boolean = true,
+  pagination: {
+    page?: number;
+    take?: number;
+  },
+  filters?: {
+    viewed?: boolean;
+    clientId?: string;
+    sortByCreated?: boolean;
+    sortOrder?: 'ASC' | 'DESC';
+  }
+): Promise<{
+  buyOrders: BuyOrderSchemaType[];
+  currentPage: number;
+  total: number;
+  totalPages: number;
+}> {
+  try {
+    const params: Record<string, unknown> = {};
+
+    // pagination
+    params.page = pagination.page || 1;
+    params.take = pagination.take || 30;
+
+    // filters
+    if (filters?.viewed !== undefined) params.viewed = filters.viewed;
+    if (filters?.clientId) params.clientId = filters.clientId;
+    if (filters?.sortByCreated !== undefined)
+      params.sortByCreated = filters.sortByCreated;
+    if (filters?.sortOrder) params.sortOrder = filters.sortOrder;
+
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${BUY_ORDER}/${companyId}/${isClient ? 'client' : 'provider'}/paginated`,
+      {
+        params,
         headers: {
           'Content-Type': 'application/json',
         },

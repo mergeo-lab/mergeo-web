@@ -93,9 +93,9 @@ const getRoutTitles = (currentPage: number) => {
         },
         '/client/dashboard': { text: 'Panel de Control', icon: <LuLayoutDashboard {...iconProps} /> },
         '/client/orders': { text: 'Hacer Pedido', icon: <LuShoppingCart {...iconProps} /> },
-        '/client/proOrders': { text: 'Pedidos', icon: <LuArchive {...iconProps} /> },
-        '/client/proOrders/$orderId': {
-            text: <SubLink to={'/client/proOrders'} texts={['Pedidos', 'Detalle del pedido']} />,
+        '/client/preOrders': { text: 'Pedidos', icon: <LuArchive {...iconProps} /> },
+        '/client/preOrders/$orderId': {
+            text: <SubLink to={'/client/preOrders'} texts={['Pedidos', 'Detalle del pedido']} />,
             icon: <LuArchive {...iconProps} />
         },
 
@@ -113,9 +113,9 @@ const getRoutTitles = (currentPage: number) => {
         },
 
         '/provider/dashboard': { text: 'Panel de Control', icon: <LuLayoutDashboard {...iconProps} /> },
-        '/provider/proOrders': { text: 'Pedidos', icon: <LuArchive {...iconProps} /> },
-        '/provider/proOrders/$orderId': {
-            text: <SubLink to={'/provider/proOrders'} texts={['Pedidos', 'Detalle del pedido']} />,
+        '/provider/preOrders': { text: 'Pedidos', icon: <LuArchive {...iconProps} /> },
+        '/provider/preOrders/$orderId': {
+            text: <SubLink to={'/provider/preOrders'} texts={['Pedidos', 'Detalle del pedido']} />,
             icon: <LuArchive {...iconProps} />
         },
         '/sellDetail': { text: 'Detalle del Pedido', icon: <LuFileSearch {...iconProps} /> },

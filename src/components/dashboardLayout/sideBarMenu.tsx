@@ -142,9 +142,9 @@ export function SideBarMenu({ companyName }: Props) {
                             </li>
                             <li>
                                 <SpecialLink
-                                    to="/client/proOrders"
+                                    to="/client/preOrders"
                                     onClick={onLinkClicked}
-                                    activePaths={['/client/proOrders']}
+                                    activePaths={['/client/preOrders']}
                                 >
                                     <LuArchive size={iconSize} />
                                     Pedidos
@@ -236,8 +236,8 @@ export function SideBarMenu({ companyName }: Props) {
                             </li>
                             <li>
                                 <SpecialLink
-                                    to="/provider/proOrders"
-                                    activePaths={['/provider/proOrders']}
+                                    to="/provider/preOrders"
+                                    activePaths={['/provider/preOrders']}
                                     onClick={onLinkClicked}
                                 >
                                     <LuArchive size={iconSize} />

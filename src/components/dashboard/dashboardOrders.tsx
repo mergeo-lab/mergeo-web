@@ -114,7 +114,7 @@ export default function DashboardOrders({ companyId, accountType, queryKey, item
                                         <div className="font-medium">{formatToArgentinianPesos(order.totalPrice)}</div>
                                     </div>
                                     <Button variant='outline'>
-                                        <Link to={'/provider/proOrders/$preOrderId'} params={{ preOrderId: order.id || "" }}>
+                                        <Link to={'/provider/preOrders/$preOrderId'} params={{ preOrderId: order.id || "" }}>
                                             Ver Pedido
                                         </Link>
                                     </Button>

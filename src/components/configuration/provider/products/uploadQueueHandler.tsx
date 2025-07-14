@@ -39,7 +39,6 @@ export function UploadQueueHandler({ userId, onFinish }: Props) {
                     id={key}
                     fileName={upload.fileName || key}
                     userId={userId}
-                    onFinish={() => { }}
                 />
             ))}
         </div>

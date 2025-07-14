@@ -32,15 +32,15 @@ import { Route as AuthenticatedDashboardLayoutAccountTypeProviderDashboardImport
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientOrdersImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/orders'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientDashboardImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/dashboard'
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderProductsIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/products/index'
-import { Route as AuthenticatedDashboardLayoutAccountTypeProviderProOrdersIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/proOrders/index'
+import { Route as AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/preOrders/index'
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/configuration/index'
-import { Route as AuthenticatedDashboardLayoutAccountTypeClientProOrdersIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/proOrders/index'
+import { Route as AuthenticatedDashboardLayoutAccountTypeClientPreOrdersIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/preOrders/index'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientListsIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/lists/index'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/configuration/index'
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderProductsNewProductsImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/products/newProducts'
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderProductsProductIdImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/products/$productId'
-import { Route as AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId'
-import { Route as AuthenticatedDashboardLayoutAccountTypeClientProOrdersPreOrderIdImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/proOrders/$preOrderId'
+import { Route as AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersPreOrderIdImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/preOrders/$preOrderId'
+import { Route as AuthenticatedDashboardLayoutAccountTypeClientPreOrdersPreOrderIdImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/preOrders/$preOrderId'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientListsFavoritesImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/lists/favorites'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientListsBlackListImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/lists/blackList'
 
@@ -183,10 +183,10 @@ const AuthenticatedDashboardLayoutAccountTypeProviderProductsIndexRoute =
     getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
   } as any)
 
-const AuthenticatedDashboardLayoutAccountTypeProviderProOrdersIndexRoute =
-  AuthenticatedDashboardLayoutAccountTypeProviderProOrdersIndexImport.update({
-    id: '/provider/proOrders/',
-    path: '/provider/proOrders/',
+const AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersIndexRoute =
+  AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersIndexImport.update({
+    id: '/provider/preOrders/',
+    path: '/provider/preOrders/',
     getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
   } as any)
 
@@ -199,10 +199,10 @@ const AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexRoute =
     } as any,
   )
 
-const AuthenticatedDashboardLayoutAccountTypeClientProOrdersIndexRoute =
-  AuthenticatedDashboardLayoutAccountTypeClientProOrdersIndexImport.update({
-    id: '/client/proOrders/',
-    path: '/client/proOrders/',
+const AuthenticatedDashboardLayoutAccountTypeClientPreOrdersIndexRoute =
+  AuthenticatedDashboardLayoutAccountTypeClientPreOrdersIndexImport.update({
+    id: '/client/preOrders/',
+    path: '/client/preOrders/',
     getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
   } as any)
 
@@ -238,20 +238,20 @@ const AuthenticatedDashboardLayoutAccountTypeProviderProductsProductIdRoute =
     } as any,
   )
 
-const AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdRoute =
-  AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdImport.update(
+const AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersPreOrderIdRoute =
+  AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersPreOrderIdImport.update(
     {
-      id: '/provider/proOrders/$preOrderId',
-      path: '/provider/proOrders/$preOrderId',
+      id: '/provider/preOrders/$preOrderId',
+      path: '/provider/preOrders/$preOrderId',
       getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
     } as any,
   )
 
-const AuthenticatedDashboardLayoutAccountTypeClientProOrdersPreOrderIdRoute =
-  AuthenticatedDashboardLayoutAccountTypeClientProOrdersPreOrderIdImport.update(
+const AuthenticatedDashboardLayoutAccountTypeClientPreOrdersPreOrderIdRoute =
+  AuthenticatedDashboardLayoutAccountTypeClientPreOrdersPreOrderIdImport.update(
     {
-      id: '/client/proOrders/$preOrderId',
-      path: '/client/proOrders/$preOrderId',
+      id: '/client/preOrders/$preOrderId',
+      path: '/client/preOrders/$preOrderId',
       getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
     } as any,
   )
@@ -428,18 +428,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientListsFavoritesImport
       parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
     }
-    '/_authenticated/_dashboardLayout/_accountType/client/proOrders/$preOrderId': {
-      id: '/_authenticated/_dashboardLayout/_accountType/client/proOrders/$preOrderId'
-      path: '/client/proOrders/$preOrderId'
-      fullPath: '/client/proOrders/$preOrderId'
-      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientProOrdersPreOrderIdImport
+    '/_authenticated/_dashboardLayout/_accountType/client/preOrders/$preOrderId': {
+      id: '/_authenticated/_dashboardLayout/_accountType/client/preOrders/$preOrderId'
+      path: '/client/preOrders/$preOrderId'
+      fullPath: '/client/preOrders/$preOrderId'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientPreOrdersPreOrderIdImport
       parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
     }
-    '/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId': {
-      id: '/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId'
-      path: '/provider/proOrders/$preOrderId'
-      fullPath: '/provider/proOrders/$preOrderId'
-      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdImport
+    '/_authenticated/_dashboardLayout/_accountType/provider/preOrders/$preOrderId': {
+      id: '/_authenticated/_dashboardLayout/_accountType/provider/preOrders/$preOrderId'
+      path: '/provider/preOrders/$preOrderId'
+      fullPath: '/provider/preOrders/$preOrderId'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersPreOrderIdImport
       parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
     }
     '/_authenticated/_dashboardLayout/_accountType/provider/products/$productId': {
@@ -470,11 +470,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientListsIndexImport
       parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
     }
-    '/_authenticated/_dashboardLayout/_accountType/client/proOrders/': {
-      id: '/_authenticated/_dashboardLayout/_accountType/client/proOrders/'
-      path: '/client/proOrders'
-      fullPath: '/client/proOrders'
-      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientProOrdersIndexImport
+    '/_authenticated/_dashboardLayout/_accountType/client/preOrders/': {
+      id: '/_authenticated/_dashboardLayout/_accountType/client/preOrders/'
+      path: '/client/preOrders'
+      fullPath: '/client/preOrders'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientPreOrdersIndexImport
       parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
     }
     '/_authenticated/_dashboardLayout/_accountType/provider/configuration/': {
@@ -484,11 +484,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexImport
       parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
     }
-    '/_authenticated/_dashboardLayout/_accountType/provider/proOrders/': {
-      id: '/_authenticated/_dashboardLayout/_accountType/provider/proOrders/'
-      path: '/provider/proOrders'
-      fullPath: '/provider/proOrders'
-      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderProOrdersIndexImport
+    '/_authenticated/_dashboardLayout/_accountType/provider/preOrders/': {
+      id: '/_authenticated/_dashboardLayout/_accountType/provider/preOrders/'
+      path: '/provider/preOrders'
+      fullPath: '/provider/preOrders'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersIndexImport
       parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
     }
     '/_authenticated/_dashboardLayout/_accountType/provider/products/': {
@@ -548,15 +548,15 @@ interface AuthenticatedDashboardLayoutAccountTypeRouteChildren {
   AuthenticatedDashboardLayoutAccountTypeProviderDiscountsRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderDiscountsRoute
   AuthenticatedDashboardLayoutAccountTypeClientListsBlackListRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientListsBlackListRoute
   AuthenticatedDashboardLayoutAccountTypeClientListsFavoritesRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientListsFavoritesRoute
-  AuthenticatedDashboardLayoutAccountTypeClientProOrdersPreOrderIdRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientProOrdersPreOrderIdRoute
-  AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdRoute
+  AuthenticatedDashboardLayoutAccountTypeClientPreOrdersPreOrderIdRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientPreOrdersPreOrderIdRoute
+  AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersPreOrderIdRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersPreOrderIdRoute
   AuthenticatedDashboardLayoutAccountTypeProviderProductsProductIdRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderProductsProductIdRoute
   AuthenticatedDashboardLayoutAccountTypeProviderProductsNewProductsRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderProductsNewProductsRoute
   AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexRoute
   AuthenticatedDashboardLayoutAccountTypeClientListsIndexRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientListsIndexRoute
-  AuthenticatedDashboardLayoutAccountTypeClientProOrdersIndexRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientProOrdersIndexRoute
+  AuthenticatedDashboardLayoutAccountTypeClientPreOrdersIndexRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientPreOrdersIndexRoute
   AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexRoute
-  AuthenticatedDashboardLayoutAccountTypeProviderProOrdersIndexRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderProOrdersIndexRoute
+  AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersIndexRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersIndexRoute
   AuthenticatedDashboardLayoutAccountTypeProviderProductsIndexRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderProductsIndexRoute
 }
 
@@ -574,10 +574,10 @@ const AuthenticatedDashboardLayoutAccountTypeRouteChildren: AuthenticatedDashboa
       AuthenticatedDashboardLayoutAccountTypeClientListsBlackListRoute,
     AuthenticatedDashboardLayoutAccountTypeClientListsFavoritesRoute:
       AuthenticatedDashboardLayoutAccountTypeClientListsFavoritesRoute,
-    AuthenticatedDashboardLayoutAccountTypeClientProOrdersPreOrderIdRoute:
-      AuthenticatedDashboardLayoutAccountTypeClientProOrdersPreOrderIdRoute,
-    AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdRoute:
-      AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdRoute,
+    AuthenticatedDashboardLayoutAccountTypeClientPreOrdersPreOrderIdRoute:
+      AuthenticatedDashboardLayoutAccountTypeClientPreOrdersPreOrderIdRoute,
+    AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersPreOrderIdRoute:
+      AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersPreOrderIdRoute,
     AuthenticatedDashboardLayoutAccountTypeProviderProductsProductIdRoute:
       AuthenticatedDashboardLayoutAccountTypeProviderProductsProductIdRoute,
     AuthenticatedDashboardLayoutAccountTypeProviderProductsNewProductsRoute:
@@ -586,12 +586,12 @@ const AuthenticatedDashboardLayoutAccountTypeRouteChildren: AuthenticatedDashboa
       AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexRoute,
     AuthenticatedDashboardLayoutAccountTypeClientListsIndexRoute:
       AuthenticatedDashboardLayoutAccountTypeClientListsIndexRoute,
-    AuthenticatedDashboardLayoutAccountTypeClientProOrdersIndexRoute:
-      AuthenticatedDashboardLayoutAccountTypeClientProOrdersIndexRoute,
+    AuthenticatedDashboardLayoutAccountTypeClientPreOrdersIndexRoute:
+      AuthenticatedDashboardLayoutAccountTypeClientPreOrdersIndexRoute,
     AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexRoute:
       AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexRoute,
-    AuthenticatedDashboardLayoutAccountTypeProviderProOrdersIndexRoute:
-      AuthenticatedDashboardLayoutAccountTypeProviderProOrdersIndexRoute,
+    AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersIndexRoute:
+      AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersIndexRoute,
     AuthenticatedDashboardLayoutAccountTypeProviderProductsIndexRoute:
       AuthenticatedDashboardLayoutAccountTypeProviderProductsIndexRoute,
   }
@@ -658,15 +658,15 @@ export interface FileRoutesByFullPath {
   '/provider/discounts': typeof AuthenticatedDashboardLayoutAccountTypeProviderDiscountsRoute
   '/client/lists/blackList': typeof AuthenticatedDashboardLayoutAccountTypeClientListsBlackListRoute
   '/client/lists/favorites': typeof AuthenticatedDashboardLayoutAccountTypeClientListsFavoritesRoute
-  '/client/proOrders/$preOrderId': typeof AuthenticatedDashboardLayoutAccountTypeClientProOrdersPreOrderIdRoute
-  '/provider/proOrders/$preOrderId': typeof AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdRoute
+  '/client/preOrders/$preOrderId': typeof AuthenticatedDashboardLayoutAccountTypeClientPreOrdersPreOrderIdRoute
+  '/provider/preOrders/$preOrderId': typeof AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersPreOrderIdRoute
   '/provider/products/$productId': typeof AuthenticatedDashboardLayoutAccountTypeProviderProductsProductIdRoute
   '/provider/products/newProducts': typeof AuthenticatedDashboardLayoutAccountTypeProviderProductsNewProductsRoute
   '/client/configuration': typeof AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexRoute
   '/client/lists': typeof AuthenticatedDashboardLayoutAccountTypeClientListsIndexRoute
-  '/client/proOrders': typeof AuthenticatedDashboardLayoutAccountTypeClientProOrdersIndexRoute
+  '/client/preOrders': typeof AuthenticatedDashboardLayoutAccountTypeClientPreOrdersIndexRoute
   '/provider/configuration': typeof AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexRoute
-  '/provider/proOrders': typeof AuthenticatedDashboardLayoutAccountTypeProviderProOrdersIndexRoute
+  '/provider/preOrders': typeof AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersIndexRoute
   '/provider/products': typeof AuthenticatedDashboardLayoutAccountTypeProviderProductsIndexRoute
 }
 
@@ -689,15 +689,15 @@ export interface FileRoutesByTo {
   '/provider/discounts': typeof AuthenticatedDashboardLayoutAccountTypeProviderDiscountsRoute
   '/client/lists/blackList': typeof AuthenticatedDashboardLayoutAccountTypeClientListsBlackListRoute
   '/client/lists/favorites': typeof AuthenticatedDashboardLayoutAccountTypeClientListsFavoritesRoute
-  '/client/proOrders/$preOrderId': typeof AuthenticatedDashboardLayoutAccountTypeClientProOrdersPreOrderIdRoute
-  '/provider/proOrders/$preOrderId': typeof AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdRoute
+  '/client/preOrders/$preOrderId': typeof AuthenticatedDashboardLayoutAccountTypeClientPreOrdersPreOrderIdRoute
+  '/provider/preOrders/$preOrderId': typeof AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersPreOrderIdRoute
   '/provider/products/$productId': typeof AuthenticatedDashboardLayoutAccountTypeProviderProductsProductIdRoute
   '/provider/products/newProducts': typeof AuthenticatedDashboardLayoutAccountTypeProviderProductsNewProductsRoute
   '/client/configuration': typeof AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexRoute
   '/client/lists': typeof AuthenticatedDashboardLayoutAccountTypeClientListsIndexRoute
-  '/client/proOrders': typeof AuthenticatedDashboardLayoutAccountTypeClientProOrdersIndexRoute
+  '/client/preOrders': typeof AuthenticatedDashboardLayoutAccountTypeClientPreOrdersIndexRoute
   '/provider/configuration': typeof AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexRoute
-  '/provider/proOrders': typeof AuthenticatedDashboardLayoutAccountTypeProviderProOrdersIndexRoute
+  '/provider/preOrders': typeof AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersIndexRoute
   '/provider/products': typeof AuthenticatedDashboardLayoutAccountTypeProviderProductsIndexRoute
 }
 
@@ -725,15 +725,15 @@ export interface FileRoutesById {
   '/_authenticated/_dashboardLayout/_accountType/provider/discounts': typeof AuthenticatedDashboardLayoutAccountTypeProviderDiscountsRoute
   '/_authenticated/_dashboardLayout/_accountType/client/lists/blackList': typeof AuthenticatedDashboardLayoutAccountTypeClientListsBlackListRoute
   '/_authenticated/_dashboardLayout/_accountType/client/lists/favorites': typeof AuthenticatedDashboardLayoutAccountTypeClientListsFavoritesRoute
-  '/_authenticated/_dashboardLayout/_accountType/client/proOrders/$preOrderId': typeof AuthenticatedDashboardLayoutAccountTypeClientProOrdersPreOrderIdRoute
-  '/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId': typeof AuthenticatedDashboardLayoutAccountTypeProviderProOrdersPreOrderIdRoute
+  '/_authenticated/_dashboardLayout/_accountType/client/preOrders/$preOrderId': typeof AuthenticatedDashboardLayoutAccountTypeClientPreOrdersPreOrderIdRoute
+  '/_authenticated/_dashboardLayout/_accountType/provider/preOrders/$preOrderId': typeof AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersPreOrderIdRoute
   '/_authenticated/_dashboardLayout/_accountType/provider/products/$productId': typeof AuthenticatedDashboardLayoutAccountTypeProviderProductsProductIdRoute
   '/_authenticated/_dashboardLayout/_accountType/provider/products/newProducts': typeof AuthenticatedDashboardLayoutAccountTypeProviderProductsNewProductsRoute
   '/_authenticated/_dashboardLayout/_accountType/client/configuration/': typeof AuthenticatedDashboardLayoutAccountTypeClientConfigurationIndexRoute
   '/_authenticated/_dashboardLayout/_accountType/client/lists/': typeof AuthenticatedDashboardLayoutAccountTypeClientListsIndexRoute
-  '/_authenticated/_dashboardLayout/_accountType/client/proOrders/': typeof AuthenticatedDashboardLayoutAccountTypeClientProOrdersIndexRoute
+  '/_authenticated/_dashboardLayout/_accountType/client/preOrders/': typeof AuthenticatedDashboardLayoutAccountTypeClientPreOrdersIndexRoute
   '/_authenticated/_dashboardLayout/_accountType/provider/configuration/': typeof AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexRoute
-  '/_authenticated/_dashboardLayout/_accountType/provider/proOrders/': typeof AuthenticatedDashboardLayoutAccountTypeProviderProOrdersIndexRoute
+  '/_authenticated/_dashboardLayout/_accountType/provider/preOrders/': typeof AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersIndexRoute
   '/_authenticated/_dashboardLayout/_accountType/provider/products/': typeof AuthenticatedDashboardLayoutAccountTypeProviderProductsIndexRoute
 }
 
@@ -759,15 +759,15 @@ export interface FileRouteTypes {
     | '/provider/discounts'
     | '/client/lists/blackList'
     | '/client/lists/favorites'
-    | '/client/proOrders/$preOrderId'
-    | '/provider/proOrders/$preOrderId'
+    | '/client/preOrders/$preOrderId'
+    | '/provider/preOrders/$preOrderId'
     | '/provider/products/$productId'
     | '/provider/products/newProducts'
     | '/client/configuration'
     | '/client/lists'
-    | '/client/proOrders'
+    | '/client/preOrders'
     | '/provider/configuration'
-    | '/provider/proOrders'
+    | '/provider/preOrders'
     | '/provider/products'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -789,15 +789,15 @@ export interface FileRouteTypes {
     | '/provider/discounts'
     | '/client/lists/blackList'
     | '/client/lists/favorites'
-    | '/client/proOrders/$preOrderId'
-    | '/provider/proOrders/$preOrderId'
+    | '/client/preOrders/$preOrderId'
+    | '/provider/preOrders/$preOrderId'
     | '/provider/products/$productId'
     | '/provider/products/newProducts'
     | '/client/configuration'
     | '/client/lists'
-    | '/client/proOrders'
+    | '/client/preOrders'
     | '/provider/configuration'
-    | '/provider/proOrders'
+    | '/provider/preOrders'
     | '/provider/products'
   id:
     | '__root__'
@@ -823,15 +823,15 @@ export interface FileRouteTypes {
     | '/_authenticated/_dashboardLayout/_accountType/provider/discounts'
     | '/_authenticated/_dashboardLayout/_accountType/client/lists/blackList'
     | '/_authenticated/_dashboardLayout/_accountType/client/lists/favorites'
-    | '/_authenticated/_dashboardLayout/_accountType/client/proOrders/$preOrderId'
-    | '/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId'
+    | '/_authenticated/_dashboardLayout/_accountType/client/preOrders/$preOrderId'
+    | '/_authenticated/_dashboardLayout/_accountType/provider/preOrders/$preOrderId'
     | '/_authenticated/_dashboardLayout/_accountType/provider/products/$productId'
     | '/_authenticated/_dashboardLayout/_accountType/provider/products/newProducts'
     | '/_authenticated/_dashboardLayout/_accountType/client/configuration/'
     | '/_authenticated/_dashboardLayout/_accountType/client/lists/'
-    | '/_authenticated/_dashboardLayout/_accountType/client/proOrders/'
+    | '/_authenticated/_dashboardLayout/_accountType/client/preOrders/'
     | '/_authenticated/_dashboardLayout/_accountType/provider/configuration/'
-    | '/_authenticated/_dashboardLayout/_accountType/provider/proOrders/'
+    | '/_authenticated/_dashboardLayout/_accountType/provider/preOrders/'
     | '/_authenticated/_dashboardLayout/_accountType/provider/products/'
   fileRoutesById: FileRoutesById
 }
@@ -935,15 +935,15 @@ export const routeTree = rootRoute
         "/_authenticated/_dashboardLayout/_accountType/provider/discounts",
         "/_authenticated/_dashboardLayout/_accountType/client/lists/blackList",
         "/_authenticated/_dashboardLayout/_accountType/client/lists/favorites",
-        "/_authenticated/_dashboardLayout/_accountType/client/proOrders/$preOrderId",
-        "/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId",
+        "/_authenticated/_dashboardLayout/_accountType/client/preOrders/$preOrderId",
+        "/_authenticated/_dashboardLayout/_accountType/provider/preOrders/$preOrderId",
         "/_authenticated/_dashboardLayout/_accountType/provider/products/$productId",
         "/_authenticated/_dashboardLayout/_accountType/provider/products/newProducts",
         "/_authenticated/_dashboardLayout/_accountType/client/configuration/",
         "/_authenticated/_dashboardLayout/_accountType/client/lists/",
-        "/_authenticated/_dashboardLayout/_accountType/client/proOrders/",
+        "/_authenticated/_dashboardLayout/_accountType/client/preOrders/",
         "/_authenticated/_dashboardLayout/_accountType/provider/configuration/",
-        "/_authenticated/_dashboardLayout/_accountType/provider/proOrders/",
+        "/_authenticated/_dashboardLayout/_accountType/provider/preOrders/",
         "/_authenticated/_dashboardLayout/_accountType/provider/products/"
       ]
     },
@@ -987,12 +987,12 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/_dashboardLayout/_accountType/client/lists/favorites.tsx",
       "parent": "/_authenticated/_dashboardLayout/_accountType"
     },
-    "/_authenticated/_dashboardLayout/_accountType/client/proOrders/$preOrderId": {
-      "filePath": "_authenticated/_dashboardLayout/_accountType/client/proOrders/$preOrderId.tsx",
+    "/_authenticated/_dashboardLayout/_accountType/client/preOrders/$preOrderId": {
+      "filePath": "_authenticated/_dashboardLayout/_accountType/client/preOrders/$preOrderId.tsx",
       "parent": "/_authenticated/_dashboardLayout/_accountType"
     },
-    "/_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId": {
-      "filePath": "_authenticated/_dashboardLayout/_accountType/provider/proOrders/$preOrderId.tsx",
+    "/_authenticated/_dashboardLayout/_accountType/provider/preOrders/$preOrderId": {
+      "filePath": "_authenticated/_dashboardLayout/_accountType/provider/preOrders/$preOrderId.tsx",
       "parent": "/_authenticated/_dashboardLayout/_accountType"
     },
     "/_authenticated/_dashboardLayout/_accountType/provider/products/$productId": {
@@ -1011,16 +1011,16 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/_dashboardLayout/_accountType/client/lists/index.tsx",
       "parent": "/_authenticated/_dashboardLayout/_accountType"
     },
-    "/_authenticated/_dashboardLayout/_accountType/client/proOrders/": {
-      "filePath": "_authenticated/_dashboardLayout/_accountType/client/proOrders/index.tsx",
+    "/_authenticated/_dashboardLayout/_accountType/client/preOrders/": {
+      "filePath": "_authenticated/_dashboardLayout/_accountType/client/preOrders/index.tsx",
       "parent": "/_authenticated/_dashboardLayout/_accountType"
     },
     "/_authenticated/_dashboardLayout/_accountType/provider/configuration/": {
       "filePath": "_authenticated/_dashboardLayout/_accountType/provider/configuration/index.tsx",
       "parent": "/_authenticated/_dashboardLayout/_accountType"
     },
-    "/_authenticated/_dashboardLayout/_accountType/provider/proOrders/": {
-      "filePath": "_authenticated/_dashboardLayout/_accountType/provider/proOrders/index.tsx",
+    "/_authenticated/_dashboardLayout/_accountType/provider/preOrders/": {
+      "filePath": "_authenticated/_dashboardLayout/_accountType/provider/preOrders/index.tsx",
       "parent": "/_authenticated/_dashboardLayout/_accountType"
     },
     "/_authenticated/_dashboardLayout/_accountType/provider/products/": {

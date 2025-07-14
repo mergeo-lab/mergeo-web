@@ -54,12 +54,12 @@ export function SaveOrderAsListDialog({
         try {
             console.log('Calling onSaveList...');
             await onSaveList(listName);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error saving list:', error);
             toast({
                 variant: "destructive",
                 title: "Error",
-                description: error?.message || "Error al guardar la lista. Inténtelo de nuevo.",
+                description: error instanceof Error ? error.message : "Error al guardar la lista. Inténtelo de nuevo.",
             });
         }
     };
@@ -73,7 +73,7 @@ export function SaveOrderAsListDialog({
     // Show processing state
     if (isProcessing) {
         return (
-            <Dialog open={isOpen} onOpenChange={() => { }}>
+            <Dialog open={isOpen}>
                 <DialogContent className="sm:max-w-md p-5">
                     <DialogHeader>
                         <DialogTitle className="flex gap-2 items-center">

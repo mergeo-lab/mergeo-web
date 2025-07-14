@@ -17,7 +17,7 @@ export function SheetWithConfirm({
     children: React.ReactNode;
     confirmTitle?: string;
     confirmMessage?: string;
-    [key: string]: any;
+    [key: string]: unknown;
 }) {
     const [showConfirm, setShowConfirm] = useState(false);
     const shouldConfirm = useRef(false);

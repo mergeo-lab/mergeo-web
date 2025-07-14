@@ -20,7 +20,7 @@ export interface AuthContextType {
     logout: () => void;
     forgotPassword: (email: string) => Promise<void>;
     resetPassword: (newPassword: string) => Promise<void>;
-    inviteUser: (userData: { email: string; firstName: string; lastName: string; companyId: string; roles: any[] }) => Promise<{ error?: string; data?: any }>;
+    inviteUser: (userData: { email: string; firstName: string; lastName: string; companyId: string; roles: RoleSchemaType[] }) => Promise<{ error?: string; data?: unknown }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

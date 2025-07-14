@@ -147,6 +147,7 @@ export default function OrderConfig(props: Props) {
         setTime(null);
         setSelectedBranch(null);
         setDeliveryTime(undefined);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resetConfig, clearConfig, setDeliveryTime]);
 
     const handleUseModifySavedConfig = useCallback(() => {
