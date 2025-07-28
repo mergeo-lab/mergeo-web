@@ -539,7 +539,7 @@ export default function OrderConfig(props: Props) {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <Label id='name'>Criterio de reemplazo</Label>
-                                <div className="border rounded border-border h-48">
+                                <div className="border rounded border-border h-60">
                                     <ReplacementCriteriaSelector
                                         value={internalRc || replacementCriteria}
                                         onValueChange={(value) => setInternalRc(value)}
@@ -550,7 +550,7 @@ export default function OrderConfig(props: Props) {
                             </div>
                             <div>
                                 <Label id='address'>Usar una Lista</Label>
-                                <div className="border rounded border-border p-5 h-48 overflow-auto">
+                                <div className="border rounded border-border p-5 h-60 overflow-auto">
                                     <ListSelector
                                         selectedListId={internalList || listId}
                                         onChange={(item: { id: string, name: string }) => {

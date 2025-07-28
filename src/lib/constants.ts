@@ -43,23 +43,32 @@ export const ActivityType: Record<string, { type: string; classname: string }> =
 
 export enum ReplacementCriteria {
   BEST_PRICE_FOR_UNIT = 'best_price_for_unit',
-  SAME_PRICE_SAME_UNIT = 'same_price_same_unit',
-  SAME_PRODUCT_ANOTHER_UNIT = 'same_product_another_unit',
+  SAME_BRAND_AND_ITEM = 'same_brand_and_item',
+  SAME_PRODUCT_AND_PRESENTATION = 'same_product_and_presentation',
+  BEST_PRICE_FOR_UNIT_AND_PRESENTATION = 'best_price_for_unit_and_presentation',
   NO_REPLACEMENT = 'no_replacement',
 }
 
 export const ReplacementCriteriaValues = {
+  // Mejor PUM por EAN (Descripción/Variedad, Marca y Presentación)
   BEST_PRICE_FOR_UNIT: {
     value: ReplacementCriteria.BEST_PRICE_FOR_UNIT,
     label: 'Mejor precio por unidad de medida',
   },
-  SAME_PRICE_SAME_UNIT: {
-    value: ReplacementCriteria.SAME_PRICE_SAME_UNIT,
-    label: 'Mejor precio y misma presentación',
+  // Mejor PUM por Descripcion/Variedad y Marca
+  SAME_BRAND_AND_ITEM: {
+    value: ReplacementCriteria.SAME_BRAND_AND_ITEM,
+    label: 'Mismos marca y producto',
   },
-  SAME_PRODUCT_ANOTHER_UNIT: {
-    value: ReplacementCriteria.SAME_PRODUCT_ANOTHER_UNIT,
-    label: 'Mismo producto, distinta presentación',
+  // Mejor PUM por Descripcion/Variedad y Presentacion
+  SAME_PRODUCT_AND_PRESENTATION: {
+    value: ReplacementCriteria.SAME_PRODUCT_AND_PRESENTATION,
+    label: 'Mismos producto y presentación',
+  },
+  // Mejor PUM por Unidad de Medida
+  BEST_PRICE_FOR_UNIT_AND_PRESENTATION: {
+    value: ReplacementCriteria.BEST_PRICE_FOR_UNIT_AND_PRESENTATION,
+    label: 'Mejor precio por unidad de medida y presentación',
   },
   NO_REPLACEMENT: {
     value: ReplacementCriteria.NO_REPLACEMENT,
