@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { DropZoneSchemaType, IncomingDropZoneSchemaType } from '@/lib/schemas';
 import { transformToLatLng } from '@/lib/utils';
+import { toast } from '@/components/ui/use-toast';
 
 type DropZonesState = {
   dropZones: DropZoneSchemaType[];
@@ -45,13 +46,30 @@ const UseDropZonesStore = create<DropZonesState>((set, get) => ({
       ),
     })),
   addMultipleIncomingDropZoneSchema: (incomingDropZones) => {
-    const googleZones = incomingDropZones.map((dz) => ({
-      ...dz, // Spread the rest of the zone's properties
-      zone: {
-        ...dz.zone, // Spread the properties of the zone
-        coordinates: transformToLatLng(dz.zone.coordinates), // Transform the coordinates
-      },
-    }));
+    const googleZones = incomingDropZones.map((dz) => {
+      // Check if coordinates are valid
+      const hasValidCoordinates =
+        dz.zone.coordinates &&
+        dz.zone.coordinates[0] &&
+        dz.zone.coordinates[0].length > 0;
+
+      // If coordinates are invalid, show warning
+      if (!hasValidCoordinates) {
+        toast({
+          variant: 'destructive',
+          title: 'Zona cargada incorrectamente',
+          description: `La zona "${dz.name}" no tiene coordenadas válidas. Se ha cargado con coordenadas por defecto. Por favor, modifica la zona para agregar las coordenadas correctas.`,
+        });
+      }
+
+      return {
+        ...dz, // Spread the rest of the zone's properties
+        zone: {
+          ...dz.zone, // Spread the properties of the zone
+          coordinates: transformToLatLng(dz.zone.coordinates), // Transform the coordinates
+        },
+      };
+    });
 
     set(() => ({ dropZones: googleZones }));
   },

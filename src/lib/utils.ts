@@ -99,6 +99,17 @@ export function transformPolygonToGeoJSON(
 export function transformToLatLng(
   coordinates: [number, number][][]
 ): google.maps.LatLngLiteral[] {
+  // Check if coordinates exist and are valid
+  if (!coordinates || !coordinates[0] || coordinates[0].length === 0) {
+    // Return center of Argentina as default
+    return [
+      { lat: -34.6118, lng: -58.396 }, // Buenos Aires
+      { lat: -34.6118, lng: -58.396 }, // Buenos Aires
+      { lat: -34.6118, lng: -58.396 }, // Buenos Aires
+      { lat: -34.6118, lng: -58.396 }, // Buenos Aires
+    ];
+  }
+
   // Flatten the array and transform each [lng, lat] to { lat, lng }
   return coordinates[0].map((pair: [number, number]) => ({
     lat: pair[1], // lat is the second element

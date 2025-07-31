@@ -26,6 +26,7 @@ function RegisterCompany() {
 
   const form = useForm<RegisterCompanySchemaType>({
     resolver: zodResolver(RegisterCompanySchema) as unknown as Resolver<RegisterCompanySchemaType>,
+    mode: "onChange", // Show validation errors as user types
     defaultValues: {
       name: "",
       razonSocial: "",
@@ -45,7 +46,20 @@ function RegisterCompany() {
 
   const onSubmit = async (fields: RegisterCompanySchemaType) => {
     try {
-      // Validate the form data
+      // Trigger form validation to show all field-specific errors
+      const isValid = await form.trigger();
+
+      if (!isValid) {
+        console.error("Form validation failed");
+        toast({
+          variant: "destructive",
+          title: "Error de validación",
+          description: "Por favor, verifica todos los campos del formulario.",
+        });
+        return;
+      }
+
+      // Additional validation check
       const validationResult = RegisterCompanySchema.safeParse(fields);
       if (!validationResult.success) {
         console.error("Form validation failed:", validationResult.error);
@@ -56,6 +70,7 @@ function RegisterCompany() {
         });
         return;
       }
+
       // Remove id field from branch.address
       const response = await mutation.mutateAsync({
         name: fields.name,
@@ -184,9 +199,9 @@ function RegisterCompany() {
             </Link>
           </p>
           <Button
-            disabled={mutation.isPending || !form.formState.isValid}
+            disabled={mutation.isPending}
             onClick={form.handleSubmit(onSubmit)}
-            className='min-w-[200px]'
+            className={'min-w-[200px]'}
             type="submit">
             Continuar
           </Button>

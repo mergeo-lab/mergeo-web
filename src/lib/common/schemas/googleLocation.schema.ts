@@ -27,7 +27,7 @@ export const LocationSchema = z.object({
     type: z.string(),
     coordinates: z.tuple([z.number(), z.number()]),
   }),
-  name: z.string(),
+  name: z.string().min(1, { message: 'La dirección es obligatoria' }),
   phoneNumber: z.string().optional(),
   email: z.string().optional(),
 });

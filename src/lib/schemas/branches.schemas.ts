@@ -39,6 +39,14 @@ export const BranchesSchema = z.object({
         code: z.ZodIssueCode.custom,
         message: 'La dirección es obligatoria',
       });
+      return;
+    }
+
+    if (!address.name || address.name.trim() === '') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'La dirección es obligatoria',
+      });
     }
   }),
 });
