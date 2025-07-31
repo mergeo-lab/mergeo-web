@@ -1,6 +1,6 @@
 import { UploadEvents } from "@/components/configuration/provider/products/uploadEvents";
 import { useProductUploads } from "@/hooks/useProductUploads";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Props = {
     userId: string;
@@ -10,30 +10,59 @@ type Props = {
 export function UploadQueueHandler({ userId, onFinish }: Props) {
     const { uploads } = useProductUploads(userId);
     const hasCalledOnFinish = useRef(false);
+    const [completedUploads, setCompletedUploads] = useState<Set<string>>(new Set());
 
-    // Only show in-progress uploads (not finished and percent < 100)
-    const inProgressUploads = Object.entries(uploads).filter(
-        ([, upload]) => !upload.finished && upload.percent < 100
+    // Show uploads that are in progress OR recently completed (within 10 seconds)
+    const visibleUploads = Object.entries(uploads).filter(
+        ([key, upload]) => {
+            const isInProgress = !upload.finished && upload.percent < 100;
+            const isRecentlyCompleted = upload.finished && upload.percent === 100 && !completedUploads.has(key);
+            return isInProgress || isRecentlyCompleted;
+        }
     );
 
     useEffect(() => {
+        // Track completed uploads and remove them after 10 seconds
+        const newCompletedUploads = new Set<string>();
+
+        Object.entries(uploads).forEach(([key, upload]) => {
+            if (upload.finished && upload.percent === 100) {
+                newCompletedUploads.add(key);
+
+                // Remove from completed uploads after 10 seconds
+                setTimeout(() => {
+                    setCompletedUploads(prev => {
+                        const updated = new Set(prev);
+                        updated.delete(key);
+                        return updated;
+                    });
+                }, 10000);
+            }
+        });
+
+        if (newCompletedUploads.size > 0) {
+            setCompletedUploads(prev => new Set([...prev, ...newCompletedUploads]));
+        }
+
         // Only call onFinish if we have uploads and they're all done
-        if (Object.values(uploads).length > 0 && inProgressUploads.length === 0 && !hasCalledOnFinish.current) {
+        if (Object.values(uploads).length > 0 && visibleUploads.length === 0 && !hasCalledOnFinish.current) {
             hasCalledOnFinish.current = true;
-            onFinish();
-        } else if (inProgressUploads.length > 0) {
+            if (typeof onFinish === 'function') {
+                onFinish();
+            }
+        } else if (visibleUploads.length > 0) {
             // Reset the flag if we get new uploads
             hasCalledOnFinish.current = false;
         }
-    }, [uploads, inProgressUploads.length, onFinish]);
+    }, [uploads, visibleUploads.length, onFinish]);
 
-    if (inProgressUploads.length === 0) {
+    if (visibleUploads.length === 0) {
         return null;
     }
 
     return (
         <div className="flex flex-col gap-2">
-            {inProgressUploads.map(([key, upload]) => (
+            {visibleUploads.map(([key, upload]) => (
                 <UploadEvents
                     key={key}
                     id={key}

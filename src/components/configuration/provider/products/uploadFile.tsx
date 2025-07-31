@@ -69,7 +69,7 @@ export default function UploadFile() {
                     onSuccess={fileUploadedCallback}
                 />
             </div>
-            <div>
+            <div className="max-h-96 overflow-y-auto">
                 <UploadQueueHandler
                     userId={userId || ""}
                     onFinish={productsQueueFinishCallback}
