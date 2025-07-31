@@ -12,12 +12,16 @@ export function UploadQueueHandler({ userId, onFinish }: Props) {
     const hasCalledOnFinish = useRef(false);
     const [completedUploads, setCompletedUploads] = useState<Set<string>>(new Set());
 
+    console.log('UploadQueueHandler: All uploads:', uploads);
+
     // Show uploads that are in progress OR recently completed (within 10 seconds)
     const visibleUploads = Object.entries(uploads).filter(
         ([key, upload]) => {
             const isInProgress = !upload.finished && upload.percent < 100;
             const isRecentlyCompleted = upload.finished && upload.percent === 100 && !completedUploads.has(key);
-            return isInProgress || isRecentlyCompleted;
+            const shouldShow = isInProgress || isRecentlyCompleted;
+            console.log('UploadQueueHandler: Upload', key, 'isInProgress:', isInProgress, 'isRecentlyCompleted:', isRecentlyCompleted, 'shouldShow:', shouldShow);
+            return shouldShow;
         }
     );
 

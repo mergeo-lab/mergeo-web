@@ -24,6 +24,7 @@ export function UploadEvents({ id, userId, fileName, onFinish }: Props) {
             currentUpload &&
             (currentUpload.percent === 100 || currentUpload.finished)
         ) {
+            console.log('UploadEvents: Saving results for', fileName, currentUpload);
             addResult(fileName, {
                 ...currentUpload,
                 fileName,
@@ -39,9 +40,7 @@ export function UploadEvents({ id, userId, fileName, onFinish }: Props) {
     }
     if (
         !('percent' in currentUpload) ||
-        currentUpload.percent === 0 ||
-        currentUpload.percent === 100 ||
-        currentUpload.finished
+        currentUpload.percent === 0
     ) {
         return null;
     }
@@ -51,18 +50,25 @@ export function UploadEvents({ id, userId, fileName, onFinish }: Props) {
             <div className={cn("flex items-center gap-4 w-full transition-opacity duration-300")}
             >
                 <p className="text-sm text-muted-foreground">
-                    Subiendo archivo <span className="font-medium">{fileName}</span>
+                    {currentUpload.finished ? 'Completado' : 'Subiendo archivo'} <span className="font-medium">{fileName}</span>
                 </p>
                 <div className="w-1/2">
                     <Progress value={currentUpload.percent} className="w-full rounded h-2" />
                 </div>
                 <div>{currentUpload.percent}%</div>
-                <div className="text-sm text-muted-foreground">
-                    Procesando producto con Ean/Gtin:
-                    <span className="text-info pl-1">
-                        {currentUpload.gtins?.[currentUpload.gtins.length - 1]}
-                    </span>
-                </div>
+                {!currentUpload.finished && (
+                    <div className="text-sm text-muted-foreground">
+                        Procesando producto con Ean/Gtin:
+                        <span className="text-info pl-1">
+                            {currentUpload.gtins?.[currentUpload.gtins.length - 1]}
+                        </span>
+                    </div>
+                )}
+                {currentUpload.finished && (
+                    <div className="text-sm text-muted-foreground">
+                        {currentUpload.successGtins?.length || 0} exitosos, {currentUpload.failedGtins?.length || 0} errores
+                    </div>
+                )}
             </div>
         </div>
     );
