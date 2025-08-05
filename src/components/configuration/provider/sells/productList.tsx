@@ -26,6 +26,16 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
     // Debug: Check dropZoneId
     console.log('ProductList dropZoneId:', data);
 
+    // Debug: Log component props to understand the issue
+    console.log('ProductList Debug:', {
+        orderStatus,
+        isProvider,
+        disabled,
+        acceptedProductsLength: acceptedProducts?.length,
+        dataLength: data?.length,
+        dropZoneId
+    });
+
     const total = data && data.reduce((acc, item) => {
         // Check if the item is in the acceptedProducts array
         let isAccepted = false;
@@ -69,7 +79,16 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                                         'cursor-pointer': !disabled,
                                         'cursor-not-allowed opacity-50': disabled
                                     })}
-                                    onClick={disabled ? undefined : toggleAllProducts}
+                                    onClick={disabled ? undefined : () => {
+                                        console.log('Toggle all products clicked:', {
+                                            disabled,
+                                            orderStatus,
+                                            isProvider,
+                                            acceptedProductsLength: acceptedProducts?.length,
+                                            dataLength: data?.length
+                                        });
+                                        toggleAllProducts();
+                                    }}
                                 >
                                     <Label className={cn('text-sm font-thin', {
                                         'cursor-pointer': !disabled,
@@ -105,6 +124,17 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                             {
                                 data && data.map((item) => {
                                     const product = item.product
+
+                                    // Debug: Log each product rendering
+                                    console.log('Rendering product:', {
+                                        productId: item.id,
+                                        productName: product?.name,
+                                        orderStatus,
+                                        isProvider,
+                                        disabled,
+                                        willRenderCheckbox: isProvider && orderStatus === PRE_ORDER_STATUS.pending
+                                    });
+
                                     return (
                                         <TableRow key={product.id} className={cn("hover:bg-white first:border-t-none", {
                                             'bg-green-50 hover:bg-green-50': item.accepted && (orderStatus === PRE_ORDER_STATUS.accepted || orderStatus === PRE_ORDER_STATUS.partialyAccepted),
@@ -138,6 +168,17 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                                                                     : product.accepted
                                                             }
                                                             onClick={disabled ? undefined : () => {
+                                                                // Debug: Log checkbox click attempt
+                                                                console.log('Checkbox clicked for product:', {
+                                                                    productId: item.id,
+                                                                    productName: product?.name,
+                                                                    disabled,
+                                                                    orderStatus,
+                                                                    isProvider,
+                                                                    acceptedProductsLength: acceptedProducts?.length,
+                                                                    isProductAccepted: acceptedProducts?.some(p => p.id === item.id)
+                                                                });
+
                                                                 // Validate dropZoneId before using it
                                                                 if (!dropZoneId) {
                                                                     console.error('Missing dropZoneId in ProductList');

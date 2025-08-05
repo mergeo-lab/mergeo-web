@@ -19,6 +19,12 @@ const UseProviderSellStore = create<SellProviderState>((set, get) => ({
   addAcceptedProduct: (product: SellProductSchemaType) => {
     const { acceptedProducts, rejectedProducts } = get();
 
+    console.log('addAcceptedProduct called:', {
+      productId: product.id,
+      currentAcceptedCount: acceptedProducts.length,
+      currentRejectedCount: rejectedProducts.length,
+    });
+
     // Add to accepted and remove from rejected
     set({
       acceptedProducts: [...acceptedProducts, product],
@@ -27,6 +33,11 @@ const UseProviderSellStore = create<SellProviderState>((set, get) => ({
   },
 
   addAllAcceptedProducts: (products: SellProductSchemaType[]) => {
+    console.log('addAllAcceptedProducts called:', {
+      productsCount: products?.length,
+      productsIds: products?.map((p) => p.id),
+    });
+
     // Add all products to accepted and clear rejected
     set({
       acceptedProducts: products,
@@ -62,6 +73,13 @@ const UseProviderSellStore = create<SellProviderState>((set, get) => ({
 
     const isAccepted = acceptedProducts.some((p) => p.id === product.id);
 
+    console.log('toggleProductAcceptance called:', {
+      productId: product.id,
+      isAccepted,
+      acceptedProductsLength: acceptedProducts.length,
+      rejectedProductsLength: rejectedProducts.length,
+    });
+
     if (isAccepted) {
       // Move to rejected
       set({
@@ -78,6 +96,14 @@ const UseProviderSellStore = create<SellProviderState>((set, get) => ({
   },
   toggleAllProducts: (allProducts: SellProductSchemaType[] | undefined) => {
     const { acceptedProducts } = get();
+
+    console.log('toggleAllProducts called:', {
+      allProductsLength: allProducts?.length,
+      acceptedProductsLength: acceptedProducts.length,
+      willSelectAll: !(
+        allProducts && acceptedProducts.length === allProducts.length
+      ),
+    });
 
     if (allProducts && acceptedProducts.length === allProducts.length) {
       // If all products are selected, unselect all

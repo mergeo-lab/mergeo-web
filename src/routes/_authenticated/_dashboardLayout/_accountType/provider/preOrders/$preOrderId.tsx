@@ -26,8 +26,11 @@ function isResponseDeadlineExpired(deadline: string): boolean {
         const deadlineDate = parseISO(deadline);
         console.log('deadlineDate', deadlineDate);
         console.log('isPast', isPast(deadlineDate));
+        console.log('Current date:', new Date());
+        console.log('Time difference (minutes):', (deadlineDate.getTime() - new Date().getTime()) / (1000 * 60));
         return isPast(deadlineDate);
     } catch {
+        console.error('Error parsing deadline:', deadline);
         return false;
     }
 }
@@ -64,8 +67,28 @@ export function SellsDetail() {
     // Check if response deadline has passed
     const isDeadlineExpired = order?.responseDeadline ? isResponseDeadlineExpired(order.responseDeadline) : false;
 
+    // For second instances (instance > 1), we should not be blocked by the original deadline
+    // The backend should provide a new deadline for second instances, but if it doesn't,
+    // we'll allow the provider to respond regardless of the original deadline
+    const isSecondInstance = order?.instance !== undefined ? order.instance > 1 : false;
+    const shouldAllowResponse = isSecondInstance || !isDeadlineExpired;
+
+    // Debug: Log order details to understand the issue with second instances
+    console.log('PreOrder Details:', {
+        id: order?.id,
+        instance: order?.instance,
+        status: order?.status,
+        isDeadlineExpired,
+        responseDeadline: order?.responseDeadline,
+        preOrderProducts: order?.preOrderProducts?.length,
+        created: order?.created,
+        updated: order?.updated,
+        shouldAllowResponse,
+        isSecondInstance
+    });
+
     async function handleProviderResponse() {
-        if (!order || mutation.isPending || isDeadlineExpired) return;
+        if (!order || mutation.isPending || !shouldAllowResponse) return;
 
         // Debug: Check dropZoneId and prices
         console.log('Order dropZoneId:', order.dropZoneId);
@@ -101,7 +124,7 @@ export function SellsDetail() {
     }
 
     async function handleReceptedResponse() {
-        if (!order || mutation.isPending || isDeadlineExpired) return;
+        if (!order || mutation.isPending || !shouldAllowResponse) return;
 
         // Debug: Check dropZoneId and prices
         console.log('Order dropZoneId:', order.dropZoneId);
@@ -155,15 +178,26 @@ export function SellsDetail() {
     }, [order, companyId]);
 
     const toggleAllAcceptedProducts = useCallback(() => {
+        console.log('toggleAllAcceptedProducts called');
         const acceptedProdcut = sellProduct();
+        console.log('sellProduct result:', acceptedProdcut);
         addAllAcceptedProducts(acceptedProdcut || []);
     }, [addAllAcceptedProducts, sellProduct]);
 
     useEffect(() => {
+        console.log('useEffect triggered:', {
+            hasOrder: !!order,
+            orderInstance: order?.instance,
+            orderStatus: order?.status,
+            productsCount: order?.preOrderProducts?.length,
+            shouldAllowResponse
+        });
+
         if (order) {
+            console.log('Calling toggleAllAcceptedProducts');
             toggleAllAcceptedProducts();
         }
-    }, [order, toggleAllAcceptedProducts]);
+    }, [order, toggleAllAcceptedProducts, shouldAllowResponse]);
 
     console.log('order', order);
 
@@ -210,7 +244,7 @@ export function SellsDetail() {
                         acceptedProducts={acceptedProducts}
                         onSelect={(item) => toggleProductAcceptance(item)}
                         toggleAllProducts={() => toggleAllProducts(sellProduct())}
-                        disabled={isDeadlineExpired} />
+                        disabled={!shouldAllowResponse} />
 
                 </div>
                 {
@@ -218,7 +252,7 @@ export function SellsDetail() {
                     <div className='flex justify-end gap-2 pr-10 border-t-2 border-border pt-6'>
                         <Button
                             onClick={handleReceptedResponse}
-                            disabled={mutation.isPending || isDeadlineExpired}
+                            disabled={mutation.isPending || !shouldAllowResponse}
                             variant="ghost"
                             className='text-destructive hover:text-destructive'>
                             Rechazar Pedido
@@ -228,7 +262,7 @@ export function SellsDetail() {
                             className={cn('w-48', {
                                 'cursor-wait': mutation.isPending
                             })}
-                            disabled={acceptedProducts.length === 0 || isDeadlineExpired}>
+                            disabled={acceptedProducts.length === 0 || !shouldAllowResponse}>
                             {mutation.isPending ? <LoadingIndicator className='text-white w-4 h-4' /> : "Aceptar Pedido"}
                         </Button>
                     </div>
