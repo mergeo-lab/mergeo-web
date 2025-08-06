@@ -74,10 +74,6 @@ export default function ClientFinder({ onCompanyAdded, onMultipleCompaniesAdded 
         }
     }
 
-    function handleShowZones() {
-        setShowZones(true);
-    }
-
     useEffect(() => {
         if (mutation.isSuccess) {
             setSelectedItem(mutation.data);

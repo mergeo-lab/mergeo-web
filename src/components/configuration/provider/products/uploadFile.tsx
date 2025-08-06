@@ -7,7 +7,6 @@ import { useEffect, useRef, useCallback } from "react";
 
 export default function UploadFile() {
     const { account } = useAuth();
-    const userId = account?.user.id;
     const companyId = account?.company.id;
     const dropzoneRef = useRef<DropZoneRef>(null);
     const { addToQueue, removeFinishedFromQueue } = useUploadQueue();

@@ -86,7 +86,7 @@ export default function NewDiscount({ openit, isEdit = false, onClose, data, ite
             const action = isEdit ? 'actualizada' : 'creada';
             const listName = form.getValues('name') || data?.name || 'la lista';
             toast({
-                title: "Clientes Actualizados con éxito!",
+                title: "Clientes Actualizados con éxitos",
                 description: `Clientes en la lista de descuento "${listName}" ${action} con éxito!`,
                 duration: 3000,
             });
