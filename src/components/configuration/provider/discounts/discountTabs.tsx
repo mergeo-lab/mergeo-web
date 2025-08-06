@@ -5,20 +5,41 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DiscountProducts from "@/components/configuration/provider/discounts/discountProducts";
 import DiscountAddProducts from "@/components/configuration/provider/discounts/discountAddProducts";
 import { useEffect, useState } from "react";
+import OverlayLoadingIndicator from "@/components/overlayLoadingIndicator";
 
 type Props = {
     className?: string,
     companyId: string,
     selectedDiscountId?: string | null,
     discount?: number,
+    activeTab?: string,
+    onTabChange?: (tab: string) => void,
 }
 
-export default function DiscountTabs({ className, companyId, selectedDiscountId, discount = 0 }: Props) {
+export default function DiscountTabs({ className, companyId, selectedDiscountId, discount = 0, activeTab, onTabChange }: Props) {
     const [tab, setTab] = useState("products");
+    const [isTabLoading, setIsTabLoading] = useState(false);
 
     useEffect(() => {
         setTab("products");
     }, [selectedDiscountId])
+
+    useEffect(() => {
+        if (activeTab) {
+            setTab(activeTab);
+        }
+    }, [activeTab]);
+
+    const handleTabChange = (newTab: string) => {
+        setIsTabLoading(true);
+        setTab(newTab);
+        onTabChange?.(newTab);
+
+        // Simular un pequeño delay para mostrar el loading
+        setTimeout(() => {
+            setIsTabLoading(false);
+        }, 300);
+    };
 
     if (!selectedDiscountId) {
         return (
@@ -33,7 +54,7 @@ export default function DiscountTabs({ className, companyId, selectedDiscountId,
 
     return (
         <div className={cn("w-full h-full px-4", className)}>
-            <Tabs value={tab} onValueChange={setTab} className="w-full h-full">
+            <Tabs value={tab} onValueChange={handleTabChange} className="w-full h-full">
                 <div className="w-full">
                     <TabsList className="grid w-full grid-cols-2 gap-2 bg-muted/20 h-fit p-2">
                         <TabsTrigger className={cn("!text-white",
@@ -52,15 +73,22 @@ export default function DiscountTabs({ className, companyId, selectedDiscountId,
                     </TabsList>
                 </div>
 
-                <TabsContent value="products" className="h-full">
+                <TabsContent value="products" className="h-full relative">
                     <DiscountProducts selectedDiscountId={selectedDiscountId} discount={discount} />
+                    {isTabLoading && (
+                        <OverlayLoadingIndicator label="Cargando productos" />
+                    )}
                 </TabsContent>
-                <TabsContent value="add" className="h-full">
+                <TabsContent value="add" className="h-full relative">
                     <DiscountAddProducts
                         companyId={companyId}
                         discountListId={selectedDiscountId}
                         discount={discount}
+                        onSuccess={() => handleTabChange("products")}
                     />
+                    {isTabLoading && (
+                        <OverlayLoadingIndicator label="Cargando productos" />
+                    )}
                 </TabsContent>
             </Tabs>
         </div>

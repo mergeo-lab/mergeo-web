@@ -49,6 +49,7 @@ export const ProviderProductSearch = z.object({
   ean: z.string().optional(),
   companyId: z.string().optional(),
   includeInventory: z.boolean().optional().default(true),
+  showOnlyInactive: z.boolean().optional().default(false),
 });
 
 export const ProductsFormFinder = z.object({
@@ -72,7 +73,9 @@ export type ProviderProductSearchType = z.infer<typeof ProviderProductSearch>;
 export type NewProductSearchType = Omit<
   ProviderProductSearchType,
   'includeInventory'
->;
+> & {
+  showOnlyInactive?: boolean;
+};
 
 export type ProductsFormFinderType = z.infer<typeof ProductsFormFinder>;
 export type ProductMetadataType = z.infer<typeof ProductMetadataSchema>;

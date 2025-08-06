@@ -123,6 +123,11 @@ export async function providerProductsSearch(
       if (searchParams.brand) params.brand = searchParams.brand;
     }
 
+    // Add showOnlyInactive parameter
+    if (searchParams.showOnlyInactive !== undefined) {
+      params.showOnlyInactive = searchParams.showOnlyInactive;
+    }
+
     const { data: response }: AxiosResponse = await axiosPrivate.get(
       `${PROVIDER_PRODUCT_SEARCH}`,
       {

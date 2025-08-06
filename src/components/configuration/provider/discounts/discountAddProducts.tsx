@@ -14,22 +14,49 @@ import { cn } from "@/lib/utils";
 import { MdFactCheck } from "react-icons/md";
 import { useMutation } from '@tanstack/react-query';
 import { saveDiscountProducts } from "@/lib/discounts";
+import { toast } from "@/components/ui/use-toast";
 
 type Props = {
     companyId: string,
     discountListId: string,
-    discount: number
+    discount: number,
+    onSuccess?: () => void,
 }
-export default function DiscountAddProducts({ companyId, discountListId, discount }: Props) {
+export default function DiscountAddProducts({ companyId, discountListId, discount, onSuccess }: Props) {
     const { addProduct, removeProduct, toggleAllProducts, removeAllProducts, products: savedProducts } = UseDiscountProductsStore();
     const { resetParams, setParams } = useProviderProductSearchStore();
     const [showSearch, setShowSearch] = useState<boolean>(false);
     const { data, isLoading, isError, refetch } = UseNewProductSearch();
-    const saveProductsMutation = useMutation({ mutationFn: saveDiscountProducts });
+    const saveProductsMutation = useMutation({
+        mutationFn: saveDiscountProducts,
+        onSuccess: () => {
+            // Show success toast
+            toast({
+                title: "Productos agregados",
+                description: "Los productos se han agregado exitosamente a la lista de descuentos",
+                duration: 3000, // 3 seconds
+            });
+
+            // Clear selected products
+            removeAllProducts();
+
+            // Call success callback to navigate to products tab
+            setTimeout(() => {
+                onSuccess?.();
+            }, 1000); // Wait 1 second before navigating
+        },
+        onError: (error) => {
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: error.message || "Error al agregar productos",
+            });
+        }
+    });
 
     useEffect(() => {
         // Set search parameters to load all products for the company
-        setParams({ companyId });
+        setParams({ companyId, showOnlyInactive: false });
     }, [companyId, setParams]);
 
     useEffect(() => {
@@ -77,28 +104,40 @@ export default function DiscountAddProducts({ companyId, discountListId, discoun
         <div className="w-full h-full relative px-5">
             {saveProductsMutation.isPending && <OverlayLoadingIndicator />}
             <div className="w-full h-20 overflow-hidden rounded-t">
-                <SearchProducts companyId={companyId} className={cn("pt-0 pl-5 h-20 mt-0 border-b-[1px] border-border transition-all duration-700 bg-muted/10 ", {
+                <div className={cn("pt-0 pl-5 h-20 mt-0 border-b-[1px] border-border transition-all duration-700 bg-muted/10 flex justify-between items-center", {
                     "-mt-20": showSearch
                 })}>
-                    <CustomSearchField
-                        name="name"
-                        label="Nombre"
-                        companyId={companyId}
-                        className="flex-col items-start [&>div]:w-44"
-                    />
-                    <CustomSearchField
-                        name="brand"
-                        label="Marca"
-                        companyId={companyId}
-                        className="flex-col items-start [&>div]:w-44"
-                    />
-                    <CustomSearchField
-                        name="ean"
-                        label="Ean/Gtin"
-                        companyId={companyId}
-                        className="flex-col items-start [&>div]:w-44"
-                    />
-                </SearchProducts>
+                    <SearchProducts companyId={companyId} className="mb-5">
+                        <CustomSearchField
+                            name="name"
+                            label="Nombre"
+                            companyId={companyId}
+                            className="flex-col items-start [&>div]:w-44"
+                        />
+                        <CustomSearchField
+                            name="brand"
+                            label="Marca"
+                            companyId={companyId}
+                            className="flex-col items-start [&>div]:w-44"
+                        />
+                        <CustomSearchField
+                            name="ean"
+                            label="Ean/Gtin"
+                            companyId={companyId}
+                            className="flex-col items-start [&>div]:w-44"
+                        />
+                    </SearchProducts>
+                    <Button
+                        className="mt-5"
+                        variant="ghost"
+                        onClick={() => setShowSearch(!showSearch)}
+                    >
+                        <LuChevronUp />
+                        Volver a la lista de productos
+                    </Button>
+
+
+                </div>
                 <div className="w-full flex justify-between items-center h-20 gap-2 border-b-[1px] border-border text-sm bg-muted/20 px-3">
 
                     <Button

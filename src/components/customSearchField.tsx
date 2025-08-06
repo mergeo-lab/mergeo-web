@@ -28,9 +28,9 @@ export default function CustomSearchField({ name, label, inputType = "text", cla
             const { name: n, brand, ean } = form.getValues();
             if (!n && !brand && !ean) {
                 // When all fields are cleared, fetch all products for the company
-                setParams({ companyId });
+                setParams({ companyId, showOnlyInactive: false });
             } else {
-                setParams({ name: n, brand, ean, companyId });
+                setParams({ name: n, brand, ean, companyId, showOnlyInactive: false });
             }
         }, 0);
     };

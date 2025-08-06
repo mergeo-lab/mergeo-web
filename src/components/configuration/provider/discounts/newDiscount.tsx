@@ -17,6 +17,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { MdOutlineDiscount } from "react-icons/md";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
+import { toast } from "@/components/ui/use-toast";
 
 type Props = {
     openit?: boolean,
@@ -26,9 +27,10 @@ type Props = {
     itemId?: string | null,
     showOnyClients?: boolean,
     callback?: () => void,
+    onShowClientsChange?: (show: boolean) => void,
 }
 
-export default function NewDiscount({ openit, isEdit = false, onClose, data, itemId, callback, showOnyClients = false }: Props) {
+export default function NewDiscount({ openit, isEdit = false, onClose, data, itemId, callback, showOnyClients = false, onShowClientsChange }: Props) {
     const { account } = useAuth();
     const companyId = account?.company.id || '';
     const [selectedCompanies, setSelectedCompanies] = useState<CompanySchemaType[]>([]);
@@ -67,12 +69,31 @@ export default function NewDiscount({ openit, isEdit = false, onClose, data, ite
         }
     }
 
+    function addMultipleCompanies(companies: CompanySchemaType[]) {
+        const newCompanies = companies.filter(company =>
+            !selectedCompanies.find(selected => selected.id === company.id)
+        );
+        setSelectedCompanies(prev => [...prev, ...newCompanies]);
+    }
+
     function removeClient(id: string) {
         setSelectedCompanies(prev => prev.filter(c => c.id !== id));
     }
 
     useEffect(() => {
         if (mutation.isSuccess) {
+            // Mostrar notificación de éxito
+            const action = isEdit ? 'actualizada' : 'creada';
+            const listName = form.getValues('name') || data?.name || 'la lista';
+            toast({
+                title: "Clientes Actualizados con éxito!",
+                description: `Clientes en la lista de descuento "${listName}" ${action} con éxito!`,
+                duration: 3000,
+            });
+
+            // Cambiar el estado showOnyClients a true
+            onShowClientsChange?.(true);
+
             callback && callback()
             onClose?.();
             form.reset();
@@ -177,7 +198,10 @@ export default function NewDiscount({ openit, isEdit = false, onClose, data, ite
 
                                     </div>
                                     <div className={cn("border border-border rounded-md p-4 w-1/2", { "w-full min-h-[300px]": showOnyClients })}>
-                                        <ClientFinder onCompanyAdded={(company) => addCompany(company)} />
+                                        <ClientFinder
+                                            onCompanyAdded={(company) => addCompany(company)}
+                                            onMultipleCompaniesAdded={(companies) => addMultipleCompanies(companies)}
+                                        />
                                         <div className="px-4">
                                             <ClientCuitList companies={selectedCompanies} onClickRemove={removeClient} />
                                         </div>

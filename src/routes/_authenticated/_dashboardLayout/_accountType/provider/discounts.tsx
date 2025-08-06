@@ -32,6 +32,7 @@ export function Discounts() {
     const [showNewDiscountModal, setShowNewDiscountModal] = useState({ open: false, isEdit: false, showOnyClients: false });
     const [prevListLength, setPrevListLength] = useState(0);
     const [showClients, setShowClients] = useState(false);
+    const [activeTab, setActiveTab] = useState("products");
 
     const { data: lists, isLoading: searchListsLoading, isError, refetch } = useQuery({
         queryKey: ['discount-lists', companyId],
@@ -50,6 +51,10 @@ export function Discounts() {
         console.log('handleCreateDiscountList');
         setSelectedDiscount(null);
         setShowNewDiscountModal({ open: true, isEdit: false, showOnyClients: false })
+    }
+
+    function handleShowClientsChange(show: boolean) {
+        setShowClients(show);
     }
 
     useEffect(() => {
@@ -100,6 +105,7 @@ export function Discounts() {
                     callback={refetch}
                     onClose={() => setShowNewDiscountModal({ open: false, isEdit: false, showOnyClients: false })}
                     data={selectedDiscount ? lists.find((item: DiscountSchemaType) => item.id === selectedDiscount) : null}
+                    onShowClientsChange={handleShowClientsChange}
                 />
             </>
         )
@@ -155,7 +161,7 @@ export function Discounts() {
                                     <span>Agregar o sacar cliente</span>
                                 </Button>
                             </div>
-                            <div className={cn('px-5 h-[40px] transition-all duration-300', {
+                            <div className={cn('px-5 h-[0px] p-0  transition-all duration-300', {
                                 'h-[calc(100vh-350px)] overflow-y-auto': showClients,
                             })}>
                                 {selectedDiscount &&
@@ -177,14 +183,16 @@ export function Discounts() {
                             </div>
                         </div>
                         {/* PRODUCTOS */}
-                        <div className={cn('w-full py-3 z-20 relative')}>
+                        <div className={cn('w-full py-3 z-20 relative bg-white')}>
                             {showClients &&
                                 <div className='absolute inset-0 bg-white/30 backdrop-blur-[2px] h-full z-30 '></div>
                             }
                             <DiscountTabs
-                                selectedDiscountId={selectedDiscount}
+                                selectedDiscountId={selectedDiscount ? selectedDiscount : null}
                                 companyId={companyId}
                                 discount={selectedDiscount ? lists.find((item: DiscountSchemaType) => item.id === selectedDiscount)?.discount : 0}
+                                activeTab={activeTab}
+                                onTabChange={setActiveTab}
                             />
                         </div>
                     </div>
@@ -197,6 +205,7 @@ export function Discounts() {
                     callback={refetch}
                     onClose={() => setShowNewDiscountModal({ open: false, isEdit: false, showOnyClients: false })}
                     data={selectedDiscount ? lists.find((item: DiscountSchemaType) => item.id === selectedDiscount) : null}
+                    onShowClientsChange={handleShowClientsChange}
                 />
             </>
         )

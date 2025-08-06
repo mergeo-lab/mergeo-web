@@ -36,10 +36,10 @@ export default function SearchProducts({ companyId, className, children }: Props
 
         if (!name && !brand && !ean) {
             // When all fields are empty, fetch all products for the company
-            setParams({ companyId });
+            setParams({ companyId, showOnlyInactive: false });
         } else {
             try {
-                await setParams({ name, brand, ean, companyId });
+                await setParams({ name, brand, ean, companyId, showOnlyInactive: false });
             } catch {
                 form.clearErrors();
                 form.reset(fields, {

@@ -29,10 +29,12 @@ type ProviderInventoryPaginationState = {
   page: number;
   search: ProductsFormFinderType;
   sort: SortOptionsType;
+  showOnlyInactive: boolean;
   setPage: (number: number) => void;
   getPage: () => number;
   setSearch: (search: ProductsFormFinderType) => void;
   setSort: (sort: SortOptionsType) => void;
+  setShowOnlyInactive: (show: boolean) => void;
 };
 
 const UseProviderInventoryPaginationState =
@@ -40,6 +42,7 @@ const UseProviderInventoryPaginationState =
     page: 1,
     search: {},
     sort: sortOptions[0],
+    showOnlyInactive: false,
 
     setPage: (page: number) => set(() => ({ page })),
     getPage: () => get().page,
@@ -47,6 +50,9 @@ const UseProviderInventoryPaginationState =
     setSearch: (search: ProductsFormFinderType) => set(() => ({ search })),
 
     setSort: (sort: SortOptionsType) => set(() => ({ sort })),
+
+    setShowOnlyInactive: (show: boolean) =>
+      set(() => ({ showOnlyInactive: show })),
   }));
 
 export default UseProviderInventoryPaginationState;

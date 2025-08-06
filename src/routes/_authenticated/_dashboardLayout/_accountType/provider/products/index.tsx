@@ -13,9 +13,11 @@ import UseProviderInventoryPaginationState, { sortOptions, SortOptionsType } fro
 import ProductFormFinder from '@/components/configuration/provider/products/productFormFinder'
 import { PaginationSort, ProductSchemaType, ProductsFormFinderType, ProviderProductSearchType } from '@/lib/schemas'
 import NoProductsFound from '@/components/configuration/provider/products/noProductsFound'
+import NoInactiveProductsFound from '@/components/configuration/provider/products/noInactiveProductsFound'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { FaPlus } from 'react-icons/fa'
 import { providerProductsSearch } from '@/lib/products'
+import { Toggle } from '@/components/ui/toggle'
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/products/')({
     component: () => <Products />,
@@ -32,6 +34,7 @@ export default function Products() {
         data,
         isLoading,
         isError,
+        isFetching,
         refetch,
         handleSearch,
         setPagination,
@@ -46,7 +49,7 @@ export default function Products() {
     });
 
     const { currentPage } = useSearch({ from: '/_authenticated/_dashboardLayout/_accountType/provider/products/' });
-    const { sort, setSort, search, setSearch, setPage, page } = UseProviderInventoryPaginationState()
+    const { sort, setSort, search, setSearch, setPage, page, showOnlyInactive, setShowOnlyInactive } = UseProviderInventoryPaginationState()
     const [isSearching, setIsSearching] = useState(false);
     const tableRef = useRef<HTMLDivElement>(null);
 
@@ -54,8 +57,13 @@ export default function Products() {
         if (fields.name || fields.brand) setIsSearching(true)
         else setIsSearching(false)
         setSearch(fields);
-        handleSearch({ companyId: company?.id, includeInventory: true, ...fields });
+        handleSearch({ companyId: company?.id, includeInventory: true, showOnlyInactive, ...fields });
     }
+
+    const handleShowOnlyInactiveChange = (checked: boolean) => {
+        setShowOnlyInactive(checked);
+        handleSearch({ companyId: company?.id, includeInventory: true, showOnlyInactive: checked, ...search });
+    };
 
     const sortBySelection = (value: string) => {
         if (!value) return;
@@ -74,12 +82,12 @@ export default function Products() {
 
     useEffect(() => {
         if (search.brand != "" || search.name != "") {
-            handleSearch({ companyId: company?.id, includeInventory: true, ...search });
+            handleSearch({ companyId: company?.id, includeInventory: true, showOnlyInactive, ...search });
         } else {
-            handleSearch({ companyId: company?.id, includeInventory: true });
+            handleSearch({ companyId: company?.id, includeInventory: true, showOnlyInactive });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [company?.id, search]);
+    }, [company?.id, search, showOnlyInactive]);
 
     useEffect(() => {
         if (currentPage) {
@@ -89,6 +97,8 @@ export default function Products() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage]);
 
+    // Show loading when the query is loading, fetching, or when we don't have data yet
+    const shouldShowLoading = isLoading || isFetching || !data;
 
     if (isError) {
         return (
@@ -105,13 +115,13 @@ export default function Products() {
                 <div className='w-full flex gap-2'>
                     <ProductFormFinder
                         onChange={onSearchChange}
-                        disabled={isLoading || !data?.products || data && data.products.length === 0}
+                        disabled={shouldShowLoading || (!data?.products || data.products.length === 0) && !showOnlyInactive}
                         defaults={search}
                         inputWidth='60px'
                     />
                     <div className='flex items-center gap-2 [&>p]:text-nowrap'>
                         <p>Ordenar por</p>
-                        <Select onValueChange={sortBySelection} value={sort.id} disabled={!data?.products || data && data.products.length === 0}>
+                        <Select onValueChange={sortBySelection} value={sort.id} disabled={shouldShowLoading || (!data?.products || data.products.length === 0) && !showOnlyInactive}>
                             <SelectTrigger className='px-5 w-fit'>
                                 <SelectValue placeholder="" />
                             </SelectTrigger>
@@ -123,6 +133,22 @@ export default function Products() {
                                 ))}
                             </SelectContent>
                         </Select>
+                    </div>
+                    <div className='flex items-center gap-2 [&>p]:text-nowrap'>
+                        <Toggle
+                            pressed={showOnlyInactive}
+                            onPressedChange={handleShowOnlyInactiveChange}
+                            disabled={shouldShowLoading}
+                            className={cn(
+                                "transition-all duration-200",
+                                {
+                                    "!bg-info !text-white hover:!bg-info/90": showOnlyInactive,
+                                    "bg-gray-200 text-gray-600 hover:bg-gray-300": !showOnlyInactive,
+                                }
+                            )}
+                        >
+                            Mostrar solo productos inactivos
+                        </Toggle>
                     </div>
                 </div>
 
@@ -136,7 +162,7 @@ export default function Products() {
                 </div>
             </div>
 
-            {isLoading
+            {shouldShowLoading
                 ? <div className="space-y-2 p-5">
                     {Array.from({ length: 10 }).map((_, index) => (
                         <Skeleton key={index} className="h-12 w-full rounded-sm" />
@@ -149,6 +175,8 @@ export default function Products() {
                             currentPage={`${data.currentPage}`}
                             tableRef={tableRef as React.RefObject<HTMLDivElement>}
                             deleteCallback={() => refetch()}
+                            showOnlyInactive={showOnlyInactive}
+                            refetchCallback={() => refetch()}
                         />
                         {data.totalPages > 1 && (
                             <div className='sticky bottom-0 bg-white py-5 shadow-[0_-4px_6px_-1px_rgb(0_0_0_/0.1)]'>
@@ -177,23 +205,24 @@ export default function Products() {
                         )}
                     </div>
                     : isSearching ? <NoProductsFound />
-                        :
-                        <div className={cn("p-4 h-full overflow-y-auto z-10", {
-                            "visible": !isLoading,
-                            "hidden": isLoading,
-                        })}>
-                            <div className='w-full h-full flex flex-col gap-2 justify-center items-center'>
-                                <img src={noProductsImage} alt="no products" />
-                                <p className='text-lg font-bold mt-5'>No tienes ningún producto cargado!</p>
-                                <p className='font-light mb-5'>Puedes hacerlo manualmete o subir una lista</p>
-                                <Link to="/provider/products/newProducts">
-                                    <Button className='flex gap-2'>
-                                        <FaPlus size={12} />
-                                        <p>Agregar Productos</p>
-                                    </Button>
-                                </Link>
+                        : showOnlyInactive && (!data?.products || data.products.length === 0) && !search.name && !search.brand ? <NoInactiveProductsFound />
+                            :
+                            <div className={cn("p-4 h-full overflow-y-auto z-10", {
+                                "visible": !shouldShowLoading,
+                                "hidden": shouldShowLoading,
+                            })}>
+                                <div className='w-full h-full flex flex-col gap-2 justify-center items-center'>
+                                    <img src={noProductsImage} alt="no products" />
+                                    <p className='text-lg font-bold mt-5'>No tienes ningún producto cargado!</p>
+                                    <p className='font-light mb-5'>Puedes hacerlo manualmete o subir una lista</p>
+                                    <Link to="/provider/products/newProducts">
+                                        <Button className='flex gap-2'>
+                                            <FaPlus size={12} />
+                                            <p>Agregar Productos</p>
+                                        </Button>
+                                    </Link>
+                                </div>
                             </div>
-                        </div>
             }
         </div >
     )

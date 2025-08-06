@@ -1,4 +1,3 @@
-import { UploadQueueHandler } from "@/components/configuration/provider/products/uploadQueueHandler";
 import { SavedUploads } from "@/components/configuration/provider/products/savedUploads";
 import Dropzone, { DropZoneRef } from "@/components/dropzone";
 import { useAuth } from "@/context/AuthContext";
@@ -11,18 +10,12 @@ export default function UploadFile() {
     const userId = account?.user.id;
     const companyId = account?.company.id;
     const dropzoneRef = useRef<DropZoneRef>(null);
-    const { addToQueue, resetQueue, removeFinishedFromQueue } = useUploadQueue();
+    const { addToQueue, removeFinishedFromQueue } = useUploadQueue();
+
 
     const fileUploadedCallback = useCallback((item: UploadQueueItem) => {
         addToQueue(item); // queue the file as "pending"
     }, [addToQueue]);
-
-    const productsQueueFinishCallback = useCallback(() => {
-        if (dropzoneRef.current) {
-            dropzoneRef.current.reset();
-        }
-        resetQueue();
-    }, [resetQueue]);
 
     useEffect(() => {
         return () => {
@@ -70,10 +63,6 @@ export default function UploadFile() {
                 />
             </div>
             <div className="max-h-96 overflow-y-auto">
-                <UploadQueueHandler
-                    userId={userId || ""}
-                    onFinish={productsQueueFinishCallback}
-                />
                 <SavedUploads />
             </div>
         </div>
