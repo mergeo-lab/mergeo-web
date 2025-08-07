@@ -55,24 +55,22 @@ export default function UploadManualProducts() {
                         companyId={companyId}
                         products={allProducts}
                         triggerButton={
-                            // allProducts.length > 0 &&
-                            // <div className={cn("w-20 h-72 absolute top-1/2 rounded-l-lg -translate-y-1/2 bg-gradient-to-r from-info to-blue-500 border-white border-2 shadow-lg transition-all duration-300 animate-bouncing animate-duration-1000 animate-delay-1000 animate-iteration-count-infinite",
-                            //     { "-right-12": products.length > 0, "-right-[130px]": products.length == 0 }
-                            // )}>
-                            //     <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-90 font-black text-white whitespace-nowrap">
-                            //         Ver productos seleccionados
-                            //     </p>
-                            // </div>
-                            <div className={cn("w-80 h-16 flex items-center justify-center absolute bottom-[5%] rounded-l-lg -translate-y-1/2 bg-gradient-to-r from-info to-blue-500 border-white border-2 shadow-lg transition-all duration-500 gap-3",
+                            <div className={cn("w-80 h-16 flex items-center justify-center absolute bottom-[-20px] rounded-lg -translate-y-1/2 bg-gradient-to-r from-info to-blue-500 border-white border-2 shadow-lg transition-all duration-700 gap-3 right-[30px]",
                                 {
-                                    "-right-12 animate-bouncing animate-duration-1000 animate-delay-1000 animate-iteration-count-infinite ": products.length > 0,
-                                    "-right-[370px]": products.length == 0
+                                    "translate-y-6 opacity-100": products.length > 0,
+                                    "translate-y-full opacity-0": products.length == 0
                                 }
                             )}>
-                                <BiSolidRightArrowSquare size={30} className="text-white" />
-                                <p className="font-black text-white whitespace-nowrap">
-                                    Ver productos seleccionados
-                                </p>
+                                <div className={cn("w-full h-full flex items-center justify-center rounded-lg transition-all duration-700 gap-3",
+                                    {
+                                        "animate-pulse-5s": products.length > 0
+                                    }
+                                )}>
+                                    <BiSolidRightArrowSquare size={30} className="text-white" />
+                                    <p className="font-black text-white whitespace-nowrap">
+                                        Ver productos seleccionados
+                                    </p>
+                                </div>
                             </div>
                         }
                         removeProduct={removeProduct}

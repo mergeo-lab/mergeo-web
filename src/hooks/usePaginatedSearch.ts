@@ -34,6 +34,7 @@ export function usePaginatedSearch<TParams, TData>({
       return await queryFn(params, pagination);
     },
     enabled: getEnabled(params),
+    refetchOnWindowFocus: false,
   });
 
   const handleSearch = (newParams: TParams) => {

@@ -220,9 +220,9 @@ export default function PreOrders() {
     }
 
     return (
-        <div className='w-full flex flex-col gap-2 relative'>
+        <div className='w-full flex flex-col gap-2 relative h-full'>
             {/* Header with filters */}
-            <div className="bg-accent h-20 w-full pl-14 shadow z-20 flex justify-between items-center">
+            <div className="bg-accent h-20 w-full pl-14 shadow z-20 flex justify-between items-center sticky top-0 left-0 right-0">
                 <div className='w-full flex gap-4'>
                     <div className='flex items-center gap-2 [&>p]:text-nowrap'>
                         <p>Estado</p>
@@ -257,7 +257,7 @@ export default function PreOrders() {
                 </div>
             </div>
 
-            <div className='w-full p-10 h-full flex flex-col items-center -mt-5'>
+            <div className='w-full p-10 flex-1 flex flex-col items-center -mt-5 overflow-hidden'>
                 {
                     (!data?.preOrders || data?.preOrders.length === 0) ? (
                         <div className='w-full h-[calc(100vh-10rem)] flex justify-center items-center absolute top-0 left-0 right-0 bottom-0 '>
@@ -273,16 +273,16 @@ export default function PreOrders() {
                             </div>
                         </div>
                     ) : (
-                        <div className='w-full'>
-                            <div className="relative max-h-[750px] w-full overflow-y-auto" ref={tableRef}>
-                                <Table>
+                        <div className='w-full h-full flex flex-col'>
+                            <div className={`flex-1 overflow-y-auto overflow-x-auto ${data && data.totalPages > 1 ? 'pb-20' : ''}`} ref={tableRef}>
+                                <Table className="min-w-full">
                                     <TableHeader className='bg-white sticky top-0 z-10 shadow-sm'>
                                         <TableRow className="hover:bg-transparent">
-                                            <TableHead className="w-[150px]">Numero de Orden</TableHead>
-                                            <TableHead className="w-[150px]">Creada</TableHead>
-                                            <TableHead className="w-[100px] text-center">Ordenes</TableHead>
-                                            <TableHead className="w-[150px] text-center">Estado</TableHead>
-                                            <TableHead className="w-[200px] text-right"></TableHead>
+                                            <TableHead className="min-w-[120px]">Numero de Orden</TableHead>
+                                            <TableHead className="min-w-[120px]">Creada</TableHead>
+                                            <TableHead className="min-w-[80px] text-center">Ordenes</TableHead>
+                                            <TableHead className="min-w-[100px] text-center">Estado</TableHead>
+                                            <TableHead className="min-w-[160px] text-right"></TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody className="bg-white">
@@ -301,15 +301,15 @@ export default function PreOrders() {
                                                     // Grupo de 1: mostrar como individual
                                                     return (
                                                         <TableRow className="hover:bg-white first:border-t-none" key={order.id}>
-                                                            <TableCell className="w-[150px]">{order.preOrderNumber}</TableCell>
-                                                            <TableCell className="w-[150px]">{formatDate(order.created)}</TableCell>
-                                                            <TableCell className="w-[150px] text-center"> </TableCell>
-                                                            <TableCell className="w-[150px] text-center">
+                                                            <TableCell className="min-w-[120px]">{order.preOrderNumber}</TableCell>
+                                                            <TableCell className="min-w-[120px]">{formatDate(order.created)}</TableCell>
+                                                            <TableCell className="min-w-[80px] text-center"> </TableCell>
+                                                            <TableCell className="min-w-[100px] text-center">
                                                                 <div className="flex justify-center">
                                                                     <StatusBadge className='py-2 px-6 text-sm' status={order.status} />
                                                                 </div>
                                                             </TableCell>
-                                                            <TableCell className="w-[150px] text-center">
+                                                            <TableCell className="min-w-[160px] text-center">
                                                                 <Link to="/client/preOrders/$preOrderId" params={{ preOrderId: order.id }}>
                                                                     <Button variant='ghost' className='space-x-2'>
                                                                         <LuEye className='cursor-pointer' size={20} />
@@ -332,17 +332,17 @@ export default function PreOrders() {
                                                     return (
                                                         <Fragment key={groupKey}>
                                                             <TableRow className='bg-white hover:bg-white'>
-                                                                <TableCell className="w-[150px]">
+                                                                <TableCell className="min-w-[120px]">
                                                                     {groupOrders.map((o: PreOrderSchemaType) => o.preOrderNumber).join(', ')}
                                                                 </TableCell>
-                                                                <TableCell className="w-[150px]">{formatDate(groupOrders[0].created)}</TableCell>
-                                                                <TableCell className="w-[100px] text-center">{groupOrders.length}</TableCell>
-                                                                <TableCell className="w-[150px] text-center">
+                                                                <TableCell className="min-w-[120px]">{formatDate(groupOrders[0].created)}</TableCell>
+                                                                <TableCell className="min-w-[80px] text-center">{groupOrders.length}</TableCell>
+                                                                <TableCell className="min-w-[100px] text-center">
                                                                     <div className="flex justify-center">
                                                                         <StatusBadge className='py-2 px-6 text-sm' status={getGroupState(groupOrders)} />
                                                                     </div>
                                                                 </TableCell>
-                                                                <TableCell className="w-[200px] text-center">
+                                                                <TableCell className="min-w-[160px] text-center">
                                                                     <Button variant='ghost' className='space-x-2' onClick={() => toggleGroup(groupKey)}>
                                                                         {expandedGroups.has(groupKey)
                                                                             ? <div className='flex justify-center items-center'>
@@ -376,15 +376,15 @@ export default function PreOrders() {
                                                                                 <TableBody className="bg-white">
                                                                                     {groupOrders.map((order: PreOrderSchemaType) => (
                                                                                         <TableRow key={order.id} className='bg-gray-300/25 hover:bg-gray-300/15 h-14'>
-                                                                                            <TableCell className="w-[138px] pl-5">{order.preOrderNumber}</TableCell>
-                                                                                            <TableCell className="w-[150px]">{formatDate(order.created)}</TableCell>
-                                                                                            <TableCell className="w-[135px]"></TableCell>
-                                                                                            <TableCell className="w-[170px] text-center">
+                                                                                            <TableCell className="min-w-[120px] pl-5">{order.preOrderNumber}</TableCell>
+                                                                                            <TableCell className="min-w-[120px]">{formatDate(order.created)}</TableCell>
+                                                                                            <TableCell className="min-w-[80px]"></TableCell>
+                                                                                            <TableCell className="min-w-[100px] text-center">
                                                                                                 <div className="flex justify-center">
                                                                                                     <StatusBadge className='py-2 px-6 text-sm' status={order.status} />
                                                                                                 </div>
                                                                                             </TableCell>
-                                                                                            <TableCell className="w-[210px] text-center p-0">
+                                                                                            <TableCell className="min-w-[160px] text-center p-0">
                                                                                                 <Link to="/client/preOrders/$preOrderId" params={{ preOrderId: order.id }}>
                                                                                                     <Button variant='ghost' className='space-x-2 hover:bg-gray-300/45'>
                                                                                                         <LuEye className='cursor-pointer' size={20} />
@@ -415,15 +415,15 @@ export default function PreOrders() {
                                                 // Orden individual
                                                 return (
                                                     <TableRow className="hover:bg-white first:border-t-none" key={order.id}>
-                                                        <TableCell className="w-[150px]">{order.preOrderNumber}</TableCell>
-                                                        <TableCell className="w-[150px]">{formatDate(order.created)}</TableCell>
-                                                        <TableCell className="w-[150px] text-center"> </TableCell>
-                                                        <TableCell className="w-[150px] text-center">
+                                                        <TableCell className="min-w-[120px]">{order.preOrderNumber}</TableCell>
+                                                        <TableCell className="min-w-[120px]">{formatDate(order.created)}</TableCell>
+                                                        <TableCell className="min-w-[80px] text-center"> </TableCell>
+                                                        <TableCell className="min-w-[100px] text-center">
                                                             <div className="flex justify-center">
                                                                 <StatusBadge className='py-2 px-6 text-sm' status={order.status} />
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell className="w-[150px] text-center">
+                                                        <TableCell className="min-w-[160px] text-center">
                                                             <Link to="/client/preOrders/$preOrderId" params={{ preOrderId: order.id }}>
                                                                 <Button variant='ghost' className='space-x-2'>
                                                                     <LuEye className='cursor-pointer' size={20} />
@@ -448,7 +448,7 @@ export default function PreOrders() {
                             </div>
                             {/* Pagination */}
                             {data && data.totalPages > 1 && (
-                                <div className='sticky bottom-0 bg-white py-5 shadow-[0_-4px_6px_-1px_rgb(0_0_0/0.1)]'>
+                                <div className='absolute bottom-0 left-0 right-0 bg-white py-5 shadow-[0_-4px_6px_-1px_rgb(0_0_0/0.1)] border-t'>
                                     <PaginationCustom
                                         currentPage={page}
                                         prev={page > 1}

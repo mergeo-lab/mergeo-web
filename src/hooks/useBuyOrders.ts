@@ -11,5 +11,6 @@ export const useBuyOrders = (companyId?: string, isClient?: boolean) => {
       return getAllBuyOrders(companyId, isClient);
     },
     enabled: !!companyId && typeof isClient === 'boolean', // solo ejecuta cuando ambos existen
+    refetchOnWindowFocus: false,
   });
 };

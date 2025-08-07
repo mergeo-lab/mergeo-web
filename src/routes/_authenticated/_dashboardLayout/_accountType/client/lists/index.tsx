@@ -59,6 +59,7 @@ export function SearchLists() {
             return getSearchLists(companyId);
         },
         enabled: !!company?.id, // Ensure the query runs only if company ID exists
+        refetchOnWindowFocus: false,
     });
 
     useEffect(() => {

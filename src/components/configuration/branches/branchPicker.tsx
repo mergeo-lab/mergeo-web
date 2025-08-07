@@ -37,6 +37,7 @@ export function BranchPicker({ className, companyId, isEditing, notFoundMessage,
     const { data: branchesResult, isLoading, isError, refetch } = useQuery({
         queryKey: ['branches', companyId],
         queryFn: () => companyId ? getBranches({ companyId }) : Promise.reject(new Error('Company ID is undefined')),
+        refetchOnWindowFocus: false,
     })
     const branches = branchesResult?.data?.company?.branches.filter(branch => !branch.isMain) || [];
 

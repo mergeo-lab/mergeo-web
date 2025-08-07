@@ -4,15 +4,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
+import OverlayLoadingIndicator from '@/components/overlayLoadingIndicator';
 import { useAuth } from '@/context/AuthContext';
 import { ActivityType } from '@/lib/constants';
 import { getProductById, getProductMetadata, modifyProduct } from '@/lib/products';
 import { ProductMetadataType, ProductSchemaType } from '@/lib/schemas';
 import { cn, formatDate, formatToArgentinianPesos } from '@/lib/utils';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useParams, useSearch } from '@tanstack/react-router'
 import { useEffect, useState } from 'react';
-import { LuImage, LuMoveRight, LuSquarePen } from 'react-icons/lu';
+import { LuImage, LuMoveRight, LuSquarePen, LuX } from 'react-icons/lu';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/provider/products/$productId')({
     component: () => <ProductDetail />,
@@ -31,14 +32,17 @@ export default function ProductDetail() {
     const { edit, currentPage } = useSearch({
         from: '/_authenticated/_dashboardLayout/_accountType/provider/products/$productId'
     });
+    const queryClient = useQueryClient();
     const [isEditing, setIsEditing] = useState(false);
-    const [changes, setChanges] = useState<{ price: number, description?: string | undefined } | null>(null);
+    const [changes, setChanges] = useState<{ price: number | undefined, description?: string | undefined } | null>(null);
+    const [isPriceCleared, setIsPriceCleared] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
 
     const { data, isLoading, isError, refetch } = useQuery<{
         product: ProductSchemaType | null;
         productMetadata: ProductMetadataType | null;
     }>({
-        queryKey: ['combinedData', { productId, isEditing }],
+        queryKey: ['combinedData', { productId }],
         queryFn: async () => {
             if (!productId) {
                 return { product: null, productMetadata: null }; // Return null when no productId is provided
@@ -50,27 +54,85 @@ export default function ProductDetail() {
             return { product, productMetadata };
         },
         enabled: !!productId, // Only run the query if params exist
+        staleTime: 0, // Always consider data stale to force fresh fetches
+        gcTime: 0, // Don't cache anything
+        refetchOnMount: true,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: true,
     });
 
     async function saveChanges() {
-        if (changes?.price || changes?.description) {
-            const formattedPrice = changes.price.toFixed(2); // Ensure consistent decimal places
-            const update = await mutation.mutateAsync({
-                productId,
-                price: formattedPrice,
-                description: changes?.description
-            });
+        // Validate that we have a valid price when saving
+        if (isPriceCleared) {
+            alert('El precio no puede estar vacío');
+            return;
+        }
 
-            if (update) {
-                setChanges({
-                    price: Number(update.price), // Convert price to number
-                    description: update.description
-                }); // Reset changes after successful update
-                await refetch(); // Add await to ensure the refetch completes
+        const currentPrice = changes?.price ?? Number(data?.product?.price);
+        if (currentPrice === undefined || currentPrice === null || isNaN(currentPrice) || currentPrice <= 0) {
+            alert('El precio debe ser un número válido mayor a 0');
+            return;
+        }
+
+        if (changes?.price !== undefined || changes?.description) {
+            setIsUpdating(true);
+
+            try {
+                const formattedPrice = changes.price?.toFixed(2) || Number(data?.product?.price)?.toFixed(2) || '0.00';
+                const update = await mutation.mutateAsync({
+                    productId,
+                    price: formattedPrice,
+                    description: changes?.description
+                });
+
+                if (update) {
+                    console.log('Product updated successfully:', update);
+
+                    // Reset changes after successful update
+                    setChanges(null);
+                    setIsPriceCleared(false);
+
+                    // Force a complete cache invalidation for all product-related queries
+                    await queryClient.invalidateQueries({
+                        predicate: (query) => {
+                            const queryKey = query.queryKey;
+                            return (
+                                Array.isArray(queryKey) &&
+                                (queryKey[0] === 'combinedData' ||
+                                    queryKey[0] === 'products' ||
+                                    queryKey[0] === 'client-products' ||
+                                    queryKey[0] === 'products-search')
+                            );
+                        }
+                    });
+
+                    // Force a refetch of the current data and wait for it to complete
+                    await refetch();
+                }
+                setIsEditing(false);
+            } finally {
+                setIsUpdating(false);
             }
-            setIsEditing(false);
         }
     }
+
+    const hasValidPrice = () => {
+        // If the price field is cleared, it's not valid
+        if (isPriceCleared) return false;
+
+        const currentPrice = changes?.price ?? Number(data?.product?.price);
+        return currentPrice !== undefined && currentPrice !== null && !isNaN(currentPrice) && currentPrice > 0;
+    };
+
+    const getPriceError = () => {
+        // If the price field is cleared, show error
+        if (isPriceCleared) return 'El precio no puede estar vacío';
+
+        const currentPrice = changes?.price ?? Number(data?.product?.price);
+        if (currentPrice === 0) return 'El precio no puede ser 0';
+        if (currentPrice !== undefined && currentPrice !== null && !isNaN(currentPrice) && currentPrice < 0) return 'El precio no puede ser negativo';
+        return null;
+    };
 
     const mutation = useMutation({
         mutationFn: ({ productId, price, description }: {
@@ -78,8 +140,27 @@ export default function ProductDetail() {
             price: string,
             description: string | undefined
         }) => modifyProduct({ productId, companyId, price, description }),
-        onSuccess: () => {
-            refetch();
+        onSuccess: async () => {
+
+            // Force a complete cache invalidation for all product-related queries
+            await queryClient.invalidateQueries({
+                predicate: (query) => {
+                    const queryKey = query.queryKey;
+                    return (
+                        Array.isArray(queryKey) &&
+                        (queryKey[0] === 'combinedData' ||
+                            queryKey[0] === 'products' ||
+                            queryKey[0] === 'client-products' ||
+                            queryKey[0] === 'products-search')
+                    );
+                }
+            });
+
+            // Force a refetch of the current data and wait for it to complete
+            await refetch();
+        },
+        onError: (error) => {
+            console.error('Error updating product:', error);
         },
     })
 
@@ -93,6 +174,9 @@ export default function ProductDetail() {
 
     return (
         <div className='relative h-full overflow-y-hidden'>
+            {(mutation.isPending || isUpdating) && (
+                <OverlayLoadingIndicator label="Guardando cambios..." />
+            )}
             <div className='flex flex-col px-10'>
                 <div className='flex items-center px-6 pt-6 pb-3 gap-2'>
                     {isLoading
@@ -141,17 +225,18 @@ export default function ProductDetail() {
                                     <p><strong>Familia:</strong> {data?.product?.family}</p>
                                     <p><strong>Editado:</strong> {data?.product && formatDate(data?.product?.updated)}</p>
                                 </div>
-                                <div className='w-2/5'>
+                                <div className='w-2/6'>
                                     <p><strong>Descripción:</strong></p>
                                     {!isEditing
                                         ? <p className='font-light text-base text-black/50'>{data?.product?.description}</p>
                                         : <Textarea
                                             className='h-48'
-                                            defaultValue={data?.product?.description}
+                                            value={changes?.description ?? data?.product?.description ?? ''}
                                             onChange={(e) => setChanges((prev) => ({
                                                 ...prev ?? { price: data?.product && +data?.product?.price || 0, description: data?.product && data?.product?.description },
                                                 description: e.target.value,
                                             }))}
+                                            disabled={mutation.isPending || isUpdating}
                                         />
                                     }
                                 </div>
@@ -163,20 +248,52 @@ export default function ProductDetail() {
                                 >
                                     <p>Precio:</p>
                                     {!isEditing
-                                        ? <h2 className="text-md font-bold mb-2 leading-none">{
-                                            data?.product && formatToArgentinianPesos(+data?.product?.price)}
-                                        </h2>
+                                        ? <div className="flex flex-col gap-1">
+                                            <h2 className="text-md font-bold leading-none">{
+                                                data?.product && formatToArgentinianPesos(+data?.product?.price)}
+                                            </h2>
+                                            <p className="text-[14px] text-right text-muted-foreground/80">
+                                                PUM: {data?.product && formatToArgentinianPesos(+data?.product?.pricePerBaseUnit)}
+                                            </p>
+                                        </div>
                                         :
-                                        <Input
-                                            defaultValue={changes?.price || data?.product?.price}
-                                            onChange={(e) => {
-                                                const newPrice = parseFloat(e.target.value.replace(",", ".")); // Ensure it's a valid number
-                                                setChanges((prev) => ({
-                                                    ...prev,
-                                                    price: !isNaN(newPrice) ? newPrice : prev?.price ?? 0,
-                                                }));
-                                            }}
-                                        ></Input>
+                                        <div className="relative">
+                                            <Input
+                                                value={isPriceCleared ? '' : (changes?.price?.toString() ?? data?.product?.price?.toString() ?? '')}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    setIsPriceCleared(false);
+                                                    setChanges((prev) => ({
+                                                        ...prev ?? { price: data?.product && +data?.product?.price || 0, description: data?.product?.description },
+                                                        price: value === '' ? undefined : parseFloat(value.replace(",", ".")) || undefined,
+                                                    }));
+                                                }}
+                                                disabled={mutation.isPending || isUpdating}
+                                                placeholder="0.00"
+                                                className={`w-48 ${getPriceError() ? 'border-red-500' : ''}`}
+                                            />
+                                            {isEditing && (
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 p-0 hover:bg-gray-100"
+                                                    onClick={() => {
+                                                        setIsPriceCleared(true);
+                                                        setChanges((prev) => ({
+                                                            ...prev ?? { price: data?.product && +data?.product?.price || 0, description: data?.product?.description },
+                                                            price: undefined,
+                                                        }));
+                                                    }}
+                                                    disabled={mutation.isPending || isUpdating}
+                                                >
+                                                    <LuX size={14} />
+                                                </Button>
+                                            )}
+                                            {getPriceError() && (
+                                                <p className="text-red-500 text-sm mt-1 absolute -bottom-6 left-0">{getPriceError()}</p>
+                                            )}
+                                        </div>
 
                                     }
                                 </div>
@@ -251,14 +368,21 @@ export default function ProductDetail() {
                 <div className={cn('flex items-center justify-end gap-2 absolute -bottom-32 left-0 px-10 h-28 bg-white shadow w-full transition-all duration-300 ease-out', {
                     "bottom-0": isEditing
                 })}>
-                    <Button onClick={saveChanges}>Guardar cambios</Button>
+                    <Button
+                        onClick={saveChanges}
+                        disabled={mutation.isPending || isUpdating || !hasValidPrice()}
+                    >
+                        {(mutation.isPending || isUpdating) ? 'Guardando...' : 'Guardar cambios'}
+                    </Button>
                     <Button
                         variant='destructive'
                         onClick={() => {
-                            const price = Number(data?.product?.price);
-                            setChanges({ description: data?.product?.description, price: price })
-                            setIsEditing(false)
+                            // Reset changes to original values
+                            setChanges(null);
+                            setIsPriceCleared(false);
+                            setIsEditing(false);
                         }}
+                        disabled={mutation.isPending || isUpdating}
                     >
                         Cancelar
                     </Button>

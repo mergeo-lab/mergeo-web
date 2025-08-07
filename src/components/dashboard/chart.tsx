@@ -23,6 +23,7 @@ export default function Chart({ companyId, accountType, queryKey }: Props) {
     const { data, isLoading } = useQuery({
         queryKey: [queryKey, companyId, accountType],
         queryFn: () => accountType === ACCOUNT.provider ? getChartData(companyId) : getClientChartData(companyId),
+        refetchOnWindowFocus: false,
     });
 
     // We only use this to show the chart when there is no data

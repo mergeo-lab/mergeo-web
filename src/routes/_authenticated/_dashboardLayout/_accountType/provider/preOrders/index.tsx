@@ -185,7 +185,7 @@ export default function Sells() {
 
 
     return (
-        <div className='w-full flex flex-col gap-2 relative'>
+        <div className='w-full flex flex-col gap-2 relative h-full'>
             {/* Sticky header with filters */}
             <div className="bg-accent h-20 w-full pl-14 shadow z-20 flex justify-between items-center sticky top-0 left-0 right-0">
                 <div className='w-full flex gap-4'>
@@ -237,7 +237,7 @@ export default function Sells() {
                 </div>
             </div>
 
-            <div className='w-full p-10 h-full flex flex-col items-center -mt-5'>
+            <div className='w-full p-10 flex-1 flex flex-col items-center -mt-5 overflow-hidden'>
                 {
                     (!data?.preOrders || data?.preOrders.length === 0) ? (
                         <div className='w-full h-[calc(100vh-10rem)] flex justify-center items-center absolute top-0 left-0 right-0 bottom-0 '>
@@ -253,19 +253,19 @@ export default function Sells() {
                             </div>
                         </div>
                     ) : (
-                        <div className='w-full'>
-                            <div className="relative max-h-[750px] w-full overflow-y-auto" ref={tableRef}>
-                                <Table>
+                        <div className='w-full h-full flex flex-col'>
+                            <div className={`flex-1 overflow-y-auto overflow-x-auto ${data && data.totalPages > 1 ? 'pb-20' : ''}`} ref={tableRef}>
+                                <Table className="min-w-full">
                                     <TableHeader className='bg-white sticky top-0 z-10 shadow-sm'>
                                         <TableRow className="hover:bg-transparent">
-                                            <TableHead className="w-[150px]">Número de Pedido</TableHead>
-                                            <TableHead className="w-[150px]">Fecha</TableHead>
-                                            <TableHead className="w-[150px]">Zona</TableHead>
-                                            <TableHead className="w-[150px] text-center">Instancia</TableHead>
-                                            <TableHead className="w-[150px] text-center">Fecha de Entrega</TableHead>
-                                            <TableHead className="w-[150px] text-center">Estado</TableHead>
-                                            <TableHead className="w-[150px] text-center">Acciones</TableHead>
-                                            <TableHead className="w-[200px] text-right pr-14">Orden de Compra</TableHead>
+                                            <TableHead className="min-w-[120px]">Número de Pedido</TableHead>
+                                            <TableHead className="min-w-[120px]">Fecha</TableHead>
+                                            <TableHead className="min-w-[120px]">Zona</TableHead>
+                                            <TableHead className="min-w-[100px] text-center">Instancia</TableHead>
+                                            <TableHead className="min-w-[140px] text-center">Fecha de Entrega</TableHead>
+                                            <TableHead className="min-w-[100px] text-center">Estado</TableHead>
+                                            <TableHead className="min-w-[120px] text-center">Acciones</TableHead>
+                                            <TableHead className="min-w-[160px] text-right pr-14">Orden de Compra</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody className="bg-white">
@@ -274,22 +274,22 @@ export default function Sells() {
                                             .map((order: PreOrderSchemaType) => {
                                                 return (
                                                     <TableRow className="hover:bg-white first:border-t-none" key={order.id}>
-                                                        <TableCell className="w-[150px]">{order.preOrderNumber || 'N/A'}</TableCell>
-                                                        <TableCell className="w-[150px]">{safeFormatDate(order.created)}</TableCell>
-                                                        <TableCell className="w-[150px]">{order.dropZoneName || 'N/A'}</TableCell>
-                                                        <TableCell className="w-[150px] text-center">{order.instance || 'N/A'}</TableCell>
-                                                        <TableCell className="w-[150px] text-center">
+                                                        <TableCell className="min-w-[120px]">{order.preOrderNumber || 'N/A'}</TableCell>
+                                                        <TableCell className="min-w-[120px]">{safeFormatDate(order.created)}</TableCell>
+                                                        <TableCell className="min-w-[120px]">{order.dropZoneName || 'N/A'}</TableCell>
+                                                        <TableCell className="min-w-[100px] text-center">{order.instance || 'N/A'}</TableCell>
+                                                        <TableCell className="min-w-[140px] text-center">
                                                             {order.criteria?.expectedDeliveryStartDay && order.criteria?.expectedDeliveryEndDay
                                                                 ? formatDeliveryDateRange(order.criteria.expectedDeliveryStartDay, order.criteria.expectedDeliveryEndDay)
                                                                 : 'N/A'
                                                             }
                                                         </TableCell>
-                                                        <TableCell className="w-[150px] text-center">
+                                                        <TableCell className="min-w-[100px] text-center">
                                                             <div className="flex justify-center">
                                                                 <StatusBadge className='py-2 px-6 text-sm' status={order.status || 'unknown'} />
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell className="w-[150px] text-center">
+                                                        <TableCell className="min-w-[120px] text-center">
                                                             <Link to={`/provider/preOrders/$preOrderId`} params={{ preOrderId: order.id }}>
                                                                 <Button variant='ghost' className='space-x-2'>
                                                                     <LuEye className='cursor-pointer' size={20} />
@@ -297,7 +297,7 @@ export default function Sells() {
                                                                 </Button>
                                                             </Link>
                                                         </TableCell>
-                                                        <TableCell className="w-[200px] text-right">
+                                                        <TableCell className="min-w-[160px] text-right">
                                                             {order.buyOrder
                                                                 ? (
                                                                     <Link to={`/buyOrder/$orderId`} params={{ orderId: order.buyOrder.id }} key={order.buyOrder.id}>
@@ -321,7 +321,7 @@ export default function Sells() {
 
                             {/* Pagination */}
                             {data && data.totalPages > 1 && (
-                                <div className='sticky bottom-0 bg-white py-5 shadow-[0_-4px_6px_-1px_rgb(0_0_0/0.1)]'>
+                                <div className='absolute bottom-0 left-0 right-0 bg-white py-5 shadow-[0_-4px_6px_-1px_rgb(0_0_0/0.1)] border-t'>
                                     <PaginationCustom
                                         currentPage={page}
                                         prev={page > 1}

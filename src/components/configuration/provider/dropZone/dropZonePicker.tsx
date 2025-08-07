@@ -24,6 +24,7 @@ export function DropZonePicker({ className, companyId, newEntry, disabled }: Pro
 
     const { data: dropZonesListData, isFetching, isError, refetch } = useQuery({
         queryKey: ['dropZones', companyId],
+        refetchOnWindowFocus: false,
         queryFn: () => companyId ? getDropZones({ companyId }) : Promise.reject(new Error('Company ID is undefined')),
     })
     const dropZones: IncomingDropZoneSchemaType[] = dropZonesListData || [];

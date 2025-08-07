@@ -45,6 +45,7 @@ export function Discounts() {
             return getAllDiscountList(companyId);
         },
         enabled: !!companyId, // Ensure the query runs only if company ID exists
+        refetchOnWindowFocus: false,
     });
 
     function handleCreateDiscountList() {

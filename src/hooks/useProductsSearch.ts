@@ -115,6 +115,7 @@ export function useProductSearch(searchParams: Partial<SearchParams>) {
       };
     },
     enabled: !!company?.id && configDone,
+    refetchOnWindowFocus: false,
   });
 
   const resetSearch = () => {

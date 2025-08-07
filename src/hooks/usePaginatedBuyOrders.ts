@@ -53,7 +53,7 @@ export function usePaginatedBuyOrders(
       return getAllBuyOrdersPaginated(companyId, isClient, pagination, filters);
     },
     enabled: !!companyId,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     refetchOnMount: true,
   });
 

@@ -17,6 +17,7 @@ export const UseNewProductSearch = () => {
       return { products: result as unknown as ProductSchemaType[] };
     },
     enabled: !!params,
+    refetchOnWindowFocus: false,
   });
 
   return query;

@@ -169,17 +169,19 @@ export default function Products() {
                     ))}
                 </div>
                 : data && data.products.length > 0
-                    ? <div className='grid grid-rows-[1fr_auto] h-full w-full gap-4 overflow-auto pt-5'>
-                        <ProviderProductsTable
-                            products={data.products}
-                            currentPage={`${data.currentPage}`}
-                            tableRef={tableRef as React.RefObject<HTMLDivElement>}
-                            deleteCallback={() => refetch()}
-                            showOnlyInactive={showOnlyInactive}
-                            refetchCallback={() => refetch()}
-                        />
+                    ? <div className='flex flex-col h-full w-full pt-5 relative'>
+                        <div className={`flex-1 overflow-auto ${data.totalPages > 1 ? 'pb-20' : ''}`}>
+                            <ProviderProductsTable
+                                products={data.products}
+                                currentPage={`${data.currentPage}`}
+                                tableRef={tableRef as React.RefObject<HTMLDivElement>}
+                                deleteCallback={() => refetch()}
+                                showOnlyInactive={showOnlyInactive}
+                                refetchCallback={() => refetch()}
+                            />
+                        </div>
                         {data.totalPages > 1 && (
-                            <div className='sticky bottom-0 bg-white py-5 shadow-[0_-4px_6px_-1px_rgb(0_0_0_/0.1)]'>
+                            <div className='absolute bottom-0 left-0 right-0 bg-white py-5 shadow-[0_-4px_6px_-1px_rgb(0_0_0_/0.1)] border-t'>
                                 <PaginationCustom
                                     currentPage={page}
                                     prev={page > 1}

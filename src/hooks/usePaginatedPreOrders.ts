@@ -62,7 +62,7 @@ export function usePaginatedPreOrders(companyId: string) {
       return getAllPreOrdersPaginated(companyId, pagination, filters);
     },
     enabled: !!companyId,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     refetchOnMount: true,
   });
 
@@ -159,7 +159,7 @@ export function usePaginatedSellPreOrders(companyId: string) {
       return getSellPreOrdersPaginated(companyId, pagination, filters);
     },
     enabled: !!companyId,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     refetchOnMount: true,
     staleTime: 0, // Always consider data stale
   });

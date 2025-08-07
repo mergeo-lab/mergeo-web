@@ -36,6 +36,7 @@ export function PickUpPicker({ className, companyId, disabled, notFoundMessage, 
     const { data: pickUpResult, isLoading, isError, refetch } = useQuery({
         queryKey: ['pickUp', companyId],
         queryFn: () => companyId ? getPickUpPoints({ companyId }) : Promise.reject(new Error('Company ID is undefined')),
+        refetchOnWindowFocus: false,
     });
 
     const pickUpPoints = pickUpResult?.data;

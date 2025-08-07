@@ -12,6 +12,7 @@ export default function ProductsStats({ companyId }: { companyId: string }) {
     const { data, isLoading } = useQuery({
         queryKey: ['products-stats', companyId],
         queryFn: () => getProductsStats(companyId),
+        refetchOnWindowFocus: false,
     });
 
 

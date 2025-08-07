@@ -41,6 +41,7 @@ type SearchState = {
     productId: string,
     replacementCriteria: ReplacementCriteria | null
   ) => void;
+  updateProductQuantity: (productId: string, quantity: number) => void;
   reset: () => void;
 };
 const UseSearchStore = create<SearchState>((set, get) => ({
@@ -90,22 +91,23 @@ const UseSearchStore = create<SearchState>((set, get) => ({
     set({ morePresentations }),
 
   removeProduct: (productId: string) => {
-    const { activeSearchItem, savedProducts } = get();
+    const { savedProducts } = get();
     console.log('[removeProduct] called with:', productId);
-    // Use the active search ID or default to "generic"
-    const activeSearchId = activeSearchItem?.id || 'default';
-    const productsArray = savedProducts[activeSearchId] || [];
-    console.log('[removeProduct] Current productsArray:', productsArray);
-    // Filter out the product with the matching id and providerId
-    const updatedProductsArray = productsArray.filter(
-      (p) => !(p.id === productId)
-    );
-    console.log('[removeProduct] Updated productsArray:', updatedProductsArray);
+    console.log('[removeProduct] Current savedProducts:', savedProducts);
+
+    // Remove product from all search lists
+    const updatedSavedProducts = {};
+    Object.keys(savedProducts).forEach((searchId) => {
+      const productsArray = savedProducts[searchId] || [];
+      const updatedProductsArray = productsArray.filter(
+        (p) => p.id !== productId
+      );
+      updatedSavedProducts[searchId] = updatedProductsArray;
+    });
+
+    console.log('[removeProduct] Updated savedProducts:', updatedSavedProducts);
     set({
-      savedProducts: {
-        ...savedProducts,
-        [activeSearchId]: updatedProductsArray,
-      },
+      savedProducts: updatedSavedProducts,
     });
   },
 
@@ -163,6 +165,35 @@ const UseSearchStore = create<SearchState>((set, get) => ({
     );
     console.log(
       '[updateProductReplacementCriteria] Updated productsArray:',
+      updatedProductsArray
+    );
+
+    set({
+      savedProducts: {
+        ...savedProducts,
+        [activeSearchId]: updatedProductsArray,
+      },
+    });
+  },
+
+  updateProductQuantity: (productId: string, quantity: number) => {
+    const { activeSearchItem, savedProducts } = get();
+    console.log('[updateProductQuantity] called with:', {
+      productId,
+      quantity,
+    });
+    const activeSearchId = activeSearchItem?.id || 'default';
+    const productsArray = savedProducts[activeSearchId] || [];
+    console.log(
+      '[updateProductQuantity] Current productsArray:',
+      productsArray
+    );
+
+    const updatedProductsArray = productsArray.map((product) =>
+      product.id === productId ? { ...product, quantity } : product
+    );
+    console.log(
+      '[updateProductQuantity] Updated productsArray:',
       updatedProductsArray
     );
 

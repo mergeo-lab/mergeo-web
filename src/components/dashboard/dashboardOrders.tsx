@@ -25,6 +25,7 @@ export default function DashboardOrders({ companyId, accountType, queryKey, item
     const { data, isLoading, refetch } = useQuery({
         queryKey: [queryKey, companyId, accountType],
         queryFn: () => accountType === ACCOUNT.provider ? getPendingOrders(companyId) : getLatestOrders(companyId),
+        refetchOnWindowFocus: false,
     });
 
     useEffect(() => {

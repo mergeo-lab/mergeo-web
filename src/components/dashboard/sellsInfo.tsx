@@ -21,6 +21,7 @@ export default function SellsInfo({ companyId }: { companyId: string }) {
             return getSellInfo(companyId);
         },
         enabled: !!companyId, // Ensure the query runs only if company ID exists
+        refetchOnWindowFocus: false,
     });
 
     if (isLoading) {
