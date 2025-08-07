@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { PreOrderSchemaType } from '@/lib/schemas';
 import { formatDate, NotificationType } from '@/lib/utils';
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback, useMemo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import sinPedidos from '@/assets/sin-pedidos.png'
 import { ConfigTabs } from '@/lib/constants';
@@ -13,7 +13,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useNotifications } from '@/context/NotificationsContext';
 import { usePaginatedSellPreOrders } from '@/hooks/usePaginatedPreOrders';
 import { PaginationCustom } from '@/components/pagination';
-import UseProviderPreOrdersPaginationState, { preOrdersSortOptions, preOrdersStatusFilters } from '@/store/preOrdersPagination.store';
+import UseProviderPreOrdersPaginationState, { preOrdersSortOptions, preOrdersStatusFilters, preOrdersZoneFilters } from '@/store/preOrdersPagination.store';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 // Safe formatDate wrapper to handle invalid dates
@@ -23,6 +23,31 @@ const safeFormatDate = (dateString: string | undefined): string => {
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return 'Fecha inválida';
         return formatDate(dateString);
+    } catch {
+        return 'Fecha inválida';
+    }
+};
+
+// Format delivery date range
+const formatDeliveryDateRange = (startDay: string | undefined, endDay: string | undefined): React.ReactNode => {
+    if (!startDay || !endDay) return 'N/A';
+
+    try {
+        const startDate = new Date(startDay);
+        const endDate = new Date(endDay);
+
+        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) return 'Fecha inválida';
+
+        const formatDay = (date: Date) => {
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            return `${day}/${month}`;
+        };
+
+        const startFormatted = formatDay(startDate);
+        const endFormatted = formatDay(endDate);
+
+        return (<p>Desde el {startFormatted}<br />  Hasta el {endFormatted}</p >);
     } catch {
         return 'Fecha inválida';
     }
@@ -38,10 +63,11 @@ export default function Sells() {
     const { notifications } = useNotifications();
     const tableRef = useRef<HTMLDivElement>(null);
 
-    const { setPage, page, statusFilter, setStatusFilter, sort, setSort } = UseProviderPreOrdersPaginationState();
+    const { setPage, page, statusFilter, setStatusFilter, zoneFilter, setZoneFilter, sort, setSort } = UseProviderPreOrdersPaginationState();
 
     const {
         data,
+        allPreOrdersData,
         isLoading,
         isError,
         refetch,
@@ -61,16 +87,44 @@ export default function Sells() {
         }
     }, [notifications, refetch]);
 
+    // Temporary: use filtered data to test if the logic works
+    const testData = allPreOrdersData || data?.preOrders || [];
+
+    const uniqueZones = (() => {
+        if (!testData || !Array.isArray(testData)) {
+            return [];
+        }
+        const zones = Array.from(
+            new Map(
+                testData
+                    .filter(order => order && order.dropZoneId && order.dropZoneName)
+                    .map(order => [order.dropZoneId, { id: order.dropZoneId, name: order.dropZoneName }])
+            ).values()
+        );
+
+        return zones;
+    })();
+
+    // Create dynamic zone filters based on available data
+    const availableZoneFilters = useMemo(() => [
+        ...preOrdersZoneFilters,
+        ...uniqueZones.map(zone => ({
+            id: zone.id,
+            name: zone.name,
+            value: zone.id,
+        }))
+    ], [uniqueZones]);
+
     // Handle all filter changes
     useEffect(() => {
-        console.log('Filter effect triggered with sort:', sort, 'and status:', statusFilter);
         handleSearch({
             sortByCreated: true,
             sortOrder: sort.sortOrder,
-            ...(statusFilter.value !== '' && { status: statusFilter.value })
+            ...(statusFilter.value !== '' && { status: statusFilter.value }),
+            ...(zoneFilter.value !== '' && { zone: zoneFilter.value })
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [sort.sortOrder, statusFilter.value]); // Depend on both sort and status filter
+    }, [sort.sortOrder, statusFilter.value, zoneFilter.value]); // Depend on sort, status filter, and zone filter
 
     // Handle status filter change
     const handleStatusFilterChange = useCallback((value: string) => {
@@ -81,21 +135,24 @@ export default function Sells() {
         }
     }, [setStatusFilter]);
 
+    // Handle zone filter change
+    const handleZoneFilterChange = useCallback((value: string) => {
+        const selectedFilter = availableZoneFilters.find(filter => filter.id === value);
+        if (selectedFilter) {
+            setZoneFilter(selectedFilter);
+            // Don't call handleSearch here, let the useEffect handle it
+        }
+    }, [setZoneFilter, availableZoneFilters]);
+
     // Handle sort change
     const handleSortChange = useCallback((value: string) => {
         const selectedSort = preOrdersSortOptions.find(sort => sort.id === value);
         if (selectedSort) {
-            console.log('Changing sort to:', selectedSort);
             setSort(selectedSort);
             // Don't call handleSearch here, let the useEffect handle it
         }
     }, [setSort]);
 
-    // Debug: Log current state
-    useEffect(() => {
-        console.log('Current sort state:', sort);
-        console.log('Current status filter:', statusFilter);
-    }, [sort, statusFilter]);
 
     const scrollToTop = useCallback(() => {
         tableRef.current?.scrollTo({
@@ -126,6 +183,7 @@ export default function Sells() {
         );
     }
 
+
     return (
         <div className='w-full flex flex-col gap-2 relative'>
             {/* Sticky header with filters */}
@@ -139,6 +197,21 @@ export default function Sells() {
                             </SelectTrigger>
                             <SelectContent>
                                 {preOrdersStatusFilters.map((filter) => (
+                                    <SelectItem key={filter.id} value={filter.id}>
+                                        {filter.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className='flex items-center gap-2 [&>p]:text-nowrap'>
+                        <p>Zona</p>
+                        <Select onValueChange={handleZoneFilterChange} value={zoneFilter.id}>
+                            <SelectTrigger className='px-5 w-fit'>
+                                <SelectValue placeholder="" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {availableZoneFilters.map((filter) => (
                                     <SelectItem key={filter.id} value={filter.id}>
                                         {filter.name}
                                     </SelectItem>
@@ -189,6 +262,7 @@ export default function Sells() {
                                             <TableHead className="w-[150px]">Fecha</TableHead>
                                             <TableHead className="w-[150px]">Zona</TableHead>
                                             <TableHead className="w-[150px] text-center">Instancia</TableHead>
+                                            <TableHead className="w-[150px] text-center">Fecha de Entrega</TableHead>
                                             <TableHead className="w-[150px] text-center">Estado</TableHead>
                                             <TableHead className="w-[150px] text-center">Acciones</TableHead>
                                             <TableHead className="w-[200px] text-right pr-14">Orden de Compra</TableHead>
@@ -204,6 +278,12 @@ export default function Sells() {
                                                         <TableCell className="w-[150px]">{safeFormatDate(order.created)}</TableCell>
                                                         <TableCell className="w-[150px]">{order.dropZoneName || 'N/A'}</TableCell>
                                                         <TableCell className="w-[150px] text-center">{order.instance || 'N/A'}</TableCell>
+                                                        <TableCell className="w-[150px] text-center">
+                                                            {order.criteria?.expectedDeliveryStartDay && order.criteria?.expectedDeliveryEndDay
+                                                                ? formatDeliveryDateRange(order.criteria.expectedDeliveryStartDay, order.criteria.expectedDeliveryEndDay)
+                                                                : 'N/A'
+                                                            }
+                                                        </TableCell>
                                                         <TableCell className="w-[150px] text-center">
                                                             <div className="flex justify-center">
                                                                 <StatusBadge className='py-2 px-6 text-sm' status={order.status || 'unknown'} />

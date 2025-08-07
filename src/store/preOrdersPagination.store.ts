@@ -51,15 +51,36 @@ export const preOrdersStatusFilters: PreOrdersStatusFilterType[] = [
     name: 'Parcialmente Aceptados',
     value: 'partialy-accepted',
   },
+  {
+    id: 'timeout',
+    name: 'Expirados',
+    value: 'timeout',
+  },
+];
+
+export type PreOrdersZoneFilterType = {
+  id: string;
+  name: string;
+  value: string;
+};
+
+export const preOrdersZoneFilters: PreOrdersZoneFilterType[] = [
+  {
+    id: 'all',
+    name: 'Todas las Zonas',
+    value: '',
+  },
 ];
 
 type PreOrdersPaginationState = {
   page: number;
   statusFilter: PreOrdersStatusFilterType;
+  zoneFilter: PreOrdersZoneFilterType;
   sort: PreOrdersSortOptionsType;
   setPage: (number: number) => void;
   getPage: () => number;
   setStatusFilter: (filter: PreOrdersStatusFilterType) => void;
+  setZoneFilter: (filter: PreOrdersZoneFilterType) => void;
   setSort: (sort: PreOrdersSortOptionsType) => void;
 };
 
@@ -67,6 +88,7 @@ const UsePreOrdersPaginationState = create<PreOrdersPaginationState>(
   (set, get) => ({
     page: 1,
     statusFilter: preOrdersStatusFilters[0],
+    zoneFilter: preOrdersZoneFilters[0],
     sort: preOrdersSortOptions[0],
 
     setPage: (page: number) => set(() => ({ page })),
@@ -74,6 +96,9 @@ const UsePreOrdersPaginationState = create<PreOrdersPaginationState>(
 
     setStatusFilter: (statusFilter: PreOrdersStatusFilterType) =>
       set(() => ({ statusFilter })),
+
+    setZoneFilter: (zoneFilter: PreOrdersZoneFilterType) =>
+      set(() => ({ zoneFilter })),
 
     setSort: (sort: PreOrdersSortOptionsType) => set(() => ({ sort })),
   })
@@ -85,10 +110,12 @@ export default UsePreOrdersPaginationState;
 type ProviderPreOrdersPaginationState = {
   page: number;
   statusFilter: PreOrdersStatusFilterType;
+  zoneFilter: PreOrdersZoneFilterType;
   sort: PreOrdersSortOptionsType;
   setPage: (number: number) => void;
   getPage: () => number;
   setStatusFilter: (filter: PreOrdersStatusFilterType) => void;
+  setZoneFilter: (filter: PreOrdersZoneFilterType) => void;
   setSort: (sort: PreOrdersSortOptionsType) => void;
 };
 
@@ -96,6 +123,7 @@ const UseProviderPreOrdersPaginationState =
   create<ProviderPreOrdersPaginationState>((set, get) => ({
     page: 1,
     statusFilter: preOrdersStatusFilters[0],
+    zoneFilter: preOrdersZoneFilters[0],
     sort: preOrdersSortOptions[0],
 
     setPage: (page: number) => set(() => ({ page })),
@@ -104,6 +132,11 @@ const UseProviderPreOrdersPaginationState =
     setStatusFilter: (statusFilter: PreOrdersStatusFilterType) => {
       console.log('Setting status filter:', statusFilter);
       set(() => ({ statusFilter }));
+    },
+
+    setZoneFilter: (zoneFilter: PreOrdersZoneFilterType) => {
+      console.log('Setting zone filter:', zoneFilter);
+      set(() => ({ zoneFilter }));
     },
 
     setSort: (sort: PreOrdersSortOptionsType) => {

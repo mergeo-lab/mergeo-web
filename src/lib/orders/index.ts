@@ -318,6 +318,7 @@ export async function getSellPreOrdersPaginated(
   },
   filters?: {
     status?: string;
+    zone?: string; // This will be the dropZoneId
     sortByCreated?: boolean;
     sortOrder?: 'ASC' | 'DESC';
   }
@@ -336,6 +337,7 @@ export async function getSellPreOrdersPaginated(
 
     // filters
     if (filters?.status) params.status = filters.status;
+    if (filters?.zone) params.dropZoneId = filters.zone;
     if (filters?.sortByCreated !== undefined)
       params.sortByCreated = filters.sortByCreated;
     if (filters?.sortOrder) params.sortOrder = filters.sortOrder;
