@@ -92,11 +92,9 @@ const UseSearchStore = create<SearchState>((set, get) => ({
 
   removeProduct: (productId: string) => {
     const { savedProducts } = get();
-    console.log('[removeProduct] called with:', productId);
-    console.log('[removeProduct] Current savedProducts:', savedProducts);
 
     // Remove product from all search lists
-    const updatedSavedProducts = {};
+    const updatedSavedProducts: SavedProducts = {};
     Object.keys(savedProducts).forEach((searchId) => {
       const productsArray = savedProducts[searchId] || [];
       const updatedProductsArray = productsArray.filter(
@@ -105,7 +103,6 @@ const UseSearchStore = create<SearchState>((set, get) => ({
       updatedSavedProducts[searchId] = updatedProductsArray;
     });
 
-    console.log('[removeProduct] Updated savedProducts:', updatedSavedProducts);
     set({
       savedProducts: updatedSavedProducts,
     });
