@@ -188,7 +188,7 @@ export default function OrdenesDeCompra() {
                                         <TableHead>Ultimo dia de entrega</TableHead>
                                         <TableHead>Rango horario de entrega</TableHead>
                                         <TableHead className='text-center'>Detalle</TableHead>
-                                        <TableHead className='text-center'>Vista</TableHead>
+                                        <TableHead className='text-center'>Procesada</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody className='bg-white'>

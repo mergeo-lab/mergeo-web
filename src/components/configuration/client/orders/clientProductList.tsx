@@ -3,49 +3,45 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { PRE_ORDER_STATUS } from '@/lib/constants';
-import { PreOrderProductSchemaType } from '@/lib/schemas';
+import { NewPreOrderProductSchemaType } from '@/lib/schemas';
 import { SellProductSchemaType } from '@/lib/schemas/sell.schema';
 import { cn, formatToArgentinianPesos } from '@/lib/utils';
 
 type Props = {
     orderStatus: PRE_ORDER_STATUS | undefined,
-    data: PreOrderProductSchemaType[] | undefined,
-    providerId: string | undefined,
-    dropZoneId: string | undefined,
-    acceptedProducts: SellProductSchemaType[],
+    data: NewPreOrderProductSchemaType[] | undefined,
+    providerId?: string,
+    dropZoneId?: string,
+    acceptedProducts?: SellProductSchemaType[],
     isLoading: boolean,
     isProvider: boolean,
-    toggleAllProducts: () => void
-    onSelect: (product: SellProductSchemaType) => void
+    toggleAllProducts?: () => void
+    onSelect?: (product: SellProductSchemaType) => void
     disabled?: boolean
     totalPrice?: number
 }
 
-export default function ProductList({ orderStatus, data, providerId, dropZoneId, acceptedProducts, isProvider = true, isLoading, onSelect, toggleAllProducts, disabled = false, totalPrice }: Props) {
-
-    // Debug: Check dropZoneId
-    console.log('ProductList dropZoneId:', dropZoneId);
+export default function ClientProductList({ orderStatus, data, providerId, dropZoneId, acceptedProducts, isProvider = false, isLoading, onSelect, toggleAllProducts, disabled = false, totalPrice }: Props) {
 
     const total = data && data.reduce((acc, item) => {
         // Check if the item is in the acceptedProducts array
         let isAccepted = false;
         if (orderStatus === PRE_ORDER_STATUS.pending) {
-            isAccepted = acceptedProducts.some(
+            isAccepted = acceptedProducts && acceptedProducts.some(
                 (accepted) => accepted.id === item.id
-            );
+            ) || false;
         } else if (orderStatus === PRE_ORDER_STATUS.accepted || orderStatus === PRE_ORDER_STATUS.partialyAccepted) {
             isAccepted = item.accepted;
         }
 
         if (isAccepted) {
-            const itemTotal = item.quantity * +item?.price || 0; // Ensure price is treated as a number
+            const itemTotal = item.quantity * +item?.price || 0;
             return acc + itemTotal;
         }
 
-        return acc; // Skip non-accepted products
-    }, 0); // Initial accumulator value is 0
+        return acc;
+    }, 0);
 
-    // Format the total to Argentinian Pesos
     const formattedTotal = total && formatToArgentinianPesos(total);
 
     return (
@@ -55,7 +51,7 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
             <Table>
                 <TableHeader className='sticky top-0 shadow-sm'>
                     <TableRow className="bg-white hover:bg-white [&>th]:text-secondary/90 [&>th]:font-thin">
-                        <TableHead>PRODCUTO</TableHead>
+                        <TableHead>PRODUCTO</TableHead>
                         <TableHead>UNIDAD DE MEDIDA</TableHead>
                         <TableHead>CANTIDAD</TableHead>
                         <TableHead>PRECIO</TableHead>
@@ -70,57 +66,58 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                                         'cursor-not-allowed opacity-50': disabled
                                     })}
                                     onClick={disabled ? undefined : () => {
-                                        toggleAllProducts();
+                                        toggleAllProducts && toggleAllProducts();
                                     }}
                                 >
                                     <Label className={cn('text-sm font-thin', {
                                         'cursor-pointer': !disabled,
                                         'cursor-not-allowed': disabled
                                     })}>{
-                                            acceptedProducts.length !== data?.length ? 'Seleccionar todos' : 'Deseleccionar todos'}</Label>
+                                            acceptedProducts && acceptedProducts.length !== data?.length ? 'Seleccionar todos' : 'Deseleccionar todos'}</Label>
                                     <Checkbox
-                                        checked={acceptedProducts.length !== data?.length}
+                                        checked={acceptedProducts && acceptedProducts.length !== data?.length}
                                         disabled={
-                                            orderStatus !== PRE_ORDER_STATUS.pending && acceptedProducts.length !== data?.length || disabled}
+                                            orderStatus !== PRE_ORDER_STATUS.pending && acceptedProducts && acceptedProducts.length !== data?.length || disabled}
                                     />
                                 </div >
                             </TableHead>
                         }
                     </TableRow>
                 </TableHeader>
-                {isLoading ?
-                    <TableBody className="bg-white hover:bg-white">
-                        {Array.from({ length: 6 }).map((_, index) => (
-                            <TableRow key={"tr-" + index} className="hover:bg-transparent border-none">
-                                <TableCell colSpan={7} className="h-0 p-2 border-none hover:none ">
-                                    <Skeleton key={index} className="h-14 w-full rounded-sm" />
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                    :
+                {isLoading ? (
                     <>
+
+                        <TableBody className="bg-white hover:bg-white">
+                            {Array.from({ length: 6 }).map((_, index) => (
+                                <TableRow key={"tr-" + index} className="hover:bg-transparent border-none">
+                                    <TableCell colSpan={6} className="h-0 p-2 border-none hover:none ">
+                                        <Skeleton key={index} className="h-14 w-full rounded-sm" />
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </>
+                ) : (
+                    <>
+
                         <TableBody className="bg-white">
                             <TableRow className="bg-border/30 hover:bg-border/30">
                                 <TableCell colSpan={6} className="h-[1px] p-1"></TableCell>
                             </TableRow>
                             {
                                 data && data.map((item) => {
-                                    const product = item.product
-
-
-
+                                    console.log('Rendering client product:', item);
                                     return (
-                                        <TableRow key={product.id} className={cn("hover:bg-white first:border-t-none", {
+                                        <TableRow key={item.id} className={cn("hover:bg-white first:border-t-none", {
                                             'bg-green-50 hover:bg-green-50': item.accepted && (orderStatus === PRE_ORDER_STATUS.accepted || orderStatus === PRE_ORDER_STATUS.partialyAccepted),
                                             'bg-red-50 hover:bg-red-50': !item.accepted && (orderStatus === PRE_ORDER_STATUS.rejected || orderStatus === PRE_ORDER_STATUS.partialyAccepted),
                                             'hover:bg-white': orderStatus === PRE_ORDER_STATUS.pending || orderStatus !== PRE_ORDER_STATUS.rejected
                                         })}>
                                             <TableCell>
-                                                <div> {product?.name} {product?.variety}</div>
-                                                <div className='text-muted font-thin'>{product?.brand}</div>
+                                                <div>{item.productName} {item.variety}</div>
+                                                <div className='text-muted font-thin'>{item.brand}</div>
                                             </TableCell>
-                                            <TableCell>{product?.netContent} {product?.measurementUnit}</TableCell>
+                                            <TableCell>{item.netContent} {item.measurementUnit}</TableCell>
                                             <TableCell>{item.quantity}</TableCell>
                                             <TableCell>{formatToArgentinianPesos(+item?.price)}</TableCell>
                                             {orderStatus !== PRE_ORDER_STATUS.pending &&
@@ -136,13 +133,13 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                                                     <div className='flex justify-end mr-20'>
                                                         <Checkbox
                                                             disabled={
-                                                                orderStatus !== PRE_ORDER_STATUS.pending && !product.accepted || disabled}
+                                                                orderStatus !== PRE_ORDER_STATUS.pending && !item.accepted || disabled}
                                                             checked={
                                                                 orderStatus === PRE_ORDER_STATUS.pending
                                                                     ? !(acceptedProducts || []).find((p) => p.id === item.id)
-                                                                    : product.accepted
+                                                                    : item.accepted
                                                             }
-                                                            onClick={disabled ? undefined : () => onSelect({
+                                                            onClick={disabled ? undefined : () => onSelect && onSelect({
                                                                 id: item.id,
                                                                 quantity: item.quantity,
                                                                 price: String(item.price),
@@ -166,14 +163,14 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                                 <TableCell colSpan={2} className={cn("h-[2px] p-2 pl-4 font-bold", {
                                     'text-right pr-14': !isProvider
                                 })}>
-                                    {!isProvider && orderStatus === PRE_ORDER_STATUS.pending
+                                    {!isProvider
                                         ? <p>{formatToArgentinianPesos(totalPrice || 0)}</p>
                                         : formattedTotal}
                                 </TableCell>
                             </TableRow>
                         </TableBody>
                     </>
-                }
+                )}
             </Table>
         </div >
 

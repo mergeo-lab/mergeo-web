@@ -1,18 +1,13 @@
-import ProductList from '@/components/configuration/provider/sells/productList';
+import ClientProductList from '@/components/configuration/client/orders/clientProductList';
 import { StatusBadge } from '@/components/statusBadge';
-import { getSellPreOrdersById, preOrderProviderResponse } from '@/lib/orders';
+import { getClientPreOrderById } from '@/lib/orders';
 import { cn, formatDate } from '@/lib/utils';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { createFileRoute, Link, useParams } from '@tanstack/react-router'
-import { useCallback, useEffect } from 'react';
-import UseProviderSellStore from '@/store/providerSell';
-import { SellProductSchemaType } from '@/lib/schemas/sell.schema';
-import { PreOrderProductSchemaType } from '@/lib/schemas';
+import { useQuery } from '@tanstack/react-query';
+import { createFileRoute, useParams } from '@tanstack/react-router'
+
 import { PRE_ORDER_STATUS } from '@/lib/constants';
-import UseCompanyStore from '@/store/company.store';
+
 import BackLink from '@/components/backLink';
-import { Button } from '@/components/ui/button';
-import { BsBoxArrowInRight } from "react-icons/bs";
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/preOrders/$preOrderId')({
     component: () => <SellsDetail />,
@@ -21,65 +16,40 @@ export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountT
 export function SellsDetail() {
     const { preOrderId } = useParams({ from: '/_authenticated/_dashboardLayout/_accountType/client/preOrders/$preOrderId' });
 
-    const {
-        acceptedProducts,
-        addAllAcceptedProducts,
-        toggleAllProducts,
-        toggleProductAcceptance,
-    } = UseProviderSellStore();
 
-    const { company } = UseCompanyStore();
-    const companyId = company?.id;
 
-    const { data: order, isLoading } = useQuery({
-        queryKey: ['proOrderDetail', preOrderId],
-        queryFn: ({ queryKey }) => {
-            const preOrderId = queryKey[1];
+
+
+    const { data: order, isLoading, error } = useQuery({
+        queryKey: ['clientPreOrderDetail', preOrderId],
+        queryFn: async () => {
             if (!preOrderId) {
-                // Return a rejected promise if companyId is undefined
-                return Promise.reject(new Error('Order ID is undefined'));
+                throw new Error('Order ID is undefined');
             }
-            return getSellPreOrdersById(preOrderId);
+            console.log('Query function executing with preOrderId:', preOrderId);
+            const result = await getClientPreOrderById(preOrderId);
+            console.log('Query function result:', result);
+            return result;
         },
-        enabled: !!preOrderId, // Ensure the query runs only if company ID exists
+        enabled: !!preOrderId,
+        refetchOnWindowFocus: false,
     });
 
-    const mutation = useMutation({ mutationFn: preOrderProviderResponse });
+    // Debug logs
+    console.log('Client PreOrder Debug:', {
+        preOrderId,
+        isLoading,
+        error,
+        order,
+        orderProducts: order?.products,
+        orderProductsLength: order?.products?.length,
+        orderStatus: order?.status,
+        orderTotalPrice: order?.totalPrice
+    });
 
-    const sellProduct = useCallback(() => {
-        if (!companyId || !order) return;
-
-        // Debug: Check dropZoneId and prices
-        console.log('Order dropZoneId in client sellProduct:', order.dropZoneId);
-        console.log('Client product prices:', order.preOrderProducts.map(item => ({ id: item.id, price: item.price, priceType: typeof item.price })));
-
-        // Validate that we have a valid dropZoneId
-        if (!order.dropZoneId) {
-            console.error('Missing dropZoneId in order:', order);
-            return [];
-        }
-
-        return order?.preOrderProducts.map((item: PreOrderProductSchemaType): SellProductSchemaType => {
-            return {
-                id: item.id,
-                quantity: item.quantity,
-                price: String(item.price), // Ensure it's a string
-                providerId: companyId,
-                dropZoneId: order.dropZoneId,
-            };
-        });
-    }, [order, companyId]);
-
-    const toggleAllAcceptedProducts = useCallback(() => {
-        const acceptedProdcut = sellProduct();
-        addAllAcceptedProducts(acceptedProdcut || []);
-    }, [addAllAcceptedProducts, sellProduct]);
-
-    useEffect(() => {
-        if (order) {
-            toggleAllAcceptedProducts();
-        }
-    }, [order, toggleAllAcceptedProducts]);
+    if (error) {
+        console.error('Query error:', error);
+    }
 
     return (
         <>
@@ -90,19 +60,11 @@ export function SellsDetail() {
                         <div className='h-5 w-1 border-l-2 border-secondary/50 mr-2'></div>
                         <div className='flex justify-between items-center text-sm font-thin border-border border rounded pl-2'>
                             <p>Numero de pedido</p>
-                            <span className='font-semibold bg-muted/20 px-2 py-1 rounded-r ml-2'>{order?.preOrderNumber}</span>
+                            <span className='font-semibold bg-muted/20 px-2 py-1 rounded-r ml-2'>{order?.clientPreOrderNumber}</span>
                         </div>
                         <StatusBadge className='py-1 font-black text-sm' status={order?.status || ""} />
-                        {order?.orderId &&
-                            <Link to={`/buyOrder/$orderId`} params={{ orderId: order?.orderId || '' }}>
-                                <Button variant='link' className='space-x-2'>
-                                    <BsBoxArrowInRight size={20} />
-                                    <p>Ir a Orden de Compra</p>
-                                </Button>
-                            </Link>
-                        }
                     </div>
-                    <div className='font-thin text-secondary/80 mr-4 mt-2'>{order?.created && formatDate(order?.created)}</div>
+                    <div className='font-thin text-secondary/80 mr-4 mt-2'>{order?.createdAt && formatDate(order?.createdAt)}</div>
                 </div>
             </div>
             <div className='flex flex-col items-stretch'>
@@ -110,21 +72,14 @@ export function SellsDetail() {
                     'h-[calc(100vh-225px)]': order?.status !== PRE_ORDER_STATUS.pending,
                     'h-fit overflow-auto': order?.status === PRE_ORDER_STATUS.pending
                 })}>
-                    {mutation.isPending &&
-                        <div className='absolute inset-0 bg-white/60 w-full h-full z-20 flex justify-center items-center pointer-events-none'>
-                        </div>
-                    }
-                    <ProductList
+
+                    <ClientProductList
                         isProvider={false}
                         isLoading={isLoading}
                         orderStatus={order?.status as PRE_ORDER_STATUS}
-                        providerId={order?.buyerId}
                         dropZoneId={order?.dropZoneId}
-                        data={order?.preOrderProducts}
-                        acceptedProducts={acceptedProducts}
-                        onSelect={(item) => toggleProductAcceptance(item)}
-                        toggleAllProducts={() => toggleAllProducts(sellProduct())}
-                        totalPrice={order?.totalPrice}
+                        data={order?.products || []}
+                        totalPrice={Number(order?.totalPrice || 0)}
                     />
 
                 </div>

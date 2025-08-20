@@ -31,6 +31,7 @@ import { Route as AuthenticatedDashboardLayoutAccountTypeProviderDiscountsImport
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderDashboardImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/dashboard'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientOrdersImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/orders'
 import { Route as AuthenticatedDashboardLayoutAccountTypeClientDashboardImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/dashboard'
+import { Route as AuthenticatedDashboardLayoutAccountTypeClientCheckPreOrdersImport } from './routes/_authenticated/_dashboardLayout/_accountType/client/check-pre-orders'
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderProductsIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/products/index'
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderPreOrdersIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/preOrders/index'
 import { Route as AuthenticatedDashboardLayoutAccountTypeProviderConfigurationIndexImport } from './routes/_authenticated/_dashboardLayout/_accountType/provider/configuration/index'
@@ -173,6 +174,13 @@ const AuthenticatedDashboardLayoutAccountTypeClientDashboardRoute =
   AuthenticatedDashboardLayoutAccountTypeClientDashboardImport.update({
     id: '/client/dashboard',
     path: '/client/dashboard',
+    getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
+  } as any)
+
+const AuthenticatedDashboardLayoutAccountTypeClientCheckPreOrdersRoute =
+  AuthenticatedDashboardLayoutAccountTypeClientCheckPreOrdersImport.update({
+    id: '/client/check-pre-orders',
+    path: '/client/check-pre-orders',
     getParentRoute: () => AuthenticatedDashboardLayoutAccountTypeRoute,
   } as any)
 
@@ -386,6 +394,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardLayoutBuyOrderIndexImport
       parentRoute: typeof AuthenticatedDashboardLayoutImport
     }
+    '/_authenticated/_dashboardLayout/_accountType/client/check-pre-orders': {
+      id: '/_authenticated/_dashboardLayout/_accountType/client/check-pre-orders'
+      path: '/client/check-pre-orders'
+      fullPath: '/client/check-pre-orders'
+      preLoaderRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientCheckPreOrdersImport
+      parentRoute: typeof AuthenticatedDashboardLayoutAccountTypeImport
+    }
     '/_authenticated/_dashboardLayout/_accountType/client/dashboard': {
       id: '/_authenticated/_dashboardLayout/_accountType/client/dashboard'
       path: '/client/dashboard'
@@ -542,6 +557,7 @@ const AuthLayoutRouteWithChildren = AuthLayoutRoute._addFileChildren(
 )
 
 interface AuthenticatedDashboardLayoutAccountTypeRouteChildren {
+  AuthenticatedDashboardLayoutAccountTypeClientCheckPreOrdersRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientCheckPreOrdersRoute
   AuthenticatedDashboardLayoutAccountTypeClientDashboardRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientDashboardRoute
   AuthenticatedDashboardLayoutAccountTypeClientOrdersRoute: typeof AuthenticatedDashboardLayoutAccountTypeClientOrdersRoute
   AuthenticatedDashboardLayoutAccountTypeProviderDashboardRoute: typeof AuthenticatedDashboardLayoutAccountTypeProviderDashboardRoute
@@ -562,6 +578,8 @@ interface AuthenticatedDashboardLayoutAccountTypeRouteChildren {
 
 const AuthenticatedDashboardLayoutAccountTypeRouteChildren: AuthenticatedDashboardLayoutAccountTypeRouteChildren =
   {
+    AuthenticatedDashboardLayoutAccountTypeClientCheckPreOrdersRoute:
+      AuthenticatedDashboardLayoutAccountTypeClientCheckPreOrdersRoute,
     AuthenticatedDashboardLayoutAccountTypeClientDashboardRoute:
       AuthenticatedDashboardLayoutAccountTypeClientDashboardRoute,
     AuthenticatedDashboardLayoutAccountTypeClientOrdersRoute:
@@ -652,6 +670,7 @@ export interface FileRoutesByFullPath {
   '/registration/': typeof AuthLayoutRegistrationIndexRoute
   '/buyOrder/$orderId': typeof AuthenticatedDashboardLayoutBuyOrderOrderIdRoute
   '/buyOrder': typeof AuthenticatedDashboardLayoutBuyOrderIndexRoute
+  '/client/check-pre-orders': typeof AuthenticatedDashboardLayoutAccountTypeClientCheckPreOrdersRoute
   '/client/dashboard': typeof AuthenticatedDashboardLayoutAccountTypeClientDashboardRoute
   '/client/orders': typeof AuthenticatedDashboardLayoutAccountTypeClientOrdersRoute
   '/provider/dashboard': typeof AuthenticatedDashboardLayoutAccountTypeProviderDashboardRoute
@@ -683,6 +702,7 @@ export interface FileRoutesByTo {
   '/registration': typeof AuthLayoutRegistrationIndexRoute
   '/buyOrder/$orderId': typeof AuthenticatedDashboardLayoutBuyOrderOrderIdRoute
   '/buyOrder': typeof AuthenticatedDashboardLayoutBuyOrderIndexRoute
+  '/client/check-pre-orders': typeof AuthenticatedDashboardLayoutAccountTypeClientCheckPreOrdersRoute
   '/client/dashboard': typeof AuthenticatedDashboardLayoutAccountTypeClientDashboardRoute
   '/client/orders': typeof AuthenticatedDashboardLayoutAccountTypeClientOrdersRoute
   '/provider/dashboard': typeof AuthenticatedDashboardLayoutAccountTypeProviderDashboardRoute
@@ -719,6 +739,7 @@ export interface FileRoutesById {
   '/_authLayout/registration/': typeof AuthLayoutRegistrationIndexRoute
   '/_authenticated/_dashboardLayout/buyOrder/$orderId': typeof AuthenticatedDashboardLayoutBuyOrderOrderIdRoute
   '/_authenticated/_dashboardLayout/buyOrder/': typeof AuthenticatedDashboardLayoutBuyOrderIndexRoute
+  '/_authenticated/_dashboardLayout/_accountType/client/check-pre-orders': typeof AuthenticatedDashboardLayoutAccountTypeClientCheckPreOrdersRoute
   '/_authenticated/_dashboardLayout/_accountType/client/dashboard': typeof AuthenticatedDashboardLayoutAccountTypeClientDashboardRoute
   '/_authenticated/_dashboardLayout/_accountType/client/orders': typeof AuthenticatedDashboardLayoutAccountTypeClientOrdersRoute
   '/_authenticated/_dashboardLayout/_accountType/provider/dashboard': typeof AuthenticatedDashboardLayoutAccountTypeProviderDashboardRoute
@@ -753,6 +774,7 @@ export interface FileRouteTypes {
     | '/registration/'
     | '/buyOrder/$orderId'
     | '/buyOrder'
+    | '/client/check-pre-orders'
     | '/client/dashboard'
     | '/client/orders'
     | '/provider/dashboard'
@@ -783,6 +805,7 @@ export interface FileRouteTypes {
     | '/registration'
     | '/buyOrder/$orderId'
     | '/buyOrder'
+    | '/client/check-pre-orders'
     | '/client/dashboard'
     | '/client/orders'
     | '/provider/dashboard'
@@ -817,6 +840,7 @@ export interface FileRouteTypes {
     | '/_authLayout/registration/'
     | '/_authenticated/_dashboardLayout/buyOrder/$orderId'
     | '/_authenticated/_dashboardLayout/buyOrder/'
+    | '/_authenticated/_dashboardLayout/_accountType/client/check-pre-orders'
     | '/_authenticated/_dashboardLayout/_accountType/client/dashboard'
     | '/_authenticated/_dashboardLayout/_accountType/client/orders'
     | '/_authenticated/_dashboardLayout/_accountType/provider/dashboard'
@@ -929,6 +953,7 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/_dashboardLayout/_accountType.tsx",
       "parent": "/_authenticated/_dashboardLayout",
       "children": [
+        "/_authenticated/_dashboardLayout/_accountType/client/check-pre-orders",
         "/_authenticated/_dashboardLayout/_accountType/client/dashboard",
         "/_authenticated/_dashboardLayout/_accountType/client/orders",
         "/_authenticated/_dashboardLayout/_accountType/provider/dashboard",
@@ -962,6 +987,10 @@ export const routeTree = rootRoute
     "/_authenticated/_dashboardLayout/buyOrder/": {
       "filePath": "_authenticated/_dashboardLayout/buyOrder/index.tsx",
       "parent": "/_authenticated/_dashboardLayout"
+    },
+    "/_authenticated/_dashboardLayout/_accountType/client/check-pre-orders": {
+      "filePath": "_authenticated/_dashboardLayout/_accountType/client/check-pre-orders.tsx",
+      "parent": "/_authenticated/_dashboardLayout/_accountType"
     },
     "/_authenticated/_dashboardLayout/_accountType/client/dashboard": {
       "filePath": "_authenticated/_dashboardLayout/_accountType/client/dashboard.tsx",

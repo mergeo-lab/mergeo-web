@@ -12,7 +12,6 @@ import { useEffect, memo, } from 'react';
 import { ACCOUNT } from '@/lib/constants';
 import { useAuth } from '@/context/AuthContext';
 import OverlayLoadingIndicator from '@/components/overlayLoadingIndicator';
-import { useGlobalLoading } from '@/store/globalLoading.store';
 
 // Memoize Card and its subcomponents
 const MemoizedCard = memo(Card);
@@ -34,7 +33,6 @@ type Schema = z.infer<typeof LoginSchema>
 const MemoizedFormField = memo(FormField);
 
 function Login() {
-  const { show } = useGlobalLoading();
   const { account, loading, login } = useAuth();
   const router = useRouter();
 
@@ -48,47 +46,57 @@ function Login() {
     },
   });
 
-  // Get redirect param from search using router.state.location.search
-  let searchString = '';
-  if (typeof router.state.location.search === 'string') {
-    searchString = router.state.location.search;
-  } else if (router.state.location.search && typeof router.state.location.search === 'object') {
-    searchString = new URLSearchParams(
-      Object.entries(router.state.location.search).reduce((acc, [key, value]) => {
-        acc[key] = value?.toString() ?? '';
-        return acc;
-      }, {} as Record<string, string>)
-    ).toString();
-    if (searchString) searchString = '?' + searchString;
-  }
-  const searchParams = new URLSearchParams(searchString);
-  const redirectParam = searchParams.get('redirect');
-
   const onSubmit = async (fields: Schema) => {
     await login(fields.email, fields.password);
   };
 
+  // Handle redirect after successful login
   useEffect(() => {
     if (account && !loading) {
+      // Get redirect param from search
+      const searchParams = new URLSearchParams(router.state.location.search as Record<string, string>);
+      const redirectParam = searchParams.get('redirect');
+
       let redirectTo;
-      if (redirectParam && redirectParam.startsWith(window.location.origin)) {
-        // Absolute URL, use pathname + search only
-        const url = new URL(redirectParam);
-        redirectTo = url.pathname + url.search;
-      } else if (redirectParam && redirectParam.startsWith('/')) {
-        // Relative path, safe to use
-        redirectTo = redirectParam;
+
+      // If there's a redirect parameter, use it
+      if (redirectParam) {
+        try {
+          // Decode the URL parameter first
+          const decodedRedirect = decodeURIComponent(redirectParam);
+
+          // The redirect parameter should be a relative path starting with /
+          if (decodedRedirect.startsWith('/')) {
+            redirectTo = decodedRedirect;
+          } else {
+            // If it's not a valid path, fall back to default
+            const accountType = account?.user?.accountType;
+            redirectTo = (accountType === ACCOUNT.provider ? "/provider" : "/client") + "/dashboard";
+          }
+        } catch (error) {
+          console.error('Invalid redirect URL:', redirectParam);
+          // Fall back to default on error
+          const accountType = account?.user?.accountType;
+          redirectTo = (accountType === ACCOUNT.provider ? "/provider" : "/client") + "/dashboard";
+        }
       } else {
-        // Fallback to default
+        // No redirect parameter, use default
         const accountType = account?.user?.accountType;
         redirectTo = (accountType === ACCOUNT.provider ? "/provider" : "/client") + "/dashboard";
       }
-      console.log('Navigating to:', redirectTo);
-      router.navigate({ to: redirectTo });
-    } else if (account && loading) {
-      show();
+
+      router.navigate({ to: redirectTo, replace: true });
     }
-  }, [account, loading, router, show, redirectParam]);
+  }, [account, loading, router]);
+
+  // Show loading while logging in
+  if (loading) {
+    return (
+      <div className='w-full h-full flex justify-center items-center'>
+        <OverlayLoadingIndicator />
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>
@@ -140,11 +148,12 @@ function Login() {
                 <p className='text-sm text-muted'>
                   Olvidaste tu contraseña?{' '}
                   <Link to="/forgotPassword">
-                    <Button className='-ml-3' variant="link">
+                    <Button className='-ml-3' variant="link" type="button">
                       Recuperar Contraseña
                     </Button>
                   </Link>
                 </p>
+
               </div>
             </div>
           </MemoizedCardBody>
@@ -153,7 +162,7 @@ function Login() {
               <p className='text-sm text-muted'>
                 No tenes una cuenta?{' '}
                 <Link to="/registration" disabled={loading}>
-                  <Button className='-ml-3' variant="link" disabled={loading}>
+                  <Button className='-ml-3' variant="link" type="button" disabled={loading}>
                     Registrate
                   </Button>
                 </Link>

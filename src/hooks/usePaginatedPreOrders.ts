@@ -1,11 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import {
-  getAllPreOrdersPaginated,
+  getMyClientPreOrders,
   getSellPreOrdersPaginated,
   getSellPreOrders,
 } from '@/lib/orders';
-import { PreOrderSchemaType } from '@/lib/schemas';
-import { useState, useCallback } from 'react';
+import {
+  PreOrderSchemaType,
+  ClientPreOrdersResponseSchemaType,
+} from '@/lib/schemas';
+import { useState, useCallback, useEffect } from 'react';
 
 export const defaultPreOrdersPagination = {
   page: 1,
@@ -26,10 +29,6 @@ export function usePaginatedPreOrders(companyId: string) {
   const [filters, setFilters] = useState<PreOrdersFilters>({});
 
   const handleSearch = useCallback((newFilters: PreOrdersFilters) => {
-    console.log(
-      'usePaginatedPreOrders - handleSearch called with:',
-      newFilters
-    );
     setFilters(newFilters);
     setPagination((prev) => ({ ...prev, page: 1 }));
   }, []);
@@ -39,32 +38,37 @@ export function usePaginatedPreOrders(companyId: string) {
     setPagination(defaultPreOrdersPagination);
   }, []);
 
-  const { data, isLoading, isError, error, refetch, isFetching } = useQuery<{
-    preOrders: PreOrderSchemaType[];
-    currentPage: number;
-    total: number;
-    totalPages: number;
-  }>({
-    queryKey: ['preorders-paginated', companyId, pagination, filters],
-    queryFn: async () => {
-      console.log(
-        'usePaginatedPreOrders - queryFn called with filters:',
-        filters
-      );
-      if (!companyId) {
-        return {
-          preOrders: [],
-          currentPage: 1,
-          total: 0,
-          totalPages: 0,
-        };
-      }
-      return getAllPreOrdersPaginated(companyId, pagination, filters);
-    },
-    enabled: !!companyId,
-    refetchOnWindowFocus: false,
-    refetchOnMount: true,
-  });
+  const { data, isLoading, isError, error, refetch, isFetching } =
+    useQuery<ClientPreOrdersResponseSchemaType>({
+      queryKey: ['preorders-paginated', companyId, pagination, filters],
+      queryFn: async () => {
+        if (!companyId) {
+          return {
+            entities: [],
+            total: 0,
+            count: 0,
+            page: 1,
+            pageSize: 30,
+            totalPages: 0,
+            hasNextPage: false,
+            hasPreviousPage: false,
+            message: '',
+          };
+        }
+        const result = await getMyClientPreOrders(pagination, filters);
+        return result;
+      },
+      enabled: !!companyId,
+      refetchOnWindowFocus: false,
+      refetchOnMount: true,
+    });
+
+  // Log errors when they occur
+  useEffect(() => {
+    if (error) {
+      console.error('usePaginatedPreOrders - Query error:', error);
+    }
+  }, [error]);
 
   return {
     data,
@@ -110,22 +114,18 @@ export function usePaginatedSellPreOrders(companyId: string) {
   } = useQuery<PreOrderSchemaType[]>({
     queryKey: ['sell-preorders-all', companyId],
     queryFn: async () => {
-      console.log('Fetching all preOrders for companyId:', companyId);
       if (!companyId) {
         console.log('No companyId provided');
         return [];
       }
       try {
         const result = await getSellPreOrders(companyId);
-        console.log('getSellPreOrders result:', result);
         // Handle case where backend might return { preOrders: [...] } instead of [...]
         if (result && typeof result === 'object' && 'preOrders' in result) {
           const preOrders = (result as any).preOrders || [];
-          console.log('Extracted preOrders from object:', preOrders);
           return preOrders;
         }
         const finalResult = Array.isArray(result) ? result : [];
-        console.log('Final result:', finalResult);
         return finalResult;
       } catch (error) {
         console.error('Error fetching all preOrders:', error);
@@ -144,10 +144,6 @@ export function usePaginatedSellPreOrders(companyId: string) {
   }>({
     queryKey: ['sell-preorders-paginated', companyId, pagination, filters],
     queryFn: async () => {
-      console.log(
-        'usePaginatedSellPreOrders - queryFn called with filters:',
-        filters
-      );
       if (!companyId) {
         return {
           preOrders: [],

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { useState } from "react";
-import { cratePreOrder } from "@/lib/orders";
+import { createClientPreOrder } from "@/lib/orders";
 import UseSearchStore, { ProductWithQuantity } from "@/store/search.store";
 import { LuClipboardList } from "react-icons/lu";
 import QuantitySelector from "@/components/configuration/client/orders/quantitySelector";
@@ -45,7 +45,7 @@ export function CartSheet({
     triggerButton,
     onInteractOutside }: Props) {
     const queryClient = useQueryClient();
-    const mutation = useMutation({ mutationFn: cratePreOrder })
+    const mutation = useMutation({ mutationFn: createClientPreOrder })
     const { getAllSavedProducts, removeProduct, updateProductDeliveryDate, updateProductReplacementCriteria, updateProductQuantity, reset: resetStore } = UseSearchStore();
     const { getAllConfig } = UseSearchConfigStore();
     const { account } = useAuth();
@@ -478,7 +478,7 @@ export function CartSheet({
                         <SheetFooter className=" items-center">
                             {/* Sección de guardar lista */}
                             <div className="w-full flex flex-col gap-2">
-                                <div className="w-full mb-4 flex items-center gap-2">
+                                <div className="w-full mb-4 mt-4 flex items-center gap-2">
                                     <p className="text-sm text-muted-foreground">
                                         ¿Quieres guardar los productos en una lista?
                                     </p>

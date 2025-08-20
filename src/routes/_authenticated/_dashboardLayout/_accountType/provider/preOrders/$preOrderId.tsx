@@ -71,7 +71,12 @@ export function SellsDetail() {
     // The backend should provide a new deadline for second instances, but if it doesn't,
     // we'll allow the provider to respond regardless of the original deadline
     const isSecondInstance = order?.instance !== undefined ? order.instance > 1 : false;
-    const shouldAllowResponse = isSecondInstance || !isDeadlineExpired;
+
+    // Allow response if:
+    // 1. It's a second instance (instance > 1)
+    // 2. The deadline hasn't expired
+    // 3. The order is still pending (regardless of deadline)
+    const shouldAllowResponse = isSecondInstance || !isDeadlineExpired || order?.status === PRE_ORDER_STATUS.pending;
 
     // Debug: Log order details to understand the issue with second instances
     console.log('PreOrder Details:', {
@@ -84,7 +89,9 @@ export function SellsDetail() {
         created: order?.created,
         updated: order?.updated,
         shouldAllowResponse,
-        isSecondInstance
+        isSecondInstance,
+        acceptedProductsCount: acceptedProducts.length,
+        rejectedProductsCount: rejectedProducts.length
     });
 
     async function handleProviderResponse() {
@@ -193,13 +200,20 @@ export function SellsDetail() {
             shouldAllowResponse
         });
 
-        if (order) {
+        if (order && order.status === PRE_ORDER_STATUS.pending) {
             console.log('Calling toggleAllAcceptedProducts');
             toggleAllAcceptedProducts();
         }
-    }, [order, toggleAllAcceptedProducts, shouldAllowResponse]);
+    }, [order, toggleAllAcceptedProducts]);
 
     console.log('order', order);
+    console.log('Button states:', {
+        acceptButtonDisabled: acceptedProducts.length === 0 || !shouldAllowResponse,
+        rejectButtonDisabled: mutation.isPending || !shouldAllowResponse,
+        shouldAllowResponse,
+        acceptedProductsLength: acceptedProducts.length,
+        mutationIsPending: mutation.isPending
+    });
 
     return (
         <>

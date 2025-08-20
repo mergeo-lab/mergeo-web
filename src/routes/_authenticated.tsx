@@ -6,13 +6,22 @@ export const Route = createFileRoute('/_authenticated')({
 
     if (!context.auth.account?.user) {
       console.debug('Not authenticated, redirecting to login...');
+      // Convert search params to string if it's an object
+      let searchString = '';
+      if (typeof location.search === 'string') {
+        searchString = location.search;
+      } else if (location.search && typeof location.search === 'object') {
+        searchString = new URLSearchParams(location.search as Record<string, string>).toString();
+        if (searchString) searchString = '?' + searchString;
+      }
+
+      const redirectPath = location.pathname + searchString;
+
       throw redirect({
         to: '/login',
         search: {
-          // Use the current location to power a redirect after login
-          // (Do not use `router.state.resolvedLocation` as it can
-          // potentially lag behind the actual current location)
-          redirect: location.href,
+          // Use the current pathname and search to power a redirect after login
+          redirect: redirectPath,
         },
       });
     }

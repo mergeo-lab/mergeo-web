@@ -20,6 +20,7 @@ function PasswordInput({ fieldName }: Props) {
         <div className='relative'>
             <Input type={isPasswordVisible ? "text" : "password"} {...register(fieldName)} />
             <button
+                type="button"
                 className="absolute inset-y-0 right-0 flex items-center px-4 text-gray-600"
                 onClick={togglePasswordVisibility}
             >

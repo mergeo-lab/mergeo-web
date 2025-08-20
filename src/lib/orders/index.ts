@@ -2,6 +2,7 @@ import { axiosPrivate } from '@/lib/api/axios';
 import {
   SEARCH_PRODUCTS,
   PRE_ORDER,
+  CLIENT_PRE_ORDER,
   BUY_ORDER,
   ORDERS_EVENTS,
 } from './endpoints';
@@ -13,7 +14,9 @@ import {
   PaginationSort,
   PaginationType,
   PreOrderSchemaType,
+  NewPreOrderSchemaType,
   ProductSchemaType,
+  ClientPreOrdersResponseSchemaType,
 } from '@/lib/schemas';
 import { BuyOrderSchemaType } from '@/lib/schemas/orders.schema';
 import { SellProductSchemaType } from '@/lib/schemas/sell.schema';
@@ -91,8 +94,6 @@ export async function getProducts(
         },
       }
     );
-
-    console.log('SEARCH RESPONSE ::::: ', response);
 
     return response.data;
   } catch (error) {
@@ -585,5 +586,232 @@ export async function preOrderProviderResponse({
     }
 
     throw error;
+  }
+}
+
+// CLIENT PRE-ORDER FUNCTIONS
+export async function createClientPreOrder({
+  searchParams,
+  reacteplacementCriteria,
+  cartProducts,
+}: {
+  userId: string | undefined;
+  searchParams: SearchParams;
+  reacteplacementCriteria: ReplacementCriteria;
+  cartProducts: ProductWithQuantity[];
+}): Promise<{ message: string; preOrderId: string }> {
+  const {
+    branchId,
+    expectedDeliveryStartDay,
+    expectedDeliveryEndDay,
+    startHour,
+    endHour,
+    isPickUp,
+    pickUpLat,
+    pickUpLng,
+    pickUpRadius,
+  } = searchParams;
+
+  const sp = {
+    branchId,
+    expectedDeliveryStartDay,
+    expectedDeliveryEndDay,
+    startHour,
+    endHour,
+    isPickUp,
+    pickUpLat,
+    pickUpLng,
+    pickUpRadius,
+  };
+
+  const productsWithQuantity: CartProductQuantity[] = cartProducts.map(
+    (product) => ({
+      id: product.id,
+      quantity: product.quantity ?? 1,
+      price: product.price.toString(),
+      providerId: product.providerId,
+      dropZoneId: product.dropZoneId,
+      delivery_date: product.deliveryDate || null,
+      replacementCriteria: product.replacementCriteria || null,
+    })
+  );
+
+  const payload = {
+    searchParams: sp,
+    replacementCriteria: reacteplacementCriteria,
+    cartProducts: productsWithQuantity,
+  };
+
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.post(
+      `${CLIENT_PRE_ORDER}`,
+      JSON.stringify({ ...payload })
+    );
+    return response;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+export async function getClientPreOrderById(
+  preOrderId: string
+): Promise<NewPreOrderSchemaType> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${CLIENT_PRE_ORDER}/${preOrderId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    console.log('getClientPreOrderById - Full response:', response);
+    console.log('getClientPreOrderById - response.data:', response.data);
+    console.log('getClientPreOrderById - response type:', typeof response);
+    console.log(
+      'getClientPreOrderById - response keys:',
+      Object.keys(response)
+    );
+
+    // Check if data is directly in response or in response.data
+    const data = response.data || response;
+
+    if (!data) {
+      console.error('getClientPreOrderById - No data found in response!');
+      throw new Error('No data received from API');
+    }
+
+    console.log('getClientPreOrderById - Final data to return:', data);
+    return data;
+  } catch (error) {
+    console.error('getClientPreOrderById - Error:', error);
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+export async function getClientPreOrdersByBuyerId(
+  buyerId: string
+): Promise<PreOrderSchemaType[]> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${CLIENT_PRE_ORDER}/buyer/${buyerId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+export async function getMyClientPreOrders(
+  pagination: {
+    page?: number;
+    take?: number;
+  },
+  filters?: {
+    status?: string;
+    sortByCreated?: boolean;
+    sortOrder?: 'ASC' | 'DESC';
+  }
+): Promise<ClientPreOrdersResponseSchemaType> {
+  try {
+    const params: Record<string, unknown> = {};
+
+    // pagination
+    params.page = pagination.page || 1;
+    params.take = pagination.take || 30;
+
+    // filters
+    if (filters?.status) params.status = filters.status;
+    if (filters?.sortByCreated !== undefined)
+      params.sortByCreated = filters.sortByCreated;
+    if (filters?.sortOrder) params.sortOrder = filters.sortOrder;
+
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${CLIENT_PRE_ORDER}/my-orders`,
+      {
+        params,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    console.log('getMyClientPreOrders response:', response);
+    console.log('getMyClientPreOrders response.data:', response.data);
+
+    // Return the data directly from the response
+    return response.data;
+  } catch (error) {
+    console.error('getMyClientPreOrders - Error details:', error);
+    if (isAxiosError(error)) {
+      console.error(
+        'getMyClientPreOrders - Axios error response:',
+        error.response
+      );
+      console.error(
+        'getMyClientPreOrders - Axios error status:',
+        error.response?.status
+      );
+      console.error(
+        'getMyClientPreOrders - Axios error data:',
+        error.response?.data
+      );
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
+
+    throw error;
+  }
+}
+
+export async function getAllClientPreOrders(_preOrderId: string): Promise<any> {
+  return getMyClientPreOrders({ page: 1, take: 1000 });
+}
+
+export async function checkPreOrders(buyerId: string): Promise<any> {
+  try {
+    const { data: response }: AxiosResponse = await axiosPrivate.get(
+      `${CLIENT_PRE_ORDER}/${buyerId}/complete`
+    );
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      if (error.response?.data.statusCode === 400) {
+        error.message = 'Algo salio mal, vuelve a intentarlo!';
+      } else {
+        error.message = error.response?.data.message;
+      }
+    }
   }
 }
