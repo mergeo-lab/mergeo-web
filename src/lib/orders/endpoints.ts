@@ -2,7 +2,7 @@ import { API_BASE } from '../api/config';
 
 export const SEARCH_PRODUCTS = `${API_BASE}/product/company`;
 
-export const PRE_ORDER = `${API_BASE}/preorder`;
+export const PRE_ORDER = `${API_BASE}/pre-order`;
 
 export const CLIENT_PRE_ORDER = `${API_BASE}/client-pre-orders`;
 
