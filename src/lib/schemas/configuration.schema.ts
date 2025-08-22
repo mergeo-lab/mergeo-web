@@ -76,14 +76,27 @@ const NewPreOrderProductSchema = z.object({
   quantity: z.number(),
   price: z.string(),
   accepted: z.boolean(),
+  productStatus: z.string(), // Individual product status: "pending", "processed", "accepted", etc.
   delivery_date: z.string().nullable(),
   productId: z.string(),
   productName: z.string(),
+  gtin: z.string(),
   measurementUnit: z.string(),
   brand: z.string(),
   variety: z.string(),
   netContent: z.string(),
   pricePerBaseUnit: z.string(),
+  description: z.string(),
+  segment: z.string(),
+  family: z.string(),
+  image: z.string().nullable(),
+  units: z.number().nullable(),
+  manufacturer_name: z.string(),
+  manufacturer_id: z.string(),
+  manufacturer_country: z.string(),
+  companyId: z.string(),
+  replacementCriteria: z.string(),
+  buyOrderId: z.string().optional(),
 });
 
 // Define the Criteria schema
@@ -132,6 +145,17 @@ export const PreOrderSchema = z.object({
   totalPrice: z.number(),
 });
 
+// Define the BuyOrder Summary schema for pre-orders
+const BuyOrderSummarySchema = z.object({
+  id: z.string(),
+  buyOrderNumber: z.number(),
+  status: z.string(),
+  totalPrice: z.string(),
+  providerName: z.string(),
+  providerId: z.string(),
+  createdAt: z.string(),
+});
+
 // Define the new PreOrder schema for the updated format
 export const NewPreOrderSchema = z.object({
   id: z.string(),
@@ -141,6 +165,7 @@ export const NewPreOrderSchema = z.object({
   totalPrice: z.string(),
   responseDeadline: z.string(),
   products: z.array(NewPreOrderProductSchema),
+  buyOrders: z.array(BuyOrderSummarySchema).optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
@@ -195,6 +220,7 @@ export const ClientPreOrderSchema = z.object({
   totalPrice: z.string(),
   responseDeadline: z.string(),
   products: z.array(NewPreOrderProductSchema),
+  buyOrders: z.array(BuyOrderSummarySchema).optional(),
   branchName: z.string().optional(),
   branchId: z.string().optional(),
   createdAt: z.string(),
@@ -218,6 +244,7 @@ export type PreOrderProductSchemaType = z.infer<typeof PreOrderProductSchema>;
 export type NewPreOrderProductSchemaType = z.infer<
   typeof NewPreOrderProductSchema
 >;
+export type BuyOrderSummarySchemaType = z.infer<typeof BuyOrderSummarySchema>;
 export type ProductSchemaType = z.infer<typeof ProductSchema>;
 export type PreOrderSchemaType = z.infer<typeof PreOrderSchema>;
 export type NewPreOrderSchemaType = z.infer<typeof NewPreOrderSchema>;

@@ -33,28 +33,23 @@ export const preOrdersStatusFilters: PreOrdersStatusFilterType[] = [
   },
   {
     id: 'pending',
-    name: 'Pendientes',
+    name: 'Pendiente',
     value: 'pending',
   },
   {
+    id: 'processed',
+    name: 'Procesado',
+    value: 'processed',
+  },
+  {
     id: 'accepted',
-    name: 'Aceptados',
+    name: 'Aceptado',
     value: 'accepted',
   },
   {
-    id: 'rejected',
-    name: 'Rechazados',
-    value: 'rejected',
-  },
-  {
-    id: 'partialyAccepted',
-    name: 'Parcialmente Aceptados',
-    value: 'partialy-accepted',
-  },
-  {
-    id: 'timeout',
-    name: 'Expirados',
-    value: 'timeout',
+    id: 'end',
+    name: 'Finalizada',
+    value: 'end',
   },
 ];
 

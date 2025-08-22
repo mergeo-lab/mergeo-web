@@ -162,9 +162,9 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                         </TableBody>
                         <TableBody className="bg-white sticky bottom-[-1px] shadow">
                             <TableRow className='bg-white hover:bg-white'>
-                                <TableCell colSpan={4} className="h-[1px] p-1 pl-10 py-4">TOTAL</TableCell>
-                                <TableCell colSpan={2} className={cn("h-[2px] p-2 pl-4 font-bold", {
-                                    'text-right pr-14': !isProvider
+                                <TableCell colSpan={5} className="h-[1px] p-1 pl-10 py-4">TOTAL</TableCell>
+                                <TableCell className={cn("h-[2px] p-2 font-bold text-left", {
+                                    'pr-14': !isProvider
                                 })}>
                                     {!isProvider && orderStatus === PRE_ORDER_STATUS.pending
                                         ? <p>{formatToArgentinianPesos(totalPrice || 0)}</p>

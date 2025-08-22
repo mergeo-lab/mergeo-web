@@ -7,14 +7,15 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect, useCallback, useRef } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import sinPedidos from '@/assets/sin-pedidos.png'
-import { ConfigTabs } from '@/lib/constants';
-import { LuEye } from 'react-icons/lu';
+import { ConfigTabs, ProductStatus } from '@/lib/constants';
+import { LuEye, LuShoppingCart } from 'react-icons/lu';
 import { useAuth } from '@/context/AuthContext';
 import { useNotifications } from '@/context/NotificationsContext';
 import { usePaginatedPreOrders } from '@/hooks/usePaginatedPreOrders';
 import { PaginationCustom } from '@/components/pagination';
 import UsePreOrdersPaginationState, { preOrdersSortOptions, preOrdersStatusFilters, PreOrdersSortOptionsType } from '@/store/preOrdersPagination.store';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountType/client/preOrders/')({
     component: () => <PreOrders />
@@ -190,11 +191,15 @@ export default function PreOrders() {
                                             <TableHead className="min-w-[120px]">Creada</TableHead>
                                             <TableHead className="min-w-[80px] text-center">Sucursal</TableHead>
                                             <TableHead className="min-w-[100px] text-center">Estado</TableHead>
+                                            <TableHead className="min-w-[120px] text-center">Ordenes de Compra</TableHead>
                                             <TableHead className="min-w-[160px] text-right"></TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody className="bg-white">
                                         {clientOrders.map((clientOrder: ClientPreOrderSchemaType) => {
+                                            const hasBuyOrders = clientOrder.buyOrders && clientOrder.buyOrders.length > 0;
+                                            const buyOrdersCount = clientOrder.buyOrders?.length || 0;
+
                                             return (
                                                 <TableRow className="hover:bg-white first:border-t-none" key={clientOrder.id}>
                                                     <TableCell className="min-w-[120px]">{clientOrder.clientPreOrderNumber}</TableCell>
@@ -202,8 +207,47 @@ export default function PreOrders() {
                                                     <TableCell className="min-w-[80px] text-center">{(clientOrder.branchName)}</TableCell>
                                                     <TableCell className="min-w-[100px] text-center">
                                                         <div className="flex justify-center">
-                                                            <StatusBadge className='py-2 px-6 text-sm' status={clientOrder.status} />
+                                                            <StatusBadge
+                                                                className='py-2 px-6 text-sm'
+                                                                status={clientOrder.status}
+                                                                hasWarning={clientOrder.products.some(product => product.productStatus === ProductStatus.notFound)}
+                                                            />
                                                         </div>
+                                                    </TableCell>
+                                                    <TableCell className="min-w-[120px] text-center">
+                                                        {hasBuyOrders ? (
+                                                            buyOrdersCount === 1 ? (
+                                                                <Link to="/buyOrder/$orderId" params={{ orderId: clientOrder.buyOrders?.[0].id || '' }}>
+                                                                    <Button variant='ghost' className='space-x-2'>
+                                                                        <LuShoppingCart className='cursor-pointer' size={20} />
+                                                                        <p>Ver orden {clientOrder.buyOrders?.[0].buyOrderNumber}</p>
+                                                                    </Button>
+                                                                </Link>
+                                                            ) : (
+                                                                <DropdownMenu>
+                                                                    <DropdownMenuTrigger asChild>
+                                                                        <Button variant='ghost' className='space-x-2'>
+                                                                            <LuShoppingCart className='cursor-pointer' size={20} />
+                                                                            <p>Ver ordenes ({buyOrdersCount})</p>
+                                                                        </Button>
+                                                                    </DropdownMenuTrigger>
+                                                                    <DropdownMenuContent>
+                                                                        {clientOrder.buyOrders?.map((buyOrder) => (
+                                                                            <DropdownMenuItem key={buyOrder.id}>
+                                                                                <Link to="/buyOrder/$orderId" params={{ orderId: buyOrder.id }}>
+                                                                                    <div className='flex items-center space-x-2'>
+                                                                                        <LuShoppingCart size={16} />
+                                                                                        <span>Ver orden {buyOrder.buyOrderNumber}</span>
+                                                                                    </div>
+                                                                                </Link>
+                                                                            </DropdownMenuItem>
+                                                                        ))}
+                                                                    </DropdownMenuContent>
+                                                                </DropdownMenu>
+                                                            )
+                                                        ) : (
+                                                            <span className='text-muted text-sm'>Sin ordenes</span>
+                                                        )}
                                                     </TableCell>
                                                     <TableCell className="min-w-[160px] text-center">
                                                         <Link to="/client/preOrders/$preOrderId" params={{ preOrderId: clientOrder.id }}>

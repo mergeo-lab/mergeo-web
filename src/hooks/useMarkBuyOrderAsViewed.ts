@@ -10,12 +10,22 @@ export const useMarkBuyOrderAsViewed = () => {
     onMutate: async (orderId: string) => {
       // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
       await queryClient.cancelQueries({ queryKey: ['buyOrders'] });
+      await queryClient.cancelQueries({ queryKey: ['buyorders-paginated'] });
 
       // Snapshot the previous value - we need to get all buyOrders queries
       const previousBuyOrders = queryClient.getQueriesData<
         BuyOrderSchemaType[]
       >({
         queryKey: ['buyOrders'],
+      });
+
+      const previousPaginatedBuyOrders = queryClient.getQueriesData<{
+        buyOrders: BuyOrderSchemaType[];
+        currentPage: number;
+        total: number;
+        totalPages: number;
+      }>({
+        queryKey: ['buyorders-paginated'],
       });
 
       // Optimistically update all buyOrders queries
@@ -29,8 +39,24 @@ export const useMarkBuyOrderAsViewed = () => {
         }
       );
 
+      // Optimistically update all paginated buyOrders queries
+      queryClient.setQueriesData<{
+        buyOrders: BuyOrderSchemaType[];
+        currentPage: number;
+        total: number;
+        totalPages: number;
+      }>({ queryKey: ['buyorders-paginated'] }, (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          buyOrders: old.buyOrders.map((order) =>
+            order.id === orderId ? { ...order, markedAsViewd: true } : order
+          ),
+        };
+      });
+
       // Return a context object with the snapshotted value
-      return { previousBuyOrders };
+      return { previousBuyOrders, previousPaginatedBuyOrders };
     },
     onError: (err, orderId, context) => {
       console.log(err, orderId, context);
@@ -40,10 +66,16 @@ export const useMarkBuyOrderAsViewed = () => {
           queryClient.setQueryData(queryKey, data);
         });
       }
+      if (context?.previousPaginatedBuyOrders) {
+        context.previousPaginatedBuyOrders.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
     },
     onSettled: () => {
       // Always refetch after error or success
       queryClient.invalidateQueries({ queryKey: ['buyOrders'] });
+      queryClient.invalidateQueries({ queryKey: ['buyorders-paginated'] });
     },
   });
 };

@@ -84,6 +84,19 @@ export enum PRE_ORDER_STATUS {
   timeout = 'timeout',
   fail = 'fail',
   processed = 'processed',
+  end = 'end',
+}
+
+export enum ClientPreOrderStatus {
+  pending = 'pending', // Estado inicial
+  processed = 'processed', // Al menos un producto está siendo procesado
+  end = 'end', // Todos los productos han sido procesados
+}
+export enum ProductStatus {
+  pending = 'pending', // Pedido original, no entró en flujo de reemplazo
+  accepted = 'accepted', // Producto aceptado por algún proveedor
+  processed = 'processed', // Buscando reemplazo
+  notFound = 'not-found', // No se encontró reemplazo después de 4 intentos
 }
 
 export enum SERVER_SENT_EVENTS {
