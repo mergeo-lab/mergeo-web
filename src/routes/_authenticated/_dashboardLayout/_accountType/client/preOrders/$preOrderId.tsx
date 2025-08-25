@@ -16,10 +16,6 @@ export const Route = createFileRoute('/_authenticated/_dashboardLayout/_accountT
 export function SellsDetail() {
     const { preOrderId } = useParams({ from: '/_authenticated/_dashboardLayout/_accountType/client/preOrders/$preOrderId' });
 
-
-
-
-
     const { data: order, isLoading, error } = useQuery({
         queryKey: ['clientPreOrderDetail', preOrderId],
         queryFn: async () => {
@@ -51,6 +47,34 @@ export function SellsDetail() {
         console.error('Query error:', error);
     }
 
+    // Check if it's a 404 error (order not found)
+    const isOrderNotFound = error && (
+        (error as any)?.response?.status === 404 || 
+        (error as any)?.status === 404 ||
+        (error as any)?.message?.includes('not found')
+    );
+
+    if (isOrderNotFound) {
+        return (
+            <>
+                <div className='p-4 shadow overflow-auto'>
+                    <div className='flex justify-between'>
+                        <div className='flex items-center gap-2 pb-1'>
+                            <BackLink />
+                            <div className='h-5 w-1 border-l-2 border-secondary/50 mr-2'></div>
+                        </div>
+                    </div>
+                </div>
+                <div className='flex flex-col items-center justify-center h-[calc(100vh-225px)]'>
+                    <div className='text-center'>
+                        <h2 className='text-2xl font-semibold text-gray-800 mb-2'>No se encontró el pedido</h2>
+                        <p className='text-gray-600'>El pedido que estás buscando no existe o ha sido eliminado.</p>
+                    </div>
+                </div>
+            </>
+        );
+    }
+
     return (
         <>
             <div className='p-4 shadow overflow-auto'>
@@ -77,9 +101,9 @@ export function SellsDetail() {
                         isProvider={false}
                         isLoading={isLoading}
                         orderStatus={order?.status as PRE_ORDER_STATUS}
-                        dropZoneId={order?.dropZoneId}
                         data={order?.products || []}
                         totalPrice={Number(order?.totalPrice || 0)}
+                        totalAcceptedPrice={Number(order?.totalAcceptedPrice || 0)}
                     />
 
                 </div>

@@ -163,6 +163,7 @@ export const NewPreOrderSchema = z.object({
   status: z.string(),
   dropZoneId: z.string(),
   totalPrice: z.string(),
+  totalAcceptedPrice: z.string(),
   responseDeadline: z.string(),
   products: z.array(NewPreOrderProductSchema),
   buyOrders: z.array(BuyOrderSummarySchema).optional(),

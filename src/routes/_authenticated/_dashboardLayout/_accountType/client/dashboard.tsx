@@ -22,7 +22,7 @@ export default function Index() {
                 <DashboardOrders
                     companyId={companyId}
                     accountType={ACCOUNT.client}
-                    queryKey='dashboard-latest-orders'
+                    queryKey={`dashboard-latest-orders-${companyId}`}
                     itemsCount={3}
                 />
             </div>
