@@ -2,7 +2,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { PRE_ORDER_STATUS, ProductStatus } from '@/lib/constants';
 import { NewPreOrderProductSchemaType } from '@/lib/schemas';
-import { SellProductSchemaType } from '@/lib/schemas/sell.schema';
 import { cn, formatToArgentinianPesos } from '@/lib/utils';
 import { FiAlertCircle } from 'react-icons/fi';
 import { LuShoppingCart } from 'react-icons/lu';
