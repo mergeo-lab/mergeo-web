@@ -26,7 +26,7 @@ export default function UploadProducts() {
         <div>
             <div className="grid grid-rows-[auto_1fr] h-full w-full">
                 <Tabs value={tab} className="w-full h-full m-auto rounded relative" onValueChange={onTabChange}>
-                    <div className="bg-accent h-20 px-10 shadow z-20 flex justify-between items-center">
+                    <div className="bg-accent px-10 shadow z-20 flex justify-between items-center">
                         <TabsList className='rounded-none w-full justify-start h-[50px] bg-accent'>
                             {
                                 Object.values(TabsConfig).map((tab, index) =>

@@ -241,7 +241,7 @@ export function SearchLists() {
                             {selectedList && formatDate(selectedList?.updated)}
                         </div>
                     </div>
-                    <div className='h-20 flex items-center justify-between px-8 py-3 border-b'>
+                    <div className='flex items-center justify-between px-8 py-3 border-b h-fit'>
                         <div className='flex gap-4 items-center'>
                             <div className='relative'>
                                 <LuSearch className='absolute top-2 left-3' />
@@ -279,11 +279,10 @@ export function SearchLists() {
                             />
                         </div>
                     </div>
-                    <div className='px-6 h-full'>
+                    <div className='h-full'>
                         {isLoading && <OverlayLoadingIndicator />}
                         {selectedList?.products && selectedList?.products.length > 0 ?
                             <SearchProductsTable
-                                maxHeight="h-[600px]"
                                 products={filteredProducts} // Use memoized filtered products
                                 removeProduct={handleRemoveProduct}
                             />

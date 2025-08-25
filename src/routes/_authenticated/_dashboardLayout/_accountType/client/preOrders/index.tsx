@@ -131,12 +131,12 @@ export default function PreOrders() {
     return (
         <div className='w-full flex flex-col gap-2 relative h-full'>
             {/* Header with filters */}
-            <div className="bg-accent h-20 w-full pl-14 shadow z-20 flex justify-between items-center sticky top-0 left-0 right-0">
+            <div className="bg-accent h-fit py-2 w-full pl-14 shadow z-20 flex justify-between items-center sticky top-0 left-0 right-0">
                 <div className='w-full flex gap-4'>
                     <div className='flex items-center gap-2 [&>p]:text-nowrap'>
                         <p>Estado</p>
                         <Select onValueChange={handleStatusFilterChange} value={statusFilter.id}>
-                            <SelectTrigger className='px-5 w-fit'>
+                            <SelectTrigger className='px-5 w-fit h-8'>
                                 <SelectValue placeholder="" />
                             </SelectTrigger>
                             <SelectContent>
@@ -151,7 +151,7 @@ export default function PreOrders() {
                     <div className='flex items-center gap-2 [&>p]:text-nowrap'>
                         <p>Ordenar por</p>
                         <Select onValueChange={handleSortChange} value={sort.id} disabled={!data?.entities || (data && data.entities.length === 0 && statusFilter.id === 'all')}>
-                            <SelectTrigger className='px-5 w-fit'>
+                            <SelectTrigger className='px-5 w-fit h-8'>
                                 <SelectValue placeholder="" />
                             </SelectTrigger>
                             <SelectContent>
@@ -166,7 +166,7 @@ export default function PreOrders() {
                 </div>
             </div>
 
-            <div className='w-full p-10 flex-1 flex flex-col items-center -mt-5 overflow-hidden'>
+            <div className='w-full pt-4 flex-1 flex flex-col items-center -mt-5 overflow-hidden'>
                 {
                     (!data?.entities || data?.entities.length === 0) ? (
                         <div className='w-full h-[calc(100vh-10rem)] flex justify-center items-center absolute top-0 left-0 right-0 bottom-0 '>
@@ -187,7 +187,7 @@ export default function PreOrders() {
                                 <Table className="min-w-full">
                                     <TableHeader className='bg-white sticky top-0 z-10 shadow-sm'>
                                         <TableRow className="hover:bg-transparent">
-                                            <TableHead className="min-w-[120px]">Numero de Orden</TableHead>
+                                            <TableHead className="min-w-[120px]">N° de Orden</TableHead>
                                             <TableHead className="min-w-[120px]">Creada</TableHead>
                                             <TableHead className="min-w-[80px] text-center">Sucursal</TableHead>
                                             <TableHead className="min-w-[100px] text-center">Estado</TableHead>
@@ -202,7 +202,7 @@ export default function PreOrders() {
 
                                             return (
                                                 <TableRow className="hover:bg-white first:border-t-none" key={clientOrder.id}>
-                                                    <TableCell className="min-w-[120px]">{clientOrder.clientPreOrderNumber}</TableCell>
+                                                    <TableCell className="min-w-[120px] pl-10">{clientOrder.clientPreOrderNumber}</TableCell>
                                                     <TableCell className="min-w-[120px]">{formatDate(clientOrder.createdAt)}</TableCell>
                                                     <TableCell className="min-w-[80px] text-center">{(clientOrder.branchName)}</TableCell>
                                                     <TableCell className="min-w-[100px] text-center">

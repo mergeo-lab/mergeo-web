@@ -53,9 +53,9 @@ export default function DiscountTabs({ className, companyId, selectedDiscountId,
     }
 
     return (
-        <div className={cn("w-full h-full px-4", className)}>
+        <div className={cn("w-full h-full ", className)}>
             <Tabs value={tab} onValueChange={handleTabChange} className="w-full h-full">
-                <div className="w-full">
+                <div className="w-full px-4">
                     <TabsList className="grid w-full grid-cols-2 gap-2 bg-muted/20 h-fit p-2">
                         <TabsTrigger className={cn("!text-white",
                             {

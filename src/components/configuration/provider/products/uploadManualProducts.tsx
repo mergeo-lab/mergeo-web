@@ -47,10 +47,9 @@ export default function UploadManualProducts() {
     }, [removeAllProducts, resetParams])
 
     return (
-        <div className="grid grid-rows-[auto,1fr] h-[calc(100vh-250px)]">
-            <div className="pl-10 shadow rounded mx-10 mt-5 p-5">
+        <div className="grid grid-rows-[auto,1fr] h-[calc(100vh-160px)]">
+            <div className="pl-10 shadow rounded mx-10 mt-4 h-fit py-2">
                 <div className="w-full flex justify-between items-center">
-                    <h1 className="text-base font-bold text-nowrap">Busca el producto por nombre, marca o codigo EAN</h1>
                     <SelectedProductsSheet
                         companyId={companyId}
                         products={allProducts}
@@ -77,7 +76,7 @@ export default function UploadManualProducts() {
                         onSaveCallback={savedProductsCallback}
                     />
                 </div>
-                <SearchProducts companyId={companyId} className="flex items-center gap-4">
+                <SearchProducts companyId={companyId} className="flex items-center gap-4 p-0 mt-0">
                     <CustomSearchField name="name" label="Nombre" companyId={companyId} className="w-52 2xl:w-72" />
                     <CustomSearchField name="brand" label="Marca" companyId={companyId} className="w-52 2xl:w-72" />
                     <span className="mr-5">o</span>

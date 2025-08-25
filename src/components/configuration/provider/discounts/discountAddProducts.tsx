@@ -104,10 +104,11 @@ export default function DiscountAddProducts({ companyId, discountListId, discoun
         <div className="w-full h-full relative px-5">
             {saveProductsMutation.isPending && <OverlayLoadingIndicator />}
             <div className="w-full h-20 overflow-hidden rounded-t">
+                
                 <div className={cn("pt-0 pl-5 h-20 mt-0 border-b-[1px] border-border transition-all duration-700 bg-muted/10 flex justify-between items-center", {
                     "-mt-20": showSearch
                 })}>
-                    <SearchProducts companyId={companyId} className="mb-5">
+                    <SearchProducts companyId={companyId} className="mb-5" useSmallButton>
                         <CustomSearchField
                             name="name"
                             label="Nombre"
@@ -128,7 +129,7 @@ export default function DiscountAddProducts({ companyId, discountListId, discoun
                         />
                     </SearchProducts>
                     <Button
-                        className="mt-5"
+                        className="mt-0"
                         variant="ghost"
                         onClick={() => setShowSearch(!showSearch)}
                     >

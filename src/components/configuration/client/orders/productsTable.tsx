@@ -262,7 +262,7 @@ export default function ProductsTable({ configCanceled }: Params) {
     return (
         <ErrorBoundary FallbackComponent={ErrorFallback}>
             <div className="relative w-full overflow-x-auto">
-                <div className="h-[calc(100vh-220px)] w-full overflow-y-auto overflow-x-auto" ref={tableRef}>
+                <div className="h-[calc(100vh-130px)] w-full overflow-y-auto overflow-x-auto" ref={tableRef}>
                     <div className="w-full h-12 bg-white absolute top-0 left-0"></div>
                     <div className="min-w-[800px]">
                         <Table>
@@ -299,7 +299,7 @@ export default function ProductsTable({ configCanceled }: Params) {
                 </div>
                 {data && data.totalPages > 1 &&
                     <PaginationCustom
-                        className="mt-5"
+                        className="absolute bottom-5 right-0"
                         currentPage={page}
                         prev={page > 1}
                         next={page < data.totalPages}

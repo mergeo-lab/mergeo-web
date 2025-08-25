@@ -12,9 +12,10 @@ type Props = {
     companyId: string;
     className?: string;
     children?: ReactNode; // 👈 custom fields passed as children
+    useSmallButton?: boolean;
 };
 
-export default function SearchProducts({ companyId, className, children }: Props) {
+export default function SearchProducts({ companyId, className, children, useSmallButton = false }: Props) {
     const { isLoading } = UseNewProductSearch();
     const { setParams } = useProviderProductSearchStore();
 
@@ -57,9 +58,11 @@ export default function SearchProducts({ companyId, className, children }: Props
                 className={cn("mt-5 p-2 flex flex-wrap items-end gap-5", className)}
             >
                 {children}
-                <Button type="submit" className="flex gap-3 px-10" disabled={isDisabled}>
+                <Button type="submit" className={cn("flex gap-3 px-10", {
+                    "px-5": useSmallButton,
+                })} disabled={isDisabled}>
                     <FiSearch size={20} />
-                    Buscar
+                    {useSmallButton ? "" : "Buscar"}
                 </Button>
             </form>
         </FormProvider>

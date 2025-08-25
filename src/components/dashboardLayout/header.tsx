@@ -42,7 +42,7 @@ export function DashboardHeader({ title }: Props) {
     };
 
     return (
-        <div className='h-16 w-full flex items-center justify-between px-5'>
+        <div className='h-12 flex items-center justify-between px-5 absolute top-0 right-0 w-[calc(100vw-13rem)]'>
             <div className="flex items-center">
                 <div className="mr-2">
                     {title && title.icon && title.icon}

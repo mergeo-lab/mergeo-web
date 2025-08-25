@@ -118,7 +118,7 @@ export function Discounts() {
                         <div className='w-full shadow flex justify-center items-center py-4 mb-2'>
                             <h3 className='text-bold text-nowrap px-4 text-[1.2rem]'>Listas de descuentos</h3>
                         </div>
-                        <div className='w-full h-[80%] overflow-y-auto'>
+                        <div className='w-full h-[100%] overflow-y-auto'>
                             {lists && lists.map((list: DiscountSchemaType) => (
                                 <DiscountListItem
                                     onClick={(id: string) => setSelectedDiscount(id)}

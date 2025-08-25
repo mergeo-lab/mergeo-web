@@ -213,19 +213,19 @@ function DashboardLayout() {
     }, [matchRoute, router]);
 
     return (
-        <div className='w-full h-full flex'>
+        <div className='w-full h-full flex overflow-hidden'>
             <ErrorBoundary fallback={<div className="p-4">Error loading sidebar</div>}>
                 <Suspense fallback={<div className="w-64 bg-secondary h-screen"></div>}>
                     <MemoizedSideBarMenu companyName={account?.company.name || ''} />
                 </Suspense>
             </ErrorBoundary>
-            <div className='w-full px-5 2xl:px-12 flex flex-col justify-center'>
+            <div className='w-full px-5 2xl:px-12 flex flex-col justify-center my-0 py-0'>
                 <ErrorBoundary fallback={<div className="h-16 px-4 flex items-center border-b">Dashboard</div>}>
                     <Suspense fallback={<div className="h-16 bg-white shadow animate-pulse"></div>}>
                         <DashboardHeader title={currentTitle} />
                     </Suspense>
                 </ErrorBoundary>
-                <div className='w-[calc(100vw-250px)] 2xl:w-[calc(100vw-300px)] h-screen mt-0 my-10 border rounded shadow lg:max-h-[calc(100vh-110px)] bg-white'>
+                <div className='w-[calc(100vw-250px)] 2xl:w-[calc(100vw-300px)] h-screen mt-10 border rounded shadow lg:max-h-[calc(100vh-60px)] overflow-hidden'>
                     <ErrorBoundary
                         FallbackComponent={ErrorFallback}
                         onError={(error, info) => {

@@ -109,8 +109,8 @@ export default function Products() {
     }
 
     return (
-        <div className="grid grid-rows-[auto_1fr] h-full w-full">
-            <div className="bg-accent h-20 w-full px-5 shadow z-20 flex justify-between items-center">
+        <div className="grid grid-rows-[auto_1fr] h-full w-full overflow-hidden">
+            <div className="bg-accent h-fit py-2 w-full px-5 shadow z-20 flex justify-between items-center">
 
                 <div className='w-full flex gap-2'>
                     <ProductFormFinder
@@ -118,11 +118,12 @@ export default function Products() {
                         disabled={shouldShowLoading || (!data?.products || data.products.length === 0) && !showOnlyInactive}
                         defaults={search}
                         inputWidth='60px'
+                        inputHeight='h-[28px]'
                     />
                     <div className='flex items-center gap-2 [&>p]:text-nowrap'>
                         <p>Ordenar por</p>
                         <Select onValueChange={sortBySelection} value={sort.id} disabled={shouldShowLoading || (!data?.products || data.products.length === 0) && !showOnlyInactive}>
-                            <SelectTrigger className='px-5 w-fit'>
+                            <SelectTrigger className='px-5 w-fit h-[28px] '>
                                 <SelectValue placeholder="" />
                             </SelectTrigger>
                             <SelectContent>
@@ -141,6 +142,7 @@ export default function Products() {
                             disabled={shouldShowLoading}
                             className={cn(
                                 "transition-all duration-200",
+                                "h-[28px]",
                                 {
                                     "!bg-info !text-white hover:!bg-info/90": showOnlyInactive,
                                     "bg-gray-200 text-gray-600 hover:bg-gray-300": !showOnlyInactive,
@@ -154,7 +156,7 @@ export default function Products() {
 
                 <div className='flex justify-center items-center w-fit'>
                     <Link to="/provider/products/newProducts">
-                        <Button className='flex gap-2'>
+                        <Button className='flex gap-2 h-[28px]'>
                             <FaPlus size={12} />
                             <p>Agregar Productos</p>
                         </Button>
@@ -169,8 +171,8 @@ export default function Products() {
                     ))}
                 </div>
                 : data && data.products.length > 0
-                    ? <div className='flex flex-col h-full w-full pt-5 relative'>
-                        <div className={`flex-1 overflow-auto ${data.totalPages > 1 ? 'pb-20' : ''}`}>
+                    ? <div className='flex flex-col h-full w-full overflow-hidden'>
+                        <div className={`flex-1 min-h-0 overflow-hidden ${data.totalPages > 1 ? 'pb-0' : ''}`}>
                             <ProviderProductsTable
                                 products={data.products}
                                 currentPage={`${data.currentPage}`}
@@ -181,7 +183,7 @@ export default function Products() {
                             />
                         </div>
                         {data.totalPages > 1 && (
-                            <div className='absolute bottom-0 left-0 right-0 bg-white py-5 shadow-[0_-4px_6px_-1px_rgb(0_0_0_/0.1)] border-t'>
+                            <div className='flex-shrink-0 bg-white py-5 shadow-[0_-4px_6px_-1px_rgb(0_0_0_/0.1)] border-t'>
                                 <PaginationCustom
                                     currentPage={page}
                                     prev={page > 1}

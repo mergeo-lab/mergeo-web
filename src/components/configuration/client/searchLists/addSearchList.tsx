@@ -294,7 +294,6 @@ export function AddSearchList({
                         <SearchProductsTable
                             products={products}
                             removeProduct={removeProduct}
-                            maxHeight="h-[300px]"
                         />
 
                     </div>

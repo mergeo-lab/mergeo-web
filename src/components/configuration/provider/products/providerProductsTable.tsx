@@ -95,7 +95,7 @@ export default function ProviderProductsTable({ products, currentPage, tableRef,
     }
 
     return (
-        <div className="max-h-full overflow-y-auto mb-0 mx-5 border border-border rounded" ref={tableRef}>
+        <div className="h-full overflow-y-auto border border-border rounded" ref={tableRef}>
             {showOnlyInactive && (
                 <div className="bg-yellow-50 border-b border-yellow-200 px-4 py-2">
                     <p className="text-sm text-yellow-800 font-medium">

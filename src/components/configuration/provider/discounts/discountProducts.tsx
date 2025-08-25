@@ -90,7 +90,7 @@ export default function DiscountProducts({ selectedDiscountId, discount }: Props
                     </div>
                 </div>
                 {removeProductMutation.isPending && <OverlayLoadingIndicator />}
-                <div className="px-4 overflow-y-auto h-[calc(100vh-18%)] pb-10">
+                <div className="px-4 overflow-y-auto h-[calc(100vh-14%)] pb-10">
                     {data && data.products.map((p: ProductSchemaType) => (
                         <div key={p.id} className={cn("transition-all overflow-hidden duration-300", {
                             "opacity-0 max-h-0": removingIds.includes(p.id),

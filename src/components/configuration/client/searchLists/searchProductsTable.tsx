@@ -2,19 +2,17 @@ import { memo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "@/components/ui/table";
 import { SearchListProductType } from "@/lib/searchLists/searchLists.schemas";
-import { cn } from "@/lib/utils";
 import { FaRegTrashAlt } from "react-icons/fa";
 
 type Props = {
     products: SearchListProductType[] | null,
     removeProduct: (id: string) => void,
-    maxHeight?: string
 }
 
 // Memoize the Trash2 icon to prevent unnecessary re-renders
 const MemoizedTrashIcon = memo(FaRegTrashAlt);
 
-export default function SearchProductsTable({ products, removeProduct, maxHeight = "200px" }: Props) {
+export default function SearchProductsTable({ products, removeProduct,}: Props) {
     console.log(products);
 
     // Define a stable callback function for removing a product
@@ -25,19 +23,22 @@ export default function SearchProductsTable({ products, removeProduct, maxHeight
     if (!products || products.length === 0) return <></>;
 
     return (
-        <div className="px-4 mt-4 border rounded">
-            <div className="overflow-hidden">
+        <div className="rounded border" style={{ height: "250px" }}>
+            {/* Fixed Header */}
+            <div className="bg-white border-b">
                 <Table className="min-w-full table-fixed">
                     <TableHeader>
                         <TableRow className="hover:bg-white">
-                            <TableHead className="m-0 w-2/5">Nombre</TableHead>
-                            <TableHead className="m-0 w-2/5">Categoria</TableHead>
-                            <TableHead className="m-0"></TableHead>
+                            <TableHead className="m-0 w-2/5 bg-white">Nombre</TableHead>
+                            <TableHead className="m-0 w-2/5 bg-white">Categoria</TableHead>
+                            <TableHead className="m-0 bg-white"></TableHead>
                         </TableRow>
                     </TableHeader>
                 </Table>
             </div>
-            <div className={cn(`overflow-y-auto`, `${maxHeight}`)}>
+            
+            {/* Scrollable Body */}
+            <div className="overflow-y-auto" style={{ height: "500px" }}>
                 <Table className="min-w-full table-fixed">
                     <TableBody>
                         {products.map((product) => (
@@ -60,6 +61,6 @@ export default function SearchProductsTable({ products, removeProduct, maxHeight
                     </TableBody>
                 </Table>
             </div>
-        </div >
+        </div>
     );
 }

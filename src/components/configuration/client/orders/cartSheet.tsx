@@ -23,6 +23,7 @@ import { RxCross2 } from "react-icons/rx";
 import { ReplacementDialog } from "./replacementDialog";
 import { ReplacementCriteriaLabel } from "./ReplacementCriteriaBadge";
 import { ReplacementCriteria } from "@/lib/constants";
+import { useScrollRestore } from "@/hooks/useScrollRestore";
 
 import { SaveOrderList } from "./saveOrderList";
 
@@ -65,6 +66,9 @@ export function CartSheet({
     const [listType, setListType] = useState<'new' | 'existing'>('new');
     const [isModalAnimating, setIsModalAnimating] = useState(false);
 
+    // Usar el hook personalizado para restaurar el scroll
+    const { restoreScroll } = useScrollRestore(isOpen || false);
+
     const config = getAllConfig();
 
     const products = getAllSavedProducts();
@@ -83,10 +87,12 @@ export function CartSheet({
                 setIsModalAnimating(false);
             }, 200);
         }
+        
+        // Restaurar scroll usando el hook
+        restoreScroll();
+        
         callback();
     };
-
-
 
     const navigateToPedidos = () => {
         setShowCountdown(true);
@@ -272,6 +278,8 @@ export function CartSheet({
         <>
             <Sheet open={isOpen || false} onOpenChange={(open) => {
                 if (!open) {
+                    // Restaurar scroll usando el hook
+                    restoreScroll();
                     closeModal();
                 }
             }}>
@@ -279,7 +287,11 @@ export function CartSheet({
                 <SheetTrigger>
                     {triggerButton}
                 </SheetTrigger>
-                <SheetContent className="w-1/2 mx-w-1/2 sm:max-w-1/2" {...(onInteractOutside && { onInteractOutside: onInteractOutside })}>
+                <SheetContent 
+                    className="w-[800px] min-w-[800px]" 
+                    disableScrollLock={true}
+                    {...(onInteractOutside && { onInteractOutside: onInteractOutside })}
+                >
                     <div className="relative">
                         <SheetHeader>
                             <SheetTitle className="relative">
