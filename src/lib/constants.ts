@@ -42,37 +42,48 @@ export const ActivityType: Record<string, { type: string; classname: string }> =
   };
 
 export enum ReplacementCriteria {
-  BEST_PRICE_FOR_UNIT = 'best_price_for_unit',
-  SAME_BRAND_AND_ITEM = 'same_brand_and_item',
-  SAME_PRODUCT_AND_PRESENTATION = 'same_product_and_presentation',
   BEST_PRICE_FOR_UNIT_AND_PRESENTATION = 'best_price_for_unit_and_presentation',
+  SAME_PRODUCT_AND_PRESENTATION = 'same_product_and_presentation',
+  SAME_BRAND_AND_ITEM = 'same_brand_and_item',
+  BEST_PRICE_FOR_UNIT = 'best_price_for_unit',
   NO_REPLACEMENT = 'no_replacement',
 }
 
+
 export const ReplacementCriteriaValues = {
   // Mejor PUM por EAN (Descripción/Variedad, Marca y Presentación)
-  BEST_PRICE_FOR_UNIT: {
-    value: ReplacementCriteria.BEST_PRICE_FOR_UNIT,
-    label: 'Mejor precio por unidad de medida',
-  },
-  // Mejor PUM por Descripcion/Variedad y Marca
-  SAME_BRAND_AND_ITEM: {
-    value: ReplacementCriteria.SAME_BRAND_AND_ITEM,
-    label: 'Mismos marca y producto',
+  BEST_PRICE_FOR_UNIT_AND_PRESENTATION: {
+    value: ReplacementCriteria.BEST_PRICE_FOR_UNIT_AND_PRESENTATION,
+    label: 'Mismos Marca, Articulo y Presentacion (MAP)',
+    service: 'bestPriceForUnitAndPresentationService',
+    defaultSelected: true,
   },
   // Mejor PUM por Descripcion/Variedad y Presentacion
   SAME_PRODUCT_AND_PRESENTATION: {
     value: ReplacementCriteria.SAME_PRODUCT_AND_PRESENTATION,
-    label: 'Mismos producto y presentación',
+    label: 'Mismos Articulo y Presentacion (AP)',
+    service: 'sameProductAndPresentationService',
+    defaultSelected: false,
+  },
+  // Mejor PUM por Descripcion/Variedad y Marca
+  SAME_BRAND_AND_ITEM: {
+    value: ReplacementCriteria.SAME_BRAND_AND_ITEM,
+    label: 'Mismos Marca y Articulo (MA)',
+    service: 'sameBrandAndItemService',
+    defaultSelected: false,
   },
   // Mejor PUM por Unidad de Medida
-  BEST_PRICE_FOR_UNIT_AND_PRESENTATION: {
-    value: ReplacementCriteria.BEST_PRICE_FOR_UNIT_AND_PRESENTATION,
-    label: 'Mejor precio por unidad de medida y presentación',
+  BEST_PRICE_FOR_UNIT: {
+    value: ReplacementCriteria.BEST_PRICE_FOR_UNIT,
+    label: 'Solo Mejor Precio por Unidad de Medida',
+    service: 'bestPriceForUnitService',
+    defaultSelected: false,
   },
   NO_REPLACEMENT: {
     value: ReplacementCriteria.NO_REPLACEMENT,
-    label: 'No quiero reemplazo',
+    label: 'No reemplazo',
+    service: 'noReplacementService',
+    defaultSelected: false,
   },
 };
 

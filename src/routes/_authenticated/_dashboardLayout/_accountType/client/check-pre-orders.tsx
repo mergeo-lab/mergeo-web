@@ -94,7 +94,7 @@ function RouteComponent() {
                             <p className='text-blue-600'>Verificando...</p>
                         )}
                         {selectedPreOrderId === preOrder.id && checkPreOrdersMutation.data && (
-                            <div className='mt-4 p-4 bg-white border border-gray-200 rounded-lg shadow-sm'>
+                            <div className='mt-4 p-4 bg-white border border-gray-200 rounded-lg shadow-sm overflow-auto max-h-[500px]'>
                                 <h3 className='font-bold text-lg text-gray-800 mb-3'>Resultados de verificación</h3>
 
                                 {/* Información general de la orden */}

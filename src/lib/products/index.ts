@@ -373,6 +373,7 @@ export async function uploadProductsFile({
       if (error.response?.data.statusCode === 400) {
         error.message = 'Algo salio mal, vuelve a intentarlo!';
       } else if (error.response?.data.statusCode === 415) {
+        console.log('error.response?.data.statusCode:', error);
         error.message = 'El archivo no es valido, vuelve a intentarlo!';
       } else {
         error.message = error.response?.data.message;

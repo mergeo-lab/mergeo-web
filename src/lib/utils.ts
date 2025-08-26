@@ -240,7 +240,8 @@ export function isCustomReplacementCriteria(
  * Get the default replacement criteria
  */
 export function getDefaultReplacementCriteria(): ReplacementCriteria {
-  return ReplacementCriteria.BEST_PRICE_FOR_UNIT;
+  const defaultOption = Object.values(ReplacementCriteriaValues).find(option => option.defaultSelected);
+  return defaultOption ? defaultOption.value : ReplacementCriteria.BEST_PRICE_FOR_UNIT;
 }
 
 // Location conversion utilities

@@ -143,6 +143,7 @@ export const PreOrderSchema = z.object({
   dropZoneId: z.string(),
   dropZoneName: z.string(),
   totalPrice: z.number(),
+  acceptedTotalPrice: z.number(),
 });
 
 // Define the BuyOrder Summary schema for pre-orders

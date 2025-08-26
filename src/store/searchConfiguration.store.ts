@@ -3,6 +3,7 @@ import { BranchesSchemaType, LatLngLiteralType } from '@/lib/schemas';
 import { addDays } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { create } from 'zustand';
+import { getDefaultReplacementCriteria } from '@/lib/utils';
 
 const LOCAL_STORAGE_KEY = 'searchConfig';
 
@@ -98,7 +99,7 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
       longitude: 0,
     },
   },
-  replacementCriteria: ReplacementCriteria.BEST_PRICE_FOR_UNIT,
+  replacementCriteria: getDefaultReplacementCriteria(),
   listId: '',
   compulsa: false,
   requiredFields: ['deliveryTime', 'branch'],
@@ -245,7 +246,7 @@ const UseSearchConfigStore = create<SearchConfigState>((set, get) => ({
           longitude: 0,
         },
       },
-      replacementCriteria: ReplacementCriteria.BEST_PRICE_FOR_UNIT,
+      replacementCriteria: getDefaultReplacementCriteria(),
       listId: '',
       listName: '',
       compulsa: false,

@@ -68,9 +68,7 @@ export default function DashboardOrders({ companyId, accountType, queryKey, item
 
     return (
         <Card>
-            <CardContent className={cn("p-0", {
-                "h-64 overflow-y-auto": accountType === ACCOUNT.provider
-            })}>
+            <CardContent className={cn("p-0 h-fit max-h-64 overflow-y-auto")}>
                 <div className="divide-y">
                     {data && data
                         .filter(order => {

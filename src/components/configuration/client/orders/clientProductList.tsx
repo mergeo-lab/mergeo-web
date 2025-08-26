@@ -18,6 +18,34 @@ type Props = {
 
 export default function ClientProductList({ orderStatus, data, isProvider = false, isLoading, totalPrice, totalAcceptedPrice }: Props) {
 
+    // Logic to determine which price to display and its styling
+    const getPriceDisplayInfo = () => {
+        if (!data || data.length === 0) {
+            return { price: totalPrice || 0, hasColor: false };
+        }
+
+        const hasAcceptedProducts = data.some(product => product.productStatus === ProductStatus.accepted);
+        const hasProcessedProducts = data.some(product => product.productStatus === ProductStatus.processed);
+        const hasOnlyPendingOrProcessed = data.every(product => 
+            product.productStatus === ProductStatus.pending || product.productStatus === ProductStatus.processed
+        );
+
+        // If there are accepted products, show accepted price with color
+        if (hasAcceptedProducts) {
+            return { price: totalAcceptedPrice || 0, hasColor: true };
+        }
+
+        // If there are only pending or processed products, show total price without color
+        if (hasOnlyPendingOrProcessed) {
+            return { price: totalPrice || 0, hasColor: false };
+        }
+
+        // Default case: show total price without color
+        return { price: totalPrice || 0, hasColor: false };
+    };
+
+    const priceInfo = getPriceDisplayInfo();
+
     return (
         <div className={cn('w-[calc(100%-32px)] h-full overflow-y-auto m-auto rounded shadow-sm', {
             'h-fit': data && data?.length < 8
@@ -97,8 +125,8 @@ export default function ClientProductList({ orderStatus, data, isProvider = fals
                                             {/* Precio total */}
                                             { orderStatus === PRE_ORDER_STATUS.pending 
                                             ? <TableCell className={cn({ 'text-right pr-14': !isProvider })}>{formatToArgentinianPesos(item.quantity * +item.price)}</TableCell>
-                                            : <TableCell className={cn({ 'text-right pr-14': !isProvider}, {'text-destructive': item.productStatus !== ProductStatus.accepted})}>
-                                                {item.productStatus !== ProductStatus.accepted && ' - '}
+                                            : <TableCell className={cn({ 'text-right pr-14': !isProvider}, {'text-destructive': item.productStatus === ProductStatus.notFound})}>
+                                                {item.productStatus === ProductStatus.notFound && ' - '}
                                                 {formatToArgentinianPesos(item.quantity * +item.price)}
                                             </TableCell>
                                             }
@@ -114,12 +142,10 @@ export default function ClientProductList({ orderStatus, data, isProvider = fals
                             <TableRow className='bg-white hover:bg-white'>
                                 <TableCell colSpan={ orderStatus === PRE_ORDER_STATUS.pending ? 3 : 5} className="h-[1px] p-1 pl-10 py-4">TOTAL</TableCell>
                                 <TableCell className={cn("h-[2px] p-2 font-bold text-right", {
-                                    'pr-14': !isProvider
+                                    'pr-14': !isProvider,
+                                    'text-green-600': priceInfo.hasColor
                                 })}>
-                                    {
-                                        orderStatus !== PRE_ORDER_STATUS.pending ? <p>{formatToArgentinianPesos(totalAcceptedPrice || 0)}</p>
-                                        : <p>{formatToArgentinianPesos(totalPrice || 0)}</p>
-                                    }
+                                    <p>{formatToArgentinianPesos(priceInfo.price)}</p>
                                 </TableCell>
                             </TableRow>
                         </TableBody>

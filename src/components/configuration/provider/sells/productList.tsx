@@ -19,34 +19,14 @@ type Props = {
     onSelect: (product: SellProductSchemaType) => void
     disabled?: boolean
     totalPrice?: number
+    totalAcceptedPrice?: number
 }
 
-export default function ProductList({ orderStatus, data, providerId, dropZoneId, acceptedProducts, isProvider = true, isLoading, onSelect, toggleAllProducts, disabled = false, totalPrice }: Props) {
+export default function ProductList({ orderStatus, data, providerId, dropZoneId, acceptedProducts, isProvider = true, isLoading, onSelect, toggleAllProducts, disabled = false, totalPrice, totalAcceptedPrice  }: Props) {
 
     // Debug: Check dropZoneId
-    console.log('ProductList dropZoneId:', dropZoneId);
-
-    const total = data && data.reduce((acc, item) => {
-        // Check if the item is in the acceptedProducts array
-        let isAccepted = false;
-        if (orderStatus === PRE_ORDER_STATUS.pending) {
-            isAccepted = acceptedProducts.some(
-                (accepted) => accepted.id === item.id
-            );
-        } else if (orderStatus === PRE_ORDER_STATUS.accepted || orderStatus === PRE_ORDER_STATUS.partialyAccepted) {
-            isAccepted = item.accepted;
-        }
-
-        if (isAccepted) {
-            const itemTotal = item.quantity * +item?.price || 0; // Ensure price is treated as a number
-            return acc + itemTotal;
-        }
-
-        return acc; // Skip non-accepted products
-    }, 0); // Initial accumulator value is 0
-
-    // Format the total to Argentinian Pesos
-    const formattedTotal = total && formatToArgentinianPesos(total);
+    console.log('ProductList totalPrice:', totalPrice);
+    console.log('ProductList totalAcceptedPrice:', totalAcceptedPrice);
 
     return (
         <div className={cn('w-[calc(100%-32px)] h-full overflow-y-auto m-auto rounded shadow-sm', {
@@ -60,7 +40,7 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                         <TableHead>CANTIDAD</TableHead>
                         <TableHead>PRECIO</TableHead>
                         {orderStatus !== PRE_ORDER_STATUS.pending && <TableHead>ESTADO</TableHead>}
-                        <TableHead className={cn({ 'text-right pr-14': !isProvider })}>PRECIO TOTAL</TableHead>
+                        <TableHead className={cn('text-right' )}>PRECIO TOTAL</TableHead>
 
                         {isProvider && orderStatus === PRE_ORDER_STATUS.pending &&
                             <TableHead className='text-right w-72'>
@@ -122,14 +102,27 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                                             </TableCell>
                                             <TableCell>{product?.netContent} {product?.measurementUnit}</TableCell>
                                             <TableCell>{item.quantity}</TableCell>
-                                            <TableCell>{formatToArgentinianPesos(+item?.price)}</TableCell>
+                                            <TableCell>{
+                                            orderStatus == PRE_ORDER_STATUS.pending
+                                                ? <p>{formatToArgentinianPesos(+item?.price)}</p>
+                                                : item.accepted
+                                                    ? <p className='text-primary'>{formatToArgentinianPesos(+item?.price)}</p>
+                                                    : <p className='text-destructive'> - {formatToArgentinianPesos(+item?.price)}</p>
+                                            }</TableCell>
                                             {orderStatus !== PRE_ORDER_STATUS.pending &&
                                                 <TableCell>{item.accepted
                                                     ? <p className='text-primary'>Aceptado</p>
                                                     : <p className='text-destructive font-thin'>Rechazado</p>}
                                                 </TableCell>
                                             }
-                                            <TableCell className={cn({ 'text-right pr-14': !isProvider })}>{formatToArgentinianPesos(item.quantity * +item?.price)}</TableCell>
+                                            <TableCell className={cn( 'text-right' )}>
+                                                {orderStatus == PRE_ORDER_STATUS.pending
+                                                    ? <p>{formatToArgentinianPesos(item.quantity * +item?.price)}</p>
+                                                    : item.accepted 
+                                                        ? <p className='text-primary'>{formatToArgentinianPesos(item.quantity * +item?.price)}</p> 
+                                                        : <p className='text-destructive'> - {formatToArgentinianPesos(item.quantity * +item?.price)}</p>
+                                                }
+                                                </TableCell>
 
                                             {isProvider && orderStatus === PRE_ORDER_STATUS.pending &&
                                                 <TableCell className='text-right w-72'>
@@ -157,19 +150,23 @@ export default function ProductList({ orderStatus, data, providerId, dropZoneId,
                                 })
                             }
                             <TableRow className="bg-border/30 hover:bg-border/30">
-                                <TableCell colSpan={6} className="h-[1px] p-1"></TableCell>
+                                <TableCell colSpan={2} className="h-[1px] p-1">
+                                </TableCell>
                             </TableRow>
                         </TableBody>
-                        <TableBody className="bg-white sticky bottom-[-1px] shadow">
+                        <TableBody className="bg-white sticky bottom-[-1px] shadow w-full">
                             <TableRow className='bg-white hover:bg-white'>
-                                <TableCell colSpan={5} className="h-[1px] p-1 pl-10 py-4">TOTAL</TableCell>
-                                <TableCell className={cn("h-[2px] p-2 font-bold text-left", {
-                                    'pr-14': !isProvider
-                                })}>
-                                    {!isProvider && orderStatus === PRE_ORDER_STATUS.pending
+                                <TableCell colSpan={orderStatus === PRE_ORDER_STATUS.pending ? 4 : 5} className="h-[1px] p-1 pl-10 py-4">TOTAL</TableCell>
+                                <TableCell className={cn("h-[2px] font-bold text-right")}>
+                                    {orderStatus === PRE_ORDER_STATUS.pending 
                                         ? <p>{formatToArgentinianPesos(totalPrice || 0)}</p>
-                                        : formattedTotal}
+                                        : <p>{formatToArgentinianPesos(totalAcceptedPrice || 0)}</p>
+                                    }
                                 </TableCell>
+                                { orderStatus === PRE_ORDER_STATUS.pending &&
+                                    <TableCell colSpan={2} className="h-[1px] p-1">
+                                    </TableCell>
+                                }
                             </TableRow>
                         </TableBody>
                     </>

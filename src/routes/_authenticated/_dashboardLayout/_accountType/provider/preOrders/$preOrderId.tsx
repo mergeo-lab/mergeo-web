@@ -91,7 +91,9 @@ export function SellsDetail() {
         shouldAllowResponse,
         isSecondInstance,
         acceptedProductsCount: acceptedProducts.length,
-        rejectedProductsCount: rejectedProducts.length
+        rejectedProductsCount: rejectedProducts.length,
+        totalPrice: order?.totalPrice,
+        totalAcceptedPrice: order?.acceptedTotalPrice
     });
 
     async function handleProviderResponse() {
@@ -256,9 +258,12 @@ export function SellsDetail() {
                         dropZoneId={order?.dropZoneId}
                         data={order?.preOrderProducts}
                         acceptedProducts={acceptedProducts}
+                        totalPrice={order?.totalPrice }
+                        totalAcceptedPrice={order?.acceptedTotalPrice}
                         onSelect={(item) => toggleProductAcceptance(item)}
                         toggleAllProducts={() => toggleAllProducts(sellProduct())}
                         disabled={!shouldAllowResponse} />
+
 
                 </div>
                 {

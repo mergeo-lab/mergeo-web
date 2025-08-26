@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { ProductSchemaType } from "@/lib/schemas";
 import { ReplacementCriteria } from "@/lib/constants";
 import { ReplacementCriteriaSelector } from "./ReplacementCriteriaSelector";
+import { getDefaultReplacementCriteria } from "@/lib/utils";
 
 interface ReplacementDialogProps {
     isOpen: boolean;
@@ -24,12 +25,12 @@ export function ReplacementDialog({
     currentReplacement
 }: ReplacementDialogProps) {
     const [selectedOption, setSelectedOption] = useState<ReplacementCriteria>(
-        currentReplacement || ReplacementCriteria.NO_REPLACEMENT
+        currentReplacement || getDefaultReplacementCriteria()
     );
 
     // Reset selectedOption when dialog opens or currentReplacement changes
     useEffect(() => {
-        setSelectedOption(currentReplacement || ReplacementCriteria.NO_REPLACEMENT);
+        setSelectedOption(currentReplacement || getDefaultReplacementCriteria());
     }, [isOpen, currentReplacement]);
 
     const handleApply = () => {
@@ -39,7 +40,7 @@ export function ReplacementDialog({
     };
 
     const handleCancel = () => {
-        setSelectedOption(currentReplacement || ReplacementCriteria.NO_REPLACEMENT);
+        setSelectedOption(currentReplacement || getDefaultReplacementCriteria());
         onClose();
     };
 
