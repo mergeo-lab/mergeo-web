@@ -25,7 +25,6 @@ export default function ClientProductList({ orderStatus, data, isProvider = fals
         }
 
         const hasAcceptedProducts = data.some(product => product.productStatus === ProductStatus.accepted);
-        const hasProcessedProducts = data.some(product => product.productStatus === ProductStatus.processed);
         const hasOnlyPendingOrProcessed = data.every(product => 
             product.productStatus === ProductStatus.pending || product.productStatus === ProductStatus.processed
         );
