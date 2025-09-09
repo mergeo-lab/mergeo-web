@@ -53,6 +53,7 @@ export default function ClientProductList({ orderStatus, data, isProvider = fals
                 <TableHeader className='sticky top-0 shadow-sm'>
                     <TableRow className="bg-white hover:bg-white [&>th]:text-secondary/90 [&>th]:font-thin">
                         <TableHead>PRODUCTO</TableHead>
+                        <TableHead>UNIDAD DE MEDIDA</TableHead>
                         <TableHead>CANTIDAD</TableHead>
                         <TableHead>PRECIO</TableHead>
                         {orderStatus !== PRE_ORDER_STATUS.pending && <TableHead>ESTADO</TableHead>}
@@ -66,7 +67,7 @@ export default function ClientProductList({ orderStatus, data, isProvider = fals
                         <TableBody className="bg-white hover:bg-white">
                             {Array.from({ length: 6 }).map((_, index) => (
                                 <TableRow key={"tr-" + index} className="hover:bg-transparent border-none">
-                                    <TableCell colSpan={6} className="h-0 p-2 border-none hover:none ">
+                                    <TableCell colSpan={orderStatus === PRE_ORDER_STATUS.pending ? 6 : 8} className="h-0 p-2 border-none hover:none ">
                                         <Skeleton key={index} className="h-14 w-full rounded-sm" />
                                     </TableCell>
                                 </TableRow>
@@ -90,6 +91,7 @@ export default function ClientProductList({ orderStatus, data, isProvider = fals
                                                 <div>{item.productName} {item.variety}</div>
                                                 <div className='text-muted font-thin'>{item.brand}</div>
                                             </TableCell>
+                                            <TableCell>{item.netContent} {item.measurementUnit}</TableCell>
                                             <TableCell>{item.quantity}</TableCell>
                                             <TableCell>{formatToArgentinianPesos(+item.price)}</TableCell>
                                             {/* Estado de la orden */}
@@ -139,7 +141,7 @@ export default function ClientProductList({ orderStatus, data, isProvider = fals
                         </TableBody>
                         <TableBody className="bg-white sticky bottom-[-1px] shadow">
                             <TableRow className='bg-white hover:bg-white'>
-                                <TableCell colSpan={ orderStatus === PRE_ORDER_STATUS.pending ? 3 : 5} className="h-[1px] p-1 pl-10 py-4">TOTAL</TableCell>
+                                <TableCell colSpan={ orderStatus === PRE_ORDER_STATUS.pending ? 4 : 6} className="h-[1px] p-1 pl-10 py-4">TOTAL</TableCell>
                                 <TableCell className={cn("h-[2px] p-2 font-bold text-right", {
                                     'pr-14': !isProvider,
                                     'text-green-600': priceInfo.hasColor
