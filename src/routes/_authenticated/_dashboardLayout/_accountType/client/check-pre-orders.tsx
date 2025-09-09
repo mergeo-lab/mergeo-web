@@ -205,7 +205,7 @@ function RouteComponent() {
                                                                                     {product.name || product.productName || 'Producto sin nombre'}
                                                                                 </div>
                                                                                 <div className='text-sm text-gray-500'>
-                                                                                    ID: {product.id} | Cantidad: {product.quantity} | ${product.price}
+                                                                                    PRODCUT PREORDER ID: {product.id}  | PRODUCT ID: {product.productId} | Cantidad: {product.quantity} | ${product.price}
                                                                                 </div>
                                                                             </div>
                                                                             <div className='ml-4'>
