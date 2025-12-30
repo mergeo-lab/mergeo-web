@@ -13,8 +13,10 @@ import { useAuth } from '@/context/AuthContext';
 import { useNotifications } from '@/context/NotificationsContext';
 import { usePaginatedSellPreOrders } from '@/hooks/usePaginatedPreOrders';
 import { PaginationCustom } from '@/components/pagination';
-import UseProviderPreOrdersPaginationState, { preOrdersSortOptions, preOrdersStatusFilters, preOrdersZoneFilters } from '@/store/preOrdersPagination.store';
+import UseProviderPreOrdersPaginationState, { preOrdersSortOptions, providerPreOrdersStatusFilters, preOrdersZoneFilters } from '@/store/providerPreOrdersPagination.store';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Toggle } from '@/components/ui/toggle';
+import { cn } from '@/lib/utils';
 
 // Safe formatDate wrapper to handle invalid dates
 const safeFormatDate = (dateString: string | undefined): string => {
@@ -63,7 +65,7 @@ export default function Sells() {
     const { notifications } = useNotifications();
     const tableRef = useRef<HTMLDivElement>(null);
 
-    const { setPage, page, statusFilter, setStatusFilter, zoneFilter, setZoneFilter, sort, setSort } = UseProviderPreOrdersPaginationState();
+    const { setPage, page, statusFilter, setStatusFilter, zoneFilter, setZoneFilter, sort, setSort, showOnlyWithPurchaseOrders, setShowOnlyWithPurchaseOrders } = UseProviderPreOrdersPaginationState();
 
     const {
         data,
@@ -121,14 +123,15 @@ export default function Sells() {
             sortByCreated: true,
             sortOrder: sort.sortOrder,
             ...(statusFilter.value !== '' && { status: statusFilter.value }),
-            ...(zoneFilter.value !== '' && { zone: zoneFilter.value })
+            ...(zoneFilter.value !== '' && { zone: zoneFilter.value }),
+            ...(showOnlyWithPurchaseOrders && { hasPurchaseOrders: true })
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [sort.sortOrder, statusFilter.value, zoneFilter.value]); // Depend on sort, status filter, and zone filter
+    }, [sort.sortOrder, statusFilter.value, zoneFilter.value, showOnlyWithPurchaseOrders]); // Depend on sort, status filter, zone filter, and purchase orders filter
 
     // Handle status filter change
     const handleStatusFilterChange = useCallback((value: string) => {
-        const selectedFilter = preOrdersStatusFilters.find(filter => filter.id === value);
+        const selectedFilter = providerPreOrdersStatusFilters.find(filter => filter.id === value);
         if (selectedFilter) {
             setStatusFilter(selectedFilter);
             // Don't call handleSearch here, let the useEffect handle it
@@ -152,6 +155,12 @@ export default function Sells() {
             // Don't call handleSearch here, let the useEffect handle it
         }
     }, [setSort]);
+
+    // Handle show only with purchase orders toggle
+    const handleShowOnlyWithPurchaseOrdersChange = useCallback((checked: boolean) => {
+        setShowOnlyWithPurchaseOrders(checked);
+        // Don't call handleSearch here, let the useEffect handle it
+    }, [setShowOnlyWithPurchaseOrders]);
 
 
     const scrollToTop = useCallback(() => {
@@ -196,7 +205,7 @@ export default function Sells() {
                                 <SelectValue placeholder="" />
                             </SelectTrigger>
                             <SelectContent>
-                                {preOrdersStatusFilters.map((filter) => (
+                                {providerPreOrdersStatusFilters.map((filter) => (
                                     <SelectItem key={filter.id} value={filter.id}>
                                         {filter.name}
                                     </SelectItem>
@@ -233,6 +242,23 @@ export default function Sells() {
                                 ))}
                             </SelectContent>
                         </Select>
+                    </div>
+                    <div className='flex items-center gap-2 [&>p]:text-nowrap'>
+                        <Toggle
+                            pressed={showOnlyWithPurchaseOrders}
+                            onPressedChange={handleShowOnlyWithPurchaseOrdersChange}
+                            disabled={isLoading}
+                            className={cn(
+                                "transition-all duration-200",
+                                "h-[28px]",
+                                {
+                                    "!bg-info !text-white hover:!bg-info/90": showOnlyWithPurchaseOrders,
+                                    "bg-gray-200 text-gray-600 hover:bg-gray-300": !showOnlyWithPurchaseOrders,
+                                }
+                            )}
+                        >
+                            Mostrar solo con órdenes de compra
+                        </Toggle>
                     </div>
                 </div>
             </div>

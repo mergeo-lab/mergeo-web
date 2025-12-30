@@ -25,6 +25,7 @@ export type PreOrdersStatusFilterType = {
   value: string;
 };
 
+// Client Pre-Orders Status Filters
 export const preOrdersStatusFilters: PreOrdersStatusFilterType[] = [
   {
     id: 'all',
@@ -67,7 +68,7 @@ export const preOrdersZoneFilters: PreOrdersZoneFilterType[] = [
   },
 ];
 
-type PreOrdersPaginationState = {
+type ClientPreOrdersPaginationState = {
   page: number;
   statusFilter: PreOrdersStatusFilterType;
   zoneFilter: PreOrdersZoneFilterType;
@@ -79,7 +80,7 @@ type PreOrdersPaginationState = {
   setSort: (sort: PreOrdersSortOptionsType) => void;
 };
 
-const UsePreOrdersPaginationState = create<PreOrdersPaginationState>(
+const UseClientPreOrdersPaginationState = create<ClientPreOrdersPaginationState>(
   (set, get) => ({
     page: 1,
     statusFilter: preOrdersStatusFilters[0],
@@ -99,45 +100,4 @@ const UsePreOrdersPaginationState = create<PreOrdersPaginationState>(
   })
 );
 
-export default UsePreOrdersPaginationState;
-
-// Provider Pre-Orders Pagination Store
-type ProviderPreOrdersPaginationState = {
-  page: number;
-  statusFilter: PreOrdersStatusFilterType;
-  zoneFilter: PreOrdersZoneFilterType;
-  sort: PreOrdersSortOptionsType;
-  setPage: (number: number) => void;
-  getPage: () => number;
-  setStatusFilter: (filter: PreOrdersStatusFilterType) => void;
-  setZoneFilter: (filter: PreOrdersZoneFilterType) => void;
-  setSort: (sort: PreOrdersSortOptionsType) => void;
-};
-
-const UseProviderPreOrdersPaginationState =
-  create<ProviderPreOrdersPaginationState>((set, get) => ({
-    page: 1,
-    statusFilter: preOrdersStatusFilters[0],
-    zoneFilter: preOrdersZoneFilters[0],
-    sort: preOrdersSortOptions[0],
-
-    setPage: (page: number) => set(() => ({ page })),
-    getPage: () => get().page,
-
-    setStatusFilter: (statusFilter: PreOrdersStatusFilterType) => {
-      console.log('Setting status filter:', statusFilter);
-      set(() => ({ statusFilter }));
-    },
-
-    setZoneFilter: (zoneFilter: PreOrdersZoneFilterType) => {
-      console.log('Setting zone filter:', zoneFilter);
-      set(() => ({ zoneFilter }));
-    },
-
-    setSort: (sort: PreOrdersSortOptionsType) => {
-      console.log('Setting sort:', sort);
-      set(() => ({ sort }));
-    },
-  }));
-
-export { UseProviderPreOrdersPaginationState };
+export default UseClientPreOrdersPaginationState;

@@ -13,7 +13,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useNotifications } from '@/context/NotificationsContext';
 import { usePaginatedPreOrders } from '@/hooks/usePaginatedPreOrders';
 import { PaginationCustom } from '@/components/pagination';
-import UsePreOrdersPaginationState, { preOrdersSortOptions, preOrdersStatusFilters, PreOrdersSortOptionsType } from '@/store/preOrdersPagination.store';
+import UseClientPreOrdersPaginationState, { preOrdersSortOptions, preOrdersStatusFilters, PreOrdersSortOptionsType } from '@/store/clientPreOrdersPagination.store';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
@@ -27,7 +27,7 @@ export default function PreOrders() {
     const { notifications } = useNotifications();
     const tableRef = useRef<HTMLDivElement>(null);
 
-    const { setPage, page, statusFilter, setStatusFilter, sort, setSort } = UsePreOrdersPaginationState();
+    const { setPage, page, statusFilter, setStatusFilter, sort, setSort } = UseClientPreOrdersPaginationState();
 
     const {
         data,

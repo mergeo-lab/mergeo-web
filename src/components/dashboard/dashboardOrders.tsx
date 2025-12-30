@@ -72,6 +72,10 @@ export default function DashboardOrders({ companyId, accountType, queryKey, item
                 <div className="divide-y">
                     {data && data
                         .filter(order => {
+                            // Hide orders with 'end' status for all account types
+                            if (order.status === PRE_ORDER_STATUS.end) {
+                                return false;
+                            }
                             // For clients, hide rejected orders
                             // For providers, show all orders including rejected ones
                             if (accountType === ACCOUNT.client && order.status === PRE_ORDER_STATUS.rejected) {

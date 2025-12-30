@@ -322,6 +322,7 @@ export async function getSellPreOrdersPaginated(
     zone?: string; // This will be the dropZoneId
     sortByCreated?: boolean;
     sortOrder?: 'ASC' | 'DESC';
+    hasPurchaseOrders?: boolean;
   }
 ): Promise<{
   preOrders: PreOrderSchemaType[];
@@ -342,6 +343,8 @@ export async function getSellPreOrdersPaginated(
     if (filters?.sortByCreated !== undefined)
       params.sortByCreated = filters.sortByCreated;
     if (filters?.sortOrder) params.sortOrder = filters.sortOrder;
+    if (filters?.hasPurchaseOrders !== undefined)
+      params.hasPurchaseOrders = filters.hasPurchaseOrders;
 
     console.log('getSellPreOrdersPaginated - sending params:', params);
 

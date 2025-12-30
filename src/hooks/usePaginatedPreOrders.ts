@@ -20,6 +20,7 @@ export type PreOrdersFilters = {
   zone?: string; // This will be the dropZoneId
   sortByCreated?: boolean;
   sortOrder?: 'ASC' | 'DESC';
+  hasPurchaseOrders?: boolean;
 };
 
 export function usePaginatedPreOrders(companyId: string) {
